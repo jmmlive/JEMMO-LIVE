@@ -1,214 +1,50 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#050816">
-  <meta name="description" content="JEMMO LIVE - Plataforma social LIVE global">
-  <title>JEMMO LIVE</title>
-  <style>
-    :root{
-      --bg:#050816;
-      --panel:rgba(12,20,45,.72);
-      --line:rgba(255,255,255,.10);
-      --text:#f7f9ff;
-      --muted:#9aa8c7;
-      --blue:#1d8cff;
-      --cyan:#34d8ff;
-      --gold:#ffd86b;
-      --danger:#ff5f7a;
-      --nav-h:74px;
-    }
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{
-      margin:0;
-      min-height:100vh;
-      color:var(--text);
-      font-family:Inter,Arial,sans-serif;
-      background:
-        radial-gradient(circle at 15% -10%,rgba(29,140,255,.28),transparent 34%),
-        radial-gradient(circle at 100% 10%,rgba(52,216,255,.12),transparent 28%),
-        var(--bg);
-      padding-bottom:calc(var(--nav-h) + 22px);
-    }
-    button{font:inherit;color:inherit}
-    .app{max-width:720px;margin:auto;min-height:100vh}
-    .topbar{
-      position:sticky;top:0;z-index:20;
-      display:flex;align-items:center;justify-content:space-between;
-      padding:16px 18px;
-      background:rgba(5,8,22,.72);
-      backdrop-filter:blur(18px);
-      border-bottom:1px solid var(--line);
-    }
-    .brand{display:flex;align-items:center;gap:10px}
-    .logo{
-      width:42px;height:42px;border-radius:15px;
-      display:grid;place-items:center;font-weight:900;font-size:19px;
-      background:linear-gradient(145deg,var(--blue),var(--cyan));
-      box-shadow:0 10px 30px rgba(29,140,255,.32);
-    }
-    .brand strong{display:block;letter-spacing:.7px}
-    .brand small{color:var(--muted)}
-    .icon-btn{
-      width:42px;height:42px;border:1px solid var(--line);
-      border-radius:14px;background:var(--panel);cursor:pointer;
-    }
-    main{padding:18px}
-    .hero{
-      position:relative;overflow:hidden;
-      min-height:225px;padding:24px;border:1px solid var(--line);
-      border-radius:30px;
-      background:linear-gradient(135deg,rgba(29,140,255,.30),rgba(12,20,45,.80) 55%,rgba(255,216,107,.10));
-      box-shadow:0 24px 70px rgba(0,0,0,.25);
-    }
-    .hero:after{
-      content:"";position:absolute;width:190px;height:190px;
-      border:1px solid rgba(255,255,255,.12);border-radius:50%;
-      right:-70px;top:-55px;box-shadow:0 0 0 32px rgba(255,255,255,.025),0 0 0 64px rgba(255,255,255,.018);
-    }
-    .live-pill{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:8px 11px;border-radius:999px;
-      background:rgba(255,95,122,.14);color:#ffd9e0;font-size:12px;font-weight:800;
-    }
-    .dot{width:8px;height:8px;border-radius:50%;background:var(--danger);box-shadow:0 0 14px var(--danger)}
-    h1{font-size:36px;line-height:1.02;margin:22px 0 10px;max-width:420px}
-    .hero p{margin:0;color:#c9d5ef;line-height:1.5;max-width:460px}
-    .hero-actions{display:flex;gap:10px;margin-top:22px;position:relative;z-index:2}
-    .btn{
-      border:0;border-radius:15px;padding:13px 17px;font-weight:800;cursor:pointer;
-    }
-    .btn-primary{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#03101f}
-    .btn-soft{background:rgba(255,255,255,.08);border:1px solid var(--line)}
-    .section-head{display:flex;align-items:end;justify-content:space-between;margin:25px 2px 13px}
-    .section-head h2{font-size:20px;margin:0}
-    .section-head span{font-size:12px;color:var(--muted)}
-    .rooms{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .card{
-      min-height:155px;padding:17px;border-radius:23px;
-      border:1px solid var(--line);background:var(--panel);
-      backdrop-filter:blur(14px);position:relative;overflow:hidden;
-    }
-    .card .emoji{font-size:30px}
-    .card h3{margin:17px 0 6px;font-size:16px}
-    .card p{margin:0;color:var(--muted);font-size:12px;line-height:1.4}
-    .tag{
-      position:absolute;right:12px;top:12px;
-      padding:6px 8px;border-radius:999px;background:rgba(255,255,255,.07);
-      font-size:10px;color:#dbe7ff;
-    }
-    .family{
-      display:flex;gap:15px;align-items:center;padding:17px;
-      border-radius:23px;border:1px solid var(--line);background:var(--panel);
-    }
-    .family-avatar{
-      flex:0 0 58px;width:58px;height:58px;border-radius:19px;
-      display:grid;place-items:center;font-size:28px;
-      background:linear-gradient(145deg,rgba(255,216,107,.25),rgba(29,140,255,.25));
-    }
-    .family-info{min-width:0;flex:1}
-    .family-info strong{display:block;margin-bottom:5px}
-    .family-info small{color:var(--muted)}
-    .online{font-size:11px;color:#70f2b1;margin-top:8px}
-    .bottom-nav{
-      position:fixed;z-index:30;left:50%;bottom:0;transform:translateX(-50%);
-      width:min(720px,100%);height:var(--nav-h);
-      display:grid;grid-template-columns:repeat(5,1fr);
-      background:rgba(6,10,24,.90);backdrop-filter:blur(20px);
-      border-top:1px solid var(--line);
-      padding-bottom:env(safe-area-inset-bottom);
-    }
-    .nav-item{
-      border:0;background:transparent;color:var(--muted);
-      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
-      font-size:10px;cursor:pointer;
-    }
-    .nav-item b{font-size:21px;font-weight:400}
-    .nav-item.active{color:var(--cyan)}
-    .center-live b{
-      width:46px;height:46px;border-radius:17px;display:grid;place-items:center;
-      background:linear-gradient(145deg,var(--blue),var(--cyan));color:#04101f;
-      transform:translateY(-9px);box-shadow:0 12px 28px rgba(29,140,255,.35);
-    }
-    .center-live span{transform:translateY(-8px)}
-    @media(max-width:390px){
-      h1{font-size:31px}
-      .hero{padding:21px}
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07000d">
+<title>JEMMO LIVE</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#050008;color:white;font-family:Arial,sans-serif;padding-bottom:88px}
+:root{--gold:#ffc21b;--violet:#b51cff;--panel:rgba(14,4,29,.9)}
+.hero{height:53vh;min-height:430px;background:linear-gradient(180deg,transparent 45%,#050008 100%),url("assets/inicio_jemmo.png") center top/cover no-repeat;position:relative}
+.top{position:absolute;inset:18px 18px auto;display:flex;justify-content:space-between}
+.round{width:48px;height:48px;border-radius:17px;border:1px solid #70268e;background:#0d0319cc;color:white;font-size:23px}
+.content{padding:0 16px}.welcome{text-align:center;margin-top:-8px;color:#eadcf2}.welcome b{color:#e22cff}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}
+.stat{background:var(--panel);border:1px solid #652284;border-radius:16px;text-align:center;padding:12px 4px;font-size:10px}.stat strong{display:block;color:var(--gold);font-size:21px;margin-top:4px}
+.section{margin:19px 0}.section h3{font-size:17px;margin:0 0 10px}.row{display:flex;gap:10px;overflow:auto;padding-bottom:5px;scrollbar-width:none}
+.card{min-width:142px;height:185px;border:1px solid #8b2eb8;border-radius:18px;background:linear-gradient(145deg,#4b116d,#12031f);position:relative;overflow:hidden}
+.face{font-size:69px;text-align:center;padding-top:28px}.shade{position:absolute;inset:auto 0 0;padding:34px 10px 10px;background:linear-gradient(transparent,#000)}.live{color:#ff3949;font-weight:900}
+.house{border:1px solid #7b289d;border-radius:22px;background:linear-gradient(135deg,#200638,#0b0214);padding:18px;display:flex;gap:15px;align-items:center}.house .icon{font-size:57px}.gold{border:0;border-radius:13px;background:linear-gradient(90deg,#ffb800,#ffdc58);font-weight:900;padding:12px 16px}
+.nav{position:fixed;z-index:20;bottom:0;left:0;right:0;display:grid;grid-template-columns:repeat(5,1fr);background:#0a0213f5;border-top:1px solid #6d2389;padding:9px 5px calc(9px + env(safe-area-inset-bottom))}
+.nav button{border:0;background:transparent;color:#c59bd7;font-size:11px}.nav span{display:block;font-size:25px}.nav .active{color:var(--gold)}
+.modal{display:none;position:fixed;inset:0;background:#000b;z-index:50;align-items:flex-end}.modal.show{display:flex}.sheet{width:100%;background:#10041e;border:1px solid #762799;border-radius:28px 28px 0 0;padding:23px}.family{display:flex;justify-content:space-between;align-items:center;padding:14px;border:1px solid #59346e;border-radius:15px;margin:9px 0}.family button{border:0;border-radius:11px;background:#a719ef;color:#fff;padding:9px}
+</style>
 </head>
 <body>
-  <div class="app">
-    <header class="topbar">
-      <div class="brand">
-        <div class="logo">J</div>
-        <div><strong>JEMMO LIVE</strong><small>El mundo está en vivo</small></div>
-      </div>
-      <button class="icon-btn" aria-label="Notificaciones">🔔</button>
-    </header>
-
-    <main>
-      <section class="hero">
-        <div class="live-pill"><span class="dot"></span> GLOBAL LIVE</div>
-        <h1>Conecta. Crea.<br>Vive el momento.</h1>
-        <p>Una comunidad global para descubrir personas, entrar en directo y construir tu propia Familia.</p>
-        <div class="hero-actions">
-          <button class="btn btn-primary" onclick="demo('Explorar LIVE')">Explorar LIVE</button>
-          <button class="btn btn-soft" onclick="demo('Crear cuenta')">Crear cuenta</button>
-        </div>
-      </section>
-
-      <div class="section-head">
-        <h2>Ahora en JEMMO</h2>
-        <span>Descubrir</span>
-      </div>
-
-      <section class="rooms">
-        <article class="card">
-          <span class="tag">EN VIVO</span>
-          <div class="emoji">🌍</div>
-          <h3>Conexión Global</h3>
-          <p>Personas de distintos países compartiendo el momento.</p>
-        </article>
-        <article class="card">
-          <span class="tag">24/7</span>
-          <div class="emoji">🏠</div>
-          <h3>Sala de Familia</h3>
-          <p>Tu comunidad siempre abierta, incluso sin un LIVE activo.</p>
-        </article>
-      </section>
-
-      <div class="section-head">
-        <h2>Familias</h2>
-        <span>Ver todas</span>
-      </div>
-
-      <section class="family">
-        <div class="family-avatar">✨</div>
-        <div class="family-info">
-          <strong>Tu próxima comunidad</strong>
-          <small>Encuentra personas, participa y crece en equipo.</small>
-          <div class="online">● Comunidad activa</div>
-        </div>
-        <span>›</span>
-      </section>
-    </main>
-
-    <nav class="bottom-nav" aria-label="Navegación principal">
-      <button class="nav-item active"><b>⌂</b><span>Inicio</span></button>
-      <button class="nav-item"><b>◉</b><span>Descubrir</span></button>
-      <button class="nav-item center-live" onclick="demo('Abrir LIVE')"><b>＋</b><span>LIVE</span></button>
-      <button class="nav-item"><b>💬</b><span>Chat</span></button>
-      <button class="nav-item"><b>♙</b><span>Perfil</span></button>
-    </nav>
-  </div>
-
-  <script>
-    function demo(action){
-      console.log("JEMMO LIVE:", action);
-    }
-  </script>
+<header class="hero"><div class="top"><button class="round">☰</button><button class="round">🔔</button></div></header>
+<main class="content">
+<div class="welcome">Tu mundo. <b>Tu escenario. Tu familia.</b><br><small>BIENVENIDO A JEMMO LIVE</small></div>
+<div class="stats"><div class="stat">EMISORAS<strong>34</strong></div><div class="stat">EN VIVO<strong>29</strong></div><div class="stat">USUARIOS<strong>12.580</strong></div><div class="stat">DIAMANTES<strong>125K</strong></div></div>
+<section class="section"><h3>🔴 EN TRANSMISIÓN AHORA</h3><div class="row" id="lives"></div></section>
+<section class="section"><h3>🎬 VÍDEOS POPULARES</h3><div class="row" id="videos"></div></section>
+<section class="section"><h3>🏠 TU CASA</h3><div class="house"><div class="icon">🏠</div><div><b>ÚNETE A UNA CASA</b><p>Forma parte de una familia, crece y brilla junto a ellos.</p><button class="gold" onclick="openFamilies()">EXPLORAR CASAS</button></div></div></section>
+</main>
+<nav class="nav"><button class="active"><span>🏠</span>INICIO</button><button><span>📡</span>EN VIVO</button><button><span>🐟</span>JEMMO</button><button><span>💬</span>CHAT</button><button><span>▦</span>MÁS</button></nav>
+<div id="familyModal" class="modal" onclick="if(event.target===this)closeFamilies()"><div class="sheet"><h2>Elige una familia 🏠</h2><p>No perteneces a ninguna casa. Puedes solicitar unirte a la que prefieras.</p><div id="families"></div><button class="gold" style="width:100%" onclick="closeFamilies()">CERRAR</button></div></div>
+<script>
+if(localStorage.getItem("jemmo_logged")!=="yes") location.replace("acceso.html");
+const people=[["Luna","👩🏻‍🎤"],["Andrés","🧑🏻‍🎤"],["Sofía","👩🏽‍🎤"],["Kevin","🧑🏽‍💻"],["Mía","👩🏻‍💻"]];
+document.getElementById("lives").innerHTML=people.map((p,i)=>`<article class="card"><div class="face">${p[1]}</div><div class="shade"><span class="live">● LIVE</span><br><b>${p[0]}</b><br><small>${542+i*171} mirando</small></div></article>`).join("");
+const titles=["Mi mejor directo","Momentos increíbles","Así se baila","Partida del día","Un poco de mi día"];
+document.getElementById("videos").innerHTML=people.map((p,i)=>`<article class="card"><div class="face">▶️</div><div class="shade"><b>${titles[i]}</b><br><small>${p[0]} · ${(6.4+i*1.5).toFixed(1)}K</small></div></article>`).join("");
+const familyNames=["💜 Casa Estrella","⭐ Familia Diamante","🌍 Casa Global","👑 Imperio LIVE"];
+document.getElementById("families").innerHTML=familyNames.map(n=>`<div class="family"><b>${n}</b><button onclick="requestFamily(this)">SOLICITAR</button></div>`).join("");
+function openFamilies(){document.getElementById("familyModal").classList.add("show")}
+function closeFamilies(){document.getElementById("familyModal").classList.remove("show")}
+function requestFamily(btn){btn.textContent="ENVIADA";btn.disabled=true}
+</script>
 </body>
 </html>
