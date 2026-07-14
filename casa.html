@@ -2,137 +2,122 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#08000d">
 <title>JEMMO Casa Padre</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{--violet:#8d19ff;--purple:#4b087d;--gold:#ffd84d;--pink:#ff3fe1;--ink:#09040f}
-body{font-family:Arial,sans-serif;background:#050208;color:#fff;overflow:hidden;height:100dvh}
-button{font:inherit;color:inherit}
-.house{
- height:100dvh; width:100vw; position:relative; overflow:hidden;
- background:
- radial-gradient(circle at 50% 18%,rgba(141,25,255,.38),transparent 31%),
- radial-gradient(circle at 15% 72%,rgba(255,63,225,.14),transparent 28%),
- linear-gradient(155deg,#09020f 0%,#160521 45%,#050208 100%);
+:root{--v:#a91fff;--v2:#5c0b8c;--g:#ffd84d;--ink:#07010b;--panel:rgba(29,4,45,.78)}
+html,body{height:100%;overflow:hidden;background:#050008;color:#fff;font-family:Arial,sans-serif}
+button,input{font:inherit}
+.app{height:100dvh;max-width:720px;margin:auto;position:relative;overflow:hidden;background:
+radial-gradient(circle at 50% 17%,rgba(145,20,255,.36),transparent 28%),
+radial-gradient(circle at 8% 63%,rgba(255,44,225,.1),transparent 27%),
+linear-gradient(155deg,#09010e,#170421 48%,#050008)}
+.app:before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.027) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.027) 1px,transparent 1px);background-size:34px 34px;opacity:.28;pointer-events:none}
+
+.menu-btn{position:absolute;z-index:30;top:calc(9px + env(safe-area-inset-top));left:12px;width:44px;height:44px;border-radius:15px;border:1px solid rgba(255,216,77,.42);background:rgba(18,3,29,.86);color:var(--g);font-size:23px;box-shadow:0 0 18px rgba(151,24,255,.25)}
+.menu{
+display:none;position:absolute;z-index:29;top:calc(61px + env(safe-area-inset-top));left:10px;width:min(82vw,340px);
+padding:13px;border-radius:22px;border:1px solid rgba(255,216,77,.42);
+background:rgba(15,2,25,.96);backdrop-filter:blur(18px);box-shadow:0 18px 45px #0009
 }
-.house:before{
- content:"";position:absolute;inset:0;opacity:.28;pointer-events:none;
- background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
- background-size:34px 34px;mask-image:linear-gradient(to bottom,black,transparent 80%);
-}
-.top{position:absolute;left:3vw;right:3vw;top:1.6vh;height:12vh;display:flex;gap:2vw;align-items:stretch;z-index:5}
-.brand,.counter,.total,.id{
- backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
- background:linear-gradient(145deg,rgba(71,10,112,.72),rgba(15,5,27,.76));
- border:1px solid rgba(255,216,77,.34);box-shadow:0 10px 32px rgba(0,0,0,.35),inset 0 0 24px rgba(141,25,255,.15);
- border-radius:22px;
-}
-.brand{width:34%;padding:1.3vh 3vw;display:flex;align-items:center}
-.logo{font-weight:900;font-size:clamp(18px,5vw,34px);letter-spacing:-2px;text-shadow:0 0 18px #8d19ff}
-.logo .j{font-family:Georgia,serif;font-style:italic;font-size:1.4em;color:var(--gold);text-shadow:0 0 15px #ffca19}
-.logo .emmo{color:#d14cff}.logo .live{font-size:.37em;color:var(--gold);letter-spacing:2px;margin-left:4px}
-.counter,.total{flex:1;padding:1.3vh 2vw;text-align:center}
-.label{font-size:clamp(8px,2.2vw,12px);color:#d7c6e8;text-transform:uppercase;letter-spacing:.8px}
-.num{font-size:clamp(17px,5vw,30px);font-weight:900;color:var(--gold);text-shadow:0 0 12px rgba(255,216,77,.55);margin-top:.5vh}
-.total .num{color:#e668ff;text-shadow:0 0 12px #8d19ff}
-.room-title{position:absolute;top:15vh;left:50%;transform:translateX(-50%);text-align:center;z-index:4;width:90%}
-.room-title h1{font-size:clamp(22px,6.2vw,38px);color:#fff;text-shadow:0 0 18px #a020f0}
-.room-title p{font-size:clamp(9px,2.6vw,14px);color:var(--gold);margin-top:.5vh;letter-spacing:1.5px}
-.seats{position:absolute;left:5vw;right:5vw;top:23vh;height:50vh;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:1.4vh 2.4vw;z-index:3}
-.seat{
- position:relative;border:1px solid rgba(220,115,255,.38);border-radius:22px;
- background:linear-gradient(160deg,rgba(80,14,125,.7),rgba(18,5,30,.88));
- box-shadow:0 8px 20px rgba(0,0,0,.32),inset 0 0 20px rgba(169,43,255,.12);
- display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;
-}
-.seat:after{content:"";position:absolute;bottom:-16px;width:80%;height:28px;border-radius:50%;background:#8d19ff;filter:blur(17px);opacity:.35}
-.avatar{width:min(10vw,48px);height:min(10vw,48px);border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,#e471ff,#7113b9 55%,#28043f);border:2px solid var(--gold);box-shadow:0 0 14px rgba(255,216,77,.35);font-size:clamp(13px,4vw,22px);font-weight:bold}
-.seat.empty .avatar{border:1px dashed rgba(255,255,255,.45);background:rgba(255,255,255,.05);color:#ad8bc3}
-.name{font-size:clamp(8px,2.2vw,12px);font-weight:bold;margin-top:.6vh;max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.badge{position:absolute;top:5px;right:6px;font-size:clamp(7px,1.8vw,10px);color:var(--gold)}
-.bottom{position:absolute;left:3vw;right:3vw;bottom:2vh;height:20vh;z-index:6;display:flex;gap:2.5vw}
-.chat{
- flex:1;border-radius:24px;padding:1.5vh 3vw;background:rgba(18,5,30,.78);border:1px solid rgba(157,58,255,.35);
- backdrop-filter:blur(14px);box-shadow:0 12px 30px rgba(0,0,0,.4);display:flex;flex-direction:column;justify-content:space-between;
-}
-.messages{font-size:clamp(9px,2.5vw,13px);line-height:1.55;overflow:hidden}
-.messages b{color:var(--gold)} .messages .gift{color:#ee75ff}
-.send{display:flex;gap:2vw;margin-top:1vh}
-.send input{min-width:0;flex:1;border:1px solid rgba(255,255,255,.15);border-radius:16px;background:rgba(255,255,255,.07);color:#fff;padding:1vh 3vw;outline:none}
-.send button,.patio{
- border:0;border-radius:18px;background:linear-gradient(135deg,#6d12b6,#bd2fff);font-weight:900;padding:0 3vw;box-shadow:0 0 20px rgba(157,31,255,.32)
-}
-.actions{width:24vw;display:grid;grid-template-rows:1fr 1fr;gap:1.2vh}
-.patio{position:relative;border:1px solid rgba(255,216,77,.48);color:var(--gold);font-size:clamp(10px,3vw,15px)}
-.patio small{display:block;color:#fff;font-size:.7em;margin-top:4px}
-.giftbtn{border:1px solid rgba(255,216,77,.5);border-radius:18px;background:linear-gradient(135deg,#6f4d00,#d89f00);font-weight:900;font-size:clamp(10px,3vw,15px)}
-.toast{position:absolute;top:20vh;left:50%;transform:translate(-50%,-20px);opacity:0;z-index:20;background:#160521;border:1px solid var(--gold);padding:12px 18px;border-radius:18px;transition:.25s;pointer-events:none;text-align:center;width:max-content;max-width:80vw}
-.toast.show{opacity:1;transform:translate(-50%,0)}
-@media (min-width:700px){.seats{left:12vw;right:12vw}.bottom{left:10vw;right:10vw}.top{left:10vw;right:10vw}}
+.menu.show{display:block}
+.menu h3{color:var(--g);margin:3px 6px 11px;font-size:16px}
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.menu button{min-height:61px;border:1px solid rgba(189,74,255,.35);border-radius:15px;background:linear-gradient(145deg,rgba(99,13,149,.55),rgba(24,4,37,.8));color:#fff;text-align:left;padding:10px;font-weight:800;font-size:12px}
+.menu button span{display:block;color:#dba1ff;font-weight:400;font-size:10px;margin-top:4px}
+.menu .all{grid-column:1/-1;border-color:rgba(255,216,77,.5);color:var(--g)}
+
+.top{position:absolute;z-index:4;left:66px;right:11px;top:calc(9px + env(safe-area-inset-top));height:82px;display:grid;grid-template-columns:.9fr 1fr 1fr;gap:8px}
+.card{border:1px solid rgba(255,216,77,.34);border-radius:20px;background:linear-gradient(145deg,rgba(79,10,119,.7),rgba(20,4,32,.84));box-shadow:0 8px 25px #0006,inset 0 0 22px rgba(143,25,255,.1)}
+.brand{display:flex;align-items:center;justify-content:center}
+.logo{font-weight:900;font-size:clamp(12px,4vw,22px);letter-spacing:-1px}.logo .j{font:italic 900 1.55em Georgia;color:var(--g);text-shadow:0 0 12px #ffc21b}.logo .e{color:#dc56ff}.logo small{color:var(--g);font-size:.35em;letter-spacing:1px}
+.metric{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:5px}
+.metric span{font-size:clamp(7px,2vw,10px);letter-spacing:1px;color:#dac7e4}.metric b{font-size:clamp(16px,5vw,27px);color:var(--g);text-shadow:0 0 13px rgba(255,216,77,.5);margin-top:4px}.metric.legacy b{color:#e765ff;text-shadow:0 0 13px #8d19ff}
+
+.title{position:absolute;z-index:3;top:calc(100px + env(safe-area-inset-top));left:8px;right:8px;text-align:center}
+.title h1{font-size:clamp(19px,5.4vw,31px);text-shadow:0 0 18px #9a20ef}.title p{margin-top:5px;color:var(--g);font-size:clamp(8px,2.25vw,11px);letter-spacing:1.6px}
+
+.seats{position:absolute;z-index:2;left:5vw;right:5vw;top:calc(155px + env(safe-area-inset-top));height:49vh;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:7px 9px}
+.seat{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:0;border:0;background:transparent}
+.seat:before{content:"";position:absolute;inset:8% 10%;border-radius:50%;background:radial-gradient(circle,rgba(147,29,230,.24),rgba(71,7,107,.08) 60%,transparent 70%);filter:blur(1px)}
+.avatar{position:relative;width:clamp(42px,11vw,60px);height:clamp(42px,11vw,60px);display:grid;place-items:center;border-radius:50%;border:2px solid var(--g);background:radial-gradient(circle at 35% 25%,#e66dff,#8318c7 54%,#26043d);box-shadow:0 0 15px rgba(206,61,255,.48),0 0 9px rgba(255,216,77,.22);font-size:clamp(15px,4vw,22px);font-weight:900}
+.empty .avatar{border:1px dashed rgba(255,255,255,.44);background:rgba(255,255,255,.045);box-shadow:0 0 12px rgba(158,50,255,.2);color:#b995c9}
+.name{position:relative;margin-top:4px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:clamp(8px,2.2vw,11px);font-weight:800}
+.badge{position:relative;color:var(--g);font-size:clamp(7px,1.8vw,9px);margin-bottom:3px}
+
+.bottom{position:absolute;z-index:6;left:10px;right:10px;bottom:calc(9px + env(safe-area-inset-bottom));height:20.5vh;display:grid;grid-template-columns:1fr 84px;gap:8px}
+.chat{border:1px solid rgba(165,48,219,.5);border-radius:22px;background:rgba(16,2,27,.9);backdrop-filter:blur(14px);padding:11px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 12px 30px #0007}
+.messages{font-size:clamp(9px,2.4vw,12px);line-height:1.45;max-height:9.5vh;overflow:hidden}.messages b{color:var(--g)}.gift{color:#ef6fff}
+.send{display:flex;gap:7px}.send input{min-width:0;flex:1;border:1px solid rgba(255,255,255,.16);border-radius:14px;background:rgba(255,255,255,.06);color:#fff;padding:9px 11px;outline:none;font-size:12px}.send button{border:0;border-radius:14px;padding:0 14px;background:linear-gradient(135deg,#6f10b5,#c32dff);font-weight:900}
+.actions{display:grid;grid-template-rows:1fr 1fr;gap:8px}.actions button{border-radius:18px;font-weight:900;font-size:11px;padding:6px}.patio{border:1px solid rgba(255,216,77,.52);background:linear-gradient(145deg,#6811a4,#bd2eff);color:var(--g)}.patio small{display:block;color:#fff;font-size:8px;margin-top:3px}.giftbtn{border:1px solid rgba(255,216,77,.5);background:linear-gradient(145deg,#674700,#c89200);color:#fff}
+
+.toast{position:absolute;z-index:50;top:19%;left:50%;transform:translate(-50%,-14px);opacity:0;pointer-events:none;transition:.22s;width:max-content;max-width:84%;padding:11px 16px;border:1px solid var(--g);border-radius:16px;background:#150320;text-align:center;font-size:12px}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-height:700px){.top{height:69px}.title{top:calc(84px + env(safe-area-inset-top))}.seats{top:calc(132px + env(safe-area-inset-top));height:48vh}.bottom{height:21vh}}
 </style>
 </head>
 <body>
-<main class="house">
- <section class="top">
-   <div class="brand"><div class="logo"><span class="j">J</span><span class="emmo">EMMO</span><span class="live">LIVE</span></div></div>
-   <div class="counter"><div class="label">Regalos de hoy</div><div class="num" id="daily">24.8K</div></div>
-   <div class="total"><div class="label">Legado de la Casa</div><div class="num" id="legacy">1.27M</div></div>
- </section>
+<main class="app" onclick="closeMenuOutside(event)">
+<button class="menu-btn" id="menuBtn" onclick="toggleMenu(event)">☰</button>
 
- <header class="room-title">
-   <h1>✦ JEMMO CASA PADRE ✦</h1>
-   <p>CASA FUNDADORA · ID CASA #000001</p>
- </header>
+<section class="menu" id="menu">
+<h3>JEMMO CASA PADRE</h3>
+<div class="menu-grid">
+<button onclick="demo('Niveles de la Casa · panel preparado')">🏆 NIVELES<span>Progreso, rango y logros</span></button>
+<button onclick="demo('Batallas de la Casa · panel preparado')">⚔️ BATALLAS<span>Activas y próximas</span></button>
+<button onclick="demo('Ranking de miembros · panel preparado')">👑 RANKING<span>Top de la Casa</span></button>
+<button onclick="demo('Historia y legado · panel preparado')">✦ LEGADO<span>Historia de la Casa</span></button>
+<button onclick="location.href='casa.html'" class="all">🏠 CASA PADRE<span>Volver al corazón de JEMMO</span></button>
+<button onclick="demo('Explorador de Todas las Casas · siguiente pantalla')" class="all">🌍 TODAS LAS CASAS<span>Entrar al directorio de Casas JEMMO</span></button>
+</div>
+</section>
 
- <section class="seats" id="seats"></section>
+<section class="top">
+<div class="brand card"><div class="logo"><span class="j">J</span><span class="e">EMMO</span><small> LIVE</small></div></div>
+<div class="metric card"><span>REGALOS DE HOY</span><b id="daily">24.8K</b></div>
+<div class="metric legacy card"><span>LEGADO DE LA CASA</span><b id="legacy">1.27M</b></div>
+</section>
 
- <section class="bottom">
-   <div class="chat">
-     <div class="messages" id="messages">
-       <div><b>JEMMO:</b> Bienvenidos a la Casa Padre 💜</div>
-       <div><b>Luna:</b> Esta sala está preciosa.</div>
-       <div class="gift">✦ Kai envió Estrella Dorada x3 · +3K</div>
-     </div>
-     <div class="send">
-       <input id="msg" maxlength="70" placeholder="Di algo en la Casa...">
-       <button onclick="sendMsg()">Enviar</button>
-     </div>
-   </div>
-   <div class="actions">
-      <button class="patio" onclick="toast('SÚPER PATIO · Próxima pantalla de JEMMO')">SÚPER PATIO<small>Batallas · Vídeos · Historia</small></button>
-      <button class="giftbtn" onclick="gift()">🎁 REGALO</button>
-   </div>
- </section>
- <div class="toast" id="toast"></div>
+<header class="title"><h1>✦ JEMMO CASA PADRE ✦</h1><p>CASA FUNDADORA · ID CASA #000001</p></header>
+<section class="seats" id="seats"></section>
+
+<section class="bottom">
+<div class="chat">
+<div class="messages" id="messages">
+<div><b>JEMMO:</b> Bienvenidos a la Casa Padre 💜</div>
+<div><b>Luna:</b> Esta sala está preciosa.</div>
+<div class="gift">✦ Kai envió Estrella Dorada x3 · +3K</div>
+</div>
+<div class="send"><input id="msg" maxlength="70" placeholder="Di algo en la Casa..."><button onclick="sendMsg()">Enviar</button></div>
+</div>
+<div class="actions">
+<button class="patio" onclick="demo('SÚPER PATIO · Batallas, vídeos e historia')">SÚPER PATIO<small>BATALLAS · VÍDEOS</small></button>
+<button class="giftbtn" onclick="gift()">🎁<br>REGALO</button>
+</div>
+</section>
+<div class="toast" id="toast"></div>
 </main>
 <script>
-const people=["J","L","K","R","Y","M","A"];
+const initials=["J","L","K","R","Y","M","A"];
 const names=["Fundador","Luna","Kai","Ruth","Yandira","Mía","Alex"];
 const seats=document.getElementById("seats");
 for(let i=0;i<16;i++){
- const filled=i<people.length;
- seats.innerHTML+=`<div class="seat ${filled?'':'empty'}">
-   <span class="badge">${i===0?'FUNDADOR':filled?'LV.'+(37-i*2):'LIBRE'}</span>
-   <div class="avatar">${filled?people[i]:'+'}</div>
-   <div class="name">${filled?names[i]:'Sentarse'}</div>
- </div>`;
+ const full=i<initials.length;
+ seats.innerHTML+=`<button class="seat ${full?"":"empty"}" onclick="seatInfo(${i})">
+ <span class="badge">${i===0?"FUNDADOR":full?"LV."+(37-i*2):"LIBRE"}</span>
+ <span class="avatar">${full?initials[i]:"+"}</span>
+ <span class="name">${full?names[i]:"Sentarse"}</span>
+ </button>`;
 }
+function toggleMenu(e){e.stopPropagation();document.getElementById("menu").classList.toggle("show")}
+function closeMenuOutside(e){if(!e.target.closest("#menu")&&!e.target.closest("#menuBtn"))document.getElementById("menu").classList.remove("show")}
+function demo(t){document.getElementById("menu").classList.remove("show");toast(t)}
 function toast(t){const x=document.getElementById("toast");x.textContent=t;x.classList.add("show");setTimeout(()=>x.classList.remove("show"),1900)}
-function sendMsg(){
- const input=document.getElementById("msg"); const v=input.value.trim(); if(!v)return;
- document.getElementById("messages").innerHTML+=`<div><b>Tú:</b> ${v.replace(/[<>]/g,'')}</div>`;
- input.value="";
-}
+function seatInfo(i){toast(i<names.length?names[i]+" · Asiento "+(i+1):"Asiento "+(i+1)+" disponible")}
+function sendMsg(){const input=document.getElementById("msg"),v=input.value.trim();if(!v)return;document.getElementById("messages").innerHTML+=`<div><b>Tú:</b> ${v.replace(/[<>]/g,"")}</div>`;input.value=""}
 let d=24800,l=1270000;
-function gift(){
- d+=1000;l+=1000;
- document.getElementById("daily").textContent=(d/1000).toFixed(1)+"K";
- document.getElementById("legacy").textContent=(l/1000000).toFixed(2)+"M";
- document.getElementById("messages").innerHTML+=`<div class="gift">✦ Tú enviaste Regalo JEMMO · +1K</div>`;
- toast("🎁 +1K para la Casa Padre");
-}
-document.querySelectorAll(".seat").forEach((s,i)=>s.onclick=()=>toast(i<people.length?names[i]+" · Asiento "+(i+1):"Asiento "+(i+1)+" disponible"));
+function gift(){d+=1000;l+=1000;document.getElementById("daily").textContent=(d/1000).toFixed(1)+"K";document.getElementById("legacy").textContent=(l/1000000).toFixed(2)+"M";document.getElementById("messages").innerHTML+=`<div class="gift">✦ Tú enviaste Regalo JEMMO · +1K</div>`;toast("🎁 +1K para la Casa Padre")}
 </script>
 </body>
 </html>
