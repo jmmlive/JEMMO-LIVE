@@ -1,0 +1,26 @@
+JEMMO LIVE V1 FUNCIONAL - PROTOTIPO LOCAL
+=============================================
+Subir TODOS estos archivos juntos a la raíz del repositorio JEMMO-LIVE.
+
+Archivo de entrada: index.html
+
+Incluye:
+- Inicio navegable
+- Acceso/registro local de demo
+- LIVE y sala LIVE
+- Casa central 24/7
+- Ascensor y Casas visitantes
+- Torneos de Casas
+- Chat con interfaz de traducción preparada
+- Perfil editable local
+- Ayuda / Copiloto
+- Normas
+- Centro legal con fuentes BOE, AEPD y EUR-Lex
+- Reportes con ID y estado local
+- Notificaciones
+- Súper Patio
+
+IMPORTANTE:
+Esto es un prototipo funcional FRONT-END.
+No hay todavía dinero real, autenticación de servidor, vídeo real ni moderación de servidor.
+Los datos de prueba se guardan con localStorage en el navegador.
