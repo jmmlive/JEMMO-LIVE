@@ -69,7 +69,7 @@ background:rgba(15,2,25,.96);backdrop-filter:blur(18px);box-shadow:0 18px 45px #
 <button onclick="demo('Ranking de miembros · panel preparado')">👑 RANKING<span>Top de la Casa</span></button>
 <button onclick="demo('Historia y legado · panel preparado')">✦ LEGADO<span>Historia de la Casa</span></button>
 <button onclick="location.href='casa.html'" class="all">🏠 CASA PADRE<span>Volver al corazón de JEMMO</span></button>
-<button onclick="demo('Explorador de Todas las Casas · siguiente pantalla')" class="all">🌍 TODAS LAS CASAS<span>Entrar al directorio de Casas JEMMO</span></button>
+<button onclick="location.href='ascensor.html'" class="all">🌍 TODAS LAS CASAS<span>Entrar al directorio de Casas JEMMO</span></button>
 </div>
 </section>
 
@@ -104,7 +104,7 @@ const names=["Fundador","Luna","Kai","Ruth","Yandira","Mía","Alex"];
 const seats=document.getElementById("seats");
 for(let i=0;i<16;i++){
  const full=i<initials.length;
- seats.innerHTML+=`<button class="seat ${full?"":"empty"}" onclick="seatInfo(${i})">
+ seats.innerHTML+=`<button class="seat ${full?"":"empty"}" onclick="requestSeat(${i})">
  <span class="badge">${i===0?"FUNDADOR":full?"LV."+(37-i*2):"LIBRE"}</span>
  <span class="avatar">${full?initials[i]:"+"}</span>
  <span class="name">${full?names[i]:"Sentarse"}</span>
@@ -114,7 +114,12 @@ function toggleMenu(e){e.stopPropagation();document.getElementById("menu").class
 function closeMenuOutside(e){if(!e.target.closest("#menu")&&!e.target.closest("#menuBtn"))document.getElementById("menu").classList.remove("show")}
 function demo(t){document.getElementById("menu").classList.remove("show");toast(t)}
 function toast(t){const x=document.getElementById("toast");x.textContent=t;x.classList.add("show");setTimeout(()=>x.classList.remove("show"),1900)}
-function seatInfo(i){toast(i<names.length?names[i]+" · Asiento "+(i+1):"Asiento "+(i+1)+" disponible")}
+const isHouseMember=false;
+function requestSeat(i){
+ if(i<names.length){toast(names[i]+" · Asiento "+(i+1));return}
+ if(isHouseMember){toast("💜 Miembro de la Casa · subiendo al asiento "+(i+1));return}
+ toast("🔔 Solicitud enviada al administrador para subir al asiento "+(i+1));
+}
 function sendMsg(){const input=document.getElementById("msg"),v=input.value.trim();if(!v)return;document.getElementById("messages").innerHTML+=`<div><b>Tú:</b> ${v.replace(/[<>]/g,"")}</div>`;input.value=""}
 let d=24800,l=1270000;
 function gift(){d+=1000;l+=1000;document.getElementById("daily").textContent=(d/1000).toFixed(1)+"K";document.getElementById("legacy").textContent=(l/1000000).toFixed(2)+"M";document.getElementById("messages").innerHTML+=`<div class="gift">✦ Tú enviaste Regalo JEMMO · +1K</div>`;toast("🎁 +1K para la Casa Padre")}
