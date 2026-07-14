@@ -61,34 +61,8 @@ body{padding-bottom:84px}
   </section>
 
   <section class="feed">
-    <div class="section-head">
-      <h2>🔴 En directo ahora</h2>
-      <button onclick="notice('Lista completa de directos preparada')">Ver todos</button>
-    </div>
-
-    <section class="live-grid">
-      <article class="live-card" onclick="openLive('LunaCanaria')">
-        <div class="fake-photo">👩‍🎤</div>
-        <div class="live-info"><span class="badge">EN VIVO · 1.2K</span><h3>LunaCanaria</h3><p>Charlando con la familia 💜</p></div>
-      </article>
-
-      <article class="live-card" onclick="openLive('DJ Nexo')">
-        <div class="fake-photo">🎧</div>
-        <div class="live-info"><span class="badge">EN VIVO · 846</span><h3>DJ Nexo</h3><p>Música y buen rollo 🔥</p></div>
-      </article>
-
-      <article class="live-card" onclick="openLive('MayaStar')">
-        <div class="fake-photo">🌟</div>
-        <div class="live-info"><span class="badge">EN VIVO · 634</span><h3>MayaStar</h3><p>Retos y regalos 💎</p></div>
-      </article>
-
-      <article class="live-card" onclick="openLive('CanaryFlow')">
-        <div class="fake-photo">🌊</div>
-        <div class="live-info"><span class="badge">EN VIVO · 519</span><h3>CanaryFlow</h3><p>Desde Canarias</p></div>
-      </article>
-    </section>
-
-    <div class="section-head" style="margin-top:26px">
+    <section class="house" style="margin-top:2px"><div class="house-icon">📡</div><div><h3>JEMMO está en vivo</h3><p>Descubre quién transmite ahora.</p><button onclick="location.href='live.html'">VER DIRECTOS</button></div></section>
+<div class="section-head" style="margin-top:26px">
       <h2>🎬 Vídeos populares</h2>
       <button onclick="notice('Vídeos populares preparados')">Ver todos</button>
     </div>
@@ -102,21 +76,15 @@ body{padding-bottom:84px}
     <section class="house">
       <div class="house-icon">🏠</div>
       <div>
-        <h3>Tu Casa</h3>
-        <p>No perteneces a ninguna familia. Explora familias y solicita unirte.</p>
-        <button onclick="notice('Explorador de familias preparado')">EXPLORAR CASAS</button>
+        <h3>Otras Casas</h3>
+        <p>Descubre otras casas y conoce sus comunidades.</p>
+        <button onclick="notice('Explorador de familias preparado')">VER OTRAS CASAS</button>
       </div>
     </section>
   </section>
 </main>
 
-<nav class="nav">
-  <button class="on"><span>🏠</span>INICIO</button>
-  <button onclick="notice('Directos preparados')"><span>📡</span>EN VIVO</button>
-  <button onclick="notice('Tu Casa preparada')"><span>🏡</span>CASA</button>
-  <button onclick="notice('Chat preparado')"><span>💬</span>CHAT</button>
-  <button onclick="notice('Más opciones preparadas')"><span>▦</span>MÁS</button>
-</nav>
+<nav class="nav"><button class="on"><span>🏠</span>INICIO</button><button onclick="location.href='live.html'"><span>📡</span>LIVE</button><button onclick="notice('Tu Casa se preparará después')"><span>🏡</span>CASA</button><button onclick="notice('Chat se preparará después')"><span>💬</span>CHAT</button><button onclick="notice('Perfil se preparará después')"><span>👤</span>PERFIL</button></nav>
 
 <div id="toast" class="toast"></div>
 
