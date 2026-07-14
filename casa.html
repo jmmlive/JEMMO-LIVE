@@ -47,11 +47,11 @@ background:rgba(15,2,25,.96);backdrop-filter:blur(18px);box-shadow:0 18px 45px #
 .name{position:relative;margin-top:4px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:clamp(8px,2.2vw,11px);font-weight:800}
 .badge{position:relative;color:var(--g);font-size:clamp(7px,1.8vw,9px);margin-bottom:3px}
 
-.bottom{position:absolute;z-index:6;left:10px;right:10px;bottom:calc(9px + env(safe-area-inset-bottom));height:20.5vh;display:grid;grid-template-columns:1fr 84px;gap:8px}
-.chat{border:1px solid rgba(165,48,219,.5);border-radius:22px;background:rgba(16,2,27,.9);backdrop-filter:blur(14px);padding:11px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 12px 30px #0007}
+.bottom{position:absolute;z-index:6;left:10px;right:10px;bottom:calc(9px + env(safe-area-inset-bottom));height:20.5vh;display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:10px}
+.chat{min-width:0;overflow:hidden;border:1px solid rgba(165,48,219,.5);border-radius:22px;background:rgba(16,2,27,.9);backdrop-filter:blur(14px);padding:11px;display:flex;flex-direction:column;justify-content:space-between;box-shadow:0 12px 30px #0007}
 .messages{font-size:clamp(9px,2.4vw,12px);line-height:1.45;max-height:9.5vh;overflow:hidden}.messages b{color:var(--g)}.gift{color:#ef6fff}
 .send{display:flex;gap:7px}.send input{min-width:0;flex:1;border:1px solid rgba(255,255,255,.16);border-radius:14px;background:rgba(255,255,255,.06);color:#fff;padding:9px 11px;outline:none;font-size:12px}.send button{border:0;border-radius:14px;padding:0 14px;background:linear-gradient(135deg,#6f10b5,#c32dff);font-weight:900}
-.actions{display:grid;grid-template-rows:1fr 1fr;gap:8px}.actions button{border-radius:18px;font-weight:900;font-size:11px;padding:6px}.patio{border:1px solid rgba(255,216,77,.52);background:linear-gradient(145deg,#6811a4,#bd2eff);color:var(--g)}.patio small{display:block;color:#fff;font-size:8px;margin-top:3px}.giftbtn{border:1px solid rgba(255,216,77,.5);background:linear-gradient(145deg,#674700,#c89200);color:#fff}
+.actions{min-width:0;display:grid;grid-template-rows:1fr 1fr;gap:8px}.actions button{border-radius:18px;font-weight:900;font-size:11px;padding:6px}.patio{border:1px solid rgba(255,216,77,.52);background:linear-gradient(145deg,#6811a4,#bd2eff);color:var(--g)}.patio small{display:block;color:#fff;font-size:8px;margin-top:3px}.giftbtn{border:1px solid rgba(255,216,77,.5);background:linear-gradient(145deg,#674700,#c89200);color:#fff}
 
 .toast{position:absolute;z-index:50;top:19%;left:50%;transform:translate(-50%,-14px);opacity:0;pointer-events:none;transition:.22s;width:max-content;max-width:84%;padding:11px 16px;border:1px solid var(--g);border-radius:16px;background:#150320;text-align:center;font-size:12px}.toast.show{opacity:1;transform:translate(-50%,0)}
 @media(max-height:700px){.top{height:69px}.title{top:calc(84px + env(safe-area-inset-top))}.seats{top:calc(132px + env(safe-area-inset-top));height:48vh}.bottom{height:21vh}}
@@ -92,7 +92,7 @@ background:rgba(15,2,25,.96);backdrop-filter:blur(18px);box-shadow:0 18px 45px #
 <div class="send"><input id="msg" maxlength="70" placeholder="Di algo en la Casa..."><button onclick="sendMsg()">Enviar</button></div>
 </div>
 <div class="actions">
-<button class="patio" onclick="demo('SÚPER PATIO · Batallas, vídeos e historia')">SÚPER PATIO<small>BATALLAS · VÍDEOS</small></button>
+<button class="patio" onclick="location.href='patio.html'">SÚPER PATIO<small>BATALLAS · VÍDEOS</small></button>
 <button class="giftbtn" onclick="gift()">🎁<br>REGALO</button>
 </div>
 </section>
