@@ -31,7 +31,8 @@ label{display:block;color:#d7d5e4;font-size:13px;font-weight:700;margin:0 0 7px 
 input{width:100%;border:1px solid rgba(255,255,255,.11);outline:none;background:rgba(5,5,14,.72);color:white;border-radius:17px;padding:15px 16px;font-size:16px;transition:.2s}
 input:focus{border-color:#a936ff;box-shadow:0 0 0 4px rgba(169,54,255,.11)}
 .primary{width:100%;border:0;border-radius:18px;padding:16px;margin-top:5px;font-size:16px;font-weight:900;color:white;background:linear-gradient(135deg,#8b00ff,#c000ff 55%,#ffb900);box-shadow:0 12px 30px rgba(132,0,255,.28)}
-.note{text-align:center;color:#85839a;font-size:12px;line-height:1.5;margin-top:14px}
+.forgot{display:block;width:100%;border:0;background:transparent;color:#d7b8ff;font-size:14px;font-weight:800;margin-top:16px;padding:8px;cursor:pointer}.forgot:active{opacity:.7}
+.note{text-align:center;color:#85839a;font-size:12px;line-height:1.5;margin-top:10px}
 .back{display:block;text-align:center;color:#c7c4d5;text-decoration:none;font-size:14px;font-weight:700;margin-top:16px}
 .brandline{height:2px;width:80px;margin:15px auto 0;border-radius:9px;background:linear-gradient(90deg,transparent,#ffd21f,#9d00ff,transparent)}
 </style>
@@ -59,6 +60,7 @@ input:focus{border-color:#a936ff;box-shadow:0 0 0 4px rgba(169,54,255,.11)}
       <div class="field"><label>Correo electrónico</label><input type="email" placeholder="tu@correo.com" required></div>
       <div class="field"><label>Contraseña</label><input type="password" placeholder="Tu contraseña" required></div>
       <button class="primary" type="submit">Entrar en JEMMO</button>
+      <button class="forgot" type="button" onclick="recoverPassword()">🔑 ¿Olvidaste tu contraseña?</button>
       <p class="note">Acceso seguro a tu perfil y comunidad.</p>
     </form>
 
@@ -80,6 +82,7 @@ function showForm(id,btn){
   document.getElementById(id).classList.add('active'); btn.classList.add('active');
 }
 function demo(e){e.preventDefault();alert('Vista preparada. La conexión real de cuentas será el siguiente paso.');}
+function recoverPassword(){alert('Recuperar contraseña queda preparado visualmente. Al conectar las cuentas reales, enviaremos el enlace de recuperación al correo del usuario.');}
 </script>
 </body>
 </html>
