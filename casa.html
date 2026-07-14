@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>JEMMO Casa Padre</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--violet:#8d19ff;--purple:#4b087d;--gold:#ffd84d;--pink:#ff3fe1;--ink:#09040f}
+body{font-family:Arial,sans-serif;background:#050208;color:#fff;overflow:hidden;height:100dvh}
+button{font:inherit;color:inherit}
+.house{
+ height:100dvh; width:100vw; position:relative; overflow:hidden;
+ background:
+ radial-gradient(circle at 50% 18%,rgba(141,25,255,.38),transparent 31%),
+ radial-gradient(circle at 15% 72%,rgba(255,63,225,.14),transparent 28%),
+ linear-gradient(155deg,#09020f 0%,#160521 45%,#050208 100%);
+}
+.house:before{
+ content:"";position:absolute;inset:0;opacity:.28;pointer-events:none;
+ background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+ background-size:34px 34px;mask-image:linear-gradient(to bottom,black,transparent 80%);
+}
+.top{position:absolute;left:3vw;right:3vw;top:1.6vh;height:12vh;display:flex;gap:2vw;align-items:stretch;z-index:5}
+.brand,.counter,.total,.id{
+ backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+ background:linear-gradient(145deg,rgba(71,10,112,.72),rgba(15,5,27,.76));
+ border:1px solid rgba(255,216,77,.34);box-shadow:0 10px 32px rgba(0,0,0,.35),inset 0 0 24px rgba(141,25,255,.15);
+ border-radius:22px;
+}
+.brand{width:34%;padding:1.3vh 3vw;display:flex;align-items:center}
+.logo{font-weight:900;font-size:clamp(18px,5vw,34px);letter-spacing:-2px;text-shadow:0 0 18px #8d19ff}
+.logo .j{font-family:Georgia,serif;font-style:italic;font-size:1.4em;color:var(--gold);text-shadow:0 0 15px #ffca19}
+.logo .emmo{color:#d14cff}.logo .live{font-size:.37em;color:var(--gold);letter-spacing:2px;margin-left:4px}
+.counter,.total{flex:1;padding:1.3vh 2vw;text-align:center}
+.label{font-size:clamp(8px,2.2vw,12px);color:#d7c6e8;text-transform:uppercase;letter-spacing:.8px}
+.num{font-size:clamp(17px,5vw,30px);font-weight:900;color:var(--gold);text-shadow:0 0 12px rgba(255,216,77,.55);margin-top:.5vh}
+.total .num{color:#e668ff;text-shadow:0 0 12px #8d19ff}
+.room-title{position:absolute;top:15vh;left:50%;transform:translateX(-50%);text-align:center;z-index:4;width:90%}
+.room-title h1{font-size:clamp(22px,6.2vw,38px);color:#fff;text-shadow:0 0 18px #a020f0}
+.room-title p{font-size:clamp(9px,2.6vw,14px);color:var(--gold);margin-top:.5vh;letter-spacing:1.5px}
+.seats{position:absolute;left:5vw;right:5vw;top:23vh;height:50vh;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:1.4vh 2.4vw;z-index:3}
+.seat{
+ position:relative;border:1px solid rgba(220,115,255,.38);border-radius:22px;
+ background:linear-gradient(160deg,rgba(80,14,125,.7),rgba(18,5,30,.88));
+ box-shadow:0 8px 20px rgba(0,0,0,.32),inset 0 0 20px rgba(169,43,255,.12);
+ display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;
+}
+.seat:after{content:"";position:absolute;bottom:-16px;width:80%;height:28px;border-radius:50%;background:#8d19ff;filter:blur(17px);opacity:.35}
+.avatar{width:min(10vw,48px);height:min(10vw,48px);border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 35% 25%,#e471ff,#7113b9 55%,#28043f);border:2px solid var(--gold);box-shadow:0 0 14px rgba(255,216,77,.35);font-size:clamp(13px,4vw,22px);font-weight:bold}
+.seat.empty .avatar{border:1px dashed rgba(255,255,255,.45);background:rgba(255,255,255,.05);color:#ad8bc3}
+.name{font-size:clamp(8px,2.2vw,12px);font-weight:bold;margin-top:.6vh;max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{position:absolute;top:5px;right:6px;font-size:clamp(7px,1.8vw,10px);color:var(--gold)}
+.bottom{position:absolute;left:3vw;right:3vw;bottom:2vh;height:20vh;z-index:6;display:flex;gap:2.5vw}
+.chat{
+ flex:1;border-radius:24px;padding:1.5vh 3vw;background:rgba(18,5,30,.78);border:1px solid rgba(157,58,255,.35);
+ backdrop-filter:blur(14px);box-shadow:0 12px 30px rgba(0,0,0,.4);display:flex;flex-direction:column;justify-content:space-between;
+}
+.messages{font-size:clamp(9px,2.5vw,13px);line-height:1.55;overflow:hidden}
+.messages b{color:var(--gold)} .messages .gift{color:#ee75ff}
+.send{display:flex;gap:2vw;margin-top:1vh}
+.send input{min-width:0;flex:1;border:1px solid rgba(255,255,255,.15);border-radius:16px;background:rgba(255,255,255,.07);color:#fff;padding:1vh 3vw;outline:none}
+.send button,.patio{
+ border:0;border-radius:18px;background:linear-gradient(135deg,#6d12b6,#bd2fff);font-weight:900;padding:0 3vw;box-shadow:0 0 20px rgba(157,31,255,.32)
+}
+.actions{width:24vw;display:grid;grid-template-rows:1fr 1fr;gap:1.2vh}
+.patio{position:relative;border:1px solid rgba(255,216,77,.48);color:var(--gold);font-size:clamp(10px,3vw,15px)}
+.patio small{display:block;color:#fff;font-size:.7em;margin-top:4px}
+.giftbtn{border:1px solid rgba(255,216,77,.5);border-radius:18px;background:linear-gradient(135deg,#6f4d00,#d89f00);font-weight:900;font-size:clamp(10px,3vw,15px)}
+.toast{position:absolute;top:20vh;left:50%;transform:translate(-50%,-20px);opacity:0;z-index:20;background:#160521;border:1px solid var(--gold);padding:12px 18px;border-radius:18px;transition:.25s;pointer-events:none;text-align:center;width:max-content;max-width:80vw}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (min-width:700px){.seats{left:12vw;right:12vw}.bottom{left:10vw;right:10vw}.top{left:10vw;right:10vw}}
+</style>
+</head>
+<body>
+<main class="house">
+ <section class="top">
+   <div class="brand"><div class="logo"><span class="j">J</span><span class="emmo">EMMO</span><span class="live">LIVE</span></div></div>
+   <div class="counter"><div class="label">Regalos de hoy</div><div class="num" id="daily">24.8K</div></div>
+   <div class="total"><div class="label">Legado de la Casa</div><div class="num" id="legacy">1.27M</div></div>
+ </section>
+
+ <header class="room-title">
+   <h1>✦ JEMMO CASA PADRE ✦</h1>
+   <p>CASA FUNDADORA · ID CASA #000001</p>
+ </header>
+
+ <section class="seats" id="seats"></section>
+
+ <section class="bottom">
+   <div class="chat">
+     <div class="messages" id="messages">
+       <div><b>JEMMO:</b> Bienvenidos a la Casa Padre 💜</div>
+       <div><b>Luna:</b> Esta sala está preciosa.</div>
+       <div class="gift">✦ Kai envió Estrella Dorada x3 · +3K</div>
+     </div>
+     <div class="send">
+       <input id="msg" maxlength="70" placeholder="Di algo en la Casa...">
+       <button onclick="sendMsg()">Enviar</button>
+     </div>
+   </div>
+   <div class="actions">
+      <button class="patio" onclick="toast('SÚPER PATIO · Próxima pantalla de JEMMO')">SÚPER PATIO<small>Batallas · Vídeos · Historia</small></button>
+      <button class="giftbtn" onclick="gift()">🎁 REGALO</button>
+   </div>
+ </section>
+ <div class="toast" id="toast"></div>
+</main>
+<script>
+const people=["J","L","K","R","Y","M","A"];
+const names=["Fundador","Luna","Kai","Ruth","Yandira","Mía","Alex"];
+const seats=document.getElementById("seats");
+for(let i=0;i<16;i++){
+ const filled=i<people.length;
+ seats.innerHTML+=`<div class="seat ${filled?'':'empty'}">
+   <span class="badge">${i===0?'FUNDADOR':filled?'LV.'+(37-i*2):'LIBRE'}</span>
+   <div class="avatar">${filled?people[i]:'+'}</div>
+   <div class="name">${filled?names[i]:'Sentarse'}</div>
+ </div>`;
+}
+function toast(t){const x=document.getElementById("toast");x.textContent=t;x.classList.add("show");setTimeout(()=>x.classList.remove("show"),1900)}
+function sendMsg(){
+ const input=document.getElementById("msg"); const v=input.value.trim(); if(!v)return;
+ document.getElementById("messages").innerHTML+=`<div><b>Tú:</b> ${v.replace(/[<>]/g,'')}</div>`;
+ input.value="";
+}
+let d=24800,l=1270000;
+function gift(){
+ d+=1000;l+=1000;
+ document.getElementById("daily").textContent=(d/1000).toFixed(1)+"K";
+ document.getElementById("legacy").textContent=(l/1000000).toFixed(2)+"M";
+ document.getElementById("messages").innerHTML+=`<div class="gift">✦ Tú enviaste Regalo JEMMO · +1K</div>`;
+ toast("🎁 +1K para la Casa Padre");
+}
+document.querySelectorAll(".seat").forEach((s,i)=>s.onclick=()=>toast(i<people.length?names[i]+" · Asiento "+(i+1):"Asiento "+(i+1)+" disponible"));
+</script>
+</body>
+</html>
