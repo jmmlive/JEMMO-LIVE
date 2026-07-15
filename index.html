@@ -1,486 +1,361 @@
 <!doctype html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#090511" />
-  <meta name="description" content="JEMMO LIVE" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07040e">
   <title>JEMMO LIVE</title>
-
   <style>
-    :root {
-      --bg: #08040f;
-      --panel: rgba(14, 8, 25, .56);
-      --panel-strong: rgba(17, 9, 31, .78);
-      --violet: #9d4dff;
-      --violet-soft: #d39cff;
-      --gold: #ffbd49;
-      --gold-soft: #ffe0a0;
-      --white: #fff;
-      --muted: rgba(255, 255, 255, .68);
-      --line: rgba(255, 255, 255, .13);
-      --shadow: 0 22px 70px rgba(0, 0, 0, .42);
-      --radius: 28px;
-      --menu-w: 86px;
+    :root{
+      --white:#fff;
+      --violet:#b45cff;
+      --violet2:#7d2cff;
+      --gold:#ffbd4a;
+      --glass:rgba(14,7,27,.38);
+      --line:rgba(255,255,255,.15);
+      --shadow:0 18px 55px rgba(0,0,0,.36);
     }
 
-    * {
-      box-sizing: border-box;
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      width:100%;
+      min-height:100%;
+      background:#07040e;
+      color:#fff;
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    body{min-height:100svh;overflow-x:hidden}
+    a{text-decoration:none;color:inherit;-webkit-tap-highlight-color:transparent}
+
+    .app{
+      position:relative;
+      min-height:100svh;
+      overflow:hidden;
+      isolation:isolate;
     }
 
-    html, body {
-      width: 100%;
-      min-height: 100%;
-      margin: 0;
-      background: var(--bg);
-      color: var(--white);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    .bg{
+      position:fixed;
+      inset:0;
+      z-index:-3;
+      background-image:url("assets/jemmo-background.jpg");
+      background-position:center center;
+      background-size:cover;
+      background-repeat:no-repeat;
     }
 
-    body {
-      min-height: 100svh;
-      overflow-x: hidden;
-    }
-
-    button, a {
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .app {
-      position: relative;
-      min-height: 100svh;
-      isolation: isolate;
-      overflow: hidden;
-      background: #090511;
-    }
-
-    .app::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      z-index: -3;
+    .shade{
+      position:fixed;
+      inset:0;
+      z-index:-2;
+      pointer-events:none;
       background:
-        linear-gradient(180deg, rgba(5, 2, 12, .18), rgba(5, 2, 12, .46)),
-        url("assets/jemmo-background.png") center center / cover no-repeat;
-      transform: scale(1.015);
+        linear-gradient(180deg, rgba(4,2,10,.04), rgba(4,2,10,.10)),
+        radial-gradient(circle at 50% 42%, rgba(0,0,0,0) 0 38%, rgba(4,2,10,.18) 100%);
     }
 
-    .app::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      z-index: -2;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 50% 30%, transparent 0 24%, rgba(5, 2, 12, .08) 55%, rgba(5, 2, 12, .52) 100%);
+    .logo{
+      position:relative;
+      z-index:5;
+      text-align:center;
+      padding-top:max(24px, env(safe-area-inset-top));
+      user-select:none;
+    }
+    .logo-main{
+      margin:0;
+      font-size:clamp(40px,7vw,82px);
+      line-height:.92;
+      font-weight:900;
+      letter-spacing:-.055em;
+      text-transform:uppercase;
+      filter:drop-shadow(0 0 18px rgba(169,78,255,.28));
+    }
+    .logo-main .j{
+      color:var(--gold);
+      font-family:Georgia,"Times New Roman",serif;
+      font-style:italic;
+      text-shadow:0 0 20px rgba(255,189,74,.42);
+    }
+    .logo-main .rest{color:#c26fff}
+    .logo-live{
+      margin-top:7px;
+      font-size:clamp(12px,1.6vw,18px);
+      letter-spacing:.34em;
+      font-weight:800;
+      color:#ffd58b;
+      text-transform:uppercase;
     }
 
-    .sidebar {
-      position: fixed;
-      left: max(14px, env(safe-area-inset-left));
-      top: 50%;
-      z-index: 20;
-      width: var(--menu-w);
-      padding: 12px 10px;
-      transform: translateY(-50%);
-      display: grid;
-      gap: 9px;
-      border: 1px solid var(--line);
-      border-radius: 30px;
-      background: linear-gradient(180deg, rgba(24, 12, 43, .72), rgba(10, 5, 19, .58));
-      box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.08);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+    .left-menu{
+      position:fixed;
+      left:max(12px,env(safe-area-inset-left));
+      top:50%;
+      transform:translateY(-50%);
+      z-index:20;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
     }
 
-    .nav-link {
-      min-height: 58px;
-      border: 0;
-      border-radius: 22px;
-      color: var(--muted);
-      background: transparent;
-      display: grid;
-      place-items: center;
-      gap: 2px;
-      text-decoration: none;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: .02em;
-      cursor: pointer;
-      transition: transform .2s ease, color .2s ease, background .2s ease, box-shadow .2s ease;
+    .menu-btn{
+      width:62px;
+      min-height:62px;
+      padding:8px 5px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:5px;
+      border:1px solid rgba(255,255,255,.13);
+      border-radius:21px;
+      background:linear-gradient(145deg,rgba(28,12,49,.48),rgba(8,4,16,.33));
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.08);
+      color:rgba(255,255,255,.78);
+      transition:.2s ease;
+    }
+    .menu-btn.active,
+    .menu-btn:focus-visible,
+    .menu-btn:hover{
+      color:#fff;
+      transform:translateX(3px);
+      border-color:rgba(196,113,255,.36);
+      background:linear-gradient(145deg,rgba(130,48,209,.54),rgba(49,17,80,.44));
+      box-shadow:0 16px 45px rgba(74,20,125,.34), inset 0 1px 0 rgba(255,255,255,.12);
+      outline:none;
+    }
+    .menu-icon{
+      font-size:24px;
+      line-height:1;
+    }
+    .menu-label{
+      font-size:9px;
+      font-weight:700;
     }
 
-    .nav-link .icon {
-      font-size: 22px;
-      line-height: 1;
+    .content{
+      position:relative;
+      z-index:3;
+      width:min(1100px,100%);
+      min-height:calc(100svh - 120px);
+      margin:0 auto;
+      padding:70px 28px 40px 112px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
 
-    .nav-link:hover,
-    .nav-link:focus-visible,
-    .nav-link.active {
-      color: var(--white);
-      background: linear-gradient(145deg, rgba(157, 77, 255, .34), rgba(255, 189, 73, .13));
-      box-shadow: 0 10px 28px rgba(122, 52, 209, .21), inset 0 1px 0 rgba(255,255,255,.10);
-      outline: none;
-      transform: translateY(-1px);
+    .floating-actions{
+      width:min(820px,100%);
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:28px;
     }
 
-    .shell {
-      width: min(1180px, calc(100% - var(--menu-w) - 74px));
-      min-height: 100svh;
-      margin-left: calc(var(--menu-w) + 44px);
-      padding:
-        max(24px, env(safe-area-inset-top))
-        28px
-        max(28px, env(safe-area-inset-bottom));
-      display: flex;
-      flex-direction: column;
+    .action{
+      position:relative;
+      min-height:235px;
+      padding:27px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:30px;
+      background:linear-gradient(145deg,rgba(18,8,34,.44),rgba(8,4,17,.26));
+      backdrop-filter:blur(11px);
+      -webkit-backdrop-filter:blur(11px);
+      box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.08);
+      transition:.25s ease;
+    }
+    .action::before{
+      content:"";
+      position:absolute;
+      width:190px;
+      height:190px;
+      border-radius:50%;
+      right:-62px;
+      top:-75px;
+      filter:blur(12px);
+      opacity:.68;
+    }
+    .action.live::before{background:radial-gradient(circle,rgba(157,77,255,.68),transparent 67%)}
+    .action.family::before{background:radial-gradient(circle,rgba(255,189,74,.55),transparent 67%)}
+    .action:hover,.action:focus-visible{
+      transform:translateY(-5px);
+      border-color:rgba(255,255,255,.27);
+      outline:none;
     }
 
-    .brand {
-      align-self: center;
-      margin-top: 10px;
-      text-align: center;
-      user-select: none;
+    .action-head{
+      position:relative;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+    }
+    .big-icon{
+      width:60px;height:60px;
+      display:grid;place-items:center;
+      border-radius:20px;
+      font-size:28px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.11);
+    }
+    .pill{
+      padding:9px 14px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .action h2{
+      position:relative;
+      margin:30px 0 10px;
+      font-size:clamp(34px,5vw,54px);
+      line-height:1;
+      letter-spacing:-.04em;
+    }
+    .action p{
+      position:relative;
+      margin:0;
+      max-width:27ch;
+      color:rgba(255,255,255,.75);
+      font-size:15px;
+      line-height:1.5;
+    }
+    .go{
+      position:absolute;
+      right:24px;
+      bottom:22px;
+      width:46px;height:46px;
+      border-radius:50%;
+      display:grid;place-items:center;
+      font-size:22px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.11);
     }
 
-    .brand-name {
-      margin: 0;
-      font-size: clamp(34px, 5vw, 76px);
-      font-weight: 900;
-      line-height: .92;
-      letter-spacing: -.055em;
-      text-transform: uppercase;
-      text-shadow: 0 0 28px rgba(157, 77, 255, .26);
-    }
-
-    .brand-name .j {
-      color: var(--gold);
-      font-family: Georgia, "Times New Roman", serif;
-      font-style: italic;
-      font-weight: 700;
-      text-shadow: 0 0 22px rgba(255, 189, 73, .46);
-    }
-
-    .brand-name .emmo {
-      color: #c078ff;
-    }
-
-    .brand-live {
-      margin-top: 8px;
-      color: var(--gold-soft);
-      font-size: clamp(13px, 1.5vw, 19px);
-      font-weight: 800;
-      letter-spacing: .38em;
-      text-transform: uppercase;
-    }
-
-    .hero {
-      flex: 1;
-      display: grid;
-      place-items: center;
-      padding: 42px 0 24px;
-    }
-
-    .launch-grid {
-      width: min(820px, 100%);
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: clamp(18px, 3vw, 32px);
-    }
-
-    .launch-card {
-      position: relative;
-      min-height: 260px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 28px;
-      color: var(--white);
-      text-decoration: none;
-      background: linear-gradient(145deg, rgba(25, 12, 45, .69), rgba(7, 4, 14, .48));
-      box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.09);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
-    }
-
-    .launch-card::before {
-      content: "";
-      position: absolute;
-      width: 190px;
-      aspect-ratio: 1;
-      right: -62px;
-      top: -70px;
-      border-radius: 50%;
-      filter: blur(8px);
-      opacity: .9;
-      pointer-events: none;
-    }
-
-    .launch-card.live::before {
-      background: radial-gradient(circle, rgba(171, 73, 255, .58), transparent 66%);
-    }
-
-    .launch-card.family::before {
-      background: radial-gradient(circle, rgba(255, 189, 73, .48), transparent 66%);
-    }
-
-    .launch-card:hover,
-    .launch-card:focus-visible {
-      transform: translateY(-6px) scale(1.012);
-      border-color: rgba(255,255,255,.25);
-      box-shadow: 0 30px 85px rgba(0,0,0,.48), 0 0 38px rgba(157,77,255,.12);
-      outline: none;
-    }
-
-    .card-top {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .card-icon {
-      width: 62px;
-      height: 62px;
-      display: grid;
-      place-items: center;
-      border-radius: 22px;
-      font-size: 28px;
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
-    }
-
-    .status {
-      padding: 8px 11px;
-      border-radius: 999px;
-      color: var(--white);
-      background: rgba(255,255,255,.07);
-      border: 1px solid rgba(255,255,255,.10);
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-    }
-
-    .launch-card h2 {
-      position: relative;
-      margin: 32px 0 8px;
-      font-size: clamp(28px, 4vw, 46px);
-      line-height: 1;
-      letter-spacing: -.045em;
-    }
-
-    .launch-card p {
-      position: relative;
-      max-width: 29ch;
-      margin: 0;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.55;
-    }
-
-    .arrow {
-      position: absolute;
-      right: 26px;
-      bottom: 24px;
-      width: 44px;
-      height: 44px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      color: var(--white);
-      background: rgba(255,255,255,.09);
-      border: 1px solid rgba(255,255,255,.12);
-      font-size: 21px;
-    }
-
-    .footer-note {
-      align-self: center;
-      margin: 0;
-      color: rgba(255,255,255,.48);
-      font-size: 11px;
-      letter-spacing: .12em;
-      text-transform: uppercase;
-    }
-
-    @media (max-width: 760px) {
-      :root {
-        --menu-w: 66px;
+    @media(max-width:760px){
+      .bg{
+        background-position:center center;
       }
-
-      .app::before {
-        background-position: center center;
+      .logo{
+        padding-top:max(22px,env(safe-area-inset-top));
       }
+      .logo-main{font-size:44px}
+      .logo-live{font-size:11px;margin-top:5px}
 
-      .sidebar {
-        left: max(8px, env(safe-area-inset-left));
-        width: var(--menu-w);
-        padding: 8px 7px;
-        border-radius: 25px;
+      .left-menu{
+        left:max(8px,env(safe-area-inset-left));
+        gap:10px;
       }
-
-      .nav-link {
-        min-height: 52px;
-        border-radius: 18px;
-        font-size: 8px;
+      .menu-btn{
+        width:54px;
+        min-height:54px;
+        border-radius:18px;
       }
+      .menu-icon{font-size:20px}
+      .menu-label{font-size:8px}
 
-      .nav-link .icon {
-        font-size: 19px;
+      .content{
+        min-height:calc(100svh - 94px);
+        padding:28px 16px 30px 78px;
+        align-items:center;
       }
-
-      .shell {
-        width: calc(100% - var(--menu-w) - 24px);
-        margin-left: calc(var(--menu-w) + 18px);
-        padding-left: 14px;
-        padding-right: 14px;
+      .floating-actions{
+        grid-template-columns:1fr;
+        gap:16px;
       }
-
-      .brand {
-        margin-top: 8px;
+      .action{
+        min-height:190px;
+        padding:21px;
+        border-radius:25px;
       }
-
-      .hero {
-        padding-top: 24px;
+      .big-icon{
+        width:50px;height:50px;
+        border-radius:17px;
+        font-size:23px;
       }
-
-      .launch-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
+      .pill{font-size:10px;padding:8px 11px}
+      .action h2{
+        margin-top:20px;
+        font-size:35px;
       }
-
-      .launch-card {
-        min-height: 202px;
-        padding: 22px;
-        border-radius: 24px;
+      .action p{
+        padding-right:44px;
+        font-size:13px;
       }
-
-      .card-icon {
-        width: 52px;
-        height: 52px;
-        border-radius: 18px;
-        font-size: 24px;
-      }
-
-      .launch-card h2 {
-        margin-top: 22px;
-        font-size: 31px;
-      }
-
-      .launch-card p {
-        padding-right: 38px;
-        font-size: 13px;
-      }
-
-      .arrow {
-        right: 20px;
-        bottom: 20px;
-      }
-
-      .footer-note {
-        font-size: 9px;
+      .go{
+        right:18px;
+        bottom:18px;
+        width:42px;height:42px;
       }
     }
 
-    @media (max-height: 690px) and (max-width: 760px) {
-      .brand-name {
-        font-size: 30px;
-      }
-
-      .brand-live {
-        margin-top: 4px;
-        font-size: 10px;
-      }
-
-      .hero {
-        padding: 14px 0;
-      }
-
-      .launch-card {
-        min-height: 165px;
-      }
-
-      .launch-card h2 {
-        margin-top: 14px;
-      }
-
-      .launch-card p {
-        line-height: 1.35;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        scroll-behavior: auto !important;
-        transition: none !important;
-      }
+    @media(max-height:700px) and (max-width:760px){
+      .logo-main{font-size:36px}
+      .logo-live{font-size:9px}
+      .content{padding-top:16px}
+      .action{min-height:164px}
+      .action h2{margin-top:13px}
+      .action p{line-height:1.32}
     }
   </style>
 </head>
-
 <body>
   <main class="app">
-    <nav class="sidebar" aria-label="Menú principal">
-      <a class="nav-link active" href="index.html" aria-current="page">
-        <span class="icon" aria-hidden="true">⌂</span>
-        <span>Inicio</span>
-      </a>
+    <div class="bg" aria-hidden="true"></div>
+    <div class="shade" aria-hidden="true"></div>
 
-      <a class="nav-link" href="live.html">
-        <span class="icon" aria-hidden="true">▶</span>
-        <span>Live</span>
-      </a>
+    <header class="logo" aria-label="JEMMO LIVE">
+      <h1 class="logo-main"><span class="j">J</span><span class="rest">EMMO</span></h1>
+      <div class="logo-live">LIVE ▷</div>
+    </header>
 
-      <a class="nav-link" href="familias.html">
-        <span class="icon" aria-hidden="true">♟</span>
-        <span>Familias</span>
+    <nav class="left-menu" aria-label="Menú principal">
+      <a class="menu-btn active" href="index.html" aria-current="page">
+        <span class="menu-icon">⌂</span>
+        <span class="menu-label">Inicio</span>
       </a>
-
-      <a class="nav-link" href="acceso.html">
-        <span class="icon" aria-hidden="true">◎</span>
-        <span>Perfil</span>
+      <a class="menu-btn" href="live.html">
+        <span class="menu-icon">▶</span>
+        <span class="menu-label">Live</span>
+      </a>
+      <a class="menu-btn" href="familias.html">
+        <span class="menu-icon">♟</span>
+        <span class="menu-label">Familias</span>
+      </a>
+      <a class="menu-btn" href="acceso.html">
+        <span class="menu-icon">◎</span>
+        <span class="menu-label">Perfil</span>
       </a>
     </nav>
 
-    <section class="shell">
-      <header class="brand" aria-label="JEMMO LIVE">
-        <h1 class="brand-name">
-          <span class="j">J</span><span class="emmo">EMMO</span>
-        </h1>
-        <div class="brand-live">Live ▷</div>
-      </header>
+    <section class="content">
+      <div class="floating-actions">
+        <a class="action live" href="live.html">
+          <div class="action-head">
+            <div class="big-icon">▶</div>
+            <span class="pill">Entra en directo</span>
+          </div>
+          <h2>LIVE</h2>
+          <p>Emisiones, salas y momentos en directo dentro de JEMMO.</p>
+          <span class="go">→</span>
+        </a>
 
-      <section class="hero" aria-label="Accesos principales">
-        <div class="launch-grid">
-          <a class="launch-card live" href="live.html">
-            <div class="card-top">
-              <div class="card-icon" aria-hidden="true">▶</div>
-              <span class="status">Entra en directo</span>
-            </div>
-
-            <h2>LIVE</h2>
-            <p>Descubre emisiones, salas y momentos en directo dentro de JEMMO.</p>
-            <span class="arrow" aria-hidden="true">→</span>
-          </a>
-
-          <a class="launch-card family" href="familias.html">
-            <div class="card-top">
-              <div class="card-icon" aria-hidden="true">∞</div>
-              <span class="status">24 / 7</span>
-            </div>
-
-            <h2>Familias</h2>
-            <p>Tu espacio de comunidad, conexión y actividad compartida las 24 horas.</p>
-            <span class="arrow" aria-hidden="true">→</span>
-          </a>
-        </div>
-      </section>
-
-      <p class="footer-note">JEMMO LIVE · Inicio</p>
+        <a class="action family" href="familias.html">
+          <div class="action-head">
+            <div class="big-icon">∞</div>
+            <span class="pill">24 / 7</span>
+          </div>
+          <h2>Familias</h2>
+          <p>Comunidad, conexión y actividad compartida durante todo el día.</p>
+          <span class="go">→</span>
+        </a>
+      </div>
     </section>
   </main>
 </body>
