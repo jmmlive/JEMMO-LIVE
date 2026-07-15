@@ -1,0 +1,14 @@
+JEMMO LIVE V1 - PRIMERA TIRADA
+
+SUBIR TODOS ESTOS ARCHIVOS JUNTOS A LA RAÍZ DEL REPOSITORIO:
+- index.html
+- jemmo.css
+- jemmo.js
+- live.html
+- casa-demo.html
+- patio.html
+- ascensor.html
+- mensajes.html
+- yo.html
+
+Después hacer COMMIT.
