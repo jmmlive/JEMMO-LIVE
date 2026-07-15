@@ -6,7 +6,7 @@
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:#020004;color:var(--text);font-family:Inter,Arial,sans-serif;padding-bottom:92px}
+body{margin:0;background:#020004;color:var(--text);font-family:Inter,Arial,sans-serif;padding-bottom:124px}
 button,input,textarea{font:inherit}
 button,a{-webkit-tap-highlight-color:transparent}
 a{text-decoration:none;color:inherit}
@@ -39,3 +39,14 @@ linear-gradient(180deg,#0d0016,#050008 48%,#09000f)}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--ok)}
 input,textarea{width:100%;border:1px solid var(--line);background:rgba(12,2,20,.82);color:#fff;border-radius:15px;padding:13px;outline:none}
 .muted{color:var(--muted)}
+
+body{overscroll-behavior-y:none}
+.content{padding-bottom:48px}
+.nav{bottom:12px;height:68px}
+.card{padding:14px}
+.avatar{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 35% 28%,#ef78ff,#7d17b7 47%,#210330);border:2px solid #d93cff;box-shadow:0 0 16px #a900ff44;flex:0 0 auto}
+.person-row{display:flex;align-items:center;gap:12px}
+.person-row .grow{flex:1;min-width:0}
+.person-row b,.person-row small{display:block}.person-row small{color:var(--muted);margin-top:4px}
+.badge-live{display:inline-flex;padding:5px 8px;border-radius:999px;background:#f00068;font-size:9px;font-weight:900}
+.action{width:42px;height:42px;border-radius:14px;border:1px solid var(--line);background:#2d0741;color:#fff}

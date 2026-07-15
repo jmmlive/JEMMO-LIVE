@@ -1,7 +1,7 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"><meta name="theme-color" content="#09000f"><title>Patio · JEMMO LIVE</title><link rel="stylesheet" href="jemmo.css"></head><body><div class="shell"><header class="top"><button class="iconbtn" onclick="back()" aria-label="Atrás"><svg class="ico" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><div><h1>Patio</h1><small>Conversación abierta de la Casa</small></div><span class="pill"><span class="dot"></span>JEMMO</span></header><main class="content">
-<section class="hero"><div class="kicker">PATIO · CASA PADRE</div><h2>La Casa habla.</h2><p>Un espacio ligero para conversación continua. Los mensajes se guardan en este móvil.</p></section>
-<div class="section"><h2>Conversación</h2><span>30 conectados</span></div>
-<section class="card"><div id="feed" class="stack" style="max-height:460px;overflow:auto;margin-bottom:12px"></div><div class="row"><input id="txt" placeholder="Habla con la Casa"><button class="btn" style="flex:0 0 auto" onclick="send()">Enviar</button></div></section>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"><meta name="theme-color" content="#09000f"><title>Patio · JEMMO LIVE</title><link rel="stylesheet" href="jemmo.css"><script>if(localStorage.getItem('jemmo_logged')!=='yes')location.replace('acceso.html');</script></head><body><div class="shell"><header class="top"><button class="iconbtn" onclick="back()"><svg class="ico" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><div><h1>Patio</h1><small>Casa Padre</small></div><span class="pill"><span class="dot"></span>JEMMO</span></header><main class="content">
+<section class="card person-row"><div class="avatar"></div><div class="grow"><span class="kicker">CASA PADRE</span><b>Patio central</b><small>30 conectados · conversación abierta</small></div><span class="dot"></span></section>
+<section id="feed" class="stack" style="margin-top:12px"></section>
+<div style="position:fixed;z-index:45;left:50%;bottom:92px;transform:translateX(-50%);width:min(calc(100% - 28px),692px);display:flex;gap:8px;background:#100219;padding:9px;border:1px solid var(--line);border-radius:20px"><input id="txt" placeholder="Habla con la Casa"><button class="btn" style="flex:0 0 auto" onclick="send()">Enviar</button></div>
 </main></div>
 <nav class="nav">
 <a href="index.html"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>INICIO</span></a>
@@ -9,10 +9,8 @@
 <a class="active" href="casa-demo.html"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>CASA</span></a>
 <a href="mensajes.html"><svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3 1.5-5A7 7 0 0 1 3 13V8a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5z"/></svg><span>MENSAJES</span></a>
 <a href="yo.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/></svg><span>YO</span></a>
-</nav>
-<div class="toast" id="toast"></div><script src="jemmo.js"></script><script>
-let patio=JSON.parse(localStorage.getItem('jemmo_patio')||'["Luna: Buenos días Familia","Maya: Hoy hay música en la Casa","Nexo: Voy subiendo por el Ascensor"]');
-function draw(){feed.innerHTML=patio.map(x=>`<div class="card" style="padding:12px">${x}</div>`).join('');feed.scrollTop=feed.scrollHeight}
-function send(){let v=txt.value.trim();if(!v)return;patio.push('Tú: '+v);localStorage.setItem('jemmo_patio',JSON.stringify(patio));txt.value='';draw()}
-draw();
+</nav><div class="toast" id="toast"></div><script src="jemmo.js"></script><script>
+let patio=JSON.parse(localStorage.getItem('jemmo_patio')||'["Luna|Buenos días Familia|Ahora","Maya|Hoy hay música en la Casa|2 min","Nexo|Voy subiendo por el Ascensor|5 min"]');
+function draw(){feed.innerHTML=patio.map(x=>{let a=x.split('|');return `<article class="card person-row"><div class="avatar"></div><div class="grow"><b>${a[0]}</b><small>${a[1]}</small></div><small class="muted">${a[2]||''}</small></article>`}).join('')}
+function send(){let v=txt.value.trim();if(!v)return;patio.push('Tú|'+v+'|Ahora');localStorage.setItem('jemmo_patio',JSON.stringify(patio));txt.value='';draw();scrollTo(0,document.body.scrollHeight)} draw();
 </script></body></html>

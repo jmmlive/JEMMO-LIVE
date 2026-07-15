@@ -110,7 +110,7 @@ main{padding:6px 14px 28px;position:relative;z-index:2}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 @media(max-width:380px){.livecard{height:225px}.tabs{gap:17px}.tab{font-size:16px}.event h3{font-size:21px}}
 </style>
-</head>
+<script>if(localStorage.getItem('jemmo_logged')!=='yes')location.replace('acceso.html');</script></head>
 <body>
 <div class="ambient a1"></div><div class="ambient a2"></div><div class="ambient a3"></div>
 <div class="app">
@@ -118,8 +118,8 @@ main{padding:6px 14px 28px;position:relative;z-index:2}
  <div class="topline">
   <div class="brand"><div class="jmark">J</div><div><strong>JEMMO LIVE</strong><small>EL MUNDO ESTÁ EN VIVO</small></div></div>
   <div class="actions">
-   <button class="iconbtn" aria-label="Buscar" onclick="toastMsg('Búsqueda JEMMO preparada')"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
-   <button class="iconbtn" aria-label="Notificaciones" onclick="toastMsg('Centro de notificaciones preparado')"><svg class="ico" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></button>
+   <button class="iconbtn" aria-label="Buscar" onclick="toastMsg('Buscar personas, LIVE y Casas')"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></button>
+   <button class="iconbtn" aria-label="Notificaciones" onclick="toastMsg('No tienes notificaciones nuevas')"><svg class="ico" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg></button>
   </div>
  </div>
  <div class="tabs">
@@ -175,7 +175,7 @@ main{padding:6px 14px 28px;position:relative;z-index:2}
  </article>
 </section>
 
-<div class="section"><h2>Vídeos para ti</h2><button onclick="toastMsg('Feed de vídeo preparado')">Ver más</button></div>
+<div class="section"><h2>Vídeos para ti</h2><button onclick="toastMsg('Más vídeos para ti')">Ver más</button></div>
 <section class="video-strip">
  <article class="video" onclick="toastMsg('Vídeo JEMMO · demo')"><span class="play"><svg viewBox="0 0 24 24"><path d="m9 7 8 5-8 5z"/></svg></span><div class="video-info"><b>Momentos JEMMO</b><small>2.8K reproducciones</small></div></article>
  <article class="video" onclick="toastMsg('Vídeo JEMMO · demo')"><span class="play"><svg viewBox="0 0 24 24"><path d="m9 7 8 5-8 5z"/></svg></span><div class="video-info"><b>Desde una Casa</b><small>1.4K reproducciones</small></div></article>

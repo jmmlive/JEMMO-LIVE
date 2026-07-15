@@ -1,7 +1,10 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"><meta name="theme-color" content="#09000f"><title>Mensajes · JEMMO LIVE</title><link rel="stylesheet" href="jemmo.css"></head><body><div class="shell"><header class="top"><button class="iconbtn" onclick="back()" aria-label="Atrás"><svg class="ico" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><div><h1>Mensajes</h1><small>Chats privados</small></div><span class="pill"><span class="dot"></span>JEMMO</span></header><main class="content">
-<section class="hero"><div class="kicker">MENSAJES PRIVADOS</div><h2>Conversaciones JEMMO.</h2><p>Abre un chat, escribe y guarda conversaciones demo en tu móvil. La traducción integrada queda preparada como siguiente capa.</p></section>
-<div class="section"><h2>Chats</h2><span id="count"></span></div>
-<section class="stack" id="list"></section>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"><meta name="theme-color" content="#09000f"><title>Mensajes · JEMMO LIVE</title><link rel="stylesheet" href="jemmo.css"><script>if(localStorage.getItem('jemmo_logged')!=='yes')location.replace('acceso.html');</script></head><body><div class="shell"><header class="top"><button class="iconbtn" onclick="back()"><svg class="ico" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><div><h1>Mensajes</h1><small>Tus conversaciones</small></div><span class="pill"><span class="dot"></span>JEMMO</span></header><main class="content">
+<div class="row"><input id="search" placeholder="Buscar conversación..." oninput="draw()"></div>
+<div class="section"><h2>Mensajes</h2><span id="count"></span></div><section class="stack" id="list"></section>
+<div id="chatSheet" style="display:none;position:fixed;z-index:70;inset:0;background:#07000d">
+<header class="top"><button class="iconbtn" onclick="closeChat()">‹</button><div><h1 id="chatName"></h1><small>En línea</small></div><span class="dot"></span></header>
+<main class="content"><div id="bubbleList" class="stack" style="padding-top:10px"></div></main>
+<div style="position:fixed;z-index:75;left:50%;bottom:18px;transform:translateX(-50%);width:min(calc(100% - 28px),692px);display:flex;gap:8px;background:#100219;padding:9px;border:1px solid var(--line);border-radius:20px"><input id="chatInput" placeholder="Mensaje"><button class="btn" style="flex:0 0 auto" onclick="sendPrivate()">Enviar</button></div></div>
 </main></div>
 <nav class="nav">
 <a href="index.html"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>INICIO</span></a>
@@ -9,9 +12,11 @@
 <a href="casa-demo.html"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>CASA</span></a>
 <a class="active" href="mensajes.html"><svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3 1.5-5A7 7 0 0 1 3 13V8a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5z"/></svg><span>MENSAJES</span></a>
 <a href="yo.html"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/></svg><span>YO</span></a>
-</nav>
-<div class="toast" id="toast"></div><script src="jemmo.js"></script><script>
-let s=getState();count.textContent=s.messages.length+' conversaciones';
-list.innerHTML=s.messages.map((m,i)=>`<article class="card" onclick="openChat(${i})" style="cursor:pointer"><div style="display:flex;justify-content:space-between"><b>${m.from}</b><small class="muted">${m.time}</small></div><p class="muted">${m.text}</p><span class="pill">Abrir chat</span></article>`).join('');
-function openChat(i){let m=s.messages[i];let text=prompt('Mensaje para '+m.from);if(!text)return;m.text='Tú: '+text;m.time='Ahora';saveState(s);toastMsg('Mensaje guardado');setTimeout(()=>location.reload(),450)}
+</nav><div class="toast" id="toast"></div><script src="jemmo.js"></script><script>
+let s=getState(),current=-1;
+function draw(){let q=(search.value||'').toLowerCase();let arr=s.messages.map((m,i)=>({...m,i})).filter(m=>m.from.toLowerCase().includes(q));count.textContent=arr.length;list.innerHTML=arr.map(m=>`<article class="card person-row" onclick="openChat(${m.i})"><div class="avatar"></div><div class="grow"><b>${m.from}</b><small>${m.text}</small></div><div style="text-align:right"><small class="muted">${m.time}</small>${m.unread?`<div class="pill" style="margin-top:6px;color:var(--gold)">${m.unread}</div>`:''}</div></article>`).join('')}
+function openChat(i){current=i;s.messages[i].unread=0;saveState(s);chatName.textContent=s.messages[i].from;chatSheet.style.display='block';bubbleList.innerHTML=`<div class="card" style="max-width:80%">${s.messages[i].text}</div>`}
+function closeChat(){chatSheet.style.display='none';draw()}
+function sendPrivate(){let v=chatInput.value.trim();if(!v)return;bubbleList.innerHTML+=`<div class="card" style="max-width:80%;margin-left:auto;background:#531071">${v}</div>`;s.messages[current].text='Tú: '+v;s.messages[current].time='Ahora';saveState(s);chatInput.value=''}
+draw();
 </script></body></html>
