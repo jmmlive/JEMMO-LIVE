@@ -130,6 +130,19 @@
       border:1px solid rgba(186,84,255,.22);
       font-weight:800;font-size:12px;
       white-space:nowrap;
+      display:grid;
+      grid-template-columns:auto auto auto;
+      column-gap:5px;
+      row-gap:0;
+    }
+    .wallet-label{
+      grid-column:1/-1;
+      font-size:8px;
+      color:#d8cde2;
+      text-transform:uppercase;
+      letter-spacing:.65px;
+      line-height:1;
+      text-align:left;
     }
     .wallet .coin{color:var(--gold)}
     .wallet .gem{color:#d94fff}
@@ -171,7 +184,7 @@
     .battle-card{
       margin-top:14px;
       position:relative;
-      border-radius:28px;
+      border-radius:24px;
       overflow:hidden;
       background:
         radial-gradient(circle at 27% 30%,rgba(124,27,255,.24),transparent 32%),
@@ -179,7 +192,7 @@
         linear-gradient(135deg,#12051e 0%,#07040b 52%,#171000 100%);
       border:1px solid rgba(239,171,18,.35);
       box-shadow:0 25px 80px rgba(0,0,0,.58), 0 0 35px rgba(152,39,255,.12);
-      padding:17px 14px 15px;
+      padding:13px 12px 12px;
     }
 
     .battle-head{
@@ -201,7 +214,7 @@
       grid-template-columns:1fr 54px 1fr;
       align-items:center;
       gap:5px;
-      min-height:244px;
+      min-height:178px;
       position:relative;
     }
     .battle-stage:before{
@@ -220,7 +233,7 @@
     }
 
     .crest{
-      width:112px;height:126px;margin:0 auto 7px;
+      width:82px;height:92px;margin:0 auto 3px;
       position:relative;
       display:grid;place-items:center;
       filter:drop-shadow(0 0 18px rgba(166,39,255,.32));
@@ -229,27 +242,27 @@
     .crest svg{width:100%;height:100%}
     .crest-letter{
       position:absolute;inset:0;display:grid;place-items:center;
-      font-family:Georgia,serif;font-size:50px;font-weight:900;
+      font-family:Georgia,serif;font-size:37px;font-weight:900;
       color:white;text-shadow:0 0 12px rgba(255,255,255,.55)
     }
     .crest.gold .crest-letter{color:var(--gold)}
 
     .house-kicker{font-size:10px;color:#b9afc7;letter-spacing:1px}
     .house-name{
-      margin:3px auto 5px;
-      font-size:18px;font-weight:950;line-height:1.05;
+      margin:2px auto 3px;
+      font-size:15px;font-weight:950;line-height:1.05;
       text-transform:uppercase;
       overflow:hidden;text-overflow:ellipsis;
     }
     .house.purple .house-name{color:#cb54ff}
     .house.gold .house-name{color:var(--gold)}
-    .members{font-size:11px;color:#d6cedf}
-    .score{font-size:29px;font-weight:950;margin-top:6px;letter-spacing:-1px}
+    .members{font-size:10px;color:#d6cedf}
+    .score{font-size:23px;font-weight:950;margin-top:4px;letter-spacing:-1px}
 
     .vs{
       position:relative;z-index:3;
       text-align:center;
-      font-size:40px;font-weight:1000;font-style:italic;
+      font-size:32px;font-weight:1000;font-style:italic;
       background:linear-gradient(180deg,#fff,#d860ff 48%,#ffd21c 70%);
       -webkit-background-clip:text;background-clip:text;color:transparent;
       text-shadow:0 0 20px rgba(185,63,255,.18);
@@ -337,11 +350,17 @@
       border-color:rgba(45,231,137,.38);
       background:radial-gradient(circle at 70% 20%,rgba(45,231,137,.16),transparent 32%),linear-gradient(145deg,#032015,#030907)
     }
-    .mini-live{
+    .house-status{
       position:absolute;left:11px;top:11px;
-      background:rgba(170,0,34,.88);padding:5px 7px;border-radius:7px;
-      font-size:9px;font-weight:950;
+      padding:5px 7px;border-radius:7px;
+      font-size:8px;font-weight:950;letter-spacing:.25px;
+      border:1px solid currentColor;
+      background:rgba(5,3,10,.74);
     }
+    .house-status.open{color:var(--green)}
+    .house-status.battle{color:#cf62ff}
+    .house-status.audio{color:var(--blue)}
+    .house-status.event{color:var(--gold)}
     .mini-crest{
       width:69px;height:78px;margin:16px auto 3px;position:relative;display:grid;place-items:center;
       color:#cb55ff
@@ -351,6 +370,64 @@
     .house-card h3{font-size:16px;text-align:center;margin:2px 0 4px}
     .house-card p{font-size:11px;color:#d2cbd9;text-align:center;margin:0}
     .house-card .audience{text-align:center;font-size:11px;color:#a89fb1;margin-top:10px}
+
+
+    .people-live-scroll{
+      display:grid;
+      grid-auto-flow:column;
+      grid-auto-columns:42%;
+      gap:11px;
+      overflow-x:auto;
+      padding:2px 1px 8px;
+      scroll-snap-type:x mandatory;
+      scrollbar-width:none;
+    }
+    .people-live-scroll::-webkit-scrollbar{display:none}
+    .person-live-card{
+      scroll-snap-align:start;
+      min-width:0;
+      border-radius:20px;
+      overflow:hidden;
+      background:linear-gradient(180deg,#130b20,#09050f);
+      border:1px solid rgba(174,72,255,.28);
+      cursor:pointer;
+      box-shadow:0 12px 32px rgba(0,0,0,.34);
+    }
+    .person-cover{
+      height:146px;
+      position:relative;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+    }
+    .purple-person{background:radial-gradient(circle at 50% 32%,#a83cff 0 9%,#3a1458 35%,#100719 75%)}
+    .gold-person{background:radial-gradient(circle at 50% 32%,#ffd21c 0 8%,#705000 35%,#160f02 75%)}
+    .blue-person{background:radial-gradient(circle at 50% 32%,#32b8ff 0 8%,#06466c 35%,#031018 75%)}
+    .red-person{background:radial-gradient(circle at 50% 32%,#ff536b 0 8%,#6b0b1b 35%,#180307 75%)}
+    .person-live-badge{
+      position:absolute;left:9px;top:9px;
+      padding:5px 7px;border-radius:7px;
+      background:rgba(185,0,32,.92);
+      font-size:8px;font-weight:950;
+    }
+    .person-avatar{
+      width:76px;height:76px;border-radius:50%;
+      display:grid;place-items:center;
+      font-size:31px;font-weight:950;
+      color:#fff;
+      border:3px solid rgba(255,255,255,.82);
+      background:rgba(255,255,255,.12);
+      box-shadow:0 0 28px rgba(255,255,255,.16);
+    }
+    .viewer-count{
+      position:absolute;right:8px;bottom:8px;
+      padding:4px 7px;border-radius:999px;
+      background:rgba(0,0,0,.62);
+      font-size:8px;font-weight:900;
+    }
+    .person-info{padding:10px 10px 12px}
+    .person-info strong{display:block;font-size:13px}
+    .person-info span{display:block;margin-top:3px;color:#aaa2b5;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
     .event-scroll{grid-auto-columns:76%}
     .event-card{
@@ -627,9 +704,9 @@
       .wallet .gem-part{display:none}
       .logo{font-size:23px}
       .logo .j{font-size:40px}
-      .battle-stage{grid-template-columns:1fr 42px 1fr;min-height:225px}
-      .crest{width:96px;height:109px}
-      .score{font-size:25px}
+      .battle-stage{grid-template-columns:1fr 38px 1fr;min-height:164px}
+      .crest{width:72px;height:81px}
+      .score{font-size:21px}
       .vs{font-size:34px}
       .house-name{font-size:16px}
     }
@@ -650,9 +727,8 @@
       </div>
 
       <button class="wallet" id="walletBtn" aria-label="Abrir monedero">
+        <span class="wallet-label">Monedero</span>
         <span class="coin">●</span><span>12.450</span>
-        <span class="gem-part">&nbsp;·&nbsp;</span>
-        <span class="gem gem-part">◆</span><span class="gem-part">1.250</span>
       </button>
 
       <button class="avatar-btn" id="avatarBtn" aria-label="Abrir perfil">
@@ -749,7 +825,7 @@
 
         <div class="h-scroll" id="houseScroller">
           <article class="house-card" data-house="Casa Cuba">
-            <span class="mini-live">● EN VIVO</span>
+            <span class="house-status open">● ABIERTA</span>
             <div class="mini-crest">
               <svg viewBox="0 0 120 140"><path d="M60 5 104 22v42c0 34-19 56-44 70C35 120 16 98 16 64V22Z" fill="#5c16a5" stroke="#de5eff" stroke-width="5"/></svg>
               <span>C</span>
@@ -760,7 +836,7 @@
           </article>
 
           <article class="house-card goldish" data-house="Casa Tenerife">
-            <span class="mini-live">● EN VIVO</span>
+            <span class="house-status battle">● EN BATALLA</span>
             <div class="mini-crest" style="color:#ffd21c">
               <svg viewBox="0 0 120 140"><path d="M60 5 104 22v42c0 34-19 56-44 70C35 120 16 98 16 64V22Z" fill="#8a5700" stroke="#ffd21c" stroke-width="5"/></svg>
               <span>T</span>
@@ -771,7 +847,7 @@
           </article>
 
           <article class="house-card blueish" data-house="Los Piratas">
-            <span class="mini-live">● EN VIVO</span>
+            <span class="house-status audio">● AUDIO ROOM</span>
             <div class="mini-crest" style="color:#49c2ff">
               <svg viewBox="0 0 120 140"><path d="M60 5 104 22v42c0 34-19 56-44 70C35 120 16 98 16 64V22Z" fill="#034a76" stroke="#42c5ff" stroke-width="5"/></svg>
               <span>P</span>
@@ -782,7 +858,7 @@
           </article>
 
           <article class="house-card redish" data-house="Los Diablos">
-            <span class="mini-live">● EN VIVO</span>
+            <span class="house-status event">● EVENTO</span>
             <div class="mini-crest" style="color:#ff536b">
               <svg viewBox="0 0 120 140"><path d="M60 5 104 22v42c0 34-19 56-44 70C35 120 16 98 16 64V22Z" fill="#730619" stroke="#ff536b" stroke-width="5"/></svg>
               <span>D</span>
@@ -793,7 +869,7 @@
           </article>
 
           <article class="house-card greenish" data-house="Los Marqueses">
-            <span class="mini-live">● EN VIVO</span>
+            <span class="house-status open">● ABIERTA</span>
             <div class="mini-crest" style="color:#4cf0a0">
               <svg viewBox="0 0 120 140"><path d="M60 5 104 22v42c0 34-19 56-44 70C35 120 16 98 16 64V22Z" fill="#075b39" stroke="#4cf0a0" stroke-width="5"/></svg>
               <span>M</span>
@@ -801,6 +877,64 @@
             <h3>Los Marqueses</h3>
             <p>Elegancia con carácter</p>
             <div class="audience">58 conectados</div>
+          </article>
+        </div>
+      </section>
+
+
+      <section class="section">
+        <div class="section-title">
+          <h2>Personas en LIVE</h2>
+          <button data-action="all-lives">Ver todas ›</button>
+        </div>
+
+        <div class="people-live-scroll">
+          <article class="person-live-card" data-person="Luna">
+            <div class="person-cover purple-person">
+              <span class="person-live-badge">● LIVE</span>
+              <div class="person-avatar">L</div>
+              <span class="viewer-count">◉ 1.2K</span>
+            </div>
+            <div class="person-info">
+              <strong>Luna</strong>
+              <span>España · Música y charla</span>
+            </div>
+          </article>
+
+          <article class="person-live-card" data-person="Daniela">
+            <div class="person-cover gold-person">
+              <span class="person-live-badge">● LIVE</span>
+              <div class="person-avatar">D</div>
+              <span class="viewer-count">◉ 846</span>
+            </div>
+            <div class="person-info">
+              <strong>Daniela</strong>
+              <span>Cuba · Conversación</span>
+            </div>
+          </article>
+
+          <article class="person-live-card" data-person="Nadir">
+            <div class="person-cover blue-person">
+              <span class="person-live-badge">● LIVE</span>
+              <div class="person-avatar">N</div>
+              <span class="viewer-count">◉ 632</span>
+            </div>
+            <div class="person-info">
+              <strong>Nadir</strong>
+              <span>Marruecos · Talento</span>
+            </div>
+          </article>
+
+          <article class="person-live-card" data-person="Valeria">
+            <div class="person-cover red-person">
+              <span class="person-live-badge">● LIVE</span>
+              <div class="person-avatar">V</div>
+              <span class="viewer-count">◉ 519</span>
+            </div>
+            <div class="person-info">
+              <strong>Valeria</strong>
+              <span>Colombia · Baile</span>
+            </div>
           </article>
         </div>
       </section>
@@ -1037,10 +1171,14 @@
     });
 
     $('#walletBtn').addEventListener('click', () => {
-      openModal('Monedero ficticio', `
-        <div class="rank-row"><div class="rank-num">●</div><div><strong>Coins</strong><span>Saldo de demostración</span></div><div class="rank-score">12.450</div></div>
-        <div class="rank-row"><div class="rank-num">◆</div><div><strong>Diamantes</strong><span>Saldo de demostración</span></div><div class="rank-score">1.250</div></div>
-        <p style="color:#a79eb2;font-size:12px;line-height:1.5">No hay dinero real ni pagos conectados en esta versión.</p>
+      openModal('Monedero', `
+        <div class="rank-row"><div class="rank-num">●</div><div><strong>Saldo de coins</strong><span>Saldo ficticio de demostración</span></div><div class="rank-score">12.450</div></div>
+        <div class="rank-row"><div class="rank-num">◆</div><div><strong>Diamantes</strong><span>Para juegos y funciones futuras</span></div><div class="rank-score">1.250</div></div>
+        <button onclick="showToast('Recarga · función visual preparada')" style="width:100%;padding:12px;border-radius:14px;background:linear-gradient(90deg,#6a17ee,#b52cff);color:#fff;font-weight:900;margin-top:10px">Recargar coins</button>
+        <button onclick="showToast('Cambio coins por diamantes · demostración')" style="width:100%;padding:12px;border-radius:14px;background:#241833;color:#fff;font-weight:900;margin-top:8px">Cambiar coins por diamantes</button>
+        <button onclick="showToast('Retiros · pendientes de sistema real')" style="width:100%;padding:12px;border-radius:14px;background:#17101f;color:#ffd21c;font-weight:900;margin-top:8px;border:1px solid rgba(255,210,28,.25)">Retiros</button>
+        <button onclick="showToast('Historial · pantalla futura')" style="width:100%;padding:12px;border-radius:14px;background:#17101f;color:#fff;font-weight:900;margin-top:8px">Historial de movimientos</button>
+        <p style="color:#a79eb2;font-size:11px;line-height:1.5;margin-top:12px">Recargas, conversiones y retiros son únicamente una simulación visual en esta versión.</p>
       `);
     });
 
@@ -1068,6 +1206,17 @@
         openModal(name, `
           <p style="color:#c9c1d3;line-height:1.55">Vista previa de ${name}. Aquí se abrirá la Casa, su sala, sus miembros, su chat y sus eventos.</p>
           <button onclick="closeModal();showToast('Entrando en ${name} · demostración')" style="width:100%;padding:13px;border-radius:14px;background:linear-gradient(90deg,#6a17ee,#b52cff);color:#fff;font-weight:900">Entrar en la Casa</button>
+        `);
+      });
+    });
+
+
+    $$('[data-person]').forEach(card => {
+      card.addEventListener('click', () => {
+        const person = card.dataset.person;
+        openModal(person + ' · LIVE', `
+          <p style="color:#c9c1d3;line-height:1.55">Vista previa ficticia del LIVE de ${person}. Aquí se abrirá su transmisión personal, chat, regalos y perfil.</p>
+          <button onclick="closeModal();showToast('Entrando al LIVE de ${person} · demostración')" style="width:100%;padding:13px;border-radius:14px;background:linear-gradient(90deg,#6a17ee,#b52cff);color:#fff;font-weight:900">Entrar al LIVE</button>
         `);
       });
     });
