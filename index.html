@@ -1120,9 +1120,9 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6 12 3l8 3v5c0 5-3 8-8 10-5-2-8-5-8-10Z"/><path d="m9 12 2 2 4-4"/></svg>
         <span>Casas</span>
       </button>
-      <button class="nav-btn main-live" data-nav="Sala LIVE">
+      <button class="nav-btn main-live" data-nav="Salas">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v5"/><path d="M8 22h8"/></svg>
-        <span>Sala</span>
+        <span>Salas</span>
       </button>
       <button class="nav-btn" data-nav="Mensajes">
         <span class="notify-dot" style="position:absolute;right:18px;top:4px;width:17px;height:17px;border-radius:50%;display:grid;place-items:center;background:#ff3d57;color:#fff;font-size:9px">3</span>
@@ -1203,6 +1203,15 @@
   <script>
     const $ = (selector, context = document) => context.querySelector(selector);
     const $$ = (selector, context = document) => [...context.querySelectorAll(selector)];
+
+    const roomsNavButton = $('[data-nav="Salas"]');
+    if (roomsNavButton) {
+      roomsNavButton.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        window.location.href = 'salas.html';
+      }, true);
+    }
 
     const housesNavButton = $('[data-nav="Casas"]');
     if (housesNavButton) {
