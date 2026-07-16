@@ -1,0 +1,30 @@
+{
+  "version": "Tirada Profesional 2",
+  "files": [
+    "audio-room.html",
+    "casas.html",
+    "index.html",
+    "live-sillas.html",
+    "live.html",
+    "preparar-audio.html",
+    "preparar-live-sillas.html",
+    "preparar-live.html",
+    "salas.html"
+  ],
+  "missing_internal_links": [],
+  "features": [
+    "Tres modalidades activas: LIVE individual, LIVE con sillas y Audio Room",
+    "Configuración persistente e independiente por modalidad",
+    "Portada, título y descripción obligatorios",
+    "Categoría e idioma guardados para descubrimiento futuro",
+    "Selección de plazas persistente y aplicada en la sala",
+    "Cámara automática en modos LIVE para pruebas",
+    "Audio Room exclusivamente de audio",
+    "Indicadores verde/rojo de tarea de silla",
+    "Controles de anfitriona y administración limitada",
+    "Expulsión simulada de 20 minutos",
+    "Resumen final de transmisión",
+    "Botones de regreso a Inicio y Salas"
+  ],
+  "technical_note": "La validación de imagen/texto es local y aproximada. La moderación real requiere backend."
+}

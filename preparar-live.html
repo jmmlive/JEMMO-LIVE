@@ -1,4 +1,159 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Preparar LIVE</title><style>
-:root{--bg:#05030a;--panel:#120a1d;--panel2:#1a0e2a;--purple:#a62cff;--purple2:#6d19ef;--gold:#ffd21c;--white:#faf8ff;--muted:#aea6b9;--line:rgba(184,76,255,.28);--green:#2de789;--red:#ff4b62;--blue:#38bfff;--shadow:0 22px 65px rgba(0,0,0,.5)}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;color:var(--white);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:radial-gradient(circle at 50% -10%,rgba(113,31,255,.25),transparent 34%),linear-gradient(180deg,#08040f,#040208);overflow-x:hidden}button,input,textarea,select{font:inherit}button{border:0;cursor:pointer}a{text-decoration:none;color:inherit}.app{width:min(100%,520px);min-height:100vh;margin:auto;padding-bottom:96px}.topbar{position:sticky;top:0;z-index:30;display:grid;grid-template-columns:46px 1fr 46px;align-items:center;gap:10px;padding:14px max(14px,env(safe-area-inset-right));padding-top:max(14px,env(safe-area-inset-top));background:rgba(5,3,10,.94);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}.icon{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;background:#170d25;color:#fff;border:1px solid var(--line)}.title{text-align:center}.title strong{display:block;font-size:18px}.title span{display:block;font-size:10px;color:var(--muted);margin-top:2px}main{padding:16px 14px 30px}.hero,.panel{border-radius:25px;border:1px solid var(--line);background:linear-gradient(145deg,#1a0c2a,#09050f);box-shadow:var(--shadow)}.hero{padding:22px 18px;background:radial-gradient(circle at 84% 20%,rgba(255,210,28,.15),transparent 30%),linear-gradient(145deg,#1d0c2e,#08040d)}.hero h1{margin:0 0 8px;font-size:29px;line-height:1}.hero p{margin:0;color:#d2cadb;font-size:13px;line-height:1.5}.grid{display:grid;gap:14px;margin-top:18px}.card{position:relative;overflow:hidden;min-height:190px;padding:18px;border-radius:25px;border:1px solid var(--line);display:flex;flex-direction:column;justify-content:flex-end;box-shadow:var(--shadow)}.card.live{background:radial-gradient(circle at 80% 17%,rgba(222,59,255,.35),transparent 35%),linear-gradient(145deg,#250c36,#08040d)}.card.audio{background:radial-gradient(circle at 80% 17%,rgba(56,191,255,.28),transparent 35%),linear-gradient(145deg,#071d2e,#05080e)}.card.games{opacity:.82;background:radial-gradient(circle at 80% 17%,rgba(255,210,28,.2),transparent 35%),linear-gradient(145deg,#231800,#080603)}.badge{position:absolute;top:14px;left:14px;padding:6px 9px;border-radius:999px;font-size:9px;font-weight:950;border:1px solid currentColor;background:rgba(5,3,10,.75)}.live .badge{color:#e66bff}.audio .badge{color:#57caff}.games .badge{color:var(--gold)}.symbol{position:absolute;right:18px;top:16px;font-size:51px;font-weight:950;opacity:.14}.card h2{margin:0 0 6px;font-size:24px}.card p{margin:0 0 16px;max-width:82%;font-size:12px;line-height:1.45;color:#d0c8d9}.action{align-self:flex-start;padding:11px 16px;border-radius:14px;color:#fff;font-size:12px;font-weight:950;background:linear-gradient(90deg,var(--purple2),#c431ff)}.audio .action{background:linear-gradient(90deg,#09649d,#20acef)}.games .action{background:#ffe35b;color:#5d4a00}.section-title{margin:20px 0 10px;font-size:14px}.field{display:grid;gap:7px;margin-top:13px}.field label{font-size:11px;font-weight:850;color:#d7d0df}.field input,.field textarea,.field select{width:100%;border-radius:15px;border:1px solid var(--line);background:#0b0611;color:#fff;padding:13px 14px;outline:none}.field textarea{min-height:88px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{border-color:#bd4aff;box-shadow:0 0 0 3px rgba(189,74,255,.12)}.switch-row{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.06)}.switch-row strong{font-size:12px}.switch-row span{display:block;color:var(--muted);font-size:10px;margin-top:3px}.switch{width:48px;height:27px;border-radius:999px;background:#2a2031;padding:3px;transition:.2s}.switch i{display:block;width:21px;height:21px;border-radius:50%;background:#fff;transition:.2s}.switch.on{background:var(--purple)}.switch.on i{transform:translateX(21px)}.primary{width:100%;margin-top:16px;padding:14px;border-radius:16px;color:#fff;font-weight:950;background:linear-gradient(90deg,#711cff,#c532ff);box-shadow:0 0 26px rgba(178,45,255,.32)}.secondary{width:100%;margin-top:9px;padding:13px;border-radius:16px;color:#fff;font-weight:850;background:#1b1127;border:1px solid var(--line)}.cover{position:relative;height:230px;border-radius:22px;overflow:hidden;background:radial-gradient(circle at 50% 35%,#7f2cff,#2c103f 38%,#0a0510 75%);border:1px solid var(--line);display:grid;place-items:center}.cover img{width:100%;height:100%;object-fit:cover}.cover-placeholder{text-align:center;color:#d8d0df}.cover-placeholder b{display:block;font-size:32px}.cover-placeholder span{font-size:11px}.cover-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.cover-actions label,.cover-actions button{padding:11px;border-radius:14px;text-align:center;background:#1b1029;color:#fff;border:1px solid var(--line);font-size:11px;font-weight:850}.notice{margin-top:12px;padding:11px 12px;border-radius:14px;background:rgba(255,210,28,.08);border:1px solid rgba(255,210,28,.22);color:#eee0a6;font-size:10px;line-height:1.45}.bottom{position:fixed;z-index:35;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,520px);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 6px max(8px,env(safe-area-inset-bottom));background:rgba(10,6,16,.98);border-top:1px solid var(--line);border-radius:24px 24px 0 0}.nav{display:grid;justify-items:center;gap:4px;padding:7px 2px;background:transparent;color:#a69eaf;font-size:9px;font-weight:800}.nav svg{width:21px;height:21px}.nav.active{color:#fff}.nav.center{transform:translateY(-13px);width:60px;height:60px;border-radius:50%;justify-self:center;place-content:center;background:radial-gradient(circle at 35% 25%,#c34fff,#6115ef 58%,#25073d);border:2px solid #c64dff;box-shadow:0 0 26px rgba(166,42,255,.48)}.nav.center span{display:none}.toast{position:fixed;z-index:100;left:50%;bottom:105px;transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.2s;width:min(calc(100% - 28px),480px);padding:12px 14px;border-radius:15px;background:#1a1026;border:1px solid var(--line);font-size:12px;font-weight:850}.toast.show{opacity:1;transform:translate(-50%,0)}
-</style></head><body><div class="app"><header class="topbar"><button class="icon" onclick="location.href='salas.html'">←</button><div class="title"><strong>Preparar LIVE</strong><span>Nada se publica hasta iniciar</span></div><button class="icon" onclick="location.href='index.html'">⌂</button></header><main><section class="panel" style="padding:15px"><div class="cover" id="cover"><div class="cover-placeholder"><b>+</b><span>Sube una foto tuya de buena calidad</span></div></div><div class="cover-actions"><label for="coverInput">Elegir foto</label><button onclick="clearCover()">Quitar foto</button></div><input id="coverInput" type="file" accept="image/*" hidden><div class="notice">La portada debe representar a la persona que transmite y respetar las normas de JEMMO LIVE.</div><div class="field"><label>Título del LIVE</label><input id="title" maxlength="55" placeholder="Ej.: Noche de charla con Luna"></div><div class="field"><label>Descripción para atraer personas</label><textarea id="description" maxlength="150" placeholder="Cuenta brevemente qué harás en el LIVE"></textarea></div><div class="field"><label>Modo de acceso</label><select id="privacy"><option value="public">Público</option><option value="password">Privado con contraseña</option></select></div><div class="field" id="passwordField" hidden><label>Contraseña</label><input id="password" maxlength="20" placeholder="Crea una contraseña"></div><div class="field"><label>Quién puede solicitar subir al lateral</label><select id="seatRule"><option value="request">Todos pueden solicitar</option><option value="fans">Solo Club de Fans</option><option value="invite">Solo por invitación</option><option value="closed">Nadie puede solicitar</option></select></div><div class="switch-row"><div><strong>Permitir comentarios</strong><span>Los espectadores podrán escribir</span></div><button class="switch on" data-switch="comments"><i></i></button></div><div class="switch-row"><div><strong>Activar Afortunados</strong><span>Disponible para regalos y apuestas de la sala</span></div><button class="switch on" data-switch="lucky"><i></i></button></div><button class="primary" onclick="startLive()">Iniciar LIVE</button><button class="secondary" onclick="location.href='index.html'">Volver al Inicio</button></section></main></div><div class="toast" id="toast"></div><script>let toastTimer;function showToast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.classList.remove('show'),2300)}document.querySelectorAll('[data-switch]').forEach(b=>b.onclick=()=>b.classList.toggle('on'));const privacy=document.getElementById('privacy');privacy.onchange=()=>document.getElementById('passwordField').hidden=privacy.value!=='password';const input=document.getElementById('coverInput');input.onchange=()=>{const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>document.getElementById('cover').innerHTML=`<img src="${e.target.result}" alt="Portada">`;r.readAsDataURL(f)};function clearCover(){document.getElementById('cover').innerHTML='<div class="cover-placeholder"><b>+</b><span>Sube una foto tuya de buena calidad</span></div>';input.value=''}function startLive(){const title=document.getElementById('title').value.trim(),desc=document.getElementById('description').value.trim(),privacy=document.getElementById('privacy').value,pwd=document.getElementById('password').value.trim();if(!document.querySelector('#cover img'))return showToast('Primero sube una foto de portada');if(!title)return showToast('Escribe un título para el LIVE');if(!desc)return showToast('Escribe una descripción');if(privacy==='password'&&!pwd)return showToast('Escribe la contraseña');localStorage.setItem('jemmoLiveConfig',JSON.stringify({title,desc,privacy,pwd,seatRule:document.getElementById('seatRule').value}));location.href='live.html'}</script></body></html>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Preparar Transmisión LIVE</title><style>
+:root{
+  --bg:#05030a;--panel:#120a1d;--panel2:#1a0e2a;--purple:#a62cff;--purple2:#6d19ef;
+  --gold:#ffd21c;--white:#faf8ff;--muted:#aea6b9;--line:rgba(184,76,255,.28);
+  --green:#2de789;--red:#ff4b62;--blue:#38bfff;--shadow:0 22px 65px rgba(0,0,0,.5)
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;min-height:100vh;color:var(--white);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  background:radial-gradient(circle at 50% -10%,rgba(113,31,255,.25),transparent 34%),
+             linear-gradient(180deg,#08040f,#040208);
+  overflow-x:hidden
+}
+button,input,textarea,select{font:inherit}
+button{border:0;cursor:pointer}
+a{text-decoration:none;color:inherit}
+.app{width:min(100%,520px);min-height:100vh;margin:auto;padding-bottom:96px}
+.topbar{
+  position:sticky;top:0;z-index:30;display:grid;grid-template-columns:46px 1fr 46px;
+  align-items:center;gap:10px;padding:14px;
+  padding-top:max(14px,env(safe-area-inset-top));
+  background:rgba(5,3,10,.94);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)
+}
+.icon{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;background:#170d25;color:#fff;border:1px solid var(--line)}
+.title{text-align:center}.title strong{display:block;font-size:18px}.title span{display:block;font-size:10px;color:var(--muted);margin-top:2px}
+main{padding:16px 14px 30px}
+.hero,.panel{border-radius:25px;border:1px solid var(--line);background:linear-gradient(145deg,#1a0c2a,#09050f);box-shadow:var(--shadow)}
+.hero{padding:22px 18px;background:radial-gradient(circle at 84% 20%,rgba(255,210,28,.15),transparent 30%),linear-gradient(145deg,#1d0c2e,#08040d)}
+.hero h1{margin:0 0 8px;font-size:29px;line-height:1}.hero p{margin:0;color:#d2cadb;font-size:13px;line-height:1.5}
+.grid{display:grid;gap:14px;margin-top:18px}
+.card{
+  position:relative;overflow:hidden;min-height:190px;padding:18px;border-radius:25px;
+  border:1px solid var(--line);display:flex;flex-direction:column;justify-content:flex-end;
+  box-shadow:var(--shadow)
+}
+.card.live{background:radial-gradient(circle at 80% 17%,rgba(222,59,255,.35),transparent 35%),linear-gradient(145deg,#250c36,#08040d)}
+.card.multi{background:radial-gradient(circle at 80% 17%,rgba(255,210,28,.25),transparent 35%),linear-gradient(145deg,#211300,#08040d)}
+.card.audio{background:radial-gradient(circle at 80% 17%,rgba(56,191,255,.28),transparent 35%),linear-gradient(145deg,#071d2e,#05080e)}
+.card.games{opacity:.82;background:radial-gradient(circle at 80% 17%,rgba(255,210,28,.2),transparent 35%),linear-gradient(145deg,#231800,#080603)}
+.badge{position:absolute;top:14px;left:14px;padding:6px 9px;border-radius:999px;font-size:9px;font-weight:950;border:1px solid currentColor;background:rgba(5,3,10,.75)}
+.live .badge{color:#e66bff}.multi .badge{color:var(--gold)}.audio .badge{color:#57caff}.games .badge{color:var(--gold)}
+.symbol{position:absolute;right:18px;top:16px;font-size:45px;font-weight:950;opacity:.14}
+.card h2{margin:0 0 6px;font-size:24px}.card p{margin:0 0 16px;max-width:84%;font-size:12px;line-height:1.45;color:#d0c8d9}
+.action{align-self:flex-start;padding:11px 16px;border-radius:14px;color:#fff;font-size:12px;font-weight:950;background:linear-gradient(90deg,var(--purple2),#c431ff)}
+.multi .action{background:linear-gradient(90deg,#9f6900,#ffd21c);color:#261900}.audio .action{background:linear-gradient(90deg,#09649d,#20acef)}.games .action{background:#ffe35b;color:#5d4a00}
+.field{display:grid;gap:7px;margin-top:13px}.field label{font-size:11px;font-weight:850;color:#d7d0df}
+.field input,.field textarea,.field select{width:100%;border-radius:15px;border:1px solid var(--line);background:#0b0611;color:#fff;padding:13px 14px;outline:none}
+.field textarea{min-height:88px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{border-color:#bd4aff;box-shadow:0 0 0 3px rgba(189,74,255,.12)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.primary{width:100%;margin-top:16px;padding:14px;border-radius:16px;color:#fff;font-weight:950;background:linear-gradient(90deg,#711cff,#c532ff);box-shadow:0 0 26px rgba(178,45,255,.32)}
+.secondary{width:100%;margin-top:9px;padding:13px;border-radius:16px;color:#fff;font-weight:850;background:#1b1127;border:1px solid var(--line)}
+.cover{position:relative;height:230px;border-radius:22px;overflow:hidden;background:radial-gradient(circle at 50% 35%,#7f2cff,#2c103f 38%,#0a0510 75%);border:1px solid var(--line);display:grid;place-items:center}
+.cover img,.cover video{width:100%;height:100%;object-fit:cover}.cover-placeholder{text-align:center;color:#d8d0df}.cover-placeholder b{display:block;font-size:32px}.cover-placeholder span{font-size:11px}
+.cover-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.cover-actions label,.cover-actions button{padding:11px;border-radius:14px;text-align:center;background:#1b1029;color:#fff;border:1px solid var(--line);font-size:11px;font-weight:850}
+.notice{margin-top:12px;padding:11px 12px;border-radius:14px;background:rgba(255,210,28,.08);border:1px solid rgba(255,210,28,.22);color:#eee0a6;font-size:10px;line-height:1.45}
+.checklist{display:grid;gap:8px;margin-top:14px}.check{display:flex;align-items:center;gap:9px;padding:10px 11px;border-radius:13px;background:#0e0816;border:1px solid rgba(255,255,255,.07);font-size:11px}.dot{width:10px;height:10px;border-radius:50%;background:#665e6d}.check.ok .dot{background:var(--green);box-shadow:0 0 10px rgba(45,231,137,.6)}.check.bad .dot{background:var(--red)}
+.bottom{position:fixed;z-index:35;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,520px);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 6px max(8px,env(safe-area-inset-bottom));background:rgba(10,6,16,.98);border-top:1px solid var(--line);border-radius:24px 24px 0 0}
+.nav{display:grid;justify-items:center;gap:4px;padding:7px 2px;background:transparent;color:#a69eaf;font-size:9px;font-weight:800}.nav.active{color:#fff}.nav.center{transform:translateY(-13px);width:60px;height:60px;border-radius:50%;justify-self:center;place-content:center;background:radial-gradient(circle at 35% 25%,#c34fff,#6115ef 58%,#25073d);border:2px solid #c64dff;box-shadow:0 0 26px rgba(166,42,255,.48)}.nav.center span{display:none}
+.toast{position:fixed;z-index:100;left:50%;bottom:105px;transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.2s;width:min(calc(100% - 28px),480px);padding:12px 14px;border-radius:15px;background:#1a1026;border:1px solid var(--line);font-size:12px;font-weight:850}.toast.show{opacity:1;transform:translate(-50%,0)}
+.stage{min-height:100vh;position:relative;overflow:hidden;background:radial-gradient(circle at 50% 28%,#7e2cff 0 8%,#311047 34%,#0b0611 72%,#05030a)}
+.stage:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.18),transparent 30%,transparent 58%,rgba(0,0,0,.86))}
+.live-top{position:absolute;top:max(14px,env(safe-area-inset-top));left:12px;right:12px;display:flex;align-items:center;gap:8px;z-index:4}
+.pill{padding:8px 10px;border-radius:999px;background:rgba(9,5,15,.72);border:1px solid rgba(255,255,255,.15);font-size:9px}
+.float{width:48px;height:48px;border-radius:17px;display:grid;place-items:center;background:rgba(17,9,28,.82);border:1px solid rgba(255,255,255,.15);color:#fff;box-shadow:0 12px 30px rgba(0,0,0,.3)}
+.side{position:absolute;right:12px;bottom:150px;display:grid;gap:10px;z-index:4}
+.chat{position:absolute;left:13px;right:76px;bottom:105px;z-index:4;display:grid;gap:7px}.msg{width:max-content;max-width:100%;padding:7px 9px;border-radius:12px;background:rgba(9,5,15,.64);font-size:10px}
+.end-btn{position:absolute;left:50%;bottom:32px;transform:translateX(-50%);z-index:5;padding:13px 22px;border-radius:999px;background:linear-gradient(90deg,#b11d3d,#ff4b62);color:#fff;font-weight:950}
+.modal-bg{position:fixed;inset:0;z-index:120;background:rgba(0,0,0,.72);display:none;place-items:end center}.modal-bg.show{display:grid}.modal{width:min(100%,520px);padding:18px 15px 26px;border-radius:28px 28px 0 0;background:#120a1d;border:1px solid var(--line)}.modal h3{margin:0 0 10px}.summary-row{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:12px}
+.seat-grid{position:absolute;inset:85px 12px 120px;display:grid;gap:8px;z-index:3}.seat-grid.n4{grid-template-columns:repeat(2,1fr)}.seat-grid.n8,.seat-grid.n10,.seat-grid.n12,.seat-grid.n16{grid-template-columns:repeat(4,1fr)}
+.seat{position:relative;min-height:90px;border-radius:18px;background:linear-gradient(145deg,#241334,#0d0714);border:1px solid var(--line);display:grid;place-items:center;text-align:center;padding:6px}.seat.host{border-color:var(--gold)}.seat .avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#7c28e9;font-weight:950}.seat small{font-size:8px;color:#cfc7d7}.status-light{position:absolute;right:7px;top:7px;width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 9px rgba(45,231,137,.75)}.status-light.done{background:var(--red);box-shadow:0 0 9px rgba(255,75,98,.75)}
+@media(max-width:390px){.two{grid-template-columns:1fr}.seat-grid.n12,.seat-grid.n16{grid-template-columns:repeat(4,1fr)}.seat{min-height:78px}.card{min-height:175px}}
+</style></head>
+<body><div class="app"><header class="topbar"><button class="icon" onclick="location.href='salas.html'">←</button><div class="title"><strong>Preparar Transmisión LIVE</strong><span>Cámara principal e invitados laterales</span></div><button class="icon" onclick="location.href='index.html'">⌂</button></header>
+<main><section class="panel" style="padding:15px">
+<div class="cover" id="cover"><div class="cover-placeholder"><b>+</b><span>Portada obligatoria de la persona que transmite</span></div></div>
+<div class="cover-actions"><label for="coverInput">Elegir foto</label><button type="button" onclick="clearCover()">Quitar foto</button></div>
+<input id="coverInput" type="file" accept="image/*" hidden>
+<div class="field"><label>Título obligatorio</label><input id="roomTitle" maxlength="60" placeholder="Ej.: Noche de conversación con Luna"></div>
+<div class="field"><label>Descripción obligatoria</label><textarea id="description" maxlength="180" placeholder="Explica claramente qué ocurrirá en la transmisión"></textarea></div>
+<div class="two"><div class="field"><label>Categoría</label><select id="category"><option>Conversación</option><option>Música</option><option>Talento</option><option>Baile</option><option>Entretenimiento</option><option>Comunidad</option></select></div>
+<div class="field"><label>Idioma principal</label><select id="language"><option>Español</option><option>Inglés</option><option>Portugués</option><option>Francés</option><option>Árabe</option></select></div></div>
+
+<div class="field"><label>Acceso a la sala</label><select id="privacy"><option value="public">Pública</option><option value="password">Privada con contraseña</option></select></div>
+<div class="field" id="passwordField" hidden><label>Contraseña</label><input id="password" maxlength="20" placeholder="Crea una contraseña"></div>
+<div class="field"><label>Quién puede solicitar subir</label><select id="seatRule"><option value="request">Todos pueden solicitar</option><option value="fans">Solo Club de Fans</option><option value="invite">Solo por invitación</option><option value="closed">Sillas cerradas</option></select></div>
+
+      <div class="field"><label>Vista previa de cámara</label>
+        <div class="cover" id="cameraPreview"><video id="previewVideo" autoplay muted playsinline></video></div>
+        <button class="secondary" type="button" onclick="startCamera()">Activar o reintentar cámara</button>
+      </div>
+<div class="checklist">
+<div class="check" id="checkCover"><i class="dot"></i>Portada válida</div>
+<div class="check" id="checkText"><i class="dot"></i>Título y descripción correctos</div>
+<div class="check" id="checkMedia"><i class="dot"></i>Cámara y micrófono disponibles</div>
+</div>
+<div class="notice">La comprobación local revisa tamaño, nitidez aproximada y palabras bloqueadas. La moderación real de contenido necesitará un servicio seguro en el backend.</div>
+<button class="primary" id="startBtn" onclick="startRoom()">Iniciar transmisión</button>
+<button class="secondary" onclick="location.href='index.html'">Volver al Inicio</button>
+</section></main></div><div class="toast" id="toast"></div>
+<script>
+let toastTimer;function showToast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.classList.remove('show'),2400)}
+const KEY="jemmoConfig_live_individual", TARGET="live.html", NEED_CAMERA=true;
+const badWords=['violencia extrema','sexo explícito','drogas ilegales','odio','menores desnudos','apuesta ilegal'];
+let saved=JSON.parse(localStorage.getItem(KEY)||'{}'), coverData=saved.cover||'', stream=null, mediaReady=false;
+const el=id=>document.getElementById(id);
+function loadSaved(){
+  el('roomTitle').value=saved.title||'';el('description').value=saved.description||'';
+  el('category').value=saved.category||'Conversación';el('language').value=saved.language||'Español';
+  el('privacy').value=saved.privacy||'public';el('password').value=saved.password||'';el('seatRule').value=saved.seatRule||'request';
+  if(el('seats')) el('seats').value=String(saved.seats||el('seats').value);
+  el('passwordField').hidden=el('privacy').value!=='password';
+  if(coverData) el('cover').innerHTML=`<img src="${coverData}" alt="Portada guardada">`;
+  validate();
+}
+el('privacy').onchange=()=>{el('passwordField').hidden=el('privacy').value!=='password';saveDraft();validate()};
+['roomTitle','description','category','language','password','seatRule'].forEach(id=>el(id).addEventListener('input',()=>{saveDraft();validate()}));
+if(el('seats')) el('seats').addEventListener('change',()=>{saveDraft();validate()});
+el('coverInput').onchange=()=>{
+  const f=el('coverInput').files[0];if(!f)return;
+  if(f.size>8*1024*1024) return showToast('La imagen pesa demasiado. Máximo 8 MB');
+  const img=new Image(),r=new FileReader();
+  r.onload=e=>{img.onload=()=>{if(img.width<720||img.height<720)return showToast('La portada debe tener al menos 720 × 720 píxeles');coverData=e.target.result;el('cover').innerHTML=`<img src="${coverData}" alt="Portada">`;saveDraft();validate()};img.src=e.target.result};
+  r.readAsDataURL(f)
+};
+function clearCover(){coverData='';el('cover').innerHTML='<div class="cover-placeholder"><b>+</b><span>Portada obligatoria de la persona que transmite</span></div>';saveDraft();validate()}
+function textAllowed(){
+  const t=(el('roomTitle').value+' '+el('description').value).toLowerCase();
+  return !badWords.some(w=>t.includes(w));
+}
+function saveDraft(){
+  const data={cover:coverData,title:el('roomTitle').value.trim(),description:el('description').value.trim(),category:el('category').value,language:el('language').value,privacy:el('privacy').value,password:el('password').value.trim(),seatRule:el('seatRule').value};
+  if(el('seats')) data.seats=Number(el('seats').value);
+  localStorage.setItem(KEY,JSON.stringify(data));saved=data
+}
+function mark(id,ok){el(id).classList.toggle('ok',ok);el(id).classList.toggle('bad',!ok)}
+function validate(){
+  const textOk=el('roomTitle').value.trim().length>=4&&el('description').value.trim().length>=12&&textAllowed();
+  mark('checkCover',!!coverData);mark('checkText',textOk);mark('checkMedia',mediaReady);
+  return !!coverData&&textOk&&mediaReady&&(el('privacy').value!=='password'||el('password').value.trim().length>=4)
+}
+async function startCamera(){
+  try{if(stream)stream.getTracks().forEach(t=>t.stop());stream=await navigator.mediaDevices.getUserMedia({video:NEED_CAMERA,audio:true});
+  if(NEED_CAMERA)el('previewVideo').srcObject=stream;mediaReady=true;validate();showToast('Cámara y micrófono listos')}
+  catch(e){mediaReady=false;validate();showToast(NEED_CAMERA?'Permite cámara y micrófono para continuar':'Permite el micrófono para continuar')}
+}
+function startRoom(){
+  saveDraft();
+  if(!coverData)return showToast('Debes subir una foto de portada');
+  if(el('roomTitle').value.trim().length<4)return showToast('Escribe un título válido');
+  if(el('description').value.trim().length<12)return showToast('La descripción es demasiado corta');
+  if(!textAllowed())return showToast('El texto no supera la revisión. Cámbialo para continuar');
+  if(el('privacy').value==='password'&&el('password').value.trim().length<4)return showToast('La contraseña debe tener al menos 4 caracteres');
+  if(!mediaReady)return showToast(NEED_CAMERA?'Activa la cámara y el micrófono':'Activa el micrófono');
+  localStorage.setItem('jemmoActiveRoom',JSON.stringify(saved));location.href=TARGET
+}
+loadSaved();startCamera();
+</script></body></html>

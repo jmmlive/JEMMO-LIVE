@@ -1,4 +1,4 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Preparar Audio Room</title><style>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Preparar LIVE con sillas</title><style>
 :root{
   --bg:#05030a;--panel:#120a1d;--panel2:#1a0e2a;--purple:#a62cff;--purple2:#6d19ef;
   --gold:#ffd21c;--white:#faf8ff;--muted:#aea6b9;--line:rgba(184,76,255,.28);
@@ -72,7 +72,7 @@ main{padding:16px 14px 30px}
 .seat{position:relative;min-height:90px;border-radius:18px;background:linear-gradient(145deg,#241334,#0d0714);border:1px solid var(--line);display:grid;place-items:center;text-align:center;padding:6px}.seat.host{border-color:var(--gold)}.seat .avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:#7c28e9;font-weight:950}.seat small{font-size:8px;color:#cfc7d7}.status-light{position:absolute;right:7px;top:7px;width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 9px rgba(45,231,137,.75)}.status-light.done{background:var(--red);box-shadow:0 0 9px rgba(255,75,98,.75)}
 @media(max-width:390px){.two{grid-template-columns:1fr}.seat-grid.n12,.seat-grid.n16{grid-template-columns:repeat(4,1fr)}.seat{min-height:78px}.card{min-height:175px}}
 </style></head>
-<body><div class="app"><header class="topbar"><button class="icon" onclick="location.href='salas.html'">←</button><div class="title"><strong>Preparar Audio Room</strong><span>Solo audio, sin cámara</span></div><button class="icon" onclick="location.href='index.html'">⌂</button></header>
+<body><div class="app"><header class="topbar"><button class="icon" onclick="location.href='salas.html'">←</button><div class="title"><strong>Preparar LIVE con sillas</strong><span>Reunión multicámara</span></div><button class="icon" onclick="location.href='index.html'">⌂</button></header>
 <main><section class="panel" style="padding:15px">
 <div class="cover" id="cover"><div class="cover-placeholder"><b>+</b><span>Portada obligatoria de la persona que transmite</span></div></div>
 <div class="cover-actions"><label for="coverInput">Elegir foto</label><button type="button" onclick="clearCover()">Quitar foto</button></div>
@@ -81,16 +81,19 @@ main{padding:16px 14px 30px}
 <div class="field"><label>Descripción obligatoria</label><textarea id="description" maxlength="180" placeholder="Explica claramente qué ocurrirá en la transmisión"></textarea></div>
 <div class="two"><div class="field"><label>Categoría</label><select id="category"><option>Conversación</option><option>Música</option><option>Talento</option><option>Baile</option><option>Entretenimiento</option><option>Comunidad</option></select></div>
 <div class="field"><label>Idioma principal</label><select id="language"><option>Español</option><option>Inglés</option><option>Portugués</option><option>Francés</option><option>Árabe</option></select></div></div>
-<div class="field"><label>Número de plazas</label><select id="seats"><option value="4">4 sillas</option><option value="8">8 sillas</option><option value="10" selected>10 sillas</option><option value="16">16 sillas</option><option value="25">25 sillas · requiere VIP</option></select></div>
+<div class="field"><label>Número de plazas</label><select id="seats"><option value="4">4 plazas</option><option value="8">8 plazas</option><option value="12">12 plazas</option><option value="16">16 plazas</option></select></div>
 <div class="field"><label>Acceso a la sala</label><select id="privacy"><option value="public">Pública</option><option value="password">Privada con contraseña</option></select></div>
 <div class="field" id="passwordField" hidden><label>Contraseña</label><input id="password" maxlength="20" placeholder="Crea una contraseña"></div>
 <div class="field"><label>Quién puede solicitar subir</label><select id="seatRule"><option value="request">Todos pueden solicitar</option><option value="fans">Solo Club de Fans</option><option value="invite">Solo por invitación</option><option value="closed">Sillas cerradas</option></select></div>
 
-      <div class="notice">Esta modalidad es exclusivamente de audio. La cámara no se utilizará.</div>
+      <div class="field"><label>Vista previa de cámara</label>
+        <div class="cover" id="cameraPreview"><video id="previewVideo" autoplay muted playsinline></video></div>
+        <button class="secondary" type="button" onclick="startCamera()">Activar o reintentar cámara</button>
+      </div>
 <div class="checklist">
 <div class="check" id="checkCover"><i class="dot"></i>Portada válida</div>
 <div class="check" id="checkText"><i class="dot"></i>Título y descripción correctos</div>
-<div class="check" id="checkMedia"><i class="dot"></i>Micrófono disponible</div>
+<div class="check" id="checkMedia"><i class="dot"></i>Cámara y micrófono disponibles</div>
 </div>
 <div class="notice">La comprobación local revisa tamaño, nitidez aproximada y palabras bloqueadas. La moderación real de contenido necesitará un servicio seguro en el backend.</div>
 <button class="primary" id="startBtn" onclick="startRoom()">Iniciar transmisión</button>
@@ -98,7 +101,7 @@ main{padding:16px 14px 30px}
 </section></main></div><div class="toast" id="toast"></div>
 <script>
 let toastTimer;function showToast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.classList.remove('show'),2400)}
-const KEY="jemmoConfig_audio", TARGET="audio-room.html", NEED_CAMERA=false;
+const KEY="jemmoConfig_live_sillas", TARGET="live-sillas.html", NEED_CAMERA=true;
 const badWords=['violencia extrema','sexo explícito','drogas ilegales','odio','menores desnudos','apuesta ilegal'];
 let saved=JSON.parse(localStorage.getItem(KEY)||'{}'), coverData=saved.cover||'', stream=null, mediaReady=false;
 const el=id=>document.getElementById(id);
