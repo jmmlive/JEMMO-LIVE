@@ -75,9 +75,9 @@ main{padding:16px 14px 30px}
 <body><div class="app"><header class="topbar"><button class="icon" onclick="location.href='index.html'">←</button><div class="title"><strong>Salas</strong><span>Elige cómo quieres transmitir</span></div><button class="icon" onclick="showToast('Ayuda de Salas · preparada')">?</button></header>
 <main><section class="hero"><h1>Tu espacio para transmitir</h1><p>Configura la portada, el tema y los permisos antes de salir en directo.</p></section>
 <section class="grid">
-<article class="card live" onclick="location.href='preparar-live.html'"><span class="badge">● DISPONIBLE</span><span class="symbol">LIVE</span><h2>Transmisión LIVE</h2><p>Anfitriona en pantalla completa y hasta cinco invitados laterales, siempre con permiso.</p><button class="action">Preparar LIVE</button></article>
-<article class="card multi" onclick="location.href='preparar-live-sillas.html'"><span class="badge">● DISPONIBLE</span><span class="symbol">4·8·12·16</span><h2>LIVE con sillas</h2><p>Reunión multicámara. La anfitriona ocupa una plaza y controla a todos los participantes.</p><button class="action">Preparar reunión</button></article>
-<article class="card audio" onclick="location.href='preparar-audio.html'"><span class="badge">● DISPONIBLE</span><span class="symbol">AUDIO</span><h2>Audio Room</h2><p>Solo voz, sin cámara, con 4, 8, 10, 16 o 25 sillas VIP.</p><button class="action">Preparar Audio Room</button></article>
+<article class="card live" role="link" tabindex="0" data-href="preparar-live.html"><span class="badge">● DISPONIBLE</span><span class="symbol">LIVE</span><h2>Transmisión LIVE</h2><p>Anfitriona en pantalla completa y hasta cinco invitados laterales, siempre con permiso.</p><button class="action" type="button" data-open="preparar-live.html">Preparar LIVE</button></article>
+<article class="card multi" role="link" tabindex="0" data-href="preparar-live-sillas.html"><span class="badge">● DISPONIBLE</span><span class="symbol">4·8·12·16</span><h2>LIVE con sillas</h2><p>Reunión multicámara. La anfitriona ocupa una plaza y controla a todos los participantes.</p><button class="action" type="button" data-open="preparar-live-sillas.html">Preparar reunión</button></article>
+<article class="card audio" role="link" tabindex="0" data-href="preparar-audio.html"><span class="badge">● DISPONIBLE</span><span class="symbol">AUDIO</span><h2>Audio Room</h2><p>Solo voz, sin cámara, con 4, 8, 10, 16 o 25 sillas VIP.</p><button class="action" type="button" data-open="preparar-audio.html">Preparar Audio Room</button></article>
 <article class="card games" onclick="showToast('Salas de Juegos · próximamente')"><span class="badge">PRÓXIMAMENTE</span><span class="symbol">◆</span><h2>Salas de Juegos</h2><p>Espacio reservado para juegos y competiciones futuras.</p><button class="action">Próximamente</button></article>
 </section></main>
 <nav class="bottom">
@@ -87,4 +87,9 @@ main{padding:16px 14px 30px}
 <button class="nav" onclick="showToast('Mensajes · pendiente de conexión real')">▣<span>Mensajes</span></button>
 <button class="nav" onclick="showToast('Perfil · pendiente de conexión real')">○<span>Perfil</span></button>
 </nav>
-<div class="toast" id="toast"></div></div><script>let toastTimer;function showToast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.classList.remove('show'),2400)}</script></body></html>
+<div class="toast" id="toast"></div></div><script>
+let toastTimer;function showToast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>e.classList.remove('show'),2400)}
+function openRoomSetup(url){if(url)window.location.assign(url)}
+document.querySelectorAll('[data-open]').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();openRoomSetup(btn.dataset.open)}));
+document.querySelectorAll('.card[data-href]').forEach(card=>{card.addEventListener('click',()=>openRoomSetup(card.dataset.href));card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openRoomSetup(card.dataset.href)}})});
+</script></body></html>

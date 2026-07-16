@@ -52,7 +52,7 @@ main{padding:16px 14px 30px}
 .primary{width:100%;margin-top:16px;padding:14px;border-radius:16px;color:#fff;font-weight:950;background:linear-gradient(90deg,#711cff,#c532ff);box-shadow:0 0 26px rgba(178,45,255,.32)}
 .secondary{width:100%;margin-top:9px;padding:13px;border-radius:16px;color:#fff;font-weight:850;background:#1b1127;border:1px solid var(--line)}
 .cover{position:relative;height:230px;border-radius:22px;overflow:hidden;background:radial-gradient(circle at 50% 35%,#7f2cff,#2c103f 38%,#0a0510 75%);border:1px solid var(--line);display:grid;place-items:center}
-.cover img,.cover video{width:100%;height:100%;object-fit:cover}.cover-placeholder{text-align:center;color:#d8d0df}.cover-placeholder b{display:block;font-size:32px}.cover-placeholder span{font-size:11px}
+.cover img,.cover video{width:100%;height:100%;object-fit:cover}.cover video{transform:none!important;-webkit-transform:none!important}.cover-placeholder{text-align:center;color:#d8d0df}.cover-placeholder b{display:block;font-size:32px}.cover-placeholder span{font-size:11px}
 .cover-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.cover-actions label,.cover-actions button{padding:11px;border-radius:14px;text-align:center;background:#1b1029;color:#fff;border:1px solid var(--line);font-size:11px;font-weight:850}
 .notice{margin-top:12px;padding:11px 12px;border-radius:14px;background:rgba(255,210,28,.08);border:1px solid rgba(255,210,28,.22);color:#eee0a6;font-size:10px;line-height:1.45}
 .checklist{display:grid;gap:8px;margin-top:14px}.check{display:flex;align-items:center;gap:9px;padding:10px 11px;border-radius:13px;background:#0e0816;border:1px solid rgba(255,255,255,.07);font-size:11px}.dot{width:10px;height:10px;border-radius:50%;background:#665e6d}.check.ok .dot{background:var(--green);box-shadow:0 0 10px rgba(45,231,137,.6)}.check.bad .dot{background:var(--red)}
@@ -88,9 +88,9 @@ main{padding:16px 14px 30px}
 
       <div class="notice">Esta modalidad es exclusivamente de audio. La cámara no se utilizará.</div>
 <div class="checklist">
-<div class="check" id="checkCover"><i class="dot"></i>Portada válida</div>
-<div class="check" id="checkText"><i class="dot"></i>Título y descripción correctos</div>
-<div class="check" id="checkMedia"><i class="dot"></i>Micrófono disponible</div>
+<div class="check" id="checkCover"><i class="dot"></i><span id="msgCover">Falta una portada válida</span></div>
+<div class="check" id="checkText"><i class="dot"></i><span id="msgText">Completa el título y la descripción</span></div>
+<div class="check" id="checkMedia"><i class="dot"></i><span id="msgMedia">Activa el micrófono</span></div>
 </div>
 <div class="notice">La comprobación local revisa tamaño, nitidez aproximada y palabras bloqueadas. La moderación real de contenido necesitará un servicio seguro en el backend.</div>
 <button class="primary" id="startBtn" onclick="startRoom()">Iniciar transmisión</button>
@@ -133,9 +133,28 @@ function saveDraft(){
 }
 function mark(id,ok){el(id).classList.toggle('ok',ok);el(id).classList.toggle('bad',!ok)}
 function validate(){
-  const textOk=el('roomTitle').value.trim().length>=4&&el('description').value.trim().length>=12&&textAllowed();
-  mark('checkCover',!!coverData);mark('checkText',textOk);mark('checkMedia',mediaReady);
-  return !!coverData&&textOk&&mediaReady&&(el('privacy').value!=='password'||el('password').value.trim().length>=4)
+  const title=el('roomTitle').value.trim();
+  const description=el('description').value.trim();
+  const allowed=textAllowed();
+  const coverOk=!!coverData;
+  const titleOk=title.length>=4;
+  const descriptionOk=description.length>=5;
+  const textOk=titleOk&&descriptionOk&&allowed;
+  mark('checkCover',coverOk);mark('checkText',textOk);mark('checkMedia',mediaReady);
+  if(el('msgCover')) el('msgCover').textContent=coverOk?'Portada correcta':'Falta una foto de portada';
+  if(el('msgText')){
+    if(!titleOk) el('msgText').textContent='El título debe tener al menos 4 caracteres';
+    else if(!descriptionOk) el('msgText').textContent='La descripción debe tener al menos 5 caracteres';
+    else if(!allowed) el('msgText').textContent='El texto contiene contenido no permitido';
+    else el('msgText').textContent='Título y descripción correctos';
+  }
+  if(el('msgMedia')) el('msgMedia').textContent=mediaReady?'Micrófono listo':'Activa el micrófono';
+  const passwordOk=el('privacy').value!=='password'||el('password').value.trim().length>=4;
+  const ready=coverOk&&textOk&&mediaReady&&passwordOk;
+  el('startBtn').disabled=!ready;
+  el('startBtn').style.opacity=ready?'1':'.58';
+  el('startBtn').textContent=ready?'TODO LISTO · INICIAR TRANSMISIÓN':'COMPLETA LOS PASOS PARA CONTINUAR';
+  return ready;
 }
 async function startCamera(){
   try{if(stream)stream.getTracks().forEach(t=>t.stop());stream=await navigator.mediaDevices.getUserMedia({video:NEED_CAMERA,audio:true});
@@ -146,11 +165,11 @@ function startRoom(){
   saveDraft();
   if(!coverData)return showToast('Debes subir una foto de portada');
   if(el('roomTitle').value.trim().length<4)return showToast('Escribe un título válido');
-  if(el('description').value.trim().length<12)return showToast('La descripción es demasiado corta');
+  if(el('description').value.trim().length<5)return showToast('La descripción debe tener al menos 5 caracteres');
   if(!textAllowed())return showToast('El texto no supera la revisión. Cámbialo para continuar');
   if(el('privacy').value==='password'&&el('password').value.trim().length<4)return showToast('La contraseña debe tener al menos 4 caracteres');
   if(!mediaReady)return showToast(NEED_CAMERA?'Activa la cámara y el micrófono':'Activa el micrófono');
-  localStorage.setItem('jemmoActiveRoom',JSON.stringify(saved));location.href=TARGET
+  localStorage.setItem('jemmoActiveRoom',JSON.stringify(saved));window.location.assign(TARGET)
 }
 loadSaved();startCamera();
 </script></body></html>

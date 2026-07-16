@@ -52,10 +52,10 @@ main{padding:16px 14px 30px}
 .primary{width:100%;margin-top:16px;padding:14px;border-radius:16px;color:#fff;font-weight:950;background:linear-gradient(90deg,#711cff,#c532ff);box-shadow:0 0 26px rgba(178,45,255,.32)}
 .secondary{width:100%;margin-top:9px;padding:13px;border-radius:16px;color:#fff;font-weight:850;background:#1b1127;border:1px solid var(--line)}
 .cover{position:relative;height:230px;border-radius:22px;overflow:hidden;background:radial-gradient(circle at 50% 35%,#7f2cff,#2c103f 38%,#0a0510 75%);border:1px solid var(--line);display:grid;place-items:center}
-.cover img,.cover video{width:100%;height:100%;object-fit:cover}.cover-placeholder{text-align:center;color:#d8d0df}.cover-placeholder b{display:block;font-size:32px}.cover-placeholder span{font-size:11px}
+.cover img,.cover video{width:100%;height:100%;object-fit:cover}.cover video{transform:none!important;-webkit-transform:none!important}.cover-placeholder{text-align:center;color:#d8d0df}.cover-placeholder b{display:block;font-size:32px}.cover-placeholder span{font-size:11px}
 .cover-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px}.cover-actions label,.cover-actions button{padding:11px;border-radius:14px;text-align:center;background:#1b1029;color:#fff;border:1px solid var(--line);font-size:11px;font-weight:850}
-.approval{display:none;margin-top:12px;padding:12px 13px;border-radius:14px;background:rgba(45,231,137,.10);border:1px solid rgba(45,231,137,.38);color:#bdf8d8;font-size:11px;font-weight:850}.approval.show{display:block}.notice{margin-top:12px;padding:11px 12px;border-radius:14px;background:rgba(255,210,28,.08);border:1px solid rgba(255,210,28,.22);color:#eee0a6;font-size:10px;line-height:1.45}
-.checklist{display:grid;gap:8px;margin-top:14px}.checklist.approved{display:none}.check{display:flex;align-items:center;gap:9px;padding:10px 11px;border-radius:13px;background:#0e0816;border:1px solid rgba(255,255,255,.07);font-size:11px}.dot{width:10px;height:10px;border-radius:50%;background:#665e6d}.check.ok .dot{background:var(--green);box-shadow:0 0 10px rgba(45,231,137,.6)}.check.bad .dot{background:var(--red)}
+.notice{margin-top:12px;padding:11px 12px;border-radius:14px;background:rgba(255,210,28,.08);border:1px solid rgba(255,210,28,.22);color:#eee0a6;font-size:10px;line-height:1.45}
+.checklist{display:grid;gap:8px;margin-top:14px}.check{display:flex;align-items:center;gap:9px;padding:10px 11px;border-radius:13px;background:#0e0816;border:1px solid rgba(255,255,255,.07);font-size:11px}.dot{width:10px;height:10px;border-radius:50%;background:#665e6d}.check.ok .dot{background:var(--green);box-shadow:0 0 10px rgba(45,231,137,.6)}.check.bad .dot{background:var(--red)}
 .bottom{position:fixed;z-index:35;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,520px);display:grid;grid-template-columns:repeat(5,1fr);padding:8px 6px max(8px,env(safe-area-inset-bottom));background:rgba(10,6,16,.98);border-top:1px solid var(--line);border-radius:24px 24px 0 0}
 .nav{display:grid;justify-items:center;gap:4px;padding:7px 2px;background:transparent;color:#a69eaf;font-size:9px;font-weight:800}.nav.active{color:#fff}.nav.center{transform:translateY(-13px);width:60px;height:60px;border-radius:50%;justify-self:center;place-content:center;background:radial-gradient(circle at 35% 25%,#c34fff,#6115ef 58%,#25073d);border:2px solid #c64dff;box-shadow:0 0 26px rgba(166,42,255,.48)}.nav.center span{display:none}
 .toast{position:fixed;z-index:100;left:50%;bottom:105px;transform:translate(-50%,20px);opacity:0;pointer-events:none;transition:.2s;width:min(calc(100% - 28px),480px);padding:12px 14px;border-radius:15px;background:#1a1026;border:1px solid var(--line);font-size:12px;font-weight:850}.toast.show{opacity:1;transform:translate(-50%,0)}
@@ -88,14 +88,14 @@ main{padding:16px 14px 30px}
 
       <div class="field"><label>Vista previa de cámara</label>
         <div class="cover" id="cameraPreview"><video id="previewVideo" autoplay muted playsinline></video></div>
-        <button class="secondary" id="cameraBtn" type="button" onclick="startCamera()">Activar o reintentar cámara</button>
+        <button class="secondary" type="button" onclick="startCamera()">Activar o reintentar cámara</button>
       </div>
 <div class="checklist">
-<div class="check" id="checkCover"><i class="dot"></i>Portada válida</div>
-<div class="check" id="checkText"><i class="dot"></i>Título y descripción correctos</div>
-<div class="check" id="checkMedia"><i class="dot"></i>Cámara y micrófono disponibles</div>
+<div class="check" id="checkCover"><i class="dot"></i><span id="msgCover">Falta una portada válida</span></div>
+<div class="check" id="checkText"><i class="dot"></i><span id="msgText">Completa el título y la descripción</span></div>
+<div class="check" id="checkMedia"><i class="dot"></i><span id="msgMedia">Activa la cámara y el micrófono</span></div>
 </div>
-<div class="approval" id="approval">✓ Revisión completada. Todo está listo para transmitir.</div><div class="notice" id="reviewNotice">La comprobación local revisa tamaño, nitidez aproximada y palabras bloqueadas. La moderación real de contenido necesitará un servicio seguro en el backend.</div>
+<div class="notice">La comprobación local revisa tamaño, nitidez aproximada y palabras bloqueadas. La moderación real de contenido necesitará un servicio seguro en el backend.</div>
 <button class="primary" id="startBtn" onclick="startRoom()">Iniciar transmisión</button>
 <button class="secondary" onclick="location.href='index.html'">Volver al Inicio</button>
 </section></main></div><div class="toast" id="toast"></div>
@@ -136,32 +136,43 @@ function saveDraft(){
 }
 function mark(id,ok){el(id).classList.toggle('ok',ok);el(id).classList.toggle('bad',!ok)}
 function validate(){
-  const textOk=el('roomTitle').value.trim().length>=4&&el('description').value.trim().length>=12&&textAllowed();
-  const privacyOk=el('privacy').value!=='password'||el('password').value.trim().length>=4;
-  const ready=!!coverData&&textOk&&mediaReady&&privacyOk;
-  mark('checkCover',!!coverData);mark('checkText',textOk);mark('checkMedia',mediaReady);
-  const list=document.querySelector('.checklist');
-  const approval=el('approval'), notice=el('reviewNotice'), btn=el('startBtn');
-  if(list) list.classList.toggle('approved',ready);
-  if(approval) approval.classList.toggle('show',ready);
-  if(notice) notice.hidden=ready;
-  if(btn){btn.disabled=!ready;btn.style.opacity=ready?'1':'.58';btn.style.filter=ready?'none':'grayscale(.25)'}
-  return ready
+  const title=el('roomTitle').value.trim();
+  const description=el('description').value.trim();
+  const allowed=textAllowed();
+  const coverOk=!!coverData;
+  const titleOk=title.length>=4;
+  const descriptionOk=description.length>=5;
+  const textOk=titleOk&&descriptionOk&&allowed;
+  mark('checkCover',coverOk);mark('checkText',textOk);mark('checkMedia',mediaReady);
+  if(el('msgCover')) el('msgCover').textContent=coverOk?'Portada correcta':'Falta una foto de portada';
+  if(el('msgText')){
+    if(!titleOk) el('msgText').textContent='El título debe tener al menos 4 caracteres';
+    else if(!descriptionOk) el('msgText').textContent='La descripción debe tener al menos 5 caracteres';
+    else if(!allowed) el('msgText').textContent='El texto contiene contenido no permitido';
+    else el('msgText').textContent='Título y descripción correctos';
+  }
+  if(el('msgMedia')) el('msgMedia').textContent=mediaReady?'Cámara y micrófono listos':'Activa la cámara y el micrófono';
+  const passwordOk=el('privacy').value!=='password'||el('password').value.trim().length>=4;
+  const ready=coverOk&&textOk&&mediaReady&&passwordOk;
+  el('startBtn').disabled=!ready;
+  el('startBtn').style.opacity=ready?'1':'.58';
+  el('startBtn').textContent=ready?'TODO LISTO · INICIAR TRANSMISIÓN':'COMPLETA LOS PASOS PARA CONTINUAR';
+  return ready;
 }
 async function startCamera(){
   try{if(stream)stream.getTracks().forEach(t=>t.stop());stream=await navigator.mediaDevices.getUserMedia({video:NEED_CAMERA,audio:true});
-  if(NEED_CAMERA){el('previewVideo').srcObject=stream;await el('previewVideo').play().catch(()=>{})}mediaReady=true;if(el('cameraBtn'))el('cameraBtn').textContent='✓ Cámara y micrófono activados';validate();showToast('Cámara y micrófono listos')}
-  catch(e){mediaReady=false;if(el('cameraBtn'))el('cameraBtn').textContent='Reintentar cámara y micrófono';validate();showToast(NEED_CAMERA?'Permite cámara y micrófono para continuar':'Permite el micrófono para continuar')}
+  if(NEED_CAMERA)el('previewVideo').srcObject=stream;mediaReady=true;validate();showToast('Cámara y micrófono listos')}
+  catch(e){mediaReady=false;validate();showToast(NEED_CAMERA?'Permite cámara y micrófono para continuar':'Permite el micrófono para continuar')}
 }
 function startRoom(){
   saveDraft();
   if(!coverData)return showToast('Debes subir una foto de portada');
   if(el('roomTitle').value.trim().length<4)return showToast('Escribe un título válido');
-  if(el('description').value.trim().length<12)return showToast('La descripción es demasiado corta');
+  if(el('description').value.trim().length<5)return showToast('La descripción debe tener al menos 5 caracteres');
   if(!textAllowed())return showToast('El texto no supera la revisión. Cámbialo para continuar');
   if(el('privacy').value==='password'&&el('password').value.trim().length<4)return showToast('La contraseña debe tener al menos 4 caracteres');
   if(!mediaReady)return showToast(NEED_CAMERA?'Activa la cámara y el micrófono':'Activa el micrófono');
-  localStorage.setItem('jemmoActiveRoom',JSON.stringify({...saved,mediaRequested:true,startedAt:Date.now()}));if(stream)stream.getTracks().forEach(t=>t.stop());location.href=TARGET
+  localStorage.setItem('jemmoActiveRoom',JSON.stringify(saved));window.location.assign(TARGET)
 }
 loadSaved();startCamera();
 </script></body></html>
