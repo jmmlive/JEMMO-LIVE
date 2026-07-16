@@ -1,5 +1,5 @@
 {
-  "version": "Tirada Profesional 2",
+  "version": "Tirada Profesional 3 · Corrección LIVE",
   "files": [
     "audio-room.html",
     "casas.html",
@@ -26,5 +26,13 @@
     "Resumen final de transmisión",
     "Botones de regreso a Inicio y Salas"
   ],
-  "technical_note": "La validación de imagen/texto es local y aproximada. La moderación real requiere backend."
+  "technical_note": "La validación de imagen/texto es local y aproximada. La moderación real requiere backend.",
+  "fixes": [
+    "Cámara visible al iniciar LIVE individual y LIVE con sillas",
+    "Cuadrícula 4x2 para 8 participantes",
+    "Revisión roja desaparece al aprobar todos los requisitos",
+    "Casas restaurada como pantalla funcional",
+    "Menús de gestión flotantes sin prompt del navegador",
+    "Diseño de sillas más compacto y adaptable al móvil"
+  ]
 }
