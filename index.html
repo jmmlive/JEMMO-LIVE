@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07040e">
+  <title>JEMMO LIVE</title>
+  <style>
+    :root{
+      --white:#fff;
+      --violet:#b45cff;
+      --violet2:#7d2cff;
+      --gold:#ffbd4a;
+      --glass:rgba(14,7,27,.38);
+      --line:rgba(255,255,255,.15);
+      --shadow:0 18px 55px rgba(0,0,0,.36);
+    }
+
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      width:100%;
+      min-height:100%;
+      background:#07040e;
+      color:#fff;
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    body{min-height:100svh;overflow-x:hidden}
+    a{text-decoration:none;color:inherit;-webkit-tap-highlight-color:transparent}
+
+    .app{
+      position:relative;
+      min-height:100svh;
+      overflow:hidden;
+      isolation:isolate;
+    }
+
+    .bg{
+      position:fixed;
+      inset:0;
+      z-index:-3;
+      background-image:url("assets/jemmo-background.jpg");
+      background-position:center center;
+      background-size:cover;
+      background-repeat:no-repeat;
+    }
+
+    .shade{
+      position:fixed;
+      inset:0;
+      z-index:-2;
+      pointer-events:none;
+      background:
+        linear-gradient(180deg, rgba(4,2,10,.04), rgba(4,2,10,.10)),
+        radial-gradient(circle at 50% 42%, rgba(0,0,0,0) 0 38%, rgba(4,2,10,.18) 100%);
+    }
+
+    .logo{
+      position:relative;
+      z-index:5;
+      text-align:center;
+      padding-top:max(24px, env(safe-area-inset-top));
+      user-select:none;
+    }
+    .logo-main{
+      margin:0;
+      font-size:clamp(40px,7vw,82px);
+      line-height:.92;
+      font-weight:900;
+      letter-spacing:-.055em;
+      text-transform:uppercase;
+      filter:drop-shadow(0 0 18px rgba(169,78,255,.28));
+    }
+    .logo-main .j{
+      color:var(--gold);
+      font-family:Georgia,"Times New Roman",serif;
+      font-style:italic;
+      text-shadow:0 0 20px rgba(255,189,74,.42);
+    }
+    .logo-main .rest{color:#c26fff}
+    .logo-live{
+      margin-top:7px;
+      font-size:clamp(12px,1.6vw,18px);
+      letter-spacing:.34em;
+      font-weight:800;
+      color:#ffd58b;
+      text-transform:uppercase;
+    }
+
+    .left-menu{
+      position:fixed;
+      left:max(12px,env(safe-area-inset-left));
+      top:50%;
+      transform:translateY(-50%);
+      z-index:20;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+
+    .menu-btn{
+      width:62px;
+      min-height:62px;
+      padding:8px 5px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:5px;
+      border:1px solid rgba(255,255,255,.13);
+      border-radius:21px;
+      background:linear-gradient(145deg,rgba(28,12,49,.48),rgba(8,4,16,.33));
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+      box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.08);
+      color:rgba(255,255,255,.78);
+      transition:.2s ease;
+    }
+    .menu-btn.active,
+    .menu-btn:focus-visible,
+    .menu-btn:hover{
+      color:#fff;
+      transform:translateX(3px);
+      border-color:rgba(196,113,255,.36);
+      background:linear-gradient(145deg,rgba(130,48,209,.54),rgba(49,17,80,.44));
+      box-shadow:0 16px 45px rgba(74,20,125,.34), inset 0 1px 0 rgba(255,255,255,.12);
+      outline:none;
+    }
+    .menu-icon{
+      font-size:24px;
+      line-height:1;
+    }
+    .menu-label{
+      font-size:9px;
+      font-weight:700;
+    }
+
+    .content{
+      position:relative;
+      z-index:3;
+      width:min(1100px,100%);
+      min-height:calc(100svh - 120px);
+      margin:0 auto;
+      padding:70px 28px 40px 112px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .floating-actions{
+      width:min(820px,100%);
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:28px;
+    }
+
+    .action{
+      position:relative;
+      min-height:235px;
+      padding:27px;
+      overflow:hidden;
+      border:1px solid var(--line);
+      border-radius:30px;
+      background:linear-gradient(145deg,rgba(18,8,34,.44),rgba(8,4,17,.26));
+      backdrop-filter:blur(11px);
+      -webkit-backdrop-filter:blur(11px);
+      box-shadow:var(--shadow), inset 0 1px 0 rgba(255,255,255,.08);
+      transition:.25s ease;
+    }
+    .action::before{
+      content:"";
+      position:absolute;
+      width:190px;
+      height:190px;
+      border-radius:50%;
+      right:-62px;
+      top:-75px;
+      filter:blur(12px);
+      opacity:.68;
+    }
+    .action.live::before{background:radial-gradient(circle,rgba(157,77,255,.68),transparent 67%)}
+    .action.family::before{background:radial-gradient(circle,rgba(255,189,74,.55),transparent 67%)}
+    .action:hover,.action:focus-visible{
+      transform:translateY(-5px);
+      border-color:rgba(255,255,255,.27);
+      outline:none;
+    }
+
+    .action-head{
+      position:relative;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+    }
+    .big-icon{
+      width:60px;height:60px;
+      display:grid;place-items:center;
+      border-radius:20px;
+      font-size:28px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.11);
+    }
+    .pill{
+      padding:9px 14px;
+      border-radius:999px;
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.05em;
+      text-transform:uppercase;
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .action h2{
+      position:relative;
+      margin:30px 0 10px;
+      font-size:clamp(34px,5vw,54px);
+      line-height:1;
+      letter-spacing:-.04em;
+    }
+    .action p{
+      position:relative;
+      margin:0;
+      max-width:27ch;
+      color:rgba(255,255,255,.75);
+      font-size:15px;
+      line-height:1.5;
+    }
+    .go{
+      position:absolute;
+      right:24px;
+      bottom:22px;
+      width:46px;height:46px;
+      border-radius:50%;
+      display:grid;place-items:center;
+      font-size:22px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.11);
+    }
+
+    @media(max-width:760px){
+      .bg{
+        background-position:center center;
+      }
+      .logo{
+        padding-top:max(22px,env(safe-area-inset-top));
+      }
+      .logo-main{font-size:44px}
+      .logo-live{font-size:11px;margin-top:5px}
+
+      .left-menu{
+        left:max(8px,env(safe-area-inset-left));
+        gap:10px;
+      }
+      .menu-btn{
+        width:54px;
+        min-height:54px;
+        border-radius:18px;
+      }
+      .menu-icon{font-size:20px}
+      .menu-label{font-size:8px}
+
+      .content{
+        min-height:calc(100svh - 94px);
+        padding:28px 16px 30px 78px;
+        align-items:center;
+      }
+      .floating-actions{
+        grid-template-columns:1fr;
+        gap:16px;
+      }
+      .action{
+        min-height:190px;
+        padding:21px;
+        border-radius:25px;
+      }
+      .big-icon{
+        width:50px;height:50px;
+        border-radius:17px;
+        font-size:23px;
+      }
+      .pill{font-size:10px;padding:8px 11px}
+      .action h2{
+        margin-top:20px;
+        font-size:35px;
+      }
+      .action p{
+        padding-right:44px;
+        font-size:13px;
+      }
+      .go{
+        right:18px;
+        bottom:18px;
+        width:42px;height:42px;
+      }
+    }
+
+    @media(max-height:700px) and (max-width:760px){
+      .logo-main{font-size:36px}
+      .logo-live{font-size:9px}
+      .content{padding-top:16px}
+      .action{min-height:164px}
+      .action h2{margin-top:13px}
+      .action p{line-height:1.32}
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="bg" aria-hidden="true"></div>
+    <div class="shade" aria-hidden="true"></div>
+
+    <header class="logo" aria-label="JEMMO LIVE">
+      <h1 class="logo-main"><span class="j">J</span><span class="rest">EMMO</span></h1>
+      <div class="logo-live">LIVE ▷</div>
+    </header>
+
+    <nav class="left-menu" aria-label="Menú principal">
+      <a class="menu-btn active" href="index.html" aria-current="page">
+        <span class="menu-icon">⌂</span>
+        <span class="menu-label">Inicio</span>
+      </a>
+      <a class="menu-btn" href="live.html">
+        <span class="menu-icon">▶</span>
+        <span class="menu-label">Live</span>
+      </a>
+      <a class="menu-btn" href="familias.html">
+        <span class="menu-icon">♟</span>
+        <span class="menu-label">Familias</span>
+      </a>
+      <a class="menu-btn" href="acceso.html">
+        <span class="menu-icon">◎</span>
+        <span class="menu-label">Perfil</span>
+      </a>
+    </nav>
+
+    <section class="content">
+      <div class="floating-actions">
+        <a class="action live" href="live.html">
+          <div class="action-head">
+            <div class="big-icon">▶</div>
+            <span class="pill">Entra en directo</span>
+          </div>
+          <h2>LIVE</h2>
+          <p>Emisiones, salas y momentos en directo dentro de JEMMO.</p>
+          <span class="go">→</span>
+        </a>
+
+        <a class="action family" href="familias.html">
+          <div class="action-head">
+            <div class="big-icon">∞</div>
+            <span class="pill">24 / 7</span>
+          </div>
+          <h2>Familias</h2>
+          <p>Comunidad, conexión y actividad compartida durante todo el día.</p>
+          <span class="go">→</span>
+        </a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
