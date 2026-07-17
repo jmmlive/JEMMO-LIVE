@@ -3,186 +3,229 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#09000f">
+  <meta name="theme-color" content="#08000d">
   <title>JEMMO LIVE · Acceso</title>
   <link rel="stylesheet" href="acceso.css">
 </head>
 <body>
-<main class="screen">
-  <img class="hero-logo" src="assets/jemmo-cabecera.png" alt="JEMMO LIVE">
+  <main class="page">
+    <section class="access-shell">
+      <img class="official-header" src="assets/cabecera-oficial-jemmo.jpg" alt="Mascota y logotipo oficial de JEMMO LIVE">
 
-  <section class="auth-card">
-    <div class="tabs">
-      <button id="loginTab" class="tab active" type="button">INICIAR SESIÓN</button>
-      <button id="registerTab" class="tab" type="button">REGISTRARSE</button>
-    </div>
+      <section class="panel">
+        <div class="tabs" role="tablist">
+          <button id="tabLogin" class="tab active" type="button">👤 INICIAR SESIÓN</button>
+          <button id="tabRegister" class="tab" type="button">🧑‍🤝‍🧑 REGISTRARSE</button>
+        </div>
 
-    <form id="authForm">
-      <div id="registerFields" class="register-fields hidden">
-        <label class="field"><span>👤</span><input id="displayName" type="text" placeholder="Nombre de usuario" maxlength="30"></label>
-        <label class="field"><span>🎂</span><input id="birthDate" type="date" aria-label="Fecha de nacimiento"></label>
-        <label class="field">
-          <span>◇</span>
-          <select id="gender" aria-label="Sexo">
-            <option value="">Sexo</option>
-            <option value="mujer">Mujer</option>
-            <option value="hombre">Hombre</option>
-            <option value="no_indicado">Prefiero no indicarlo</option>
-          </select>
-        </label>
-      </div>
+        <form id="authForm" novalidate>
+          <div id="registerFields" class="register-fields hidden">
+            <label class="field">
+              <span>👤</span>
+              <input id="name" type="text" placeholder="Nombre de usuario" autocomplete="name">
+            </label>
 
-      <label class="field"><span>✉</span><input id="email" type="email" placeholder="Correo electrónico" autocomplete="email" required></label>
-      <label class="field"><span>🔒</span><input id="password" type="password" placeholder="Contraseña" minlength="6" required><button id="showPassword" class="eye" type="button">◉</button></label>
-      <label id="confirmField" class="field hidden"><span>🔒</span><input id="confirmPassword" type="password" placeholder="Confirmar contraseña" minlength="6"></label>
+            <div class="two-cols">
+              <label class="field">
+                <span>🎂</span>
+                <input id="birthDate" type="date" aria-label="Fecha de nacimiento">
+              </label>
+              <label class="field">
+                <span>⚧</span>
+                <select id="gender" aria-label="Sexo">
+                  <option value="">Sexo</option>
+                  <option value="mujer">Mujer</option>
+                  <option value="hombre">Hombre</option>
+                  <option value="otro">Otro</option>
+                  <option value="prefiero-no-decirlo">Prefiero no decirlo</option>
+                </select>
+              </label>
+            </div>
+          </div>
 
-      <label id="termsRow" class="terms hidden">
-        <input id="terms" type="checkbox">
-        <span>Acepto los Términos y la Política de privacidad.</span>
-      </label>
+          <label class="field">
+            <span>✉</span>
+            <input id="email" type="email" placeholder="Correo electrónico" autocomplete="email" required>
+          </label>
 
-      <button id="forgotBtn" class="forgot" type="button">¿Olvidaste tu contraseña?</button>
-      <p id="message" class="message"></p>
-      <button id="submitBtn" class="main-btn" type="submit">ENTRAR</button>
-    </form>
+          <label class="field">
+            <span>🔒</span>
+            <input id="password" type="password" placeholder="Contraseña" autocomplete="current-password" minlength="6" required>
+            <button id="togglePassword" class="eye" type="button" aria-label="Mostrar contraseña">◉</button>
+          </label>
 
-    <div class="divider"><span></span><b>o continúa con</b><span></span></div>
-    <div class="social">
-      <button type="button" disabled>G</button>
-      <button type="button" disabled>●</button>
-      <button type="button" disabled>f</button>
-    </div>
+          <label id="confirmField" class="field hidden">
+            <span>🔒</span>
+            <input id="confirmPassword" type="password" placeholder="Confirmar contraseña" autocomplete="new-password">
+          </label>
 
-    <div class="features">
-      <div><b>★</b><span>Transmite<br>en vivo</span></div>
-      <div><b>●●●</b><span>Conecta<br>con amigos</span></div>
-      <div><b>◇</b><span>Gana<br>recompensas</span></div>
-      <div><b>♛</b><span>Sé una<br>estrella</span></div>
-    </div>
+          <button id="forgot" type="button" class="forgot">¿Olvidaste tu contraseña?</button>
 
-    <footer>
-      <strong>JEMMO LIVE</strong>
-      <small>Versión 1.0.0</small>
-    </footer>
-  </section>
-</main>
+          <label id="legalField" class="check hidden">
+            <input id="acceptLegal" type="checkbox">
+            <span>Acepto los Términos y la Política de privacidad.</span>
+          </label>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-import {
-  getAuth, setPersistence, browserLocalPersistence,
-  signInWithEmailAndPassword, createUserWithEmailAndPassword,
-  updateProfile, sendPasswordResetEmail, onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-import {
-  getFirestore, doc, setDoc, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+          <p id="status" class="status" aria-live="polite"></p>
+          <button id="submitBtn" class="primary" type="submit">ENTRAR</button>
+        </form>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ",
-  authDomain: "jemmo-live.firebaseapp.com",
-  projectId: "jemmo-live",
-  storageBucket: "jemmo-live.firebasestorage.app",
-  messagingSenderId: "355540892255",
-  appId: "1:355540892255:web:d15a8dd03b2915e31939ea",
-  measurementId: "G-8C6NJ0KM4Y"
-};
+        <div class="separator"><span></span><b>o continúa con</b><span></span></div>
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-setPersistence(auth, browserLocalPersistence);
+        <div class="socials" aria-label="Acceso social">
+          <button type="button" disabled title="Próximamente">G</button>
+          <button type="button" disabled title="Próximamente">●</button>
+          <button type="button" disabled title="Próximamente">f</button>
+        </div>
 
-let mode = "login";
-const $ = s => document.querySelector(s);
+        <section class="benefits">
+          <article><strong>⭐</strong><span>Transmite<br>en vivo</span></article>
+          <article><strong>👥</strong><span>Conecta<br>con amigos</span></article>
+          <article><strong>💎</strong><span>Gana<br>recompensas</span></article>
+          <article><strong>👑</strong><span>Sé una<br>estrella</span></article>
+        </section>
 
-function setMode(next) {
-  mode = next;
-  const register = next === "register";
-  $("#loginTab").classList.toggle("active", !register);
-  $("#registerTab").classList.toggle("active", register);
-  $("#registerFields").classList.toggle("hidden", !register);
-  $("#confirmField").classList.toggle("hidden", !register);
-  $("#termsRow").classList.toggle("hidden", !register);
-  $("#forgotBtn").classList.toggle("hidden", register);
-  $("#submitBtn").textContent = register ? "CREAR CUENTA" : "ENTRAR";
-  $("#message").textContent = "";
-}
+        <footer>
+          <div class="mini-fish">🐟</div>
+          <b>JEMMO LIVE</b>
+          <small>Versión 1.0.0</small>
+        </footer>
+      </section>
+    </section>
+  </main>
 
-$("#loginTab").onclick = () => setMode("login");
-$("#registerTab").onclick = () => setMode("register");
-$("#showPassword").onclick = () => {
-  const p = $("#password");
-  p.type = p.type === "password" ? "text" : "password";
-};
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+    import {
+      getAuth, setPersistence, browserLocalPersistence,
+      signInWithEmailAndPassword, createUserWithEmailAndPassword,
+      updateProfile, sendPasswordResetEmail, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import {
+      getFirestore, doc, setDoc, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
-$("#forgotBtn").onclick = async () => {
-  const email = $("#email").value.trim();
-  if (!email) return show("Escribe primero tu correo.", true);
-  try {
-    await sendPasswordResetEmail(auth, email);
-    show("Te enviamos el correo de recuperación.");
-  } catch (e) { show(errorText(e.code), true); }
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ",
+      authDomain: "jemmo-live.firebaseapp.com",
+      projectId: "jemmo-live",
+      storageBucket: "jemmo-live.firebasestorage.app",
+      messagingSenderId: "355540892255",
+      appId: "1:355540892255:web:d15a8dd03b2915e31939ea",
+      measurementId: "G-8C6NJ0KM4Y"
+    };
 
-function show(text, error=false) {
-  $("#message").textContent = text;
-  $("#message").className = error ? "message error" : "message ok";
-}
-function errorText(code) {
-  return ({
-    "auth/invalid-credential":"Correo o contraseña incorrectos.",
-    "auth/email-already-in-use":"Ese correo ya está registrado.",
-    "auth/invalid-email":"El correo no es válido.",
-    "auth/weak-password":"La contraseña debe tener al menos 6 caracteres.",
-    "auth/network-request-failed":"No hay conexión o el dominio no está autorizado."
-  })[code] || "No se pudo completar la operación.";
-}
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    setPersistence(auth, browserLocalPersistence).catch(console.error);
 
-$("#authForm").onsubmit = async (ev) => {
-  ev.preventDefault();
-  const email = $("#email").value.trim();
-  const password = $("#password").value;
-  $("#submitBtn").disabled = true;
+    let mode = "login";
+    const $ = (s) => document.querySelector(s);
+    const tabLogin = $("#tabLogin");
+    const tabRegister = $("#tabRegister");
+    const registerFields = $("#registerFields");
+    const confirmField = $("#confirmField");
+    const legalField = $("#legalField");
+    const forgot = $("#forgot");
+    const submitBtn = $("#submitBtn");
+    const password = $("#password");
+    const confirmPassword = $("#confirmPassword");
+    const status = $("#status");
 
-  try {
-    if (mode === "login") {
-      await signInWithEmailAndPassword(auth, email, password);
-    } else {
-      const name = $("#displayName").value.trim();
-      const birthDate = $("#birthDate").value;
-      const gender = $("#gender").value;
-      const confirm = $("#confirmPassword").value;
-
-      if (!name || !birthDate || !gender) throw new Error("Completa los datos básicos.");
-      if (password !== confirm) throw new Error("Las contraseñas no coinciden.");
-      if (!$("#terms").checked) throw new Error("Debes aceptar los términos y la privacidad.");
-
-      const result = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(result.user, { displayName: name });
-      await setDoc(doc(db, "users", result.user.uid), {
-        uid: result.user.uid,
-        displayName: name,
-        email,
-        birthDate,
-        gender,
-        role: "usuario",
-        profilePhoto: "",
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      });
+    function setStatus(message = "", type = "") {
+      status.textContent = message;
+      status.className = `status ${type}`.trim();
     }
-    location.href = "index.html";
-  } catch (e) {
-    show(e.code ? errorText(e.code) : e.message, true);
-  } finally {
-    $("#submitBtn").disabled = false;
-  }
-};
 
-onAuthStateChanged(auth, user => {
-  if (user) location.href = "index.html";
-});
-</script>
+    function setMode(next) {
+      mode = next;
+      const login = next === "login";
+      tabLogin.classList.toggle("active", login);
+      tabRegister.classList.toggle("active", !login);
+      registerFields.classList.toggle("hidden", login);
+      confirmField.classList.toggle("hidden", login);
+      legalField.classList.toggle("hidden", login);
+      forgot.classList.toggle("hidden", !login);
+      submitBtn.textContent = login ? "ENTRAR" : "CREAR CUENTA";
+      password.autocomplete = login ? "current-password" : "new-password";
+      setStatus();
+    }
+
+    function friendly(code) {
+      return ({
+        "auth/invalid-credential": "Correo o contraseña incorrectos.",
+        "auth/invalid-email": "El correo no es válido.",
+        "auth/email-already-in-use": "Ese correo ya está registrado.",
+        "auth/weak-password": "La contraseña debe tener al menos 6 caracteres.",
+        "auth/too-many-requests": "Demasiados intentos. Prueba más tarde.",
+        "auth/network-request-failed": "No hay conexión o el dominio todavía no está autorizado."
+      })[code] || "No se pudo completar la operación.";
+    }
+
+    tabLogin.addEventListener("click", () => setMode("login"));
+    tabRegister.addEventListener("click", () => setMode("register"));
+
+    $("#togglePassword").addEventListener("click", () => {
+      const visible = password.type === "text";
+      password.type = visible ? "password" : "text";
+      confirmPassword.type = visible ? "password" : "text";
+    });
+
+    forgot.addEventListener("click", async () => {
+      const email = $("#email").value.trim();
+      if (!email) return setStatus("Escribe primero tu correo.", "error");
+      try {
+        await sendPasswordResetEmail(auth, email);
+        setStatus("Correo de recuperación enviado.", "success");
+      } catch (error) {
+        setStatus(friendly(error.code), "error");
+      }
+    });
+
+    $("#authForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      submitBtn.disabled = true;
+      setStatus("Conectando…");
+
+      const email = $("#email").value.trim();
+      const pass = password.value;
+
+      try {
+        if (mode === "login") {
+          await signInWithEmailAndPassword(auth, email, pass);
+        } else {
+          const name = $("#name").value.trim();
+          const birthDate = $("#birthDate").value;
+          const gender = $("#gender").value;
+          const confirm = confirmPassword.value;
+          const legal = $("#acceptLegal").checked;
+
+          if (!name || !birthDate || !gender) throw new Error("Completa todos los datos de registro.");
+          if (pass !== confirm) throw new Error("Las contraseñas no coinciden.");
+          if (!legal) throw new Error("Debes aceptar los términos y la privacidad.");
+
+          const result = await createUserWithEmailAndPassword(auth, email, pass);
+          await updateProfile(result.user, { displayName: name });
+          await setDoc(doc(db, "users", result.user.uid), {
+            displayName: name,
+            email,
+            birthDate,
+            gender,
+            createdAt: serverTimestamp()
+          });
+        }
+        location.href = "index.html";
+      } catch (error) {
+        setStatus(error.code ? friendly(error.code) : error.message, "error");
+      } finally {
+        submitBtn.disabled = false;
+      }
+    });
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) location.href = "index.html";
+    });
+  </script>
 </body>
 </html>
