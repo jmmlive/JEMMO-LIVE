@@ -1,72 +1,82 @@
-
 <!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#120018">
+  <meta name="theme-color" content="#09000f">
   <title>JEMMO LIVE · Acceso</title>
-  <link rel="stylesheet" href="jemmo.css">
+  <link rel="stylesheet" href="acceso.css">
 </head>
-<body class="access-page">
-  <main class="access-wrap">
-    <section class="access-card">
-      <div class="tabs">
-        <button id="tabLogin" class="tab active">INICIAR SESIÓN</button>
-        <button id="tabRegister" class="tab">REGISTRARSE</button>
+<body>
+<main class="screen">
+  <img class="hero-logo" src="assets/jemmo-cabecera.png" alt="JEMMO LIVE">
+
+  <section class="auth-card">
+    <div class="tabs">
+      <button id="loginTab" class="tab active" type="button">INICIAR SESIÓN</button>
+      <button id="registerTab" class="tab" type="button">REGISTRARSE</button>
+    </div>
+
+    <form id="authForm">
+      <div id="registerFields" class="register-fields hidden">
+        <label class="field"><span>👤</span><input id="displayName" type="text" placeholder="Nombre de usuario" maxlength="30"></label>
+        <label class="field"><span>🎂</span><input id="birthDate" type="date" aria-label="Fecha de nacimiento"></label>
+        <label class="field">
+          <span>◇</span>
+          <select id="gender" aria-label="Sexo">
+            <option value="">Sexo</option>
+            <option value="mujer">Mujer</option>
+            <option value="hombre">Hombre</option>
+            <option value="no_indicado">Prefiero no indicarlo</option>
+          </select>
+        </label>
       </div>
 
-      <form id="authForm" novalidate>
-        <label id="nameField" class="field hidden">
-          <span class="icon">◉</span>
-          <input id="name" type="text" placeholder="Nombre" autocomplete="name">
-        </label>
+      <label class="field"><span>✉</span><input id="email" type="email" placeholder="Correo electrónico" autocomplete="email" required></label>
+      <label class="field"><span>🔒</span><input id="password" type="password" placeholder="Contraseña" minlength="6" required><button id="showPassword" class="eye" type="button">◉</button></label>
+      <label id="confirmField" class="field hidden"><span>🔒</span><input id="confirmPassword" type="password" placeholder="Confirmar contraseña" minlength="6"></label>
 
-        <label class="field">
-          <span class="icon">✉</span>
-          <input id="email" type="email" placeholder="Correo electrónico" autocomplete="email" required>
-        </label>
+      <label id="termsRow" class="terms hidden">
+        <input id="terms" type="checkbox">
+        <span>Acepto los Términos y la Política de privacidad.</span>
+      </label>
 
-        <label class="field">
-          <span class="icon">◆</span>
-          <input id="password" type="password" placeholder="Contraseña" autocomplete="current-password" minlength="6" required>
-          <button id="togglePassword" type="button" class="eye" aria-label="Mostrar contraseña">◐</button>
-        </label>
+      <button id="forgotBtn" class="forgot" type="button">¿Olvidaste tu contraseña?</button>
+      <p id="message" class="message"></p>
+      <button id="submitBtn" class="main-btn" type="submit">ENTRAR</button>
+    </form>
 
-        <button id="forgot" type="button" class="forgot">¿Olvidaste tu contraseña?</button>
-        <p id="status" class="status" aria-live="polite"></p>
+    <div class="divider"><span></span><b>o continúa con</b><span></span></div>
+    <div class="social">
+      <button type="button" disabled>G</button>
+      <button type="button" disabled>●</button>
+      <button type="button" disabled>f</button>
+    </div>
 
-        <button id="submitBtn" type="submit" class="primary">ENTRAR</button>
-      </form>
+    <div class="features">
+      <div><b>★</b><span>Transmite<br>en vivo</span></div>
+      <div><b>●●●</b><span>Conecta<br>con amigos</span></div>
+      <div><b>◇</b><span>Gana<br>recompensas</span></div>
+      <div><b>♛</b><span>Sé una<br>estrella</span></div>
+    </div>
 
-      <div class="separator"><span></span><p>o continúa con</p><span></span></div>
+    <footer>
+      <strong>JEMMO LIVE</strong>
+      <small>Versión 1.0.0</small>
+    </footer>
+  </section>
+</main>
 
-      <div class="socials">
-        <button type="button" disabled>Google</button>
-        <button type="button" disabled>Apple</button>
-        <button type="button" disabled>Facebook</button>
-      </div>
-
-      <p class="legal">
-        Al continuar aceptas nuestros <a href="#">Términos y condiciones</a>
-        y la <a href="#">Política de privacidad</a>.
-      </p>
-    </section>
-  </main>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-    import {
-      getAuth,
-      setPersistence,
-      browserLocalPersistence,
-      signInWithEmailAndPassword,
-      createUserWithEmailAndPassword,
-      updateProfile,
-      sendPasswordResetEmail,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import {
+  getAuth, setPersistence, browserLocalPersistence,
+  signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  updateProfile, sendPasswordResetEmail, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import {
+  getFirestore, doc, setDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ",
@@ -78,101 +88,101 @@ const firebaseConfig = {
   measurementId: "G-8C6NJ0KM4Y"
 };
 
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+setPersistence(auth, browserLocalPersistence);
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    setPersistence(auth, browserLocalPersistence).catch(console.error);
+let mode = "login";
+const $ = s => document.querySelector(s);
 
-    let mode = "login";
-    const tabLogin = document.querySelector("#tabLogin");
-    const tabRegister = document.querySelector("#tabRegister");
-    const nameField = document.querySelector("#nameField");
-    const forgot = document.querySelector("#forgot");
-    const submitBtn = document.querySelector("#submitBtn");
-    const form = document.querySelector("#authForm");
-    const status = document.querySelector("#status");
-    const password = document.querySelector("#password");
-    const togglePassword = document.querySelector("#togglePassword");
+function setMode(next) {
+  mode = next;
+  const register = next === "register";
+  $("#loginTab").classList.toggle("active", !register);
+  $("#registerTab").classList.toggle("active", register);
+  $("#registerFields").classList.toggle("hidden", !register);
+  $("#confirmField").classList.toggle("hidden", !register);
+  $("#termsRow").classList.toggle("hidden", !register);
+  $("#forgotBtn").classList.toggle("hidden", register);
+  $("#submitBtn").textContent = register ? "CREAR CUENTA" : "ENTRAR";
+  $("#message").textContent = "";
+}
 
-    function setMode(next) {
-      mode = next;
-      const isLogin = mode === "login";
-      tabLogin.classList.toggle("active", isLogin);
-      tabRegister.classList.toggle("active", !isLogin);
-      nameField.classList.toggle("hidden", isLogin);
-      forgot.classList.toggle("hidden", !isLogin);
-      submitBtn.textContent = isLogin ? "ENTRAR" : "CREAR CUENTA";
-      password.autocomplete = isLogin ? "current-password" : "new-password";
-      status.textContent = "";
-      status.className = "status";
+$("#loginTab").onclick = () => setMode("login");
+$("#registerTab").onclick = () => setMode("register");
+$("#showPassword").onclick = () => {
+  const p = $("#password");
+  p.type = p.type === "password" ? "text" : "password";
+};
+
+$("#forgotBtn").onclick = async () => {
+  const email = $("#email").value.trim();
+  if (!email) return show("Escribe primero tu correo.", true);
+  try {
+    await sendPasswordResetEmail(auth, email);
+    show("Te enviamos el correo de recuperación.");
+  } catch (e) { show(errorText(e.code), true); }
+};
+
+function show(text, error=false) {
+  $("#message").textContent = text;
+  $("#message").className = error ? "message error" : "message ok";
+}
+function errorText(code) {
+  return ({
+    "auth/invalid-credential":"Correo o contraseña incorrectos.",
+    "auth/email-already-in-use":"Ese correo ya está registrado.",
+    "auth/invalid-email":"El correo no es válido.",
+    "auth/weak-password":"La contraseña debe tener al menos 6 caracteres.",
+    "auth/network-request-failed":"No hay conexión o el dominio no está autorizado."
+  })[code] || "No se pudo completar la operación.";
+}
+
+$("#authForm").onsubmit = async (ev) => {
+  ev.preventDefault();
+  const email = $("#email").value.trim();
+  const password = $("#password").value;
+  $("#submitBtn").disabled = true;
+
+  try {
+    if (mode === "login") {
+      await signInWithEmailAndPassword(auth, email, password);
+    } else {
+      const name = $("#displayName").value.trim();
+      const birthDate = $("#birthDate").value;
+      const gender = $("#gender").value;
+      const confirm = $("#confirmPassword").value;
+
+      if (!name || !birthDate || !gender) throw new Error("Completa los datos básicos.");
+      if (password !== confirm) throw new Error("Las contraseñas no coinciden.");
+      if (!$("#terms").checked) throw new Error("Debes aceptar los términos y la privacidad.");
+
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(result.user, { displayName: name });
+      await setDoc(doc(db, "users", result.user.uid), {
+        uid: result.user.uid,
+        displayName: name,
+        email,
+        birthDate,
+        gender,
+        role: "usuario",
+        profilePhoto: "",
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
     }
+    location.href = "index.html";
+  } catch (e) {
+    show(e.code ? errorText(e.code) : e.message, true);
+  } finally {
+    $("#submitBtn").disabled = false;
+  }
+};
 
-    function friendly(code) {
-      return {
-        "auth/invalid-credential": "Correo o contraseña incorrectos.",
-        "auth/invalid-email": "El correo no es válido.",
-        "auth/email-already-in-use": "Ese correo ya está registrado.",
-        "auth/weak-password": "La contraseña debe tener al menos 6 caracteres.",
-        "auth/too-many-requests": "Demasiados intentos. Prueba más tarde.",
-        "auth/network-request-failed": "No hay conexión o el dominio aún no está autorizado."
-      }[code] || "No se pudo completar la operación.";
-    }
-
-    tabLogin.addEventListener("click", () => setMode("login"));
-    tabRegister.addEventListener("click", () => setMode("register"));
-
-    togglePassword.addEventListener("click", () => {
-      const visible = password.type === "text";
-      password.type = visible ? "password" : "text";
-      togglePassword.textContent = visible ? "◐" : "●";
-    });
-
-    forgot.addEventListener("click", async () => {
-      const email = document.querySelector("#email").value.trim();
-      if (!email) {
-        status.textContent = "Escribe primero tu correo.";
-        status.className = "status error";
-        return;
-      }
-      try {
-        await sendPasswordResetEmail(auth, email);
-        status.textContent = "Correo de recuperación enviado.";
-        status.className = "status success";
-      } catch (error) {
-        status.textContent = friendly(error.code);
-        status.className = "status error";
-      }
-    });
-
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      submitBtn.disabled = true;
-      status.textContent = "Conectando…";
-      status.className = "status";
-
-      const email = document.querySelector("#email").value.trim();
-      const pass = password.value;
-      const name = document.querySelector("#name").value.trim();
-
-      try {
-        if (mode === "login") {
-          await signInWithEmailAndPassword(auth, email, pass);
-        } else {
-          const result = await createUserWithEmailAndPassword(auth, email, pass);
-          if (name) await updateProfile(result.user, { displayName: name });
-        }
-        location.href = "index.html";
-      } catch (error) {
-        status.textContent = friendly(error.code);
-        status.className = "status error";
-      } finally {
-        submitBtn.disabled = false;
-      }
-    });
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) location.href = "index.html";
-    });
-  </script>
+onAuthStateChanged(auth, user => {
+  if (user) location.href = "index.html";
+});
+</script>
 </body>
 </html>

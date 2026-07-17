@@ -1,22 +1,5 @@
+JEMMO LIVE · ACCESO OFICIAL V1
 
-JEMMO LIVE · ACCESO + INICIO NAVEGABLE
-
-ABRIR:
-1. Pulsa acceso.html para ver la pantalla de acceso.
-2. Después de iniciar sesión correctamente, se abre index.html.
-3. Si Firebase rechaza el acceso, activa Email/Password y añade el dominio donde publiques la app en Authentication > Settings > Authorized domains.
-
-VERDAD TÉCNICA:
-- Acceso por correo y contraseña: conectado a Firebase.
-- Inicio y navegación: base navegable.
-- LIVE, Casa y Mensajes: todavía son prototipos visuales, no funciones reales multiusuario.
-
-ARCHIVOS:
-acceso.html
-index.html
-live.html
-casa-demo.html
-mensajes.html
-yo.html
-jemmo.css
-assets/fondo-acceso.jpg
+Abre acceso.html.
+El registro guarda nombre, fecha de nacimiento y sexo en Firestore, además del usuario de Firebase Authentication.
+Google, Apple y Facebook aparecen visualmente, pero todavía no están activados.
