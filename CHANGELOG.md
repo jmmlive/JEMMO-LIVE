@@ -1,8 +1,8 @@
-# Changelog v0.6
+# CHANGELOG · v0.6.1
 
-- Reconstruida desde v0.5 estable.
-- Corregido el error de usar la captura completa como encabezado.
-- Añadidos recursos optimizados `jemmo-logo-header.webp` y `jemmo-fish-nav.webp`.
-- Nuevo sistema visual de monedas: JEMMOS, JEMS y CRISTALES.
-- Buscador de funciones con filtrado y accesos recientes persistentes.
-- Navegación inferior con mascota activa.
+- Encabezado alineado y más compacto.
+- Pez activo de navegación reducido e integrado en la barra.
+- JEMMOS y JEMS muestran el pez oficial dentro de cada moneda.
+- Batalla destacada rediseñada en formato panorámico.
+- Chat público de la batalla funcional: escribir, elegir equipo y enviar regalo de prueba.
+- Mensajes del prototipo guardados localmente en el dispositivo.
