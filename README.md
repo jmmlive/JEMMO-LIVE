@@ -1,23 +1,46 @@
-# JEMMO LIVE v0.6 PROFESIONAL
+# JEMMO LIVE · Acceso con Firebase
 
-Base: v0.5 estable.
+Pantalla de inicio inspirada en la captura facilitada y conectada al proyecto Firebase **jemmo-live**.
 
-Objetivo único: pulir el Inicio sin reconstruir ni romper el contenido aprobado.
+## 1. Preparar el proyecto
 
-## Cambios
-- Logo oficial adaptado y recortado para el encabezado.
-- Monedero compacto con JEMMOS, JEMS y CRISTALES.
-- Centro de monedas funcional como panel inferior.
-- Menú lateral y buscador real de funciones.
-- Accesos recientes: máximo cinco y solo después de usarlos.
-- Barra inferior con iconos normales y el pez JEMMO únicamente en la pestaña activa.
-- Animación breve antes de cambiar de pestaña.
-- Cerrar sesión intenta cerrar Firebase y vuelve a acceso.html.
+```bash
+npm install
+```
 
+Copia `.env.example` como `.env` y coloca la API key correcta:
 
-## Correcciones finales de esta entrega
-- Fondo totalmente bloqueado al abrir el monedero o el menú lateral.
-- Chat de las batallas eliminado del Inicio.
-- Encabezado alineado y encajado sin cambiar su estructura.
-- Pez de la pestaña activa ligeramente más pequeño.
-- Iconos inferiores ajustados a un tamaño más limpio.
+```bash
+cp .env.example .env
+```
+
+En Windows puedes duplicar el archivo manualmente.
+
+## 2. Activar Firebase Authentication
+
+En Firebase Console:
+
+1. Authentication
+2. Comenzar
+3. Métodos de acceso
+4. Activar **Correo electrónico/Contraseña**
+
+## 3. Ejecutar
+
+```bash
+npm run dev
+```
+
+## Incluido
+
+- Inicio de sesión con correo y contraseña
+- Registro de usuarios
+- Recuperación de contraseña
+- Persistencia de sesión
+- Cierre de sesión
+- Diseño móvil responsive
+- Botones sociales preparados visualmente, todavía desactivados
+
+## Importante
+
+Los accesos Google, Apple y Facebook requieren configurar sus proveedores por separado en Firebase y, para Apple/Facebook, credenciales externas.
