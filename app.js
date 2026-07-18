@@ -1,0 +1,13 @@
+
+const $=(s,p=document)=>p.querySelector(s), $$=(s,p=document)=>[...p.querySelectorAll(s)];
+const menu=$('#sideMenu'), backdrop=$('#menuBackdrop'), toast=$('#demoToast');
+function openMenu(){if(!menu)return;menu.classList.add('open');menu.setAttribute('aria-hidden','false');backdrop.hidden=false;setTimeout(()=>$('#functionSearch')?.focus(),180)}
+function closeMenu(){if(!menu)return;menu.classList.remove('open');menu.setAttribute('aria-hidden','true');backdrop.hidden=true}
+$('#menuOpen')?.addEventListener('click',openMenu);$('#menuClose')?.addEventListener('click',closeMenu);backdrop?.addEventListener('click',closeMenu);
+function showToast(text){if(!toast)return;toast.textContent=text+' · pantalla preparada para una próxima versión';toast.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>toast.classList.remove('show'),2300)}
+const search=$('#functionSearch'), quick=$('#quickResults');
+search?.addEventListener('input',()=>{const q=search.value.trim().toLowerCase();quick.hidden=!q;$$('#menuList button').forEach(b=>b.classList.toggle('match',q&&b.dataset.search.includes(q)));if(q){$$('#quickResults button').forEach(b=>{const t=b.textContent.toLowerCase();b.hidden=!t.includes(q) && !({'dinero':'recargar retirar historial','moneda':'recargar retirar historial','perfil':'','live':'live','sala':'salas','mensaje':'mensajes','seguridad':'seguridad','idioma':'idioma'}[q]||'').split(' ').some(x=>t.includes(x))})}});
+$$('[data-route]').forEach(b=>b.addEventListener('click',()=>location.href=b.dataset.route));$$('[data-demo]').forEach(b=>b.addEventListener('click',()=>showToast(b.dataset.demo)));
+$('#logoutButton')?.addEventListener('click',async()=>{try{const {initializeApp,getApps}=await import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js');const {getAuth,signOut}=await import('https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js');const cfg={apiKey:'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',authDomain:'jemmo-live.firebaseapp.com',projectId:'jemmo-live',storageBucket:'jemmo-live.firebasestorage.app',messagingSenderId:'355540892255',appId:'1:355540892255:web:d15a8dd03b2915e31939ea'};const app=getApps()[0]||initializeApp(cfg);await signOut(getAuth(app))}catch(e){}location.href='acceso.html'});
+const nav=$('.bottom-nav');if(nav){const current=nav.dataset.current;$$('a[data-tab]',nav).forEach(a=>a.classList.toggle('active',a.dataset.tab===current))}
+const coin=$('#coinButton'), sheet=$('#walletSheet');coin?.addEventListener('click',()=>{sheet?.classList.add('open');backdrop.hidden=false});$('#walletClose')?.addEventListener('click',()=>{sheet?.classList.remove('open');backdrop.hidden=true});$('#rechargeDemo')?.addEventListener('click',()=>showToast('Recargar monedas'));
