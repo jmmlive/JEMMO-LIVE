@@ -1,0 +1,8 @@
+{
+  "name": "JEMMO LIVE",
+  "short_name": "JEMMO",
+  "start_url": "live.html",
+  "display": "standalone",
+  "background_color": "#07000b",
+  "theme_color": "#07000b"
+}

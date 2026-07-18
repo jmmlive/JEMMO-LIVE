@@ -1,0 +1,17 @@
+JEMMO LIVE V0.8 · LIVE COMPLETO
+
+Incluye:
+- Preparación del LIVE como en la maqueta aprobada.
+- Barra inferior visible antes de transmitir.
+- Botón central TRANSMITIR.
+- Cámara frontal, cámara trasera y ambas cámaras.
+- Aviso automático si el móvil no soporta ambas cámaras simultáneas.
+- Cronómetro de tarea.
+- Título, categoría, micrófono, cámara y conexión.
+- Al transmitir desaparece la barra inferior.
+- En modo ambas cámaras, la trasera ocupa toda la pantalla y la selfie queda flotante.
+- Perfil arriba, chat abajo, VS, sillas, regalos y controles.
+
+IMPORTANTE:
+Los navegadores solo permiten abrir la cámara con HTTPS o localhost.
+Al probar en GitHub Pages debe funcionar porque usa HTTPS.
