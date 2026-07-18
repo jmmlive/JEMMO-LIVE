@@ -1,5 +1,0 @@
-JEMMO LIVE · ACCESO OFICIAL V1
-
-Abre acceso.html.
-El registro guarda nombre, fecha de nacimiento y sexo en Firestore, además del usuario de Firebase Authentication.
-Google, Apple y Facebook aparecen visualmente, pero todavía no están activados.
