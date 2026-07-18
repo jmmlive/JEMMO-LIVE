@@ -7,3 +7,10 @@
 - Mensajes creados con DOM seguro, sin insertar HTML del usuario.
 - Persistencia local de los últimos 20 mensajes.
 - Sin cambios visuales o funcionales fuera del logo y el chat.
+
+## v0.6.3
+- Cabecera horizontal completa.
+- Scroll de fondo bloqueado en el monedero.
+- Chat compacto.
+- Casas en batalla.
+- Filtros de directos.

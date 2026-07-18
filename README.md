@@ -1,14 +1,19 @@
-# JEMMO LIVE v0.6.2
+# JEMMO LIVE v0.6.3
 
-Base estable: v0.6 PROFESIONAL.
+Base estable: **v0.6.2**.
 
-Objetivo único: corregir el logo superior y activar el envío del chat sin modificar el resto del Inicio aprobado.
+Actualización incremental, sin reconstruir el Inicio aprobado.
 
 ## Cambios
-- El logo vuelve a ocupar el encabezado en formato ancho, sin quedar pequeño dentro de un cuadrado.
-- El chat de la batalla permite enviar con el botón o con la tecla Intro.
-- Los mensajes se muestran al instante, con hora, y se conservan localmente en el dispositivo.
-- No se han modificado el monedero, la barra inferior, el pez activo, las tarjetas ni la navegación.
 
-## Alcance técnico
-El chat de esta versión es funcional en el dispositivo. Todavía no es un chat multiusuario conectado a base de datos o tiempo real; esa conexión pertenece a una fase posterior.
+- Cabecera completa de lado a lado con el logo oficial adaptado a formato horizontal.
+- Menú y monedero flotantes sobre la cabecera.
+- Bloqueo real del scroll del fondo al abrir el Centro de monedas.
+- Cabecera del chat reducida a estado, ojo y espectadores.
+- Chat local de v0.6.2 conservado.
+- Carrusel de Casas en batalla debajo del chat.
+- Filtros compactos LIVE, PK LIVE, Juegos y Streaming.
+
+## Seguridad de versión
+
+La v0.6.3 se instala encima de la v0.6.2. La v0.6.2 sigue siendo un respaldo independiente y restaurable.

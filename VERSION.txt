@@ -1,2 +1,3 @@
-JEMMO LIVE v0.6.2
-Base: v0.6 PROFESIONAL
+JEMMO LIVE v0.6.3
+Base estable: v0.6.2
+Actualización incremental y reversible.

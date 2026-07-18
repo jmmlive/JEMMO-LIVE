@@ -3,8 +3,11 @@
  const menu=qs('#sideMenu'),backdrop=qs('#menuBackdrop'),sheet=qs('#walletSheet');
  const openMenu=()=>{menu?.classList.add('open');menu?.setAttribute('aria-hidden','false');if(backdrop)backdrop.hidden=false};
  const closeMenu=()=>{menu?.classList.remove('open');menu?.setAttribute('aria-hidden','true');if(backdrop)backdrop.hidden=true};
- const openWallet=()=>{sheet?.classList.add('open');sheet?.setAttribute('aria-hidden','false');if(backdrop)backdrop.hidden=false};
- const closeWallet=()=>{sheet?.classList.remove('open');sheet?.setAttribute('aria-hidden','true');if(!menu?.classList.contains('open')&&backdrop)backdrop.hidden=true};
+ let walletScrollY=0;
+ const lockWalletScroll=()=>{walletScrollY=window.scrollY||document.documentElement.scrollTop||0;document.documentElement.classList.add('wallet-locked');document.body.classList.add('wallet-locked');document.body.style.top=`-${walletScrollY}px`};
+ const unlockWalletScroll=()=>{document.documentElement.classList.remove('wallet-locked');document.body.classList.remove('wallet-locked');document.body.style.top='';window.scrollTo(0,walletScrollY)};
+ const openWallet=()=>{if(sheet?.classList.contains('open'))return;lockWalletScroll();sheet?.classList.add('open');sheet?.setAttribute('aria-hidden','false');if(backdrop)backdrop.hidden=false};
+ const closeWallet=()=>{if(!sheet?.classList.contains('open'))return;sheet?.classList.remove('open');sheet?.setAttribute('aria-hidden','true');unlockWalletScroll();if(!menu?.classList.contains('open')&&backdrop)backdrop.hidden=true};
  qs('#menuOpen')?.addEventListener('click',openMenu);qs('#menuClose')?.addEventListener('click',closeMenu);qs('#walletClose')?.addEventListener('click',closeWallet);qs('#walletPlus')?.addEventListener('click',openWallet);qsa('.wallet-token').forEach(b=>b.addEventListener('click',openWallet));
  backdrop?.addEventListener('click',()=>{closeMenu();closeWallet()});
  const toast=t=>{const el=qs('#demoToast');if(!el)return;el.textContent=t;el.classList.add('show');clearTimeout(window.__jemmoToast);window.__jemmoToast=setTimeout(()=>el.classList.remove('show'),1800)};
