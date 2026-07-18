@@ -1,209 +1,52 @@
-
-const qs = s => document.querySelector(s);
-const qsa = s => [...document.querySelectorAll(s)];
-
-const prepareScreen = qs('#prepareScreen');
-const liveScreen = qs('#liveScreen');
-const mainVideo = qs('#mainVideo');
-const selfieVideo = qs('#selfieVideo');
-const liveMainVideo = qs('#liveMainVideo');
-const liveSelfieVideo = qs('#liveSelfieVideo');
-const stage = qs('#cameraStage');
-const selfieBox = qs('#selfieBox');
-const mainPlaceholder = qs('#mainPlaceholder');
-const selfiePlaceholder = qs('#selfiePlaceholder');
-const mainLabel = qs('#mainLabel');
-const cameraStatus = qs('#cameraStatus');
-
-let mainStream = null;
-let selfieStream = null;
-let currentMode = 'front';
-let liveStartedAt = null;
-let timerInterval = null;
-
-function showModal(title, text){
-  qs('#modalTitle').textContent = title;
-  qs('#modalText').textContent = text;
-  qs('#modal').classList.remove('hidden');
-}
-qs('#modalOk').onclick = () => qs('#modal').classList.add('hidden');
-
-function stopStream(stream){
-  if(stream) stream.getTracks().forEach(track => track.stop());
-}
-function stopAll(){
-  stopStream(mainStream); stopStream(selfieStream);
-  mainStream = null; selfieStream = null;
-}
-
-async function getVideo(facingMode){
-  return navigator.mediaDevices.getUserMedia({
-    video: { facingMode: { ideal: facingMode }, width:{ideal:1280}, height:{ideal:720} },
-    audio: false
-  });
-}
-
-async function startMode(mode){
-  currentMode = mode;
-  stopAll();
-  cameraStatus.textContent = 'Abriendo cámara…';
-  mainPlaceholder.classList.remove('hidden');
-  selfiePlaceholder.classList.remove('hidden');
-  stage.classList.toggle('dual', mode === 'dual');
-  stage.classList.toggle('single', mode !== 'dual');
-
-  if(!navigator.mediaDevices?.getUserMedia){
-    cameraStatus.textContent = 'No disponible';
-    showModal('Cámara no disponible','Este navegador no permite acceder a la cámara.');
-    return;
-  }
-
-  try{
-    if(mode === 'front'){
-      mainStream = await getVideo('user');
-      mainVideo.srcObject = mainStream;
-      mainLabel.textContent = 'CÁMARA FRONTAL';
-      mainPlaceholder.classList.add('hidden');
-    } else if(mode === 'back'){
-      mainStream = await getVideo('environment');
-      mainVideo.srcObject = mainStream;
-      mainLabel.textContent = 'CÁMARA TRASERA';
-      mainPlaceholder.classList.add('hidden');
-    } else {
-      let devices = await navigator.mediaDevices.enumerateDevices();
-      let cams = devices.filter(d => d.kind === 'videoinput');
-      if(cams.length < 2){
-        throw new Error('DUAL_NOT_SUPPORTED');
-      }
-
-      // Intentamos mantener abiertas ambas cámaras a la vez.
-      mainStream = await getVideo('environment');
-      try{
-        selfieStream = await getVideo('user');
-      }catch(err){
-        stopStream(mainStream); mainStream = null;
-        throw new Error('DUAL_NOT_SUPPORTED');
-      }
-
-      mainVideo.srcObject = mainStream;
-      selfieVideo.srcObject = selfieStream;
-      mainLabel.textContent = 'CÁMARA TRASERA';
-      mainPlaceholder.classList.add('hidden');
-      selfiePlaceholder.classList.add('hidden');
-    }
-    cameraStatus.textContent = 'Cámara lista';
-  }catch(err){
-    cameraStatus.textContent = 'No compatible';
-    if(mode === 'dual'){
-      showModal(
-        'Ambas cámaras no disponibles',
-        'Tu móvil no soporta mantener la cámara frontal y la trasera abiertas al mismo tiempo. Puedes continuar con la cámara frontal o la trasera.'
-      );
-      qsa('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === 'front'));
-      startMode('front');
-    }else{
-      showModal('No se pudo abrir la cámara','Comprueba los permisos de cámara del navegador y vuelve a intentarlo.');
-    }
-  }
-}
-
-qsa('.mode-btn').forEach(btn => {
-  btn.onclick = () => {
-    qsa('.mode-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    startMode(btn.dataset.mode);
-  };
-});
-
-qs('#retryCamera').onclick = () => startMode(currentMode);
-qs('#flipCamera').onclick = () => {
-  const next = currentMode === 'front' ? 'back' : 'front';
-  qsa('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === next));
-  startMode(next);
-};
-
-function formatTime(ms){
-  const total = Math.max(0, Math.floor(ms/1000));
-  const h = String(Math.floor(total/3600)).padStart(2,'0');
-  const m = String(Math.floor((total%3600)/60)).padStart(2,'0');
-  const s = String(total%60).padStart(2,'0');
-  return `${h}:${m}:${s}`;
-}
-
-function startTimer(){
-  liveStartedAt = Date.now();
-  clearInterval(timerInterval);
-  timerInterval = setInterval(()=>{
-    const t = formatTime(Date.now()-liveStartedAt);
-    qs('#prepareTimer').textContent = t;
-    qs('#miniTimer').textContent = t;
-    qs('#liveTimer').textContent = t;
-  },1000);
-}
-
-function transferStreamsToLive(){
-  if(currentMode === 'dual'){
-    liveMainVideo.srcObject = mainStream;
-    liveSelfieVideo.srcObject = selfieStream;
-    qs('#liveSelfieBox').style.display = 'block';
-  }else if(currentMode === 'back'){
-    liveMainVideo.srcObject = mainStream;
-    qs('#liveSelfieBox').style.display = 'none';
-  }else{
-    liveMainVideo.srcObject = mainStream;
-    qs('#liveSelfieBox').style.display = 'none';
-  }
-  qs('#liveFallback').style.display = mainStream ? 'none' : 'grid';
-}
-
-qs('#startBtn').onclick = () => {
-  const title = qs('#liveTitle').value.trim();
-  if(!title){
-    showModal('Falta el título','Escribe un título antes de iniciar la transmisión.');
-    return;
-  }
-  if(!mainStream){
-    showModal('Cámara no preparada','Activa una cámara antes de iniciar el LIVE.');
-    return;
-  }
-  transferStreamsToLive();
-  prepareScreen.classList.remove('active');
-  liveScreen.classList.add('active');
-  startTimer();
-};
-
-qs('#closeLive').onclick = () => {
-  liveScreen.classList.remove('active');
-  prepareScreen.classList.add('active');
-  clearInterval(timerInterval);
-  startMode(currentMode);
-};
-
-qs('#previewBtn').onclick = () => showModal('Vista previa','La vista previa ya está activa en la cámara superior.');
-qs('#detailsBtn').onclick = () => showModal('Detalles','Título, categoría, micrófono, cámara y conexión están listos para revisar.');
-
-qs('#camToggle').onchange = e => {
-  if(e.target.checked) startMode(currentMode);
-  else {
-    stopAll();
-    mainPlaceholder.classList.remove('hidden');
-    selfiePlaceholder.classList.remove('hidden');
-    cameraStatus.textContent = 'Cámara apagada';
-  }
-};
-
-const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-if(connection){
-  const updateConnection = () => {
-    const type = connection.effectiveType || '4g';
-    qs('#connectionText').textContent = `Conexión ${type.toUpperCase()}`;
-    qs('#connectionBadge').textContent = ['4g','5g'].includes(type) ? 'Excelente' : type === '3g' ? 'Aceptable' : 'Débil';
-  };
-  updateConnection();
-  connection.addEventListener?.('change', updateConnection);
-}else{
-  qs('#connectionText').textContent = 'Conexión disponible';
-}
-
-window.addEventListener('beforeunload', stopAll);
-startMode('front');
+(()=>{"use strict";
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const state={mode:"front",mainStream:null,pipStream:null,micOn:false,cameraOn:false,filterIndex:0,filters:[{name:"Natural",css:"none"},{name:"Luz suave",css:"brightness(1.08) contrast(1.04) saturate(1.08)"},{name:"Violeta",css:"brightness(1.04) contrast(1.08) saturate(1.18) hue-rotate(8deg)"},{name:"Cálido",css:"brightness(1.06) contrast(1.04) saturate(1.16) sepia(.08)"}],live:false,seconds:0,timer:null,viewerTimer:null,chatTimer:null,online:navigator.onLine,pending:null};
+const mainVideo=$("#mainVideo"),pipVideo=$("#pipVideo"),broadcastVideo=$("#broadcastVideo"),broadcastPip=$("#broadcastPip");
+function toast(t){const e=$("#toast");e.textContent=t;e.classList.add("show");clearTimeout(e._t);e._t=setTimeout(()=>e.classList.remove("show"),2300)}
+function openModal(title,text,action=null,confirm="Aceptar"){$("#modalTitle").textContent=title;$("#modalText").textContent=text;$("#modalConfirm").textContent=confirm;state.pending=action;$("#modalBackdrop").classList.remove("hidden");$("#modal").classList.remove("hidden")}
+function closeModal(){$("#modalBackdrop").classList.add("hidden");$("#modal").classList.add("hidden");state.pending=null}
+$("#modalCancel").onclick=closeModal;$("#modalBackdrop").onclick=closeModal;$("#modalConfirm").onclick=()=>{const a=state.pending;closeModal();if(typeof a==="function")a()};
+function openMenu(){$("#sideMenu").classList.add("open");$("#menuBackdrop").classList.remove("hidden");document.body.style.overflow="hidden"}
+function closeMenu(){$("#sideMenu").classList.remove("open");$("#menuBackdrop").classList.add("hidden");document.body.style.overflow=""}
+$("#menuOpen").onclick=openMenu;$("#menuClose").onclick=closeMenu;$("#menuBackdrop").onclick=closeMenu;
+$("#helpOpen").onclick=()=>openModal("Preparación del LIVE","Activa cámara y micrófono, escribe título y descripción, elige categoría y revisa la conexión. La transmisión multiusuario real se conectará al servidor LIVE en una fase posterior.");
+$$('[data-menu-action]').forEach(b=>b.onclick=()=>{const a=b.dataset.menuAction;closeMenu();if(a==="help")openModal("Ayuda LIVE","Permite cámara y micrófono cuando el navegador lo solicite. En algunos móviles no es posible usar las dos cámaras a la vez.");else if(a==="settings")toast("Los ajustes principales están en esta pantalla.");else if(a==="wallet")toast("El Monedero se conserva en Inicio.");else openModal("Cerrar sesión","El cierre de sesión se conectará al Firebase de la versión base.")});
+function stopStream(s){if(s)s.getTracks().forEach(t=>t.stop())}
+function stopAll(){stopStream(state.mainStream);stopStream(state.pipStream);state.mainStream=state.pipStream=null;[mainVideo,pipVideo,broadcastVideo,broadcastPip].forEach(v=>{try{v.srcObject=null}catch(_){}})}
+function constraints(f){return{facingMode:{ideal:f},width:{ideal:1280},height:{ideal:720},frameRate:{ideal:30,max:30}}}
+function setMic(on){[state.mainStream,state.pipStream].filter(Boolean).forEach(s=>s.getAudioTracks().forEach(t=>t.enabled=on))}
+async function getStream(facing,audio=true){return navigator.mediaDevices.getUserMedia({video:constraints(facing),audio:audio?{echoCancellation:true,noiseSuppression:true,autoGainControl:true}:false})}
+async function activateCamera(mode=state.mode){if(!navigator.mediaDevices?.getUserMedia){openModal("Cámara no disponible","Abre JEMMO mediante HTTPS y concede los permisos de cámara y micrófono.");return false}stopAll();state.cameraOn=false;updateSwitches();$("#cameraPlaceholder").classList.remove("hidden");try{if(mode==="dual"){const front=await getStream("user",true);let rear;try{rear=await getStream("environment",false)}catch(e){stopStream(front);throw e}const fa=front.getVideoTracks().some(t=>t.readyState==="live"),ra=rear.getVideoTracks().some(t=>t.readyState==="live");if(!fa||!ra){stopStream(front);stopStream(rear);throw Error("dual-not-supported")}state.mainStream=rear;state.pipStream=front;mainVideo.srcObject=rear;pipVideo.srcObject=front;pipVideo.classList.remove("hidden")}else{state.mainStream=await getStream(mode==="rear"?"environment":"user",true);mainVideo.srcObject=state.mainStream;pipVideo.classList.add("hidden")}state.mode=mode;state.cameraOn=true;state.micOn=true;setMic(true);$("#cameraPlaceholder").classList.add("hidden");applyFilter();updateMode();updateSwitches();updateValidation();toast(mode==="dual"?"Ambas cámaras activadas.":"Cámara activada.");return true}catch(e){console.error(e);state.cameraOn=state.micOn=false;updateSwitches();updateValidation();if(mode==="dual")openModal("Este móvil no admite ambas cámaras","JEMMO ha intentado abrir la cámara frontal y trasera al mismo tiempo, pero este dispositivo o navegador no lo permite. Selecciona frontal o trasera.");else openModal(e?.name==="NotAllowedError"?"Permiso bloqueado":"No se pudo abrir la cámara",e?.name==="NotAllowedError"?"Permite cámara y micrófono en los ajustes del navegador y vuelve a intentarlo.":"Comprueba que ninguna otra aplicación esté usando la cámara.");return false}}
+function deactivateCamera(){stopAll();state.cameraOn=state.micOn=false;$("#cameraPlaceholder").classList.remove("hidden");pipVideo.classList.add("hidden");updateSwitches();updateValidation()}
+function updateMode(){const l={front:"Cámara frontal",rear:"Cámara trasera",dual:"Ambas cámaras"};$("#modeLabel").textContent=l[state.mode];$$('.mode-btn').forEach(b=>b.classList.toggle("active",b.dataset.mode===state.mode))}
+$$('.mode-btn').forEach(b=>b.onclick=async()=>{state.mode=b.dataset.mode;updateMode();if(state.cameraOn)await activateCamera(state.mode)});
+async function switchCamera(){if(state.mode==="dual"&&state.mainStream&&state.pipStream){[state.mainStream,state.pipStream]=[state.pipStream,state.mainStream];mainVideo.srcObject=state.mainStream;pipVideo.srcObject=state.pipStream;if(state.live){broadcastVideo.srcObject=state.mainStream;broadcastPip.srcObject=state.pipStream}toast("Cámaras intercambiadas.");return}state.mode=state.mode==="front"?"rear":"front";updateMode();if(state.cameraOn)await activateCamera(state.mode)}
+$("#switchCameraTop").onclick=switchCamera;
+function updateSwitches(){$("#cameraToggle").classList.toggle("on",state.cameraOn);$("#cameraToggle").setAttribute("aria-checked",state.cameraOn);$("#micToggle").classList.toggle("on",state.micOn);$("#micToggle").setAttribute("aria-checked",state.micOn);$("#liveCamera").classList.toggle("active",state.cameraOn);$("#liveCamera").classList.toggle("danger",!state.cameraOn);$("#liveMic").classList.toggle("active",state.micOn);$("#liveMic").classList.toggle("danger",!state.micOn)}
+$("#cameraToggle").onclick=async()=>state.cameraOn?deactivateCamera():await activateCamera(state.mode);
+$("#micToggle").onclick=async()=>{if(!state.cameraOn&&!await activateCamera(state.mode))return;state.micOn=!state.micOn;setMic(state.micOn);updateSwitches();updateValidation();toast(state.micOn?"Micrófono activado.":"Micrófono silenciado.")};
+function applyFilter(){const f=state.filters[state.filterIndex];[mainVideo,pipVideo,broadcastVideo,broadcastPip].forEach(v=>v.style.filter=f.css);$("#filterButton").textContent=f.name}
+function cycleFilter(){state.filterIndex=(state.filterIndex+1)%state.filters.length;applyFilter();toast("Filtro: "+state.filters[state.filterIndex].name)}
+$("#filterButton").onclick=cycleFilter;$("#filterTool").onclick=cycleFilter;$("#lightTool").onclick=()=>openModal("Ajustes de imagen","La vista previa no usa modo espejo. Los controles avanzados de exposición y enfoque dependerán del SDK nativo de la futura APK.");$("#coverButton").onclick=()=>{if(!state.cameraOn)return toast("Activa la cámara para preparar la portada.");$("#coverText").textContent="Portada capturada";toast("Fotograma de portada preparado.")};
+function countInput(el,counter,max){const u=()=>{$(counter).textContent=el.value.length+"/"+max;updateValidation()};el.addEventListener("input",u);u()}
+countInput($("#liveTitle"),"#titleCounter",80);countInput($("#liveDescription"),"#descriptionCounter",180);$("#liveCategory").onchange=updateValidation;
+function connectionInfo(){state.online=navigator.onLine;const c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;let text=state.online?"Conexión disponible":"Sin conexión",quality=state.online?"ok":"bad",label=state.online?"Estable":"Sin red";if(state.online&&c){const type=c.effectiveType||"",down=Number(c.downlink||0);if(type==="slow-2g"||type==="2g"||(down&&down<.8)){quality="bad";label="Débil";text="La red puede cortar o degradar el LIVE."}else if(type==="3g"||(down&&down<2)){label="Aceptable";text="JEMMO deberá reducir la calidad."}else{label="Excelente";text="Conexión adecuada para la vista previa."}}$("#connectionDetail").textContent=text;const p=$("#connectionPill");p.textContent=label;p.className="status-pill "+quality;updateValidation()}
+addEventListener("online",connectionInfo);addEventListener("offline",connectionInfo);
+function setCheck(id,ok){const e=$(id);e.classList.toggle("ok",ok);$("i",e).textContent=ok?"✓":"•"}
+function validation(){return{camera:state.cameraOn,mic:state.micOn,title:$("#liveTitle").value.trim().length>=5,description:$("#liveDescription").value.trim().length>=10,category:Boolean($("#liveCategory").value),connection:state.online}}
+function updateValidation(show=false){const v=validation();setCheck("#checkCamera",v.camera);setCheck("#checkMic",v.mic);setCheck("#checkTitle",v.title);setCheck("#checkDescription",v.description);setCheck("#checkCategory",v.category);setCheck("#checkConnection",v.connection);const rows={camera:"#rowCamera",mic:"#rowMic",title:"#rowTitle",description:"#rowDescription",category:"#rowCategory",connection:"#rowConnection"};Object.entries(rows).forEach(([k,s])=>{$(s).classList.toggle("ok",v[k]);if(!show)$(s).classList.remove("error")});const all=Object.values(v).every(Boolean);$("#readyLine").classList.toggle("ready",all);$("#readyLine").classList.toggle("problem",show&&!all);$("#readyText").textContent=all?"Todo listo para iniciar":"Completa la preparación";$$('.step')[2].classList.toggle("active",all);return{v,all}}
+function fmt(s){return`${String(Math.floor(s/3600)).padStart(2,"0")}:${String(Math.floor(s%3600/60)).padStart(2,"0")}:${String(s%60).padStart(2,"0")}`}
+function addChat(name,text,system=false){const d=document.createElement("div");d.className="msg"+(system?" system":"");const b=document.createElement("b");b.textContent=name+": ";d.append(b,document.createTextNode(text));$("#liveChat").append(d);while($("#liveChat").children.length>8)$("#liveChat").firstElementChild.remove()}
+function startTimers(){stopTimers();state.seconds=0;state.timer=setInterval(()=>{state.seconds++;const t=fmt(state.seconds);$("#liveClock").textContent=t;$("#prepTimer").textContent=t},1000);state.viewerTimer=setInterval(()=>{const e=$("#viewerCount"),n=Number(e.textContent)||1;e.textContent=Math.max(1,n+Math.floor(Math.random()*5)-1)},4000);const m=[["Luna","Qué bien se ve el directo."],["Casa Tenerife","Estamos contigo."],["Alex","Se escucha perfecto."],["Sistema","Un nuevo espectador se ha unido."],["JEMMO Guard","Recuerda mantener el contenido dentro de las normas."]];let i=0;state.chatTimer=setInterval(()=>{const x=m[i++%m.length];addChat(x[0],x[1],x[0]==="Sistema"||x[0]==="JEMMO Guard")},7000)}
+function stopTimers(){clearInterval(state.timer);clearInterval(state.viewerTimer);clearInterval(state.chatTimer);state.timer=state.viewerTimer=state.chatTimer=null}
+function enterLive(){const {v,all}=updateValidation(true);if(!all){const labels={camera:"activa la cámara",mic:"activa el micrófono",title:"escribe el título",description:"añade la descripción",category:"elige una categoría",connection:"recupera Internet"},rows={camera:"#rowCamera",mic:"#rowMic",title:"#rowTitle",description:"#rowDescription",category:"#rowCategory",connection:"#rowConnection"},missing=Object.keys(v).filter(k=>!v[k]);missing.forEach(k=>$(rows[k]).classList.add("error"));$("#validationErrors").textContent="Falta: "+missing.map(k=>labels[k]).join(" · ");return toast("Todavía faltan datos obligatorios.")}$("#validationErrors").textContent="";broadcastVideo.srcObject=state.mainStream;if(state.mode==="dual"&&state.pipStream){broadcastPip.srcObject=state.pipStream;broadcastPip.classList.remove("hidden")}else{broadcastPip.classList.add("hidden");broadcastPip.srcObject=null}$("#broadcastTitle").textContent=$("#liveTitle").value.trim();$("#prepScreen").classList.add("hidden");$("#prepHeader").classList.add("hidden");$("#broadcastScreen").classList.remove("hidden");state.live=true;startTimers();updateSwitches();toast("LIVE iniciado en modo de prueba local.")}
+$("#startLive").onclick=enterLive;
+function finishLive(){stopTimers();state.live=false;$("#broadcastScreen").classList.add("hidden");$("#prepScreen").classList.remove("hidden");$("#prepHeader").classList.remove("hidden");$("#viewerCount").textContent="1";updateValidation();toast("Transmisión finalizada.")}
+$("#endLive").onclick=()=>openModal("Finalizar transmisión","¿Seguro que quieres terminar este LIVE?",finishLive,"Finalizar");
+$("#liveMic").onclick=()=>{state.micOn=!state.micOn;setMic(state.micOn);updateSwitches();toast(state.micOn?"Micrófono activado.":"Micrófono silenciado.")};
+$("#liveCamera").onclick=()=>{state.cameraOn=!state.cameraOn;[state.mainStream,state.pipStream].filter(Boolean).forEach(s=>s.getVideoTracks().forEach(t=>t.enabled=state.cameraOn));$("#broadcastCameraOff").classList.toggle("hidden",state.cameraOn);updateSwitches();toast(state.cameraOn?"Cámara reanudada.":"Cámara pausada.")};
+$("#liveSwitch").onclick=switchCamera;$("#liveEffects").onclick=cycleFilter;$("#liveMore").onclick=()=>openModal("Controles de sala","Aquí se conectarán moderadores, silenciar sala, expulsar temporalmente, compartir, calidad de emisión y administración de sillas.");$$('.seat').forEach(b=>b.onclick=()=>toast("Silla "+b.dataset.seat+": control preparado."));$("#giftButton").onclick=()=>openModal("Regalos","La bandeja visual está preparada. Coins, balances y transacciones reales se conectarán después al sistema económico seguro.");$("#heartButton").onclick=()=>toast("Reacción enviada.");
+$("#sendChat").onclick=()=>{const i=$("#chatInput"),t=i.value.trim();if(!t)return;addChat("Tú",t);i.value=""};$("#chatInput").onkeydown=e=>{if(e.key==="Enter")$("#sendChat").click()};
+async function share(){const data={title:"JEMMO LIVE",text:$("#liveTitle").value.trim()||"Estoy en directo en JEMMO LIVE"};try{if(navigator.share)await navigator.share(data);else if(navigator.clipboard){await navigator.clipboard.writeText(data.text);toast("Texto del LIVE copiado.")}else toast("Compartir estará disponible en la APK.")}catch(e){if(e.name!=="AbortError")toast("No se pudo compartir.")}}
+$("#shareTop").onclick=share;$("#liveShare").onclick=share;connectionInfo();updateMode();updateSwitches();updateValidation();
+})();

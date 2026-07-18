@@ -1,31 +1,113 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#09000f"><title>JEMMO LIVE · LIVE</title><link rel="stylesheet" href="inicio.css"><link rel="stylesheet" href="app.css"><style>.stub{min-height:calc(100svh - 90px);padding:12px}.stub-card{margin-top:18px;padding:24px 16px;border:1px solid #ff477e;border-radius:22px;background:radial-gradient(circle at top,#260735,#09000f 68%);text-align:center;box-shadow:0 0 28px #7900aa33}.stub-card .big{font-size:62px;filter:drop-shadow(0 0 14px #ff477e)}.stub-card h1{margin:8px 0;color:#ff477e}.stub-card p{color:#bfb1c5}.mini-header{display:flex;align-items:center;justify-content:space-between}.mini-header button{width:44px;height:44px;border:1px solid #6d198d;border-radius:50%;background:#170321;color:#fff;font-size:22px}.mini-logo{font-weight:950;color:#ffd04f}</style></head><body><main class="stub"><header class="mini-header"><button id="menuOpen">☰</button><div class="mini-logo">JEMMO LIVE</div><button>⌕</button></header><section class="stub-card"><div class="big">🐟</div><h1>LIVE</h1><p>Aquí estará el acceso para preparar e iniciar una transmisión LIVE.</p></section></main>
-  <div class="menu-backdrop" id="menuBackdrop" hidden></div>
-  <aside class="side-menu" id="sideMenu" aria-hidden="true">
-    <div class="menu-top">
-      <div><small>MENÚ DE USUARIO</small><h2>JEMMO LIVE</h2></div>
-      <button class="menu-close" id="menuClose" aria-label="Cerrar menú">×</button>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#09000f">
+  <meta name="color-scheme" content="dark">
+  <title>JEMMO LIVE · Preparar LIVE</title>
+  <link rel="stylesheet" href="live.css">
+</head>
+<body>
+<svg width="0" height="0" class="sprite" aria-hidden="true">
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.7 9a2.5 2.5 0 0 1 4.8 1c0 1.8-2.5 2-2.5 4M12 18h.01"/></symbol>
+  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+  <symbol id="i-cameras" viewBox="0 0 24 24"><rect x="3" y="5" width="12" height="12" rx="2"/><rect x="9" y="8" width="12" height="12" rx="2"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.6-4.2 3-6.2 7-6.2s6.4 2 7 6.2"/></symbol>
+  <symbol id="i-landscape" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="9" r="1.5"/><path d="m5 18 5-5 3 3 2-2 4 4"/></symbol>
+  <symbol id="i-switch" viewBox="0 0 24 24"><path d="M7 7h10l-3-3M17 17H7l3 3M18 7a7 7 0 0 1 1 8M6 17a7 7 0 0 1-1-8"/></symbol>
+  <symbol id="i-wand" viewBox="0 0 24 24"><path d="m4 20 11-11M13 5l1-2 1 2 2 1-2 1-1 2-1-2-2-1zM17 12l.8-1.7.8 1.7 1.7.8-1.7.8-.8 1.7-.8-1.7-1.7-.8z"/></symbol>
+  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></symbol>
+  <symbol id="i-title" viewBox="0 0 24 24"><path d="M4 6h16M9 6v14M15 6v14M7 20h10"/></symbol>
+  <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 6h14M5 10h14M5 14h10M5 18h7"/></symbol>
+  <symbol id="i-category" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="i-signal" viewBox="0 0 24 24"><path d="M5 18h.01M9 14a5 5 0 0 1 6 0M6 10a9 9 0 0 1 12 0M3 6a13 13 0 0 1 18 0"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7h.01"/></symbol>
+  <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8M5 10v10h14V10M9 20v-6h6v6"/></symbol>
+  <symbol id="i-live" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="4"/><path d="m10 9 5 3-5 3z"/></symbol>
+  <symbol id="i-rooms" viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><path d="M5 20c.5-4 2.8-6 7-6s6.5 2 7 6M4 8v5M20 8v5"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v12H9l-5 4z"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="2.5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><path d="M4 10h16v10H4zM3 7h18v3H3zM12 7v13M12 7H8.5A2.5 2.5 0 1 1 11 4.5zM12 7h3.5A2.5 2.5 0 1 0 13 4.5z"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.6M8.2 13.2l7.6 4.6"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.4 1a8 8 0 0 0-1.7-1L14.5 3h-5L9 6.1a8 8 0 0 0-1.7 1l-2.4-1-2 3.4L5 11a7 7 0 0 0 0 2l-2.1 1.5 2 3.4 2.4-1a8 8 0 0 0 1.7 1l.5 3.1h5l.5-3.1a8 8 0 0 0 1.7-1l2.4 1 2-3.4L19 13a7 7 0 0 0 0-1z"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.4 5.4 0 0 0-7.6 0L12 5.8l-1.2-1.2a5.4 5.4 0 1 0-7.6 7.6L12 21l8.8-8.8a5.4 5.4 0 0 0 0-7.6z"/></symbol>
+</svg>
+
+<div class="app">
+  <header class="topbar" id="prepHeader">
+    <button class="orb" id="menuOpen" aria-label="Abrir menú"><svg class="icon"><use href="#i-menu"/></svg></button>
+    <div class="brand"><div class="brand-main"><span class="j">J</span><span class="emmo">EMMO</span><span class="live">LIVE</span></div><small>PREPARACIÓN DE TRANSMISIÓN</small></div>
+    <button class="orb" id="helpOpen" aria-label="Ayuda"><svg class="icon"><use href="#i-help"/></svg></button>
+  </header>
+
+  <main id="prepScreen" class="prep">
+    <section class="intro">
+      <div class="intro-row"><div><h1>Prepara tu LIVE</h1><p>Cámara, sonido y detalles antes de entrar en directo.</p></div><span class="version">V0.6.4</span></div>
+      <div class="ready-line" id="readyLine"><i></i><span id="readyText">Completa la preparación</span></div>
+    </section>
+
+    <div class="steps"><div class="step active"><b>1</b><span>Preparación</span></div><div class="step active"><b>2</b><span>Detalles</span></div><div class="step"><b>3</b><span>Listo</span></div></div>
+
+    <section class="preview-card">
+      <div class="camera-stage">
+        <video id="mainVideo" autoplay playsinline muted></video>
+        <video id="pipVideo" class="hidden" autoplay playsinline muted></video>
+        <div class="camera-placeholder" id="cameraPlaceholder"><div><div class="lens"><svg class="icon"><use href="#i-camera"/></svg></div><strong>Activa la cámara</strong><span>La vista previa será la imagen real de tu móvil.</span></div></div>
+        <div class="preview-top"><span class="mode-pill"><i></i><span id="modeLabel">Cámara frontal</span></span><button class="preview-action" id="switchCameraTop" aria-label="Cambiar cámara"><svg class="icon"><use href="#i-switch"/></svg></button></div>
+        <div class="preview-tools"><button class="tool" id="filterTool"><svg class="icon"><use href="#i-wand"/></svg><small>Filtro</small></button><button class="tool" id="lightTool"><svg class="icon"><use href="#i-settings"/></svg><small>Ajustar</small></button></div>
+        <button class="cover-chip" id="coverButton"><svg class="icon"><use href="#i-camera"/></svg><span id="coverText">Portada automática</span></button>
+      </div>
+    </section>
+
+    <div class="mode-title"><svg class="icon"><use href="#i-cameras"/></svg>Modo de cámara</div>
+    <div class="camera-modes">
+      <button class="mode-btn active" data-mode="front"><svg class="icon"><use href="#i-user"/></svg><span><strong>Frontal</strong><small>Solo tú</small></span></button>
+      <button class="mode-btn" data-mode="rear"><svg class="icon"><use href="#i-landscape"/></svg><span><strong>Trasera</strong><small>Lo que enseñas</small></span></button>
+      <button class="mode-btn" data-mode="dual"><svg class="icon"><use href="#i-cameras"/></svg><span><strong>Ambas</strong><small>Tú + escena</small></span></button>
     </div>
-    <label class="function-search"><span>⌕</span><input id="functionSearch" placeholder="Buscar una función..." autocomplete="off"></label>
-    <div class="search-hint">Escribe, por ejemplo: retirar, idioma, live o perfil.</div>
-    <nav class="menu-list" id="menuList">
-      <button data-search="mi perfil editar perfil foto nombre biografia avatar apariencia" data-route="yo.html"><span>👤</span><b>Mi perfil</b><i>›</i></button>
-      <button data-search="monedero saldo monedas recargar retirar historial pagos intercambios" data-demo="Monedero"><span>🪙</span><b>Monedero</b><small>Saldo, recargas y retiros</small><i>›</i></button>
-      <button data-search="configuracion idioma permisos camara microfono preferencias aplicacion seguridad privacidad" data-demo="Configuración"><span>⚙️</span><b>Configuración</b><small>Idioma y ajustes de la aplicación</small><i>›</i></button>
-      <button data-search="ayuda soporte seguridad privacidad bloquear usuario problemas contacto" data-demo="Ayuda y soporte"><span>❓</span><b>Ayuda y soporte</b><small>Soporte, seguridad y privacidad</small><i>›</i></button>
-      <button class="logout-item" data-search="cerrar sesion salir desconectar cuenta" id="logoutButton"><span>↪</span><b>Cerrar sesión</b><i>›</i></button>
-    </nav>
-    <div class="quick-results" id="quickResults" hidden>
-      <p>Resultados rápidos</p>
-      <button data-demo="Recargar monedas">🪙 Recargar monedas <i>›</i></button>
-      <button data-demo="Retirar ganancias">💸 Retirar ganancias <i>›</i></button>
-      <button data-demo="Historial del monedero">📜 Historial del monedero <i>›</i></button>
-      <button data-route="live.html">🔴 Iniciar LIVE <i>›</i></button>
-      <button data-route="salas.html">🎙️ Salas de audio <i>›</i></button>
-      <button data-route="mensajes.html">💬 Mensajes <i>›</i></button>
-      <button data-demo="Idioma">🌍 Idioma <i>›</i></button>
-      <button data-demo="Seguridad y privacidad">🔒 Seguridad y privacidad <i>›</i></button>
-    </div>
-    <p class="role-note">Este es el menú de usuario. Más adelante cambiará según el rol: emisor, agente o colaborador.</p>
-  </aside>
-  <div class="demo-toast" id="demoToast" role="status"></div>
-<nav class="bottom-nav" data-current="live"><a data-tab="inicio" href="inicio.html"><span class="nav-icon">⌂</span><b>Inicio</b></a><a data-tab="live" href="live.html"><span class="nav-icon">▣</span><b>Live</b></a><a data-tab="salas" href="salas.html"><span class="nav-icon">🎙</span><b>Salas</b></a><a data-tab="mensajes" href="mensajes.html"><span class="badge">8</span><span class="nav-icon">◌</span><b>Mensajes</b></a><a data-tab="yo" href="yo.html"><span class="nav-icon">♙</span><b>Yo</b></a></nav><script src="app.js"></script></body></html>
+    <div class="info-note"><svg class="icon"><use href="#i-info"/></svg><span>Si el móvil no permite usar las dos cámaras al mismo tiempo, JEMMO mostrará un aviso claro.</span></div>
+
+    <section class="timer-card"><div><small>CRONÓMETRO DE TAREA</small><strong id="prepTimer">00:00:00</strong></div><div class="goal"><b>120 min</b><span>objetivo diario</span></div></section>
+
+    <section class="setup-list">
+      <article class="setup-row" id="rowFilter"><div class="row-icon"><svg class="icon"><use href="#i-wand"/></svg></div><div><h3>1. Coloca un filtro</h3><p>Opcional. Mejora luz y color.</p></div><div class="control"><button class="small-btn" id="filterButton">Natural</button></div></article>
+      <article class="setup-row" id="rowMic"><div class="row-icon"><svg class="icon"><use href="#i-mic"/></svg></div><div><h3>2. Enciende el micrófono</h3><p>Necesario para que puedan escucharte.</p></div><div class="control"><button class="switch" id="micToggle" role="switch" aria-checked="false"></button></div></article>
+      <article class="setup-row" id="rowCamera"><div class="row-icon"><svg class="icon"><use href="#i-camera"/></svg></div><div><h3>3. Activa y ajusta tu cámara</h3><p>Sin espejo. Revisa enfoque y luz.</p></div><div class="control"><button class="switch" id="cameraToggle" role="switch" aria-checked="false"></button></div></article>
+      <article class="setup-row" id="rowTitle"><div class="row-icon"><svg class="icon"><use href="#i-title"/></svg></div><div><h3>4. Coloca un título atractivo</h3><p>Obligatorio. Mínimo 5 caracteres.</p></div><div class="wide-field field-wrap"><input id="liveTitle" maxlength="80" placeholder="Escribe el título de tu LIVE..."><span class="counter" id="titleCounter">0/80</span></div></article>
+      <article class="setup-row" id="rowDescription"><div class="row-icon"><svg class="icon"><use href="#i-text"/></svg></div><div><h3>5. Añade una descripción</h3><p>Obligatoria. Explica qué harás.</p></div><div class="wide-field field-wrap"><textarea id="liveDescription" maxlength="180" placeholder="Cuenta brevemente qué verá la gente..."></textarea><span class="counter" id="descriptionCounter">0/180</span></div></article>
+      <article class="setup-row" id="rowCategory"><div class="row-icon"><svg class="icon"><use href="#i-category"/></svg></div><div><h3>6. Elige una categoría</h3><p>Ayuda a encontrar el LIVE correcto.</p></div><div class="wide-field field-wrap"><select id="liveCategory"><option value="">Seleccionar categoría</option><option>Charlando</option><option>Cocina</option><option>Música</option><option>Talento</option><option>Juegos</option><option>Vida diaria</option><option>Formación</option><option>Otro</option></select></div></article>
+      <article class="setup-row" id="rowPrivacy"><div class="row-icon"><svg class="icon"><use href="#i-lock"/></svg></div><div><h3>7. Privacidad y sillas</h3><p>Define quién entra y solicita silla.</p></div><div class="wide-field two-fields"><div class="field-wrap"><select id="privacy"><option>Público</option><option>Seguidores</option><option>Privado con contraseña</option></select></div><div class="field-wrap"><select id="chairs"><option>Por invitación</option><option>Club de fans</option><option>Seguidores</option><option>Libre</option><option>Sillas cerradas</option></select></div></div></article>
+      <article class="setup-row" id="rowConnection"><div class="row-icon"><svg class="icon"><use href="#i-signal"/></svg></div><div><h3>8. Revisa tu conexión</h3><p id="connectionDetail">Comprobando la red disponible.</p></div><div class="control"><span class="status-pill" id="connectionPill">Revisando</span></div></article>
+    </section>
+
+    <section class="preflight"><h3>Revisión antes de emitir</h3><div class="checks"><div class="check" id="checkCamera"><i>•</i>Cámara</div><div class="check" id="checkMic"><i>•</i>Micrófono</div><div class="check" id="checkTitle"><i>•</i>Título</div><div class="check" id="checkDescription"><i>•</i>Descripción</div><div class="check" id="checkCategory"><i>•</i>Categoría</div><div class="check" id="checkConnection"><i>•</i>Conexión</div></div><div class="errors" id="validationErrors"></div></section>
+    <div class="start-wrap"><button class="start-btn" id="startLive"><span class="pulse"></span>INICIAR TRANSMISIÓN LIVE</button></div>
+  </main>
+
+  <main id="broadcastScreen" class="broadcast hidden">
+    <video id="broadcastVideo" autoplay playsinline muted></video><video id="broadcastPip" class="hidden" autoplay playsinline muted></video>
+    <div class="camera-off-layer hidden" id="broadcastCameraOff"><div><svg class="icon"><use href="#i-camera"/></svg><strong>Cámara pausada</strong><p>Tu audio puede seguir activo.</p></div></div><div class="broadcast-shade"></div>
+    <div class="live-top"><div class="host"><div class="avatar">J</div><div class="host-text"><strong>Jesús · JEMMO</strong><small id="broadcastTitle">Mi transmisión</small></div></div><span class="live-badge">LIVE</span><span class="live-clock" id="liveClock">00:00:00</span><span class="viewer"><svg class="icon"><use href="#i-eye"/></svg><b id="viewerCount">1</b></span><button class="end-btn" id="endLive"><svg class="icon"><use href="#i-x"/></svg></button></div>
+    <aside class="battle-mini"><header><span>BATALLA DE CASAS</span><time>03:12</time></header><div class="vs-row"><div><div class="crest-mini">JT</div><span class="score gold">12,500</span></div><b>VS</b><div><div class="crest-mini pink">JU</div><span class="score pink">9,800</span></div></div></aside>
+    <div class="seats"><button class="seat" data-seat="1"><svg class="icon"><use href="#i-user"/></svg><small>1</small></button><button class="seat" data-seat="2"><svg class="icon"><use href="#i-user"/></svg><small>2</small></button><button class="seat" data-seat="3"><svg class="icon"><use href="#i-user"/></svg><small>3</small></button><button class="seat" data-seat="4"><b>+</b><small>4</small></button></div>
+    <div class="chat" id="liveChat"><div class="msg system"><b>Sistema:</b> Tu LIVE ha comenzado.</div><div class="msg"><b>Casa Tenerife:</b> Bienvenido al directo.</div><div class="msg"><b>JEMMO Guard:</b> La transmisión está en revisión preventiva.</div></div>
+    <button class="gift-fab" id="giftButton"><svg class="icon"><use href="#i-gift"/></svg></button>
+    <div class="live-compose"><input class="compose-field" id="chatInput" placeholder="Di algo..."><button class="round-action" id="sendChat"><svg class="icon"><use href="#i-chat"/></svg></button><button class="round-action" id="heartButton"><svg class="icon"><use href="#i-heart"/></svg></button><button class="round-action" id="shareTop"><svg class="icon"><use href="#i-share"/></svg></button></div>
+    <div class="live-controls"><button class="live-control active" id="liveMic"><svg class="icon"><use href="#i-mic"/></svg><span>Micrófono</span></button><button class="live-control active" id="liveCamera"><svg class="icon"><use href="#i-camera"/></svg><span>Cámara</span></button><button class="live-control" id="liveSwitch"><svg class="icon"><use href="#i-switch"/></svg><span>Cambiar</span></button><button class="live-control" id="liveEffects"><svg class="icon"><use href="#i-wand"/></svg><span>Efectos</span></button><button class="live-control" id="liveShare"><svg class="icon"><use href="#i-share"/></svg><span>Compartir</span></button><button class="live-control" id="liveMore"><svg class="icon"><use href="#i-more"/></svg><span>Más</span></button></div>
+  </main>
+</div>
+
+<div class="backdrop hidden" id="menuBackdrop"></div>
+<aside class="side-menu" id="sideMenu" aria-hidden="true"><div class="menu-head"><div><small>MENÚ DE USUARIO</small><h2>JEMMO LIVE</h2></div><button class="orb" id="menuClose"><svg class="icon"><use href="#i-x"/></svg></button></div><nav class="menu-list"><a href="yo.html"><span><svg class="icon"><use href="#i-user"/></svg></span><div><b>Mi perfil</b><small>Cuenta, nivel e identidad</small></div><i>›</i></a><button data-menu-action="wallet"><span><svg class="icon"><use href="#i-gift"/></svg></span><div><b>Monedero</b><small>Saldo, recargas y retiros</small></div><i>›</i></button><button data-menu-action="settings"><span><svg class="icon"><use href="#i-settings"/></svg></span><div><b>Configuración LIVE</b><small>Cámara, sonido y privacidad</small></div><i>›</i></button><button data-menu-action="help"><span><svg class="icon"><use href="#i-help"/></svg></span><div><b>Ayuda y soporte</b><small>Permisos y problemas técnicos</small></div><i>›</i></button><button data-menu-action="logout"><span><svg class="icon"><use href="#i-x"/></svg></span><div><b>Cerrar sesión</b><small>Salir de esta cuenta</small></div><i>›</i></button></nav></aside>
+
+<nav class="bottom-nav"><a href="inicio.html"><span class="nav-orb"><svg class="icon"><use href="#i-home"/></svg></span><b>Inicio</b></a><a href="live.html" class="active"><span class="nav-orb"><svg class="icon"><use href="#i-live"/></svg></span><b>Live</b></a><a href="salas.html"><span class="nav-orb"><svg class="icon"><use href="#i-rooms"/></svg></span><b>Salas</b></a><a href="mensajes.html"><span class="badge">8</span><span class="nav-orb"><svg class="icon"><use href="#i-chat"/></svg></span><b>Mensajes</b></a><a href="yo.html"><span class="nav-orb"><svg class="icon"><use href="#i-user"/></svg></span><b>Yo</b></a></nav>
+
+<div class="backdrop hidden" id="modalBackdrop"></div><section class="modal hidden" id="modal" role="dialog" aria-modal="true"><h2 id="modalTitle">Aviso</h2><p id="modalText"></p><div class="modal-actions"><button id="modalCancel">Cancelar</button><button class="primary" id="modalConfirm">Aceptar</button></div></section><div class="toast" id="toast" role="status"></div>
+<script src="live.js"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+JEMMO LIVE v0.6.4 · MÓDULO LIVE
+
+BASE
+- Se instala sobre JEMMO LIVE v0.6.3.
+- No modifica Inicio, Acceso, Salas, Mensajes ni Yo.
+- Añade live.html, live.css y live.js.
+
+INCLUYE
+- Preparación del LIVE con cámara real del móvil.
+- Cámara frontal, trasera y ambas cámaras cuando el dispositivo lo permite.
+- Aviso claro si el móvil no admite ambas cámaras.
+- Micrófono, filtros, título, descripción, categoría, privacidad, sillas y conexión.
+- Validación antes de iniciar.
+- Pantalla de transmisión local con chat, cronómetro, espectadores, batalla, sillas, regalos y controles.
+- Barra inferior: Inicio, Live, Salas, Mensajes y Yo.
+- Sin fotografías de relleno ni imágenes generadas.
+- Vista sin modo espejo.
+
+VERDAD TÉCNICA
+- Cámara, micrófono, cambios de modo y flujo visual funcionan localmente mediante HTTPS.
+- Todavía no transmite vídeo a otros usuarios. Falta conectar servidor o SDK LIVE, backend multiusuario, moderación y economía real.
