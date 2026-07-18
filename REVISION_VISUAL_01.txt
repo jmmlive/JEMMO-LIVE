@@ -1,0 +1,15 @@
+JEMMO LIVE v0.6.1 · REVISIÓN VISUAL 01
+
+Esto NO es una versión estable ni un instalador.
+Es una revisión para abrir inicio.html y mirar el diseño.
+
+Cambios incluidos:
+- Encabezado más compacto y logo completo.
+- Pez grabado dentro de JEMMOS, JEMS y CRISTALES.
+- Pez activo inferior más pequeño.
+- Batalla oficial más panorámica.
+- Ojo oficial recortado en un cuadrado.
+- Punto verde independiente para el estado.
+- Campo visual del chat de esta batalla.
+
+Todavía no se ha declarado v0.6.1 estable.
