@@ -13,3 +13,11 @@ Objetivo único: pulir el Inicio sin reconstruir ni romper el contenido aprobado
 - Barra inferior con iconos normales y el pez JEMMO únicamente en la pestaña activa.
 - Animación breve antes de cambiar de pestaña.
 - Cerrar sesión intenta cerrar Firebase y vuelve a acceso.html.
+
+
+## Correcciones finales de esta entrega
+- Fondo totalmente bloqueado al abrir el monedero o el menú lateral.
+- Chat de las batallas eliminado del Inicio.
+- Encabezado alineado y encajado sin cambiar su estructura.
+- Pez de la pestaña activa ligeramente más pequeño.
+- Iconos inferiores ajustados a un tamaño más limpio.

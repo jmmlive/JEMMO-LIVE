@@ -3,21 +3,59 @@ const ICONS={menu:'<path d="M4 6h16M4 12h16M4 18h16"/>',close:'<path d="M18 6 6 
 const svg=n=>`<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n]||ICONS.home}</svg>`;
 const qs=(s,r=document)=>r.querySelector(s), qsa=(s,r=document)=>[...r.querySelectorAll(s)];
 const menu=qs('#sideMenu'),back=qs('#menuBackdrop');
-function openMenu(){if(!menu)return;menu.classList.add('open');menu.setAttribute('aria-hidden','false');if(back)back.hidden=false;document.body.style.overflow='hidden'}
-function closeMenu(){if(!menu)return;menu.classList.remove('open');menu.setAttribute('aria-hidden','true');if(back)back.hidden=true;document.body.style.overflow=''}
+let lockedScrollY=0;
+function lockPage(){
+  if(document.body.classList.contains('ui-locked')) return;
+  lockedScrollY=window.scrollY||document.documentElement.scrollTop||0;
+  document.body.style.top=`-${lockedScrollY}px`;
+  document.body.classList.add('ui-locked');
+}
+function unlockPage(){
+  if(!document.body.classList.contains('ui-locked')) return;
+  document.body.classList.remove('ui-locked');
+  document.body.style.top='';
+  window.scrollTo(0,lockedScrollY);
+}
+function openMenu(){if(!menu)return;menu.classList.add('open');menu.setAttribute('aria-hidden','false');if(back)back.hidden=false;lockPage()}
+function closeMenu(){if(!menu)return;menu.classList.remove('open');menu.setAttribute('aria-hidden','true');if(back)back.hidden=true;if(!wallet?.classList.contains('open'))unlockPage()}
 qs('#menuOpen')?.addEventListener('click',openMenu);qs('#menuClose')?.addEventListener('click',closeMenu);back?.addEventListener('click',closeMenu);document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
 if(qs('#menuOpen')) qs('#menuOpen').innerHTML=svg('menu');if(qs('#menuClose')) qs('#menuClose').innerHTML=svg('close');
 const searchWrap=qs('.function-search span');if(searchWrap)searchWrap.innerHTML=svg('search');
 const menuButtons=qsa('#menuList button');const menuIconNames=['user','wallet','settings','help','logout'];menuButtons.forEach((b,i)=>{const s=b.querySelector('span');if(s)s.outerHTML=svg(menuIconNames[i]||'home');b.addEventListener('click',()=>{if(b.dataset.route)location.href=b.dataset.route;else if(b.dataset.action==='wallet'){closeMenu();openWallet()}else if(b.id==='logoutButton')logout();else toast(`${b.dataset.demo||b.querySelector('b')?.textContent}: próximamente`)})});
 const navIcons={inicio:'home',live:'video',salas:'mic',mensajes:'message',yo:'user'};qsa('.bottom-nav a').forEach(a=>{const tab=a.dataset.tab;const n=a.querySelector('.nav-icon');if(n)n.innerHTML=svg(navIcons[tab]);if(tab===a.closest('.bottom-nav')?.dataset.current)a.classList.add('active')});
-const wallet=qs('#walletSheet');function openWallet(){wallet?.classList.add('open');wallet?.setAttribute('aria-hidden','false')}function closeWallet(){wallet?.classList.remove('open');wallet?.setAttribute('aria-hidden','true')}qs('#walletPlus')?.addEventListener('click',openWallet);qsa('[data-wallet]').forEach(b=>b.addEventListener('click',openWallet));qs('#walletClose')?.addEventListener('click',closeWallet);qsa('[data-action="wallet"]').forEach(b=>b.addEventListener('click',openWallet));
+const wallet=qs('#walletSheet'),walletBack=qs('#walletBackdrop');
+function openWallet(){if(!wallet)return;wallet.classList.add('open');wallet.setAttribute('aria-hidden','false');if(walletBack)walletBack.hidden=false;lockPage()}
+function closeWallet(){if(!wallet)return;wallet.classList.remove('open');wallet.setAttribute('aria-hidden','true');if(walletBack)walletBack.hidden=true;if(!menu?.classList.contains('open'))unlockPage()}
+qs('#walletPlus')?.addEventListener('click',openWallet);qsa('[data-wallet]').forEach(b=>b.addEventListener('click',openWallet));qs('#walletClose')?.addEventListener('click',closeWallet);walletBack?.addEventListener('click',closeWallet);qsa('[data-action="wallet"]').forEach(b=>b.addEventListener('click',openWallet));
 function toast(t){const el=qs('#demoToast');if(!el)return;el.textContent=t;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2100)}qsa('[data-demo]').forEach(b=>b.addEventListener('click',()=>toast(`${b.dataset.demo}: próximamente`)));
 async function logout(){try{if(window.firebase?.auth)await firebase.auth().signOut()}catch{}localStorage.removeItem('jemmo_session');location.href='acceso.html'}qs('#logoutButton')?.addEventListener('click',logout);
 const input=qs('#functionSearch'),results=qs('#searchResults');const options=[['Mi perfil','yo.html','user'],['Monedero','wallet','wallet'],['Iniciar LIVE','live.html','video'],['Salas de audio','salas.html','mic'],['Mensajes','mensajes.html','message'],['Configuración','demo','settings'],['Ayuda y soporte','demo','help']];if(input&&results){input.addEventListener('input',()=>{const q=input.value.trim().toLowerCase();results.innerHTML='';if(!q)return;options.filter(x=>x[0].toLowerCase().includes(q)).forEach(([label,target,icon])=>{const b=document.createElement('button');b.innerHTML=`${svg(icon)}<b>${label}</b><i>›</i>`;b.onclick=()=>target==='wallet'?openWallet():target==='demo'?toast(`${label}: próximamente`):location.href=target;results.appendChild(b)})})}
 // Replace remaining generic emoji markers on Inicio with vector icons or clean initials.
 qsa('.battle-panel .section-title h2').forEach(h=>{h.innerHTML=`${svg('crown')} BATALLA DE CASAS DESTACADA`});
-qsa('.chat-head h2').forEach(h=>{h.innerHTML=`${svg('chat')} CHAT DE LAS BATALLAS`});
 qsa('.crest').forEach((c,i)=>{c.innerHTML=`${svg('crown')}<span>${i===0?'JT':'CU'}</span>`});
 const donate=qs('.donation>a');if(donate)donate.innerHTML=`${svg('gift')} DONAR`;
-qsa('.chat-box p').forEach((p,i)=>{p.innerHTML=p.innerHTML.replace(/^💎\s*/,svg('gem')+' ').replace(/^🔥\s*/,svg('flame')+' ').replace(/^👑\s*/,svg('badge')+' ').replace(/\s*🦄/g,'').replace(/💙💛/g,'').replace(/🎁|🌹/g,'')});
+})();
+
+// Chat local funcional de la batalla. Conserva mensajes durante la sesión del navegador.
+(()=>{
+  const form=document.querySelector('#battleChatForm');
+  const input=document.querySelector('#battleChatInput');
+  const messages=document.querySelector('#battleMessages');
+  const gift=document.querySelector('#battleGift');
+  if(!form||!input||!messages)return;
+  const append=(name,text,cls='')=>{
+    const p=document.createElement('p');
+    if(cls)p.className=cls;
+    const b=document.createElement('b'); b.textContent=name;
+    const span=document.createElement('span'); span.textContent=text;
+    p.append(b,span); messages.appendChild(p); messages.scrollTop=messages.scrollHeight;
+  };
+  form.addEventListener('submit',e=>{
+    e.preventDefault();
+    const text=input.value.trim();
+    if(!text)return;
+    append('Tú',text);
+    input.value=''; input.focus();
+  });
+  gift?.addEventListener('click',()=>append('Tú','enviaste un regalo a la batalla','gift-message'));
 })();
