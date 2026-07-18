@@ -1,37 +1,13 @@
-(() => {
-  const qs=(s,r=document)=>r.querySelector(s), qsa=(s,r=document)=>[...r.querySelectorAll(s)];
-  const menu=qs('#sideMenu'), backdrop=qs('#menuBackdrop');
-  const openMenu=()=>{menu?.classList.add('open');menu?.setAttribute('aria-hidden','false');if(backdrop){backdrop.hidden=false}};
-  const closeMenu=()=>{menu?.classList.remove('open');menu?.setAttribute('aria-hidden','true');if(backdrop){backdrop.hidden=true}};
-  qs('#menuOpen')?.addEventListener('click',openMenu); qs('#menuClose')?.addEventListener('click',closeMenu); backdrop?.addEventListener('click',closeMenu);
-  const toast=(t)=>{const el=qs('#demoToast');if(!el)return;el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1800)};
-  const routes=[
-    {label:'Mi perfil',icon:'👤',terms:'perfil editar foto nombre biografia avatar apariencia',route:'yo.html'},
-    {label:'Monedero',icon:'🟡',terms:'monedero saldo jemmos jems cristales dinero'},
-    {label:'Recargar JEMMOS',icon:'🟡',terms:'recargar comprar jemmos moneda amarilla'},
-    {label:'Retirar JEMS',icon:'🟣',terms:'retirar ganancias jems moneda rosada'},
-    {label:'Intercambiar monedas',icon:'🔄',terms:'intercambiar convertir jemmos jems cristales'},
-    {label:'Historial del monedero',icon:'📜',terms:'historial movimientos pagos monedero'},
-    {label:'Iniciar LIVE',icon:'📹',terms:'live directo transmitir camara',route:'live.html'},
-    {label:'Salas de audio',icon:'🎙️',terms:'salas audio microfono',route:'salas.html'},
-    {label:'Mensajes',icon:'💬',terms:'mensajes chats soporte avisos',route:'mensajes.html'},
-    {label:'Idioma',icon:'🌍',terms:'idioma lengua configuracion'},
-    {label:'Seguridad y privacidad',icon:'🔒',terms:'seguridad privacidad bloquear cuenta ayuda'},
-    {label:'Ayuda y soporte',icon:'❓',terms:'ayuda soporte problemas contacto'}
-  ];
-  const search=qs('#functionSearch'), menuList=qs('#menuList');
-  let results=qs('#searchResults'); if(menu && !results){results=document.createElement('div');results.id='searchResults';results.className='search-results';menuList?.after(results)}
-  const recentKey='jemmo_recent_functions';
-  const recent=()=>{try{return JSON.parse(localStorage.getItem(recentKey)||'[]')}catch{return[]}};
-  const saveRecent=(item)=>localStorage.setItem(recentKey,JSON.stringify([item,...recent().filter(x=>x.label!==item.label)].slice(0,5)));
-  function activate(item){saveRecent(item);if(item.route) location.href=item.route; else toast(`${item.label}: pantalla preparada para la siguiente fase`)}
-  function renderButtons(list,title){if(!results)return;results.innerHTML='';if(title&&list.length){const p=document.createElement('p');p.className='search-results-title';p.textContent=title;results.append(p)} list.forEach(item=>{const b=document.createElement('button');b.innerHTML=`<span>${item.icon}</span><b>${item.label}</b><i>›</i>`;b.onclick=()=>activate(item);results.append(b)})}
-  function renderDefault(){menuList.hidden=false;const r=recent();renderButtons(r,'Accesos recientes')}
-  search?.addEventListener('input',()=>{const term=search.value.trim().toLowerCase(); if(!term){renderDefault();return} menuList.hidden=true;const found=routes.filter(x=>(x.label+' '+x.terms).toLowerCase().includes(term));renderButtons(found,found.length?'Resultados':'');if(!found.length)results.innerHTML='<div class="empty-search">No se encontró esa función.</div>'});
-  qsa('[data-route]').forEach(b=>b.addEventListener('click',()=>location.href=b.dataset.route));qsa('[data-demo]').forEach(b=>b.addEventListener('click',()=>toast(`${b.dataset.demo}: pantalla preparada`)));
-  qs('#logoutButton')?.addEventListener('click',()=>{localStorage.removeItem('jemmo_session');location.href='acceso.html'});
-  renderDefault();
-  const sheet=qs('#walletSheet'); const openSheet=()=>sheet?.classList.add('open');
-  qs('#walletPlus')?.addEventListener('click',openSheet);qsa('.wallet-token').forEach(x=>x.addEventListener('click',openSheet));qs('#walletClose')?.addEventListener('click',()=>sheet?.classList.remove('open'));qs('#rechargeDemo')?.addEventListener('click',()=>toast('Recarga de JEMMOS: próxima pantalla'));
-  const nav=qs('.bottom-nav'); if(nav){const current=nav.dataset.current||'inicio';qsa('a',nav).forEach(a=>a.classList.toggle('active',a.dataset.tab===current));const active=qs('a.active',nav);if(active){const fish=document.createElement('img');fish.className='active-fish';fish.src='jemmo-logo-oficial.jpg';fish.alt='Pez JEMMO';active.append(fish)}}
-})();
+
+const $=(s,p=document)=>p.querySelector(s), $$=(s,p=document)=>[...p.querySelectorAll(s)];
+const menu=$('#sideMenu'), backdrop=$('#menuBackdrop'), toast=$('#demoToast');
+function openMenu(){if(!menu)return;menu.classList.add('open');menu.setAttribute('aria-hidden','false');backdrop.hidden=false;setTimeout(()=>$('#functionSearch')?.focus(),180)}
+function closeMenu(){if(!menu)return;menu.classList.remove('open');menu.setAttribute('aria-hidden','true');backdrop.hidden=true}
+$('#menuOpen')?.addEventListener('click',openMenu);$('#menuClose')?.addEventListener('click',closeMenu);backdrop?.addEventListener('click',closeMenu);
+function showToast(text){if(!toast)return;toast.textContent=text+' · pantalla preparada para una próxima versión';toast.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>toast.classList.remove('show'),2300)}
+const search=$('#functionSearch'), quick=$('#quickResults');
+search?.addEventListener('input',()=>{const q=search.value.trim().toLowerCase();quick.hidden=!q;$$('#menuList button').forEach(b=>b.classList.toggle('match',q&&b.dataset.search.includes(q)));if(q){$$('#quickResults button').forEach(b=>{const t=b.textContent.toLowerCase();b.hidden=!t.includes(q) && !({'dinero':'recargar retirar historial','moneda':'recargar retirar historial','perfil':'','live':'live','sala':'salas','mensaje':'mensajes','seguridad':'seguridad','idioma':'idioma'}[q]||'').split(' ').some(x=>t.includes(x))})}});
+$$('[data-route]').forEach(b=>b.addEventListener('click',()=>location.href=b.dataset.route));$$('[data-demo]').forEach(b=>b.addEventListener('click',()=>showToast(b.dataset.demo)));
+$('#logoutButton')?.addEventListener('click',async()=>{try{const {initializeApp,getApps}=await import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js');const {getAuth,signOut}=await import('https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js');const cfg={apiKey:'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',authDomain:'jemmo-live.firebaseapp.com',projectId:'jemmo-live',storageBucket:'jemmo-live.firebasestorage.app',messagingSenderId:'355540892255',appId:'1:355540892255:web:d15a8dd03b2915e31939ea'};const app=getApps()[0]||initializeApp(cfg);await signOut(getAuth(app))}catch(e){}location.href='acceso.html'});
+const nav=$('.bottom-nav');if(nav){const current=nav.dataset.current;$$('a[data-tab]',nav).forEach(a=>a.classList.toggle('active',a.dataset.tab===current))}
+const coin=$('#coinButton'), sheet=$('#walletSheet');coin?.addEventListener('click',()=>{sheet?.classList.add('open');backdrop.hidden=false});$('#walletClose')?.addEventListener('click',()=>{sheet?.classList.remove('open');backdrop.hidden=true});$('#rechargeDemo')?.addEventListener('click',()=>showToast('Recargar monedas'));
