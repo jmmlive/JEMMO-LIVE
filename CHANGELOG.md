@@ -1,9 +1,8 @@
-# CHANGELOG
+# Changelog v0.6
 
-## v0.5
-- Sustituida Casa en la barra inferior por Salas.
-- Añadido estado activo luminoso por sección.
-- Añadido menú lateral de usuario con buscador de funciones.
-- Recarga integrada en el botón de monedas.
-- Menú simplificado: Perfil, Monedero, Configuración, Ayuda y Cerrar sesión.
-- Añadido cierre de sesión real con Firebase.
+- Reconstruida desde v0.5 estable.
+- Corregido el error de usar la captura completa como encabezado.
+- Añadidos recursos optimizados `jemmo-logo-header.webp` y `jemmo-fish-nav.webp`.
+- Nuevo sistema visual de monedas: JEMMOS, JEMS y CRISTALES.
+- Buscador de funciones con filtrado y accesos recientes persistentes.
+- Navegación inferior con mascota activa.
