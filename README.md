@@ -1,15 +1,14 @@
-# JEMMO LIVE v0.6 PROFESIONAL
+# JEMMO LIVE v0.6.2
 
-Base: v0.5 estable.
+Base estable: v0.6 PROFESIONAL.
 
-Objetivo único: pulir el Inicio sin reconstruir ni romper el contenido aprobado.
+Objetivo único: corregir el logo superior y activar el envío del chat sin modificar el resto del Inicio aprobado.
 
 ## Cambios
-- Logo oficial adaptado y recortado para el encabezado.
-- Monedero compacto con JEMMOS, JEMS y CRISTALES.
-- Centro de monedas funcional como panel inferior.
-- Menú lateral y buscador real de funciones.
-- Accesos recientes: máximo cinco y solo después de usarlos.
-- Barra inferior con iconos normales y el pez JEMMO únicamente en la pestaña activa.
-- Animación breve antes de cambiar de pestaña.
-- Cerrar sesión intenta cerrar Firebase y vuelve a acceso.html.
+- El logo vuelve a ocupar el encabezado en formato ancho, sin quedar pequeño dentro de un cuadrado.
+- El chat de la batalla permite enviar con el botón o con la tecla Intro.
+- Los mensajes se muestran al instante, con hora, y se conservan localmente en el dispositivo.
+- No se han modificado el monedero, la barra inferior, el pez activo, las tarjetas ni la navegación.
+
+## Alcance técnico
+El chat de esta versión es funcional en el dispositivo. Todavía no es un chat multiusuario conectado a base de datos o tiempo real; esa conexión pertenece a una fase posterior.

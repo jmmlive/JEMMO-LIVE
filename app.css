@@ -51,3 +51,10 @@
 .battle-chat-form button{border:1px solid #9b35b8;background:linear-gradient(90deg,#7d19a2,#4c4de1);color:white;border-radius:11px;padding:0 13px;font-weight:800}
 .active-fish{width:42px;height:42px;top:-20px;border-radius:45%;object-fit:cover;object-position:center 42%;filter:drop-shadow(0 0 7px #a821ff)}
 @media(max-width:430px){.brand-logo{height:64px}.battle-board{min-height:210px}.active-fish{width:39px;height:39px;top:-18px}.eye-crop{width:40px;height:40px}.battle-status{grid-template-columns:40px 9px 1fr}.eye-crop img{transform:translate(-35px,-11px)}}
+
+
+/* v0.6.2 · AJUSTE CONTROLADO: LOGO + CHAT */
+.brand-logo img{object-fit:cover;object-position:center 42%;transform:none}
+.battle-chat-messages{max-height:190px;overflow-y:auto;scroll-behavior:smooth}
+.battle-chat-messages p.chat-own{background:linear-gradient(90deg,rgba(126,25,162,.18),rgba(76,77,225,.09))}
+.battle-chat-form button:disabled{opacity:.45;cursor:not-allowed}
