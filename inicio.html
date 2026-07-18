@@ -6,11 +6,12 @@
   <meta name="theme-color" content="#09000f">
   <title>JEMMO LIVE · Inicio</title>
   <link rel="stylesheet" href="inicio.css">
+  <link rel="stylesheet" href="app.css">
 </head>
 <body>
   <main class="app-shell">
     <header class="app-header">
-      <button class="icon-button" type="button" aria-label="Abrir menú">☰</button>
+      <button class="icon-button" id="menuOpen" type="button" aria-label="Abrir menú">☰</button>
       <a class="logo" href="inicio.html" aria-label="JEMMO LIVE Inicio">
         <span class="logo-j">J</span><span class="logo-main">EMMO</span>
         <span class="logo-live">LIVE ▶</span>
@@ -19,7 +20,7 @@
         <button class="icon-button" type="button" aria-label="Buscar">⌕</button>
         <button class="icon-button notification" type="button" aria-label="Notificaciones">♧<b>12</b></button>
       </div>
-      <button class="coins" type="button"><span>◉</span> 8,590 <b>＋</b></button>
+      <button class="coins" id="coinButton" type="button" aria-label="Saldo y recarga"><span>🪙</span> 8,590 <b>＋</b></button>
     </header>
 
     <section class="panel live-panel">
@@ -59,12 +60,45 @@
     </section>
   </main>
 
-  <nav class="bottom-nav">
-    <a class="active" href="inicio.html"><span>🐠</span>Inicio</a>
-    <a href="live.html"><span>🐟</span>Live</a>
-    <a class="create" href="casa-demo.html"><span>＋</span><small>Casa</small></a>
-    <a href="mensajes.html"><span class="badge">8</span><span>🐟</span>Mensajes</a>
-    <a href="yo.html"><span>🐠</span>Yo</a>
+
+  <div class="menu-backdrop" id="menuBackdrop" hidden></div>
+  <aside class="side-menu" id="sideMenu" aria-hidden="true">
+    <div class="menu-top">
+      <div><small>MENÚ DE USUARIO</small><h2>JEMMO LIVE</h2></div>
+      <button class="menu-close" id="menuClose" aria-label="Cerrar menú">×</button>
+    </div>
+    <label class="function-search"><span>⌕</span><input id="functionSearch" placeholder="Buscar una función..." autocomplete="off"></label>
+    <div class="search-hint">Escribe, por ejemplo: retirar, idioma, live o perfil.</div>
+    <nav class="menu-list" id="menuList">
+      <button data-search="mi perfil editar perfil foto nombre biografia avatar apariencia" data-route="yo.html"><span>👤</span><b>Mi perfil</b><i>›</i></button>
+      <button data-search="monedero saldo monedas recargar retirar historial pagos intercambios" data-demo="Monedero"><span>🪙</span><b>Monedero</b><small>Saldo, recargas y retiros</small><i>›</i></button>
+      <button data-search="configuracion idioma permisos camara microfono preferencias aplicacion seguridad privacidad" data-demo="Configuración"><span>⚙️</span><b>Configuración</b><small>Idioma y ajustes de la aplicación</small><i>›</i></button>
+      <button data-search="ayuda soporte seguridad privacidad bloquear usuario problemas contacto" data-demo="Ayuda y soporte"><span>❓</span><b>Ayuda y soporte</b><small>Soporte, seguridad y privacidad</small><i>›</i></button>
+      <button class="logout-item" data-search="cerrar sesion salir desconectar cuenta" id="logoutButton"><span>↪</span><b>Cerrar sesión</b><i>›</i></button>
+    </nav>
+    <div class="quick-results" id="quickResults" hidden>
+      <p>Resultados rápidos</p>
+      <button data-demo="Recargar monedas">🪙 Recargar monedas <i>›</i></button>
+      <button data-demo="Retirar ganancias">💸 Retirar ganancias <i>›</i></button>
+      <button data-demo="Historial del monedero">📜 Historial del monedero <i>›</i></button>
+      <button data-route="live.html">🔴 Iniciar LIVE <i>›</i></button>
+      <button data-route="salas.html">🎙️ Salas de audio <i>›</i></button>
+      <button data-route="mensajes.html">💬 Mensajes <i>›</i></button>
+      <button data-demo="Idioma">🌍 Idioma <i>›</i></button>
+      <button data-demo="Seguridad y privacidad">🔒 Seguridad y privacidad <i>›</i></button>
+    </div>
+    <p class="role-note">Este es el menú de usuario. Más adelante cambiará según el rol: emisor, agente o colaborador.</p>
+  </aside>
+  <div class="demo-toast" id="demoToast" role="status"></div>
+
+  <section class="wallet-sheet" id="walletSheet"><button class="sheet-close" id="walletClose">×</button><h3>🪙 Saldo disponible: 8,590</h3><p>Este acceso rápido sirve para añadir monedas.</p><button id="rechargeDemo">＋ RECARGAR MONEDAS</button></section>
+  <nav class="bottom-nav" data-current="inicio">
+    <a data-tab="inicio" href="inicio.html"><span class="nav-fish">🐠</span><b>Inicio</b></a>
+    <a data-tab="live" href="live.html"><span class="nav-fish">🐟</span><b>Live</b></a>
+    <a data-tab="salas" href="salas.html"><span class="nav-fish">🐡</span><b>Salas</b></a>
+    <a data-tab="mensajes" href="mensajes.html"><span class="badge">8</span><span class="nav-fish">🐟</span><b>Mensajes</b></a>
+    <a data-tab="yo" href="yo.html"><span class="nav-fish">🐠</span><b>Yo</b></a>
   </nav>
+  <script src="app.js"></script>
 </body>
 </html>
