@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#09000f">
-  <title>JEMMO LIVE · Preparar LIVE · V0.6.6 PRUEBAS</title>
+  <title>JEMMO LIVE · Preparar LIVE · V0.6.7 PRUEBAS</title>
   <style>
     :root{
       color-scheme:dark;
@@ -576,6 +576,44 @@
     .jl-sheet-actions button{min-height:45px;border:1px solid #8f3aa477;border-radius:13px;background:#17051e;color:#fff;font-weight:850;font-size:11px}
     .jl-sheet-actions .accept{border-color:#48e39d99;background:#123e31;color:#a8ffd8}
     .jl-sheet-actions .danger{border-color:#ff526f99;background:#461121;color:#ffd1da}
+    /* MINI PERFIL DEL PARTICIPANTE · V0.6.7 */
+    .jl-person-card{
+      margin-top:13px;
+      padding:13px;
+      display:grid;
+      grid-template-columns:58px minmax(0,1fr);
+      gap:11px;
+      border:1px solid #9f42bc7a;
+      border-radius:18px;
+      background:
+        radial-gradient(circle at 14% 12%,#71309a3d,transparent 38%),
+        linear-gradient(145deg,#18051f,#0b020f);
+      box-shadow:inset 0 1px 0 #ffffff0c,0 10px 26px #0006;
+    }
+    .jl-person-avatar{
+      width:58px;height:58px;
+      display:grid;place-items:center;
+      border:2px solid #d45bff;
+      border-radius:18px;
+      background:linear-gradient(145deg,#7224a2,#24102e);
+      color:#fff;
+      font-size:23px;
+      font-weight:950;
+      box-shadow:0 0 18px #a12ee755;
+    }
+    .jl-person-main{min-width:0}
+    .jl-person-name-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .jl-person-name-row strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px}
+    .jl-person-state{flex:0 0 auto;padding:4px 7px;border:1px solid #4ce2a77a;border-radius:999px;background:#0d2a21;color:#8df1c4;font-size:8px;font-weight:950}
+    .jl-person-state.request{border-color:#ff9b4388;background:#2a1608;color:#ffc28c}
+    .jl-person-meta{margin:5px 0 0;color:#c0aec7;font-size:9px;line-height:1.45}
+    .jl-person-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+    .jl-person-badges span{padding:4px 7px;border:1px solid #7d3b8c75;border-radius:999px;background:#110417;color:#e0d1e5;font-size:8px;font-weight:800}
+    .jl-person-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:1px}
+    .jl-person-actions button{min-height:41px;border:1px solid #8e3ca577;border-radius:13px;background:#17051e;color:#fff;font-size:10px;font-weight:900}
+    .jl-person-actions .connect{border-color:#49e1a080;background:#10372b;color:#9ff5d0}
+    .jl-person-actions .connect.connected{border-color:#8a759177;background:#1b111e;color:#c7b9cc}
+    .jl-seat-help{margin:10px 2px 0;color:#907e98;font-size:8px;text-align:center}
     .jl-gift-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:13px}
     .jl-gift-item{min-height:82px;padding:7px 3px;border:1px solid #87369b77;border-radius:14px;background:#120419;color:#fff}
     .jl-gift-item span{display:block;font-size:27px}.jl-gift-item b{display:block;font-size:9px}.jl-gift-item small{display:block;margin-top:3px;color:#ffd76b;font-size:8px}
@@ -743,7 +781,7 @@
     }
 
 
-    /* V0.6.6 · LIVE COMPACTO, SILLAS, REGALOS Y BATALLAS */
+    /* V0.6.7 · LIVE COMPACTO, MINI PERFIL, SILLAS, REGALOS Y BATALLAS */
     .jl-filterbar{display:flex;gap:5px;pointer-events:auto;min-width:0}
     .jl-filterbar .jl-chip{padding:0 9px;min-height:38px;font-size:10px}
     .jl-filter.active{border-color:var(--green);color:var(--green);box-shadow:0 0 12px #48e39d33}
@@ -791,7 +829,7 @@
       </button>
       <div class="jl-brand">
         <img src="jemmo-logo-header-wide.webp" alt="JEMMO LIVE">
-        <small>PREPARACIÓN DE TRANSMISIÓN · V0.6.6 PRUEBAS</small>
+        <small>PREPARACIÓN DE TRANSMISIÓN · V0.6.7 PRUEBAS</small>
       </div>
       <button class="jl-round" id="helpButton" aria-label="Ayuda">?</button>
     </header>
@@ -977,11 +1015,31 @@
 
     <div class="jl-live-modal-backdrop" id="liveModalBackdrop" hidden></div>
 
-    <section class="jl-live-sheet" id="seatSheet" hidden aria-label="Control de silla">
+    <section class="jl-live-sheet" id="seatSheet" hidden aria-label="Mini perfil y control de participante">
       <div class="jl-sheet-head">
-        <div><h3 id="seatSheetTitle">Solicitud de silla</h3><p id="seatSheetText">Una persona quiere subir al LIVE.</p></div>
+        <div><h3 id="seatSheetTitle">Perfil del participante</h3><p id="seatSheetText">Información rápida sin salir del LIVE.</p></div>
         <button class="jl-sheet-close" id="seatSheetClose" type="button" aria-label="Cerrar">×</button>
       </div>
+
+      <article class="jl-person-card" id="seatProfileCard" aria-label="Mini perfil">
+        <div class="jl-person-avatar" id="seatProfileAvatar">J</div>
+        <div class="jl-person-main">
+          <div class="jl-person-name-row">
+            <strong id="seatProfileName">Participante</strong>
+            <span class="jl-person-state" id="seatProfileState">EN LIVE</span>
+          </div>
+          <p class="jl-person-meta" id="seatProfileMeta">España · Casa Tenerife</p>
+          <div class="jl-person-badges">
+            <span id="seatProfileLevel">Nivel 8</span>
+            <span id="seatProfileBadge">Emisor</span>
+          </div>
+        </div>
+        <div class="jl-person-actions">
+          <button class="connect" id="seatConnect" type="button">CONECTAR</button>
+          <button id="seatFullProfile" type="button">VER PERFIL</button>
+        </div>
+      </article>
+
       <div class="jl-sheet-actions" id="seatRequestActions">
         <button class="danger" id="seatReject" type="button">RECHAZAR</button>
         <button class="accept" id="seatAccept" type="button">ACEPTAR</button>
@@ -991,6 +1049,7 @@
         <button id="seatLower" type="button">BAJAR</button>
         <button class="danger" id="seatExpel" type="button">EXPULSAR</button>
       </div>
+      <p class="jl-seat-help">El mini perfil permanece dentro de la transmisión. La conexión real se enlazará al backend del perfil.</p>
     </section>
 
     <section class="jl-live-sheet" id="giftSheet" hidden aria-label="Caja de regalos">
@@ -1035,7 +1094,7 @@
       <button class="jl-menu-item" data-search="ayuda soporte seguridad privacidad"><span class="jl-menu-icon">?</span><span><b>Ayuda y soporte</b><small>Seguridad y asistencia</small></span><i>›</i></button>
       <a class="jl-menu-item" data-search="salir cerrar sesion" href="index.html"><span class="jl-menu-icon">↪</span><span><b>Cerrar sesión</b></span><i>›</i></a>
     </nav>
-    <div class="jl-version">V0.6.6 PRUEBAS · LIVE corregido sobre V0.6.4</div>
+    <div class="jl-version">V0.6.7 PRUEBAS · actualización sobre V0.6.6</div>
   </aside>
 
   <div class="jl-toast" id="toast"></div>
@@ -1693,12 +1752,12 @@
       showToast(state.chatEnabled ? "Chat visible." : "Chat oculto.");
     });
 
-    /* V0.6.6 · SILLAS LATERALES, REGALOS Y CARRUSEL DE BATALLAS */
+    /* V0.6.7 · MINI PERFIL, SILLAS LATERALES, REGALOS Y CARRUSEL DE BATALLAS */
     const seatUsers = [
-      {name:"Luna",initial:"L"},
-      {name:"Alex",initial:"A"},
-      {name:"Mía",initial:"M"},
-      {name:"King",initial:"K"}
+      {id:"demo-luna",name:"Luna",initial:"L",country:"España",house:"Casa Tenerife",level:12,badge:"Emisora",connected:false},
+      {id:"demo-alex",name:"Alex",initial:"A",country:"Cuba",house:"Casa Cuba",level:9,badge:"Creador",connected:false},
+      {id:"demo-mia",name:"Mía",initial:"M",country:"México",house:"Casa Fénix",level:15,badge:"Emisora",connected:false},
+      {id:"demo-king",name:"King",initial:"K",country:"Rep. Dominicana",house:"Casa Dragón",level:11,badge:"Creador",connected:false}
     ];
     const seatStates = Array.from({length:4}, () => ({status:"free",user:null,muted:false}));
 
@@ -1761,6 +1820,23 @@
       $("liveModalBackdrop").hidden = true;
     }
 
+    function renderSeatProfile(index) {
+      const seat = seatStates[index];
+      const user = seat?.user;
+      if (!seat || !user) return;
+      const isRequest = seat.status === "request";
+      $("seatProfileAvatar").textContent = user.initial || user.name?.charAt(0)?.toUpperCase() || "J";
+      $("seatProfileName").textContent = user.name || "Participante";
+      $("seatProfileMeta").textContent = `${user.country || "País sin indicar"} · ${user.house || "Sin Casa"}`;
+      $("seatProfileLevel").textContent = `Nivel ${user.level || 1}`;
+      $("seatProfileBadge").textContent = user.badge || "Usuario";
+      $("seatProfileState").textContent = isRequest ? "SOLICITA" : "EN LIVE";
+      $("seatProfileState").classList.toggle("request", isRequest);
+      $("seatConnect").textContent = user.connected ? "CONECTADO" : "CONECTAR";
+      $("seatConnect").classList.toggle("connected", Boolean(user.connected));
+      $("seatConnect").setAttribute("aria-pressed", String(Boolean(user.connected)));
+    }
+
     function openSeatControls(index) {
       const seat = seatStates[index];
       if (!seat) return;
@@ -1768,10 +1844,11 @@
       if (seat.status === "free") queueSeatRequest(index, false);
       const current = seatStates[index];
       const isRequest = current.status === "request";
-      $("seatSheetTitle").textContent = isRequest ? `Solicitud · Silla ${index+1}` : `${current.user?.name || "Invitado"} · Silla ${index+1}`;
+      $("seatSheetTitle").textContent = isRequest ? "Perfil y solicitud" : "Perfil del participante";
       $("seatSheetText").textContent = isRequest
-        ? `${current.user?.name || "Una persona"} quiere subir a tu LIVE. Puedes aceptar o rechazar.`
-        : "Controla a la persona que está participando en tu transmisión.";
+        ? `${current.user?.name || "Una persona"} quiere subir a tu LIVE.`
+        : `Vista rápida de ${current.user?.name || "la persona"} sin abandonar la transmisión.`;
+      renderSeatProfile(index);
       $("seatRequestActions").hidden = !isRequest;
       $("seatHostControls").hidden = isRequest;
       $("seatMute").textContent = current.muted ? "ACTIVAR AUDIO" : "SILENCIAR";
@@ -1781,6 +1858,24 @@
     seatButtons().forEach((button,index) => button.addEventListener("click", () => openSeatControls(index)));
     $("seatSheetClose").addEventListener("click", closeLiveSheets);
     $("liveModalBackdrop").addEventListener("click", closeLiveSheets);
+
+    $("seatConnect").addEventListener("click", () => {
+      const index = state.activeSeatIndex;
+      const user = index == null ? null : seatStates[index]?.user;
+      if (!user) return;
+      user.connected = !user.connected;
+      renderSeatProfile(index);
+      showToast(user.connected
+        ? `Ahora estás conectado con ${user.name}.`
+        : `Has quitado la conexión con ${user.name}.`);
+    });
+
+    $("seatFullProfile").addEventListener("click", () => {
+      const index = state.activeSeatIndex;
+      const user = index == null ? null : seatStates[index]?.user;
+      if (!user) return;
+      showToast(`Perfil completo de ${user.name}: preparado para conectarse al perfil real.`, 3400);
+    });
 
     $("seatReject").addEventListener("click", () => {
       const index = state.activeSeatIndex;
