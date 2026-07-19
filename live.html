@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#09000f">
-  <title>JEMMO LIVE · Preparar LIVE · V0.6.8 PRUEBAS</title>
+  <title>JEMMO LIVE · Preparar LIVE · V0.6.9 PRUEBAS</title>
   <style>
     :root{
       color-scheme:dark;
@@ -576,7 +576,7 @@
     .jl-sheet-actions button{min-height:45px;border:1px solid #8f3aa477;border-radius:13px;background:#17051e;color:#fff;font-weight:850;font-size:11px}
     .jl-sheet-actions .accept{border-color:#48e39d99;background:#123e31;color:#a8ffd8}
     .jl-sheet-actions .danger{border-color:#ff526f99;background:#461121;color:#ffd1da}
-    /* MINI PERFIL DEL PARTICIPANTE · V0.6.8 */
+    /* MINI PERFIL DEL PARTICIPANTE · V0.6.9 */
     .jl-person-card{
       margin-top:13px;
       padding:13px;
@@ -781,7 +781,7 @@
     }
 
 
-    /* V0.6.8 · LIVE PROFESIONAL, CHAT, TAREAS, SILLAS, REGALOS Y BATALLAS */
+    /* V0.6.9 · LIVE PROFESIONAL, CHAT, TAREAS, SILLAS, REGALOS Y BATALLAS */
     .jl-filterbar{display:flex;gap:5px;pointer-events:auto;min-width:0}
     .jl-filterbar .jl-chip{padding:0 9px;min-height:38px;font-size:10px}
     .jl-filter.active{border-color:var(--green);color:var(--green);box-shadow:0 0 12px #48e39d33}
@@ -820,7 +820,7 @@
     @media(max-width:390px){.jl-filterbar .jl-chip{padding:0 7px;font-size:9px}.jl-camera-bottom{gap:5px}.jl-camera-bottom>.jl-chip{padding:0 10px}.jl-task-card{max-width:68vw}}
 
   
-    /* V0.6.8 · CORRECCIÓN REAL DEL LIVE */
+    /* V0.6.9 · CORRECCIÓN REAL DEL LIVE */
     .jl-live-overlay{
       padding-bottom:calc(76px + env(safe-area-inset-bottom));
     }
@@ -1085,6 +1085,209 @@
       box-shadow:0 0 12px currentColor;
     }
 
+
+    /* V0.6.9 · CORRECCIÓN PRIORITARIA: NAVEGACIÓN, CHAT, AJUSTES Y SOLICITUDES */
+    .jl-nav{
+      min-height:82px;
+      padding:9px 5px max(10px,env(safe-area-inset-bottom));
+    }
+    .jl-nav.live-mode{z-index:50}
+    .jl-nav.chat-hidden{transform:none}
+    .jl-nav.live-mode .jl-nav-icon{height:35px}
+    .jl-nav.live-mode .jl-nav img{width:42px;height:42px}
+
+    .jl-live-overlay{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+    .jl-chat-dock{
+      position:absolute;
+      z-index:24;
+      left:8px;
+      right:8px;
+      bottom:calc(8px + env(safe-area-inset-bottom));
+      width:auto;
+      border:0;
+      border-radius:0;
+      background:transparent;
+      box-shadow:none;
+      pointer-events:none;
+      transition:none;
+    }
+    .jl-chat-dock.collapsed{
+      left:8px;
+      right:8px;
+      bottom:calc(8px + env(safe-area-inset-bottom));
+      width:auto;
+      border:0;
+      border-radius:0;
+      background:transparent;
+    }
+    .jl-live-chat{
+      width:min(78vw,380px);
+      max-height:126px;
+      min-height:0;
+      margin:0 0 7px;
+      padding:0;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      gap:5px;
+      pointer-events:none;
+    }
+    .jl-chat-line{
+      width:max-content;
+      max-width:100%;
+      padding:6px 9px;
+      border:1px solid #ffffff19;
+      border-radius:13px 13px 13px 4px;
+      background:#09020dbc;
+      box-shadow:0 4px 14px #0005;
+      font-size:10px;
+      line-height:1.25;
+    }
+    .jl-chat-bottom-row{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) 50px;
+      gap:7px;
+      align-items:end;
+      pointer-events:auto;
+    }
+    .jl-chat-entry{min-width:0}
+    .jl-chat-handle{
+      width:100%;
+      min-height:46px;
+      padding:0 14px;
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+      gap:8px;
+      border:1px solid #9a46ae88;
+      border-radius:16px;
+      background:#100416e9;
+      color:#fff;
+      box-shadow:0 8px 24px #0008;
+      font-size:11px;
+      font-weight:900;
+    }
+    .jl-chat-handle span{font-size:17px}
+    .jl-chat-dock:not(.collapsed) .jl-chat-handle{display:none}
+    .jl-chat-form{
+      display:none;
+      grid-template-columns:38px minmax(0,1fr) 42px;
+      gap:5px;
+      min-height:46px;
+      padding:4px;
+      border:1px solid #9a46ae88;
+      border-radius:16px;
+      background:#100416f1;
+      box-shadow:0 8px 24px #0008;
+    }
+    .jl-chat-dock:not(.collapsed) .jl-chat-form{display:grid}
+    .jl-chat-form input{
+      min-width:0;
+      min-height:38px;
+      padding:0 8px;
+      border:0;
+      border-radius:11px;
+      outline:0;
+      background:#050108b5;
+      color:#fff;
+      font-size:12px;
+    }
+    .jl-chat-form button{
+      min-width:0;
+      min-height:38px;
+      padding:0;
+      border:1px solid #7f398f78;
+      border-radius:11px;
+      background:#21072b;
+      color:#fff;
+      font-size:17px;
+      font-weight:950;
+    }
+    .jl-chat-form .jl-chat-send{
+      border-color:#4be1a080;
+      background:#123a2d;
+      color:#a6f7d2;
+    }
+    .jl-chat-settings{
+      width:50px;
+      min-height:46px;
+      padding:4px 2px;
+      display:grid;
+      place-items:center;
+      align-content:center;
+      gap:1px;
+      border:1px solid #b14bd18a;
+      border-radius:15px;
+      background:#100416eb;
+      color:#fff;
+      box-shadow:0 8px 24px #0008;
+    }
+    .jl-chat-settings span{font-size:18px;line-height:1}
+    .jl-chat-settings small{font-size:7px;color:#d9cadd;font-weight:900}
+    .jl-chat-dock.comments-off .jl-chat-entry{opacity:.48}
+    .jl-chat-dock.comments-off .jl-live-chat{display:none}
+
+    .jl-settings-sheet{max-height:min(58vh,470px)}
+    .jl-settings-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin-top:12px;
+    }
+    .jl-settings-grid button{
+      min-height:72px;
+      padding:9px 7px;
+      display:grid;
+      place-items:center;
+      align-content:center;
+      gap:2px;
+      border:1px solid #8f3aa477;
+      border-radius:14px;
+      background:#17051e;
+      color:#fff;
+    }
+    .jl-settings-grid button span{font-size:20px;line-height:1}
+    .jl-settings-grid button b{font-size:10px}
+    .jl-settings-grid button small{font-size:8px;color:#aa98b0}
+    .jl-settings-grid button.danger{border-color:#ff526f99;background:#461121;color:#ffd1da}
+
+    #seatSheet.request-mode{
+      left:12px;
+      right:12px;
+      top:calc(84px + env(safe-area-inset-top));
+      bottom:auto;
+      max-height:min(48vh,360px);
+      padding:10px;
+      border-radius:17px;
+    }
+    #seatSheet.request-mode .jl-sheet-head h3{font-size:14px}
+    #seatSheet.request-mode .jl-sheet-head p{font-size:9px}
+    #seatSheet.request-mode .jl-sheet-close{width:30px;height:30px;border-radius:10px;font-size:18px}
+    #seatSheet.request-mode .jl-person-card{
+      margin-top:8px;
+      padding:8px;
+      grid-template-columns:43px minmax(0,1fr);
+      gap:8px;
+      border-radius:14px;
+    }
+    #seatSheet.request-mode .jl-person-avatar{width:43px;height:43px;border-radius:13px;font-size:18px}
+    #seatSheet.request-mode .jl-person-name-row strong{font-size:13px}
+    #seatSheet.request-mode .jl-person-meta{font-size:8px}
+    #seatSheet.request-mode .jl-person-badges{margin-top:5px}
+    #seatSheet.request-mode .jl-person-actions,
+    #seatSheet.request-mode .jl-seat-help{display:none}
+    #seatSheet.request-mode .jl-sheet-actions{gap:7px;margin-top:8px}
+    #seatSheet.request-mode .jl-sheet-actions button{min-height:38px;border-radius:11px;font-size:10px}
+
+    @media(max-width:390px){
+      .jl-chat-dock,.jl-chat-dock.collapsed{left:6px;right:6px}
+      .jl-chat-bottom-row{grid-template-columns:minmax(0,1fr) 47px;gap:5px}
+      .jl-chat-settings{width:47px}
+      .jl-settings-grid button{min-height:66px}
+      #seatSheet.request-mode{top:calc(76px + env(safe-area-inset-top));left:8px;right:8px}
+    }
+
   </style>
 </head>
 <body>
@@ -1095,7 +1298,7 @@
       </button>
       <div class="jl-brand">
         <img src="jemmo-logo-header-wide.webp" alt="JEMMO LIVE">
-        <small>PREPARACIÓN DE TRANSMISIÓN · V0.6.8 PRUEBAS</small>
+        <small>PREPARACIÓN DE TRANSMISIÓN · V0.6.9 PRUEBAS</small>
       </div>
       <button class="jl-round" id="helpButton" aria-label="Ayuda">?</button>
     </header>
@@ -1272,19 +1475,25 @@
       </article>
     </div>
 
-    <section class="jl-chat-dock collapsed" id="chatDock" aria-label="Chat del LIVE">
-      <button class="jl-chat-handle" id="chatHandle" type="button" aria-expanded="false">
-        <span>💬</span><b id="chatHandleText">Abrir chat</b><i>⌃</i>
-      </button>
-      <div class="jl-chat-panel">
-        <div class="jl-live-chat" id="liveChat">
-          <div class="jl-chat-line">JEMMO: La transmisión ha comenzado.</div>
-          <div class="jl-chat-line">Revisa el encuadre y el micrófono.</div>
+    <section class="jl-chat-dock collapsed" id="chatDock" aria-label="Chat y ajustes del LIVE">
+      <div class="jl-live-chat" id="liveChat" aria-live="polite">
+        <div class="jl-chat-line">JEMMO: La transmisión ha comenzado.</div>
+        <div class="jl-chat-line">Revisa el encuadre y el micrófono.</div>
+      </div>
+      <div class="jl-chat-bottom-row">
+        <div class="jl-chat-entry">
+          <button class="jl-chat-handle" id="chatHandle" type="button" aria-expanded="false">
+            <span>💬</span><b id="chatHandleText">Iniciar chat</b>
+          </button>
+          <form class="jl-chat-form" id="liveChatForm">
+            <button class="jl-sticker-button" id="liveStickerButton" type="button" aria-label="Abrir stickers">☺</button>
+            <input id="liveChatInput" maxlength="160" autocomplete="off" enterkeyhint="send" placeholder="Escribe un mensaje…" aria-label="Mensaje del chat">
+            <button class="jl-chat-send" type="submit" aria-label="Enviar mensaje">➤</button>
+          </form>
         </div>
-        <form class="jl-chat-form" id="liveChatForm">
-          <input id="liveChatInput" maxlength="160" autocomplete="off" placeholder="Escribe un mensaje…" aria-label="Mensaje del chat">
-          <button type="submit">Enviar</button>
-        </form>
+        <button class="jl-chat-settings" id="liveSettingsButton" type="button" aria-label="Abrir ajustes del LIVE">
+          <span>⚙</span><small>Ajustes</small>
+        </button>
       </div>
     </section>
 
@@ -1325,6 +1534,21 @@
         <button class="danger" id="seatExpel" type="button">EXPULSAR</button>
       </div>
       <p class="jl-seat-help">El mini perfil permanece dentro de la transmisión. La conexión real se enlazará al backend del perfil.</p>
+    </section>
+
+    <section class="jl-live-sheet jl-settings-sheet" id="settingsSheet" hidden aria-label="Ajustes del LIVE">
+      <div class="jl-sheet-head">
+        <div><h3>Ajustes del LIVE</h3><p>Controles principales sin salir de la transmisión.</p></div>
+        <button class="jl-sheet-close" id="settingsSheetClose" type="button" aria-label="Cerrar">×</button>
+      </div>
+      <div class="jl-settings-grid">
+        <button id="settingsCamera" type="button"><span>↔</span><b>Cambiar cámara</b><small>Frontal o trasera</small></button>
+        <button id="settingsMic" type="button"><span>🎤</span><b>Micrófono</b><small id="settingsMicState">Activo</small></button>
+        <button id="settingsComments" type="button"><span>💬</span><b>Comentarios</b><small id="settingsCommentsState">Activos</small></button>
+        <button id="settingsShare" type="button"><span>↗</span><b>Compartir LIVE</b><small>Enviar enlace</small></button>
+        <button id="settingsRoom" type="button"><span>🛡</span><b>Control de sala</b><small>Sillas y participantes</small></button>
+        <button class="danger" id="settingsEnd" type="button"><span>■</span><b>Finalizar LIVE</b><small>Cerrar transmisión</small></button>
+      </div>
     </section>
 
     <section class="jl-live-sheet" id="giftSheet" hidden aria-label="Caja de regalos">
@@ -1373,7 +1597,7 @@
       <button class="jl-menu-item" data-search="ayuda soporte seguridad privacidad"><span class="jl-menu-icon">?</span><span><b>Ayuda y soporte</b><small>Seguridad y asistencia</small></span><i>›</i></button>
       <a class="jl-menu-item" data-search="salir cerrar sesion" href="index.html"><span class="jl-menu-icon">↪</span><span><b>Cerrar sesión</b></span><i>›</i></a>
     </nav>
-    <div class="jl-version">V0.6.8 PRUEBAS · actualización sobre V0.6.7</div>
+    <div class="jl-version">V0.6.9 PRUEBAS · actualización sobre V0.6.8</div>
   </aside>
 
   <div class="jl-toast" id="toast"></div>
@@ -1745,8 +1969,8 @@
         currentAudioTracks().forEach(track => track.enabled = state[key]);
       }
     }
-    $("micToggle").addEventListener("click", e => toggleButton(e.currentTarget,"micEnabled"));
-    $("chatToggle").addEventListener("click", e => toggleButton(e.currentTarget,"chatEnabled"));
+    $("micToggle").addEventListener("click", e => { toggleButton(e.currentTarget,"micEnabled"); syncLiveSettingsUi?.(); });
+    $("chatToggle").addEventListener("click", e => { toggleButton(e.currentTarget,"chatEnabled"); syncLiveSettingsUi?.(); });
 
     function readStoredProfile() {
       try {
@@ -2016,28 +2240,31 @@
       $("prepScreen").hidden = true;
       $("broadcastScreen").hidden = false;
       const liveNav = document.querySelector(".jl-nav");
-      liveNav.hidden = false;
-      liveNav.classList.add("live-mode");
-      liveNav.classList.remove("chat-hidden");
+      liveNav.hidden = true;
+      liveNav.classList.remove("live-mode","chat-hidden");
       $("chatDock").classList.add("collapsed");
+      $("chatDock").classList.toggle("comments-off", !state.chatEnabled);
       $("chatHandle").setAttribute("aria-expanded","false");
-      $("chatHandleText").textContent = "Abrir chat";
+      $("chatHandleText").textContent = "Iniciar chat";
+      syncLiveSettingsUi();
       await refreshBroadcastVideos();
       playWaterDrop();
     });
 
     function setChatOpen(open) {
       const dock = $("chatDock");
-      const nav = document.querySelector(".jl-nav");
+      if (open && !state.chatEnabled) {
+        showToast("Los comentarios están desactivados. Actívalos desde Ajustes.");
+        return;
+      }
       dock.classList.toggle("collapsed", !open);
       $("chatHandle").setAttribute("aria-expanded", String(open));
-      $("chatHandleText").textContent = open ? "Cerrar chat" : "Abrir chat";
-      nav?.classList.toggle("chat-hidden", open);
+      $("chatHandleText").textContent = "Iniciar chat";
       if (open) setTimeout(() => $("liveChatInput")?.focus(), 120);
     }
 
     $("chatHandle").addEventListener("click", () => {
-      setChatOpen($("chatDock").classList.contains("collapsed"));
+      setChatOpen(true);
     });
 
     $("liveChatForm").addEventListener("submit", event => {
@@ -2050,7 +2277,79 @@
       input.focus();
     });
 
-    /* V0.6.8 · MINI PERFIL, SILLAS DERECHA, CHAT, REGALOS Y BATALLAS */
+
+    function syncLiveSettingsUi() {
+      $("settingsMicState").textContent = state.micEnabled ? "Activo" : "Silenciado";
+      $("settingsCommentsState").textContent = state.chatEnabled ? "Activos" : "Desactivados";
+      $("settingsMic").setAttribute("aria-pressed", String(state.micEnabled));
+      $("settingsComments").setAttribute("aria-pressed", String(state.chatEnabled));
+      $("chatDock").classList.toggle("comments-off", !state.chatEnabled);
+      $("micToggle")?.classList.toggle("on", state.micEnabled);
+      $("micToggle")?.setAttribute("aria-pressed", String(state.micEnabled));
+      $("chatToggle")?.classList.toggle("on", state.chatEnabled);
+      $("chatToggle")?.setAttribute("aria-pressed", String(state.chatEnabled));
+    }
+
+    $("liveSettingsButton").addEventListener("click", () => {
+      syncLiveSettingsUi();
+      openLiveSheet("settingsSheet");
+    });
+    $("settingsSheetClose").addEventListener("click", closeLiveSheets);
+
+    $("settingsCamera").addEventListener("click", async () => {
+      const next = state.mode === "user" ? "environment" : "user";
+      state.mode = next;
+      markCameraMode(next);
+      closeLiveSheets();
+      await activateCamera(next);
+      if (state.live) await refreshBroadcastVideos();
+      showToast(next === "user" ? "Cámara frontal activada." : "Cámara trasera activada.");
+    });
+
+    $("settingsMic").addEventListener("click", () => {
+      state.micEnabled = !state.micEnabled;
+      currentAudioTracks().forEach(track => track.enabled = state.micEnabled);
+      syncLiveSettingsUi();
+      showToast(state.micEnabled ? "Micrófono activado." : "Micrófono silenciado.");
+    });
+
+    $("settingsComments").addEventListener("click", () => {
+      state.chatEnabled = !state.chatEnabled;
+      if (!state.chatEnabled) setChatOpen(false);
+      syncLiveSettingsUi();
+      showToast(state.chatEnabled ? "Comentarios activados." : "Comentarios desactivados.");
+    });
+
+    $("settingsShare").addEventListener("click", async () => {
+      const shareData = {title:"JEMMO LIVE", text:"Estoy en directo en JEMMO LIVE", url:location.href};
+      try {
+        if (navigator.share) await navigator.share(shareData);
+        else if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(location.href);
+          showToast("Enlace del LIVE copiado.");
+        } else showToast("Compartir estará disponible al publicar el LIVE.");
+      } catch (error) {
+        if (error?.name !== "AbortError") showToast("No se pudo compartir el LIVE.");
+      }
+    });
+
+    $("settingsRoom").addEventListener("click", () => {
+      closeLiveSheets();
+      showToast("Toca una silla para gestionar participantes, silenciar, bajar o expulsar.", 3400);
+    });
+
+    $("settingsEnd").addEventListener("click", () => {
+      if (!confirm("¿Quieres finalizar esta transmisión?")) return;
+      closeLiveSheets();
+      clearAllMedia();
+      showToast("LIVE finalizado.");
+    });
+
+    $("liveStickerButton").addEventListener("click", () => {
+      showToast("Panel de stickers JEMMO: siguiente revisión del LIVE.");
+    });
+
+    /* V0.6.9 · MINI PERFIL, SILLAS DERECHA, CHAT, REGALOS Y BATALLAS */
     const seatUsers = [
       {id:"demo-luna",name:"Luna",initial:"L",country:"España",house:"Casa Tenerife",level:12,badge:"Emisora",connected:false},
       {id:"demo-alex",name:"Alex",initial:"A",country:"Cuba",house:"Casa Cuba",level:9,badge:"Creador",connected:false},
@@ -2109,12 +2408,13 @@
     }
 
     function openLiveSheet(id) {
-      ["seatSheet","giftSheet","battleSheet"].forEach(sheetId => $(sheetId).hidden = sheetId !== id);
+      ["seatSheet","settingsSheet","giftSheet","battleSheet"].forEach(sheetId => $(sheetId).hidden = sheetId !== id);
       $("liveModalBackdrop").hidden = false;
     }
 
     function closeLiveSheets() {
-      ["seatSheet","giftSheet","battleSheet"].forEach(id => $(id).hidden = true);
+      ["seatSheet","settingsSheet","giftSheet","battleSheet"].forEach(id => $(id).hidden = true);
+      $("seatSheet")?.classList.remove("request-mode");
       $("liveModalBackdrop").hidden = true;
     }
 
@@ -2149,6 +2449,7 @@
       renderSeatProfile(index);
       $("seatRequestActions").hidden = !isRequest;
       $("seatHostControls").hidden = isRequest;
+      $("seatSheet").classList.toggle("request-mode", isRequest);
       $("seatMute").textContent = current.muted ? "ACTIVAR AUDIO" : "SILENCIAR";
       openLiveSheet("seatSheet");
     }
@@ -2471,6 +2772,7 @@
     updateGiftUi();
     updateTaskUi();
     updateChecks();
+    syncLiveSettingsUi();
     syncLiveNav();
   })();
   </script>

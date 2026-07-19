@@ -1,17 +1,18 @@
-JEMMO LIVE V0.6.8 · ACTUALIZACIÓN INCREMENTAL
+JEMMO LIVE · V0.6.9 PRUEBAS
 
-1. Conserva V0.6.6 y V0.6.7 como respaldo.
-2. Instala esta actualización SOBRE la V0.6.7.
-3. Sustituye únicamente live.html por el archivo incluido.
-4. Conserva los recursos gráficos existentes de la aplicación.
-5. Publica por HTTPS y limpia la caché del navegador.
-6. Prueba en móvil:
-   - sillas en el lateral derecho;
-   - pestaña de batalla debajo de las sillas;
-   - caja de regalos lateral;
-   - chat escribible y plegable;
-   - navegación inferior;
-   - tarea verde, naranja con Cobrar, roja y desaparición;
-   - sonido de navegación a volumen bajo.
+PAQUETE COMPLETO DE ACTUALIZACIÓN SOBRE V0.6.8
 
-No borres las versiones anteriores hasta confirmar esta prueba en el móvil.
+1. Sube este ZIP completo de la misma forma que las actualizaciones anteriores.
+2. Permite que sustituya los archivos incluidos.
+3. No borres ni reinicies el proyecto antes de subirlo.
+4. Abre la aplicación y limpia la caché si todavía aparece V0.6.8.
+5. Comprueba en móvil: pescaditos durante la preparación, ocultación al iniciar LIVE, chat compacto, botón Ajustes y aviso de silla.
+
+ARCHIVOS INCLUIDOS
+- live.html
+- jemmo-fish-nav.webp
+- VERSION.txt
+- CAMBIOS_V0.6.9.md
+- LEEME_INSTALACION.txt
+
+No modifica Acceso, Inicio, Casas ni los demás módulos aprobados.
