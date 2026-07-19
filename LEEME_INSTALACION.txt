@@ -1,13 +1,17 @@
-JEMMO LIVE V0.6.11 · INSTALACIÓN
+JEMMO LIVE V0.6.12 · INSTALACIÓN
 
-1. Conserva la V0.6.10 como respaldo.
+1. Conserva el ZIP V0.6.11 como respaldo estable.
 2. Sustituye únicamente el archivo live.html por el incluido en este ZIP.
-3. No borres ni reemplaces Acceso, Inicio, Salas, Mensajes, Perfil ni los recursos gráficos.
+3. No reemplaces Acceso, Inicio, Salas, Mensajes, Perfil ni los recursos gráficos.
 4. Publica los cambios y limpia la caché del navegador antes de probar.
 
-COMPROBACIONES
-- Abrir stickers y tocar varios emojis.
-- Abrir regalos y enviar un regalo.
-- Abrir una solicitud de silla y probar sus cuatro botones.
-- Abrir un panel y cerrarlo con la X, el fondo y el botón Atrás de Android.
-- Confirmar que la Batalla aparece debajo de las sillas, compacta, y se despliega al tocarla.
+PRUEBAS EN MÓVIL
+- Inicia el LIVE y comprueba que la interfaz es más pequeña.
+- Abre una solicitud de silla: el vídeo no debe ponerse borroso.
+- Cierra el panel con X, fondo y botón Atrás de Android.
+- Abre regalos, pulsa + RECARGAR y vuelve al panel de regalos.
+- Intenta enviar un regalo más caro que el saldo para probar la recarga automática.
+- Abre el botón ✦ y prueba Juegos, Normas, Historial y Ranking.
+- Comprueba que la Batalla queda debajo de las sillas.
+
+Base requerida: V0.6.11 PRUEBAS.
