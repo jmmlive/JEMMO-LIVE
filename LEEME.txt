@@ -1,17 +1,8 @@
-JEMMO LIVE V0.8 · LIVE COMPLETO
+JEMMO LIVE V0.6.5 · CORRECCIÓN
 
-Incluye:
-- Preparación del LIVE como en la maqueta aprobada.
-- Barra inferior visible antes de transmitir.
-- Botón central TRANSMITIR.
-- Cámara frontal, cámara trasera y ambas cámaras.
-- Aviso automático si el móvil no soporta ambas cámaras simultáneas.
-- Cronómetro de tarea.
-- Título, categoría, micrófono, cámara y conexión.
-- Al transmitir desaparece la barra inferior.
-- En modo ambas cámaras, la trasera ocupa toda la pantalla y la selfie queda flotante.
-- Perfil arriba, chat abajo, VS, sillas, regalos y controles.
+1. Abre CORREGIR_JEMMO_LIVE_V0.6.5.html.
+2. Selecciona el ZIP actual de JEMMO LIVE V0.6.5.
+3. Pulsa CORREGIR Y DESCARGAR V0.6.5.
+4. Se generará JEMMO_LIVE_V0.6.5_CORREGIDA.zip.
 
-IMPORTANTE:
-Los navegadores solo permiten abrir la cámara con HTTPS o localhost.
-Al probar en GitHub Pages debe funcionar porque usa HTTPS.
+Cambios: menú más compacto, tres rayas reducidas, colisión LIVE corregida y sonido GRU-GRU-GRU.

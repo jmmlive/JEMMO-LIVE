@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#09000f">
+<title>JEMMO LIVE V0.6.5 · Corrector</title>
+<style>
+:root{--bg:#070109;--panel:#15051f;--violet:#b93cff;--pink:#ff3f98;--gold:#ffd44f;--green:#52e59c;--muted:#bcaecc}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:#fff;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}
+body{background:radial-gradient(circle at 50% -10%,#35104b 0,transparent 42%),linear-gradient(180deg,#0c0112,#040006)}
+main{width:min(100%,620px);min-height:100svh;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 14px calc(24px + env(safe-area-inset-bottom))}
+.brand{display:flex;align-items:center;justify-content:center;gap:7px;margin:8px 0 18px;font-weight:950;font-size:25px}
+.brand .j{font-family:Georgia,serif;font-style:italic;color:var(--gold);font-size:34px}
+.brand .emmo{background:linear-gradient(90deg,#fff,#c952ff,#ff4ead);background-clip:text;color:transparent}
+.brand .live{padding:5px 8px;border-radius:8px;background:var(--gold);color:#210623;font-size:12px}
+.card{padding:20px 15px;border:1px solid #b742ff66;border-radius:24px;background:linear-gradient(160deg,#1a0826ee,#09010eee);box-shadow:0 20px 70px #000a,0 0 28px #9b00ff22}
+h1{font-size:25px;line-height:1.12;margin:0 0 8px}
+.lead{color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 18px}
+.changes{display:grid;gap:8px;margin:0 0 18px}
+.changes div{display:flex;align-items:center;gap:9px;padding:10px 11px;border-radius:14px;background:#100518;border:1px solid #8c2db944;font-size:12px}
+.changes b{color:var(--green)}
+.drop{display:block;padding:17px 12px;border:1.5px dashed #d766ff88;border-radius:17px;background:#0b0410;text-align:center}
+.drop input{width:100%;margin-top:10px;color:#fff}
+button{width:100%;min-height:55px;margin-top:13px;border:0;border-radius:15px;background:linear-gradient(90deg,var(--gold),#ffbd27 45%,var(--pink),var(--violet));color:#200321;font-weight:950;font-size:17px}
+button:disabled{opacity:.45;filter:grayscale(.3)}
+.status{min-height:46px;margin-top:13px;padding:11px;border-radius:14px;background:#0b0410;color:#d7cadd;font-size:12px;line-height:1.45;white-space:pre-wrap}
+.status.ok{border:1px solid #52e59c77;color:#aaf4ca}
+.status.error{border:1px solid #ff5a7d77;color:#ffb2c2}
+.note{margin:13px 3px 0;color:#95869d;font-size:10px;line-height:1.45;text-align:center}
+</style>
+</head>
+<body>
+<main>
+  <div class="brand"><span class="j">J</span><span class="emmo">EMMO</span><span class="live">LIVE</span></div>
+  <section class="card">
+    <h1>Corrección V0.6.5</h1>
+    <p class="lead">Selecciona el ZIP actual de JEMMO LIVE. El corrector genera una copia completa corregida sin desmontar la aplicación.</p>
+
+    <div class="changes">
+      <div><b>✓</b> Menú de Inicio más pequeño y ordenado.</div>
+      <div><b>✓</b> Tres rayas pequeñas junto al logo.</div>
+      <div><b>✓</b> Colisión y franjas de la cámara eliminadas.</div>
+      <div><b>✓</b> Sonido acuático «gru, gru, gru».</div>
+    </div>
+
+    <label class="drop">
+      <strong>ZIP ACTUAL DE JEMMO LIVE</strong>
+      <input id="zipInput" type="file" accept=".zip,application/zip">
+    </label>
+
+    <button id="fixButton" disabled>CORREGIR Y DESCARGAR V0.6.5</button>
+    <div id="status" class="status">Esperando el ZIP actual…</div>
+    <p class="note">La copia original no se modifica. El resultado se descarga como JEMMO_LIVE_V0.6.5_CORREGIDA.zip.</p>
+  </section>
+</main>
+<script>
+const CSS_PATCH = "\n/* =========================================================\n   JEMMO LIVE \u00b7 V0.6.5 \u00b7 CORRECCI\u00d3N FINAL M\u00d3VIL\n   Men\u00fa compacto + cabeceras compactas + aislamiento de v\u00eddeo\n   ========================================================= */\n\n/* Bot\u00f3n de tres rayas: peque\u00f1o, integrado y consistente */\n.menu-orb,\n#menuOpen,\n.mini-header #menuOpen,\n.jl-topbar .jl-orb,\n#jlMenuOpen {\n  width: 36px !important;\n  height: 36px !important;\n  min-width: 36px !important;\n  min-height: 36px !important;\n  padding: 0 !important;\n  border-radius: 12px !important;\n  font-size: 18px !important;\n  line-height: 1 !important;\n  display: grid !important;\n  place-items: center !important;\n}\n\n.menu-orb svg,\n.jl-topbar .jl-orb svg,\n#jlMenuOpen svg {\n  width: 19px !important;\n  height: 19px !important;\n}\n\n.app-header {\n  gap: 6px !important;\n}\n\n.jl-topbar {\n  grid-template-columns: 38px minmax(0, 1fr) 38px !important;\n  gap: 6px !important;\n}\n\n/* Men\u00fa lateral del Inicio: claramente m\u00e1s estrecho y compacto */\n.side-menu {\n  width: min(74vw, 292px) !important;\n  padding:\n    calc(12px + env(safe-area-inset-top))\n    10px\n    calc(14px + env(safe-area-inset-bottom)) !important;\n  overflow-y: auto !important;\n  overscroll-behavior: contain !important;\n}\n\n.menu-top {\n  min-height: 48px !important;\n  padding: 2px 2px 8px !important;\n}\n\n.menu-top h2 {\n  margin: 2px 0 0 !important;\n  font-size: 16px !important;\n}\n\n.menu-top small {\n  font-size: 8px !important;\n  letter-spacing: .9px !important;\n}\n\n.menu-close {\n  width: 33px !important;\n  height: 33px !important;\n  min-width: 33px !important;\n  min-height: 33px !important;\n  border-radius: 11px !important;\n  font-size: 22px !important;\n}\n\n.function-search {\n  min-height: 39px !important;\n  padding: 0 9px !important;\n  border-radius: 12px !important;\n  gap: 7px !important;\n}\n\n.function-search input {\n  font-size: 12px !important;\n}\n\n.search-hint,\n.role-note {\n  font-size: 8.5px !important;\n  line-height: 1.35 !important;\n  margin: 5px 2px 8px !important;\n}\n\n.menu-list {\n  gap: 5px !important;\n}\n\n.menu-list > a,\n.menu-list > button {\n  min-height: 45px !important;\n  padding: 6px 8px !important;\n  gap: 7px !important;\n  border-radius: 13px !important;\n  grid-template-columns: 30px minmax(0, 1fr) 11px !important;\n}\n\n.menu-list > a > span:first-child,\n.menu-list > button > span:first-child {\n  width: 29px !important;\n  height: 29px !important;\n  min-width: 29px !important;\n  min-height: 29px !important;\n  border-radius: 9px !important;\n  font-size: 14px !important;\n}\n\n.menu-list b {\n  font-size: 11px !important;\n  line-height: 1.15 !important;\n}\n\n.menu-list small {\n  margin-top: 1px !important;\n  font-size: 8px !important;\n  line-height: 1.2 !important;\n}\n\n.menu-list i {\n  font-size: 15px !important;\n}\n\n/* Men\u00fa lateral del LIVE con las mismas proporciones */\n.jl-side-menu {\n  width: min(74vw, 292px) !important;\n  padding:\n    calc(12px + env(safe-area-inset-top))\n    10px\n    calc(14px + env(safe-area-inset-bottom)) !important;\n  overflow-y: auto !important;\n  overscroll-behavior: contain !important;\n}\n\n.jl-menu-head {\n  min-height: 48px !important;\n  padding: 2px 2px 8px !important;\n}\n\n.jl-menu-head h2 {\n  margin: 2px 0 0 !important;\n  font-size: 16px !important;\n}\n\n.jl-menu-head small {\n  font-size: 8px !important;\n  letter-spacing: .9px !important;\n}\n\n.jl-menu-list {\n  gap: 5px !important;\n}\n\n.jl-menu-item {\n  min-height: 45px !important;\n  padding: 6px 8px !important;\n  gap: 7px !important;\n  border-radius: 13px !important;\n  grid-template-columns: 30px minmax(0, 1fr) 11px !important;\n}\n\n.jl-menu-item .mi {\n  width: 29px !important;\n  height: 29px !important;\n  min-width: 29px !important;\n  min-height: 29px !important;\n  border-radius: 9px !important;\n}\n\n.jl-menu-item .mi svg {\n  width: 16px !important;\n  height: 16px !important;\n}\n\n.jl-menu-item b {\n  font-size: 11px !important;\n  line-height: 1.15 !important;\n}\n\n.jl-menu-item small {\n  margin-top: 1px !important;\n  font-size: 8px !important;\n  line-height: 1.2 !important;\n}\n\n/* Regla estricta: una capa oculta no puede seguir pint\u00e1ndose */\n.jl-hidden,\n[hidden] {\n  display: none !important;\n  visibility: hidden !important;\n  opacity: 0 !important;\n  pointer-events: none !important;\n}\n\n/* Contenci\u00f3n de la c\u00e1mara: evita franjas, colisiones y capas fantasma */\n.jl-preview {\n  position: relative !important;\n  overflow: hidden !important;\n  isolation: isolate !important;\n  contain: layout paint !important;\n  z-index: 1 !important;\n  background: #09000f !important;\n  backface-visibility: hidden !important;\n  -webkit-backface-visibility: hidden !important;\n}\n\n.jl-preview > video {\n  position: absolute !important;\n  inset: 0 !important;\n  width: 100% !important;\n  height: 100% !important;\n  max-width: 100% !important;\n  max-height: 100% !important;\n  display: block !important;\n  object-fit: cover !important;\n  object-position: center !important;\n  overflow: hidden !important;\n  z-index: 0 !important;\n  margin: 0 !important;\n  border: 0 !important;\n  backface-visibility: hidden !important;\n  -webkit-backface-visibility: hidden !important;\n}\n\n.jl-preview > .jl-pip {\n  inset: auto 10px 10px auto !important;\n  width: 30% !important;\n  height: 34% !important;\n  z-index: 5 !important;\n  border-radius: 14px !important;\n  overflow: hidden !important;\n}\n\n.jl-camera-empty,\n.jl-modebar,\n.jl-swap,\n.jl-preview-bottom {\n  position: absolute !important;\n  z-index: 6 !important;\n}\n\n.jl-main,\n.jl-grid,\n.jl-launch,\n.jl-summary {\n  position: relative !important;\n  z-index: 2 !important;\n  isolation: isolate !important;\n}\n\n.jl-grid,\n.jl-launch {\n  background: #070109 !important;\n}\n\n.jl-launch {\n  overflow: hidden !important;\n  contain: layout paint !important;\n  min-height: 82px !important;\n}\n\n/* La pantalla de emisi\u00f3n no puede quedar detr\u00e1s de la preparaci\u00f3n */\nbody:not(.jl-live-active) .jl-broadcast,\nbody:not(.jl-live-active) #broadcastScreen,\nbody:not(.jl-live-active) #broadcastVideo,\nbody:not(.jl-live-active) #broadcastPip,\n.jl-broadcast.jl-hidden,\n#broadcastScreen.jl-hidden,\n#broadcastVideo.jl-hidden,\n#broadcastPip.jl-hidden {\n  display: none !important;\n}\n\nbody.jl-live-active #prepScreen {\n  display: none !important;\n}\n\nbody.jl-live-active #broadcastScreen:not(.jl-hidden) {\n  display: block !important;\n  visibility: visible !important;\n  opacity: 1 !important;\n}\n\n/* Android: quitar desenfoques del compositor alrededor de v\u00eddeo */\n@media (max-width: 600px) {\n  .jl-topbar,\n  .bottom-nav,\n  .jl-preview-bottom,\n  .jl-modebar {\n    -webkit-backdrop-filter: none !important;\n    backdrop-filter: none !important;\n  }\n\n  .side-menu,\n  .jl-side-menu {\n    width: min(76vw, 286px) !important;\n  }\n}\n";
+const JS_PATCH = "\n/* =========================================================\n   JEMMO LIVE \u00b7 V0.6.5 \u00b7 CORRECCI\u00d3N FINAL\n   V\u00eddeo estable + limpieza de capas + sonido acu\u00e1tico GRU\n   ========================================================= */\n(() => {\n  'use strict';\n\n  if (window.__jemmoV065FixLoaded) return;\n  window.__jemmoV065FixLoaded = true;\n\n  const byId = id => document.getElementById(id);\n\n  function prepareVideo(video) {\n    if (!video) return;\n    video.setAttribute('playsinline', '');\n    video.setAttribute('webkit-playsinline', '');\n    video.muted = true;\n    video.controls = false;\n    video.disablePictureInPicture = true;\n    video.setAttribute('disablepictureinpicture', '');\n    video.addEventListener('loadedmetadata', () => {\n      const parentHidden =\n        video.closest('.jl-hidden,[hidden]') ||\n        video.closest('#broadcastScreen.jl-hidden');\n\n      if (!parentHidden) {\n        video.play().catch(() => {});\n      }\n    });\n  }\n\n  ['mainVideo', 'pipVideo', 'broadcastVideo', 'broadcastPip']\n    .map(byId)\n    .filter(Boolean)\n    .forEach(prepareVideo);\n\n  function broadcastIsVisible() {\n    const screen = byId('broadcastScreen');\n    if (!screen) return false;\n    return !screen.classList.contains('jl-hidden') &&\n      !screen.hasAttribute('hidden') &&\n      getComputedStyle(screen).display !== 'none';\n  }\n\n  function synchroniseVideoLayers() {\n    const live = broadcastIsVisible();\n    document.body.classList.toggle('jl-live-active', live);\n\n    if (!live) {\n      ['broadcastVideo', 'broadcastPip'].forEach(id => {\n        const video = byId(id);\n        if (!video) return;\n        try { video.pause(); } catch (_) {}\n        try { video.srcObject = null; } catch (_) {}\n        video.classList.add('jl-hidden');\n      });\n    } else {\n      const main = byId('broadcastVideo');\n      if (main) main.classList.remove('jl-hidden');\n    }\n  }\n\n  const broadcastScreen = byId('broadcastScreen');\n  if (broadcastScreen) {\n    new MutationObserver(synchroniseVideoLayers).observe(broadcastScreen, {\n      attributes: true,\n      attributeFilter: ['class', 'hidden', 'style']\n    });\n  }\n\n  document.addEventListener('visibilitychange', () => {\n    if (!document.hidden) synchroniseVideoLayers();\n  });\n\n  window.addEventListener('pageshow', synchroniseVideoLayers);\n  setTimeout(synchroniseVideoLayers, 0);\n  setTimeout(synchroniseVideoLayers, 350);\n\n  /* Sonido corto de agua/pez: \"gru, gru, gru\" */\n  let audioContext = null;\n  let lastGru = 0;\n\n  function context() {\n    const AudioCtx = window.AudioContext || window.webkitAudioContext;\n    if (!AudioCtx) return null;\n    if (!audioContext) audioContext = new AudioCtx();\n    if (audioContext.state === 'suspended') {\n      audioContext.resume().catch(() => {});\n    }\n    return audioContext;\n  }\n\n  function makeNoiseBuffer(ctx, seconds = 0.16) {\n    const length = Math.max(1, Math.floor(ctx.sampleRate * seconds));\n    const buffer = ctx.createBuffer(1, length, ctx.sampleRate);\n    const data = buffer.getChannelData(0);\n    let last = 0;\n\n    for (let i = 0; i < length; i++) {\n      const white = Math.random() * 2 - 1;\n      last = last * 0.82 + white * 0.18;\n      data[i] = last;\n    }\n    return buffer;\n  }\n\n  function gruPulse(ctx, start, variation = 0) {\n    const end = start + 0.145;\n\n    const master = ctx.createGain();\n    master.gain.setValueAtTime(0.0001, start);\n    master.gain.exponentialRampToValueAtTime(0.23, start + 0.014);\n    master.gain.exponentialRampToValueAtTime(0.0001, end);\n    master.connect(ctx.destination);\n\n    const growl = ctx.createOscillator();\n    growl.type = 'sawtooth';\n    growl.frequency.setValueAtTime(104 + variation, start);\n    growl.frequency.exponentialRampToValueAtTime(57 + variation * 0.25, end);\n\n    const lowPass = ctx.createBiquadFilter();\n    lowPass.type = 'lowpass';\n    lowPass.frequency.setValueAtTime(290, start);\n    lowPass.frequency.exponentialRampToValueAtTime(145, end);\n    lowPass.Q.value = 3.2;\n\n    const growlGain = ctx.createGain();\n    growlGain.gain.value = 0.52;\n\n    growl.connect(lowPass);\n    lowPass.connect(growlGain);\n    growlGain.connect(master);\n    growl.start(start);\n    growl.stop(end);\n\n    const water = ctx.createBufferSource();\n    water.buffer = makeNoiseBuffer(ctx, 0.16);\n\n    const band = ctx.createBiquadFilter();\n    band.type = 'bandpass';\n    band.frequency.setValueAtTime(430 + variation * 2, start);\n    band.frequency.exponentialRampToValueAtTime(205, end);\n    band.Q.value = 5.5;\n\n    const waterGain = ctx.createGain();\n    waterGain.gain.setValueAtTime(0.08, start);\n    waterGain.gain.exponentialRampToValueAtTime(0.0001, end);\n\n    water.connect(band);\n    band.connect(waterGain);\n    waterGain.connect(master);\n    water.start(start);\n    water.stop(end);\n  }\n\n  function playGruGruGru() {\n    const nowMs = Date.now();\n    if (nowMs - lastGru < 500) return;\n    lastGru = nowMs;\n\n    const ctx = context();\n    if (!ctx) return;\n\n    const t = ctx.currentTime + 0.018;\n    gruPulse(ctx, t, 0);\n    gruPulse(ctx, t + 0.17, -5);\n    gruPulse(ctx, t + 0.34, 3);\n  }\n\n  function isFishControl(target) {\n    if (!(target instanceof Element)) return false;\n    return Boolean(target.closest([\n      '.bottom-nav a',\n      '.nav-fish',\n      '.fish',\n      '.fish-button',\n      '.pez',\n      '.chicharro',\n      '[class*=\"fish\"]',\n      '[class*=\"pez\"]',\n      '[class*=\"chicharro\"]',\n      'img[alt*=\"pez\" i]',\n      'img[alt*=\"fish\" i]',\n      'img[alt*=\"chicharro\" i]'\n    ].join(',')));\n  }\n\n  document.addEventListener('pointerdown', event => {\n    if (isFishControl(event.target)) playGruGruGru();\n  }, { passive: true });\n\n  window.jemmoPlayGru = playGruGruGru;\n})();\n";
+
+const te = new TextEncoder();
+const td = new TextDecoder('utf-8');
+
+function u16(v, o) { return v.getUint16(o, true); }
+function u32(v, o) { return v.getUint32(o, true); }
+
+function crc32(bytes) {
+  let crc = 0xffffffff;
+  for (let i = 0; i < bytes.length; i++) {
+    crc ^= bytes[i];
+    for (let j = 0; j < 8; j++) {
+      crc = (crc >>> 1) ^ (0xedb88320 & -(crc & 1));
+    }
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function dosDateTime(date = new Date()) {
+  const year = Math.max(1980, date.getFullYear());
+  const time =
+    (date.getHours() << 11) |
+    (date.getMinutes() << 5) |
+    Math.floor(date.getSeconds() / 2);
+  const day =
+    ((year - 1980) << 9) |
+    ((date.getMonth() + 1) << 5) |
+    date.getDate();
+  return { time, day };
+}
+
+async function inflateRaw(bytes) {
+  const ds = new DecompressionStream('deflate-raw');
+  const stream = new Blob([bytes]).stream().pipeThrough(ds);
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+
+async function readZip(arrayBuffer) {
+  const bytes = new Uint8Array(arrayBuffer);
+  const view = new DataView(arrayBuffer);
+  const min = Math.max(0, bytes.length - 65557);
+  let eocd = -1;
+
+  for (let i = bytes.length - 22; i >= min; i--) {
+    if (u32(view, i) === 0x06054b50) {
+      eocd = i;
+      break;
+    }
+  }
+  if (eocd < 0) throw new Error('El archivo seleccionado no es un ZIP válido.');
+
+  const total = u16(view, eocd + 10);
+  const centralOffset = u32(view, eocd + 16);
+  let p = centralOffset;
+  const entries = [];
+
+  for (let index = 0; index < total; index++) {
+    if (u32(view, p) !== 0x02014b50) {
+      throw new Error('El ZIP tiene un directorio central dañado.');
+    }
+
+    const flags = u16(view, p + 8);
+    const method = u16(view, p + 10);
+    const compressedSize = u32(view, p + 20);
+    const uncompressedSize = u32(view, p + 24);
+    const nameLength = u16(view, p + 28);
+    const extraLength = u16(view, p + 30);
+    const commentLength = u16(view, p + 32);
+    const externalAttrs = u32(view, p + 38);
+    const localOffset = u32(view, p + 42);
+    const nameBytes = bytes.slice(p + 46, p + 46 + nameLength);
+    const name = td.decode(nameBytes);
+
+    if (flags & 1) {
+      throw new Error(`El archivo ${name} está cifrado y no se puede corregir.`);
+    }
+
+    if (u32(view, localOffset) !== 0x04034b50) {
+      throw new Error(`Cabecera local dañada: ${name}`);
+    }
+
+    const localNameLength = u16(view, localOffset + 26);
+    const localExtraLength = u16(view, localOffset + 28);
+    const dataStart = localOffset + 30 + localNameLength + localExtraLength;
+    const compressed = bytes.slice(dataStart, dataStart + compressedSize);
+
+    let data;
+    if (method === 0) data = compressed;
+    else if (method === 8) data = await inflateRaw(compressed);
+    else throw new Error(`Método ZIP no compatible (${method}) en ${name}.`);
+
+    if (!name.endsWith('/') && data.length !== uncompressedSize) {
+      throw new Error(`Tamaño incorrecto al abrir ${name}.`);
+    }
+
+    entries.push({ name, data, externalAttrs });
+    p += 46 + nameLength + extraLength + commentLength;
+  }
+
+  return entries;
+}
+
+function commonProjectRoot(entries) {
+  const candidates = entries
+    .map(e => e.name)
+    .filter(n => /(^|\/)(inicio|index|live)\.html$/i.test(n))
+    .map(n => n.includes('/') ? n.slice(0, n.lastIndexOf('/') + 1) : '');
+
+  if (!candidates.length) return '';
+
+  candidates.sort((a, b) => a.length - b.length);
+  return candidates[0];
+}
+
+function appendOnce(text, marker, addition) {
+  if (text.includes(marker)) return text;
+  return text.replace(/\s*$/, '') + '\n\n' + addition.trim() + '\n';
+}
+
+function injectBeforeBody(text, marker, scriptText) {
+  if (text.includes(marker)) return text;
+  const tag = `\n<script>\n${scriptText.trim()}\n<\/script>\n`;
+  if (/<\/body>/i.test(text)) return text.replace(/<\/body>/i, tag + '</body>');
+  return text + tag;
+}
+
+function patchEntries(entries, cssPatch, jsPatch) {
+  const root = commonProjectRoot(entries);
+  const markerCss = 'JEMMO LIVE · V0.6.5 · CORRECCIÓN FINAL MÓVIL';
+  const markerJs = 'JEMMO LIVE · V0.6.5 · CORRECCIÓN FINAL';
+  let foundAppCss = false;
+  let foundLiveCss = false;
+  let foundAppJs = false;
+  let foundLiveHtml = false;
+  let foundVersion = false;
+  let changed = 0;
+
+  for (const entry of entries) {
+    const base = entry.name.split('/').pop().toLowerCase();
+    if (entry.name.endsWith('/')) continue;
+
+    if (base === 'app.css') {
+      const text = td.decode(entry.data);
+      const next = appendOnce(text, markerCss, cssPatch);
+      if (next !== text) changed++;
+      entry.data = te.encode(next);
+      foundAppCss = true;
+    }
+
+    if (base === 'live.css') {
+      const text = td.decode(entry.data);
+      const next = appendOnce(text, markerCss, cssPatch);
+      if (next !== text) changed++;
+      entry.data = te.encode(next);
+      foundLiveCss = true;
+    }
+
+    if (base === 'app.js') {
+      const text = td.decode(entry.data);
+      const next = appendOnce(text, markerJs, jsPatch);
+      if (next !== text) changed++;
+      entry.data = te.encode(next);
+      foundAppJs = true;
+    }
+
+    if (base === 'live.html') {
+      const text = td.decode(entry.data);
+      const next = injectBeforeBody(text, markerJs, jsPatch);
+      if (next !== text) changed++;
+      entry.data = te.encode(next);
+      foundLiveHtml = true;
+    }
+
+    if (base === 'version.txt') {
+      entry.data = te.encode(
+        'JEMMO LIVE V0.6.5\n' +
+        'Corrección final móvil: menú compacto, colisión LIVE corregida y sonido acuático GRU.\n' +
+        'Base conservada: V0.6.4 / V0.6.3 estable.\n'
+      );
+      foundVersion = true;
+      changed++;
+    }
+  }
+
+  if (!foundLiveHtml) {
+    throw new Error('No encontré live.html dentro del ZIP. Selecciona la carpeta completa de JEMMO LIVE.');
+  }
+
+  if (!foundAppCss) {
+    entries.push({
+      name: root + 'app.css',
+      data: te.encode(cssPatch.trim() + '\n'),
+      externalAttrs: 0
+    });
+    changed++;
+  }
+
+  if (!foundLiveCss) {
+    entries.push({
+      name: root + 'live.css',
+      data: te.encode(cssPatch.trim() + '\n'),
+      externalAttrs: 0
+    });
+    changed++;
+  }
+
+  if (!foundAppJs) {
+    entries.push({
+      name: root + 'app.js',
+      data: te.encode(jsPatch.trim() + '\n'),
+      externalAttrs: 0
+    });
+    changed++;
+  }
+
+  if (!foundVersion) {
+    entries.push({
+      name: root + 'VERSION.txt',
+      data: te.encode(
+        'JEMMO LIVE V0.6.5\n' +
+        'Corrección final móvil: menú compacto, colisión LIVE corregida y sonido acuático GRU.\n' +
+        'Base conservada: V0.6.4 / V0.6.3 estable.\n'
+      ),
+      externalAttrs: 0
+    });
+    changed++;
+  }
+
+  const changesName = root + 'CAMBIOS_V0.6.5.txt';
+  const changesText =
+    'JEMMO LIVE V0.6.5 · CORRECCIÓN FINAL\n\n' +
+    '1. Menú lateral del Inicio reducido: ancho, tarjetas, iconos, textos y espacios.\n' +
+    '2. Botones de tres líneas reducidos e integrados junto al logo.\n' +
+    '3. Preparación LIVE: vídeo encerrado en su contenedor y capas ocultas eliminadas.\n' +
+    '4. Limpieza automática de la capa de emisión al finalizar o volver a preparación.\n' +
+    '5. Sonido de peces cambiado a efecto acuático grave: GRU, GRU, GRU.\n\n' +
+    'No se modifica Acceso, Inicio aprobado, Casas, Firebase ni la lógica de transmisión que ya funcionaba.\n';
+
+  const existing = entries.find(e => e.name.toLowerCase() === changesName.toLowerCase());
+  if (existing) existing.data = te.encode(changesText);
+  else entries.push({ name: changesName, data: te.encode(changesText), externalAttrs: 0 });
+
+  return { entries, changed };
+}
+
+function writeZip(entries) {
+  const now = dosDateTime();
+  const localParts = [];
+  const centralParts = [];
+  let offset = 0;
+
+  for (const entry of entries) {
+    const nameBytes = te.encode(entry.name);
+    const data = entry.data || new Uint8Array();
+    const crc = entry.name.endsWith('/') ? 0 : crc32(data);
+
+    const local = new Uint8Array(30 + nameBytes.length + data.length);
+    const lv = new DataView(local.buffer);
+    lv.setUint32(0, 0x04034b50, true);
+    lv.setUint16(4, 20, true);
+    lv.setUint16(6, 0x0800, true);
+    lv.setUint16(8, 0, true);
+    lv.setUint16(10, now.time, true);
+    lv.setUint16(12, now.day, true);
+    lv.setUint32(14, crc, true);
+    lv.setUint32(18, data.length, true);
+    lv.setUint32(22, data.length, true);
+    lv.setUint16(26, nameBytes.length, true);
+    lv.setUint16(28, 0, true);
+    local.set(nameBytes, 30);
+    local.set(data, 30 + nameBytes.length);
+    localParts.push(local);
+
+    const central = new Uint8Array(46 + nameBytes.length);
+    const cv = new DataView(central.buffer);
+    cv.setUint32(0, 0x02014b50, true);
+    cv.setUint16(4, 20, true);
+    cv.setUint16(6, 20, true);
+    cv.setUint16(8, 0x0800, true);
+    cv.setUint16(10, 0, true);
+    cv.setUint16(12, now.time, true);
+    cv.setUint16(14, now.day, true);
+    cv.setUint32(16, crc, true);
+    cv.setUint32(20, data.length, true);
+    cv.setUint32(24, data.length, true);
+    cv.setUint16(28, nameBytes.length, true);
+    cv.setUint16(30, 0, true);
+    cv.setUint16(32, 0, true);
+    cv.setUint16(34, 0, true);
+    cv.setUint16(36, 0, true);
+    cv.setUint32(38, entry.externalAttrs || (entry.name.endsWith('/') ? 0x10 : 0), true);
+    cv.setUint32(42, offset, true);
+    central.set(nameBytes, 46);
+    centralParts.push(central);
+
+    offset += local.length;
+  }
+
+  const centralOffset = offset;
+  const centralSize = centralParts.reduce((sum, p) => sum + p.length, 0);
+  const eocd = new Uint8Array(22);
+  const ev = new DataView(eocd.buffer);
+  ev.setUint32(0, 0x06054b50, true);
+  ev.setUint16(4, 0, true);
+  ev.setUint16(6, 0, true);
+  ev.setUint16(8, entries.length, true);
+  ev.setUint16(10, entries.length, true);
+  ev.setUint32(12, centralSize, true);
+  ev.setUint32(16, centralOffset, true);
+  ev.setUint16(20, 0, true);
+
+  return new Blob([...localParts, ...centralParts, eocd], { type: 'application/zip' });
+}
+
+async function patchZip(file, cssPatch, jsPatch) {
+  const entries = await readZip(await file.arrayBuffer());
+  const result = patchEntries(entries, cssPatch, jsPatch);
+  const blob = writeZip(result.entries);
+  return { blob, changed: result.changed, files: result.entries.length };
+}
+
+const input = document.getElementById('zipInput');
+const button = document.getElementById('fixButton');
+const status = document.getElementById('status');
+
+input.addEventListener('change', () => {
+  const file = input.files && input.files[0];
+  button.disabled = !file;
+  status.className = 'status';
+  status.textContent = file
+    ? `Preparado: ${file.name}\nPulsa “CORREGIR Y DESCARGAR V0.6.5”.`
+    : 'Esperando el ZIP actual…';
+});
+
+button.addEventListener('click', async () => {
+  const file = input.files && input.files[0];
+  if (!file) return;
+
+  button.disabled = true;
+  status.className = 'status';
+  status.textContent = 'Abriendo la versión actual…\nAplicando las correcciones sin tocar los demás módulos.';
+
+  try {
+    const result = await patchZip(file, CSS_PATCH, JS_PATCH);
+    const url = URL.createObjectURL(result.blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'JEMMO_LIVE_V0.6.5_CORREGIDA.zip';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 15000);
+
+    status.className = 'status ok';
+    status.textContent =
+      `CORRECCIÓN TERMINADA.\n` +
+      `${result.files} archivos conservados · ${result.changed} archivos actualizados.\n` +
+      `Se descargó JEMMO_LIVE_V0.6.5_CORREGIDA.zip`;
+  } catch (error) {
+    console.error(error);
+    status.className = 'status error';
+    status.textContent = 'No se pudo corregir el ZIP:\n' + (error?.message || error);
+  } finally {
+    button.disabled = false;
+  }
+});
+</script>
+</body>
+</html>
