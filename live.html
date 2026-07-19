@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#09000f">
-  <title>JEMMO LIVE · Preparar LIVE · V0.6.4</title>
+  <title>JEMMO LIVE · Preparar LIVE · V0.6.5 PRUEBAS</title>
   <style>
     :root{
       color-scheme:dark;
@@ -127,7 +127,7 @@
       background:#000;
       border:0;
       transform:none!important;
-      filter:none!important;
+      filter:var(--camera-filter,none)!important;
       mix-blend-mode:normal!important;
       backface-visibility:hidden;
     }
@@ -414,7 +414,7 @@
       height:100%;
       object-fit:cover;
       transform:none!important;
-      filter:none!important;
+      filter:var(--camera-filter,none)!important;
       background:#000;
     }
     .jl-live-overlay{
@@ -632,6 +632,27 @@
       .jl-grid{gap:8px}
       .jl-summary{grid-template-columns:1fr 105px}
     }
+
+
+    /* V0.6.5 · DATOS PERSISTENTES, FILTROS Y TAREAS */
+    .jl-filterbar{display:flex;gap:5px;pointer-events:auto;min-width:0}
+    .jl-filterbar .jl-chip{padding:0 9px;min-height:38px;font-size:10px}
+    .jl-filter.active{border-color:var(--green);color:var(--green);box-shadow:0 0 12px #48e39d33}
+    .jl-editor{margin-top:12px;border:1px solid #7d258c66;border-radius:20px;background:linear-gradient(145deg,#16051e,#0a010e);box-shadow:0 10px 24px #0005;overflow:hidden}
+    .jl-editor-toggle{width:100%;min-height:66px;padding:13px 15px;border:0;background:transparent;color:#fff;display:flex;align-items:center;justify-content:space-between;text-align:left}
+    .jl-editor-toggle b{display:block;font-size:14px}.jl-editor-toggle small{display:block;margin-top:3px;color:#a995af;font-size:10px}.jl-editor-toggle i{font-style:normal;color:#d560ff;font-size:22px}
+    .jl-editor-body{padding:0 12px 13px}.jl-editor-body.collapsed{display:none}
+    .jl-editor-saved{margin:0 12px 13px;padding:10px;border:1px solid #78358a66;border-radius:15px;background:#0b020f;display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:10px;align-items:center}
+    .jl-editor-saved[hidden]{display:none!important}.jl-editor-saved img{width:48px;height:48px;border-radius:12px;object-fit:cover;border:1px solid #a73fc4}.jl-editor-saved b,.jl-editor-saved small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.jl-editor-saved b{font-size:12px}.jl-editor-saved small{margin-top:3px;color:#a792ae;font-size:9px}.jl-editor-saved button{min-height:38px;padding:0 12px;border:1px solid #a23ec1;border-radius:12px;background:#21072b;color:#fff;font-weight:850}
+    .jl-save-profile{width:100%;min-height:48px;margin-top:10px;border:1px solid #52e6a488;border-radius:15px;background:linear-gradient(90deg,#1f8f70,#36d89c);color:#061f18;font-weight:950}
+    .jl-options-grid{margin-top:10px}
+    .jl-live-top-left{display:grid;gap:8px;min-width:0}
+    .jl-task-card{width:min(250px,76vw);padding:8px 10px;border:1px solid #ffd24c88;border-radius:14px;background:#140713e8;box-shadow:0 0 18px #ffd24c22}
+    .jl-task-head{display:flex;justify-content:space-between;gap:8px;align-items:center}.jl-task-head b{font-size:10px;color:#fff}.jl-task-head span{padding:3px 6px;border-radius:999px;background:#8b246d;color:#ffd9ef;font-size:7px;font-weight:900}.jl-task-time{margin-top:4px;color:var(--gold);font-size:12px;font-weight:950;font-variant-numeric:tabular-nums}.jl-task-track{height:5px;margin-top:6px;border-radius:99px;background:#3d233e;overflow:hidden}.jl-task-track i{display:block;width:0;height:100%;background:linear-gradient(90deg,#ffd24c,#ff3e8a);transition:width .25s linear}
+    .jl-active-fish{width:42px!important;height:42px!important;border-radius:45%!important;object-fit:cover!important;object-position:center 42%!important;filter:drop-shadow(0 0 7px #a821ff)!important;box-shadow:none!important}
+    .jl-nav a:not(.active) .jl-nav-icon{font-size:24px}
+    @media(max-width:390px){.jl-filterbar .jl-chip{padding:0 7px;font-size:9px}.jl-camera-bottom{gap:5px}.jl-camera-bottom>.jl-chip{padding:0 10px}.jl-task-card{width:min(235px,74vw)}}
+
   </style>
 </head>
 <body>
@@ -642,7 +663,7 @@
       </button>
       <div class="jl-brand">
         <img src="jemmo-logo-header-wide.webp" alt="JEMMO LIVE">
-        <small>PREPARACIÓN DE TRANSMISIÓN · V0.6.4</small>
+        <small>PREPARACIÓN DE TRANSMISIÓN · V0.6.5 PRUEBAS</small>
       </div>
       <button class="jl-round" id="helpButton" aria-label="Ayuda">?</button>
     </header>
@@ -675,42 +696,64 @@
       <button class="jl-start-camera" id="startCamera">ACTIVAR CÁMARA</button>
 
       <div class="jl-camera-bottom">
-        <button class="jl-chip gold" id="coverShortcut">▧ Portada</button>
-        <button class="jl-chip active" type="button">✦ Natural</button>
+        <button class="jl-chip gold" id="coverShortcut" type="button">▧ Datos LIVE</button>
+        <div class="jl-filterbar" aria-label="Filtros de cámara">
+          <button class="jl-chip jl-filter active" type="button" data-filter="natural">Natural</button>
+          <button class="jl-chip jl-filter" type="button" data-filter="suave">Suave</button>
+          <button class="jl-chip jl-filter" type="button" data-filter="luz">Luz</button>
+        </div>
       </div>
     </section>
 
-    <section class="jl-grid">
-      <div class="jl-field">
-        <label for="liveTitle">Título del LIVE <span class="jl-required">Obligatorio</span></label>
-        <input id="liveTitle" maxlength="60" placeholder="Escribe un título claro">
-        <small>Mínimo 5 caracteres.</small>
+    <section class="jl-editor" id="editorCard">
+      <button class="jl-editor-toggle" id="editorToggle" type="button" aria-expanded="true">
+        <span><b>Datos del LIVE</b><small id="editorStatus">Configura portada, título y descripción</small></span>
+        <i id="editorArrow">⌃</i>
+      </button>
+
+      <div class="jl-editor-saved" id="editorSaved" hidden>
+        <img id="savedCover" src="jemmo-logo-header.webp" alt="Portada guardada">
+        <div><b id="savedTitle">Mi LIVE</b><small id="savedDescription">Datos guardados</small></div>
+        <button id="editSaved" type="button">Editar</button>
       </div>
 
-      <div class="jl-field">
-        <label for="liveDescription">Descripción <span class="jl-required">Obligatoria</span></label>
-        <textarea id="liveDescription" maxlength="180" placeholder="Explica brevemente de qué tratará tu LIVE"></textarea>
-        <small>Mínimo 10 caracteres. La revisión automática bloquea textos no permitidos.</small>
-      </div>
+      <div class="jl-editor-body" id="editorBody">
+        <div class="jl-grid">
+          <div class="jl-field">
+            <label for="liveTitle">Título del LIVE <span class="jl-required">Obligatorio</span></label>
+            <input id="liveTitle" maxlength="60" placeholder="Escribe un título claro">
+            <small>Mínimo 5 caracteres.</small>
+          </div>
 
-      <div class="jl-field" id="coverField">
-        <label for="coverInput">Portada <span class="jl-required">Obligatoria</span></label>
-        <div class="jl-cover">
-          <img class="jl-cover-preview" id="coverPreview" src="jemmo-logo-header.webp" alt="Vista de portada">
-          <input id="coverInput" type="file" accept="image/*">
+          <div class="jl-field">
+            <label for="liveDescription">Descripción <span class="jl-required">Obligatoria</span></label>
+            <textarea id="liveDescription" maxlength="180" placeholder="Explica brevemente de qué tratará tu LIVE"></textarea>
+            <small>Mínimo 10 caracteres. La revisión automática bloquea textos no permitidos.</small>
+          </div>
+
+          <div class="jl-field" id="coverField">
+            <label for="coverInput">Portada <span class="jl-required">Obligatoria</span></label>
+            <div class="jl-cover">
+              <img class="jl-cover-preview" id="coverPreview" src="jemmo-logo-header.webp" alt="Vista de portada">
+              <input id="coverInput" type="file" accept="image/*">
+            </div>
+            <small>Se guarda en este dispositivo. No tendrás que elegirla en cada LIVE.</small>
+          </div>
+
+          <div class="jl-field">
+            <label for="privacy">Visibilidad</label>
+            <select id="privacy">
+              <option>Público</option>
+              <option>Solo seguidores</option>
+              <option>Privado con contraseña</option>
+            </select>
+          </div>
         </div>
-        <small>Usa una imagen clara. No se transmite sin portada aprobada.</small>
+        <button class="jl-save-profile" id="saveProfile" type="button">GUARDAR DATOS DEL LIVE</button>
       </div>
+    </section>
 
-      <div class="jl-field">
-        <label for="privacy">Visibilidad</label>
-        <select id="privacy">
-          <option>Público</option>
-          <option>Solo seguidores</option>
-          <option>Privado con contraseña</option>
-        </select>
-      </div>
-
+    <section class="jl-grid jl-options-grid">
       <div class="jl-option">
         <div><strong>Micrófono</strong><small>Audio de la transmisión</small></div>
         <button class="jl-toggle on" id="micToggle" aria-pressed="true"><span></span></button>
@@ -746,9 +789,16 @@
 
     <div class="jl-live-overlay">
       <div class="jl-live-top">
-        <div class="jl-host">
-          <img class="jl-avatar" src="jemmo-logo-header.webp" alt="">
-          <div><b>Mi LIVE</b><small id="liveTimer">00:00 · 1 espectador</small></div>
+        <div class="jl-live-top-left">
+          <div class="jl-host">
+            <img class="jl-avatar" src="jemmo-logo-header.webp" alt="">
+            <div><b>Mi LIVE</b><small id="liveTimer">00:00 · 1 espectador</small></div>
+          </div>
+          <div class="jl-task-card" id="taskCard">
+            <div class="jl-task-head"><b id="taskStatus">TAREA 1 DE 2</b><span>MODO PRUEBA</span></div>
+            <div class="jl-task-time" id="taskTime">00:00 / 01:00</div>
+            <div class="jl-task-track"><i id="taskProgress"></i></div>
+          </div>
         </div>
         <div class="jl-live-badge">EN DIRECTO</div>
       </div>
@@ -783,14 +833,14 @@
       <button class="jl-menu-item" data-search="ayuda soporte seguridad privacidad"><span class="jl-menu-icon">?</span><span><b>Ayuda y soporte</b><small>Seguridad y asistencia</small></span><i>›</i></button>
       <a class="jl-menu-item" data-search="salir cerrar sesion" href="index.html"><span class="jl-menu-icon">↪</span><span><b>Cerrar sesión</b></span><i>›</i></a>
     </nav>
-    <div class="jl-version">V0.6.4 · LIVE restaurado sobre V0.6.3</div>
+    <div class="jl-version">V0.6.5 PRUEBAS · LIVE corregido sobre V0.6.4</div>
   </aside>
 
   <div class="jl-toast" id="toast"></div>
 
   <nav class="jl-nav" aria-label="Navegación principal">
     <a href="inicio.html"><span class="jl-nav-icon">⌂</span><b>Inicio</b></a>
-    <a class="active" href="live.html"><img src="jemmo-logo-header.webp" alt=""><b>Live</b></a>
+    <a class="active" href="live.html"><img class="jl-active-fish" src="jemmo-fish-nav.webp" alt="Pez JEMMO"><b>Live</b></a>
     <a href="salas.html"><span class="jl-nav-icon">🎙</span><b>Salas</b></a>
     <a href="mensajes.html"><span class="jl-badge">8</span><span class="jl-nav-icon">◌</span><b>Mensajes</b></a>
     <a href="yo.html"><span class="jl-nav-icon">♙</span><b>Yo</b></a>
@@ -801,16 +851,26 @@
     "use strict";
 
     const $ = id => document.getElementById(id);
+    const PROFILE_KEY = "jemmo_live_profile_v065";
+    const TASK_SECONDS = 60;
+    const TASK_COUNT = 2;
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
     const state = {
       mode: "user",
-      mainStream: null,
-      pipStream: null,
+      mainCameraStream: null,
+      pipCameraStream: null,
+      audioStream: null,
       coverOk: false,
+      coverData: "",
       live: false,
       prepSeconds: 0,
       liveSeconds: 0,
       micEnabled: true,
-      chatEnabled: true
+      chatEnabled: true,
+      filter: "natural",
+      activationToken: 0,
+      milestone: 0
     };
 
     const mainVideo = $("mainVideo");
@@ -822,6 +882,7 @@
     const launchButton = $("launchButton");
     const message = $("validationMessage");
     const toast = $("toast");
+    const coverInput = $("coverInput");
 
     [mainVideo,pipVideo,broadcastVideo,broadcastPip].forEach(video => {
       video.muted = true;
@@ -829,16 +890,18 @@
       video.disablePictureInPicture = true;
     });
 
-    function showToast(text) {
+    function showToast(text, duration = 2600) {
       toast.textContent = text;
       toast.classList.add("show");
       clearTimeout(showToast.timer);
-      showToast.timer = setTimeout(() => toast.classList.remove("show"), 2600);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), duration);
     }
 
     function stopStream(stream) {
       if (!stream) return;
-      stream.getTracks().forEach(track => track.stop());
+      stream.getTracks().forEach(track => {
+        try { track.stop(); } catch {}
+      });
     }
 
     function detachVideo(video) {
@@ -846,24 +909,112 @@
       try { video.srcObject = null; } catch {}
     }
 
-    async function clearCameras() {
-      stopStream(state.mainStream);
-      stopStream(state.pipStream);
-      state.mainStream = null;
-      state.pipStream = null;
+    function hasLiveTrack(stream, kind) {
+      return Boolean(stream?.getTracks().some(track => track.kind === kind && track.readyState === "live"));
+    }
+
+    function currentAudioTracks() {
+      return state.audioStream?.getAudioTracks().filter(track => track.readyState === "live") || [];
+    }
+
+    function composeBroadcastStream(cameraStream) {
+      const tracks = [
+        ...(cameraStream?.getVideoTracks().filter(track => track.readyState === "live") || []),
+        ...currentAudioTracks()
+      ];
+      return new MediaStream(tracks);
+    }
+
+    async function attachVideo(video, stream) {
+      detachVideo(video);
+      video.srcObject = stream;
+      await new Promise(resolve => {
+        if (video.readyState >= 1) return resolve();
+        const done = () => resolve();
+        video.addEventListener("loadedmetadata", done, {once:true});
+        setTimeout(done, 900);
+      });
+      await video.play().catch(() => {});
+    }
+
+    function stopVideoCameras() {
+      stopStream(state.mainCameraStream);
+      stopStream(state.pipCameraStream);
+      state.mainCameraStream = null;
+      state.pipCameraStream = null;
       [mainVideo,pipVideo,broadcastVideo,broadcastPip].forEach(detachVideo);
       pipVideo.hidden = true;
       broadcastPip.hidden = true;
     }
 
-    async function requestCamera(facingMode) {
-      return navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: { ideal: facingMode },
-          width: { ideal: 1280 },
-          height: { ideal: 720 }
-        },
-        audio: true
+    function clearAllMedia() {
+      state.activationToken++;
+      state.live = false;
+      stopVideoCameras();
+      stopStream(state.audioStream);
+      state.audioStream = null;
+      $("broadcastScreen").hidden = true;
+      $("prepScreen").hidden = false;
+      document.querySelector(".jl-nav").hidden = false;
+      resetCameraUi();
+    }
+
+    function resetCameraUi() {
+      cameraEmpty.hidden = false;
+      startCamera.hidden = false;
+      startCamera.disabled = false;
+      startCamera.textContent = "ACTIVAR CÁMARA";
+      updateChecks();
+    }
+
+    const audioConstraints = {
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true
+    };
+
+    function videoConstraints(facingMode, compact = false) {
+      return {
+        facingMode: {ideal:facingMode},
+        width: {ideal:compact ? 640 : 1280},
+        height: {ideal:compact ? 480 : 720}
+      };
+    }
+
+    async function requestPrimaryCamera(facingMode) {
+      const needAudio = !hasLiveTrack(state.audioStream, "audio");
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: videoConstraints(facingMode),
+        audio: needAudio ? audioConstraints : false
+      });
+      const cameraStream = new MediaStream(stream.getVideoTracks());
+      if (needAudio) {
+        state.audioStream = new MediaStream(stream.getAudioTracks());
+        state.audioStream.getAudioTracks().forEach(track => track.enabled = state.micEnabled);
+      }
+      return cameraStream;
+    }
+
+    async function requestSecondaryCamera(facingMode) {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: videoConstraints(facingMode, true),
+        audio: false
+      });
+      return new MediaStream(stream.getVideoTracks());
+    }
+
+    function markCameraMode(mode) {
+      document.querySelectorAll(".jl-mode").forEach(item => {
+        item.classList.toggle("active", item.dataset.camera === mode);
+      });
+    }
+
+    function watchTrack(stream) {
+      stream?.getVideoTracks().forEach(track => {
+        track.addEventListener("ended", () => {
+          if (state.live) showToast("La cámara se detuvo. Pulsa Cámara para volver a abrirla.");
+          updateChecks();
+        }, {once:true});
       });
     }
 
@@ -873,72 +1024,108 @@
         return false;
       }
 
+      const token = ++state.activationToken;
       startCamera.disabled = true;
+      startCamera.hidden = false;
       startCamera.textContent = "ABRIENDO CÁMARA…";
-      await clearCameras();
+      document.querySelectorAll(".jl-mode").forEach(button => button.disabled = true);
 
+      stopVideoCameras();
+      await sleep(220);
+
+      let main = null;
+      let pip = null;
       try {
-        if (mode === "both") {
-          const rear = await requestCamera("environment");
-          let front;
-          try {
-            front = await navigator.mediaDevices.getUserMedia({
-              video: { facingMode: { ideal: "user" }, width:{ideal:640}, height:{ideal:480} },
-              audio: false
-            });
-          } catch (error) {
-            stopStream(rear);
-            throw new Error("AMBAS_NO_COMPATIBLE");
-          }
-
-          state.mainStream = rear;
-          state.pipStream = front;
-          mainVideo.srcObject = rear;
-          pipVideo.srcObject = front;
-          pipVideo.hidden = false;
-          await Promise.allSettled([mainVideo.play(), pipVideo.play()]);
-        } else {
-          const stream = await requestCamera(mode);
-          state.mainStream = stream;
-          mainVideo.srcObject = stream;
-          pipVideo.hidden = true;
-          await mainVideo.play();
+        const mainFacing = mode === "both" ? "environment" : mode;
+        main = await requestPrimaryCamera(mainFacing);
+        if (token !== state.activationToken) {
+          stopStream(main);
+          return false;
         }
 
+        if (mode === "both") {
+          try {
+            pip = await requestSecondaryCamera("user");
+          } catch (error) {
+            mode = "environment";
+            markCameraMode(mode);
+            showToast("Este móvil no admite las dos cámaras a la vez. Se mantiene la trasera.", 3600);
+          }
+        }
+
+        if (token !== state.activationToken) {
+          stopStream(main);
+          stopStream(pip);
+          return false;
+        }
+
+        state.mainCameraStream = main;
+        state.pipCameraStream = pip;
         state.mode = mode;
+        watchTrack(main);
+        watchTrack(pip);
+
+        await attachVideo(mainVideo, main);
+        if (pip) {
+          pipVideo.hidden = false;
+          await attachVideo(pipVideo, pip);
+        } else {
+          pipVideo.hidden = true;
+        }
+
         cameraEmpty.hidden = true;
         startCamera.hidden = true;
+        applyFilter(state.filter);
+
+        if (state.live) await refreshBroadcastVideos();
         updateChecks();
         return true;
       } catch (error) {
         console.error(error);
-        await clearCameras();
-        cameraEmpty.hidden = false;
-        startCamera.hidden = false;
+        stopStream(main);
+        stopStream(pip);
+        stopVideoCameras();
+        resetCameraUi();
+        startCamera.textContent = "REINTENTAR CÁMARA";
 
-        if (error?.message === "AMBAS_NO_COMPATIBLE") {
-          showToast("Este móvil no permite usar las dos cámaras a la vez.");
-        } else if (error?.name === "NotAllowedError") {
-          showToast("Debes permitir cámara y micrófono.");
-        } else if (error?.name === "NotFoundError") {
-          showToast("No se encontró una cámara disponible.");
+        if (error?.name === "NotAllowedError" || error?.name === "SecurityError") {
+          showToast("Debes permitir cámara y micrófono en el navegador.");
+        } else if (error?.name === "NotFoundError" || error?.name === "OverconstrainedError") {
+          showToast("No se encontró la cámara seleccionada.");
+        } else if (error?.name === "NotReadableError" || error?.name === "AbortError") {
+          showToast("La cámara estaba ocupada. Espera un momento y pulsa Reintentar.", 3600);
         } else {
-          showToast("No se pudo abrir la cámara.");
+          showToast("No se pudo abrir la cámara. Pulsa Reintentar.");
         }
         return false;
       } finally {
+        document.querySelectorAll(".jl-mode").forEach(button => button.disabled = false);
         startCamera.disabled = false;
-        startCamera.textContent = "ACTIVAR CÁMARA";
+        if (!startCamera.hidden && startCamera.textContent === "ABRIENDO CÁMARA…") {
+          startCamera.textContent = "REINTENTAR CÁMARA";
+        }
       }
+    }
+
+    async function refreshBroadcastVideos() {
+      if (!state.mainCameraStream) return;
+      await attachVideo(broadcastVideo, composeBroadcastStream(state.mainCameraStream));
+      if (state.pipCameraStream) {
+        broadcastPip.hidden = false;
+        await attachVideo(broadcastPip, state.pipCameraStream);
+      } else {
+        broadcastPip.hidden = true;
+        detachVideo(broadcastPip);
+      }
+      applyFilter(state.filter);
     }
 
     document.querySelectorAll(".jl-mode").forEach(button => {
       button.addEventListener("click", async () => {
-        document.querySelectorAll(".jl-mode").forEach(item => item.classList.remove("active"));
-        button.classList.add("active");
         const mode = button.dataset.camera;
         state.mode = mode;
-        if (state.mainStream) await activateCamera(mode);
+        markCameraMode(mode);
+        if (state.mainCameraStream || state.live) await activateCamera(mode);
       });
     });
 
@@ -946,10 +1133,29 @@
     $("switchCamera").addEventListener("click", async () => {
       const next = state.mode === "user" ? "environment" : "user";
       state.mode = next;
-      document.querySelectorAll(".jl-mode").forEach(item => {
-        item.classList.toggle("active", item.dataset.camera === next);
-      });
+      markCameraMode(next);
       await activateCamera(next);
+    });
+
+    const filterValues = {
+      natural: "none",
+      suave: "brightness(1.05) saturate(1.05) contrast(.96)",
+      luz: "brightness(1.18) saturate(1.08) contrast(1.02)"
+    };
+
+    function applyFilter(name) {
+      state.filter = filterValues[name] ? name : "natural";
+      const value = filterValues[state.filter];
+      [mainVideo,pipVideo,broadcastVideo,broadcastPip].forEach(video => {
+        video.style.setProperty("--camera-filter", value);
+      });
+      document.querySelectorAll(".jl-filter").forEach(button => {
+        button.classList.toggle("active", button.dataset.filter === state.filter);
+      });
+    }
+
+    document.querySelectorAll(".jl-filter").forEach(button => {
+      button.addEventListener("click", () => applyFilter(button.dataset.filter));
     });
 
     function toggleButton(button, key) {
@@ -957,37 +1163,153 @@
       button.classList.toggle("on", state[key]);
       button.setAttribute("aria-pressed", String(state[key]));
       if (key === "micEnabled") {
-        [state.mainStream,state.pipStream].filter(Boolean).forEach(stream => {
-          stream.getAudioTracks().forEach(track => track.enabled = state[key]);
-        });
+        currentAudioTracks().forEach(track => track.enabled = state[key]);
       }
     }
     $("micToggle").addEventListener("click", e => toggleButton(e.currentTarget,"micEnabled"));
     $("chatToggle").addEventListener("click", e => toggleButton(e.currentTarget,"chatEnabled"));
 
-    const coverInput = $("coverInput");
-    coverInput.addEventListener("change", () => {
-      const file = coverInput.files?.[0];
-      state.coverOk = Boolean(file && file.type.startsWith("image/") && file.size > 0);
-      if (state.coverOk) {
-        const url = URL.createObjectURL(file);
-        $("coverPreview").src = url;
+    function readStoredProfile() {
+      try {
+        const profile = JSON.parse(localStorage.getItem(PROFILE_KEY) || "null");
+        if (!profile) return null;
+        if ((profile.title || "").trim().length < 5) return null;
+        if ((profile.description || "").trim().length < 10) return null;
+        if (!String(profile.coverData || "").startsWith("data:image/")) return null;
+        return profile;
+      } catch {
+        return null;
       }
-      updateChecks();
-    });
-    $("coverShortcut").addEventListener("click", () => {
-      $("coverField").scrollIntoView({behavior:"smooth",block:"center"});
-      coverInput.click();
+    }
+
+    function setEditorCollapsed(collapsed) {
+      $("editorBody").classList.toggle("collapsed", collapsed);
+      $("editorSaved").hidden = !collapsed;
+      $("editorToggle").setAttribute("aria-expanded", String(!collapsed));
+      $("editorArrow").textContent = collapsed ? "⌄" : "⌃";
+    }
+
+    function refreshSavedSummary() {
+      $("savedCover").src = state.coverData || "jemmo-logo-header.webp";
+      $("savedTitle").textContent = $("liveTitle").value.trim() || "Mi LIVE";
+      $("savedDescription").textContent = $("liveDescription").value.trim() || "Datos guardados";
+      $("editorStatus").textContent = state.coverOk ? "Guardado · toca para editar" : "Configura portada, título y descripción";
+    }
+
+    function loadProfile() {
+      const profile = readStoredProfile();
+      if (!profile) {
+        setEditorCollapsed(false);
+        refreshSavedSummary();
+        return;
+      }
+      $("liveTitle").value = profile.title;
+      $("liveDescription").value = profile.description;
+      $("privacy").value = profile.privacy || "Público";
+      state.coverData = profile.coverData;
+      state.coverOk = true;
+      $("coverPreview").src = profile.coverData;
+      refreshSavedSummary();
+      setEditorCollapsed(true);
+    }
+
+    async function imageFileToDataUrl(file) {
+      const objectUrl = URL.createObjectURL(file);
+      try {
+        const image = new Image();
+        image.decoding = "async";
+        await new Promise((resolve, reject) => {
+          image.onload = resolve;
+          image.onerror = reject;
+          image.src = objectUrl;
+        });
+        const maxSide = 720;
+        const scale = Math.min(1, maxSide / Math.max(image.naturalWidth, image.naturalHeight));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+        canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+        const context = canvas.getContext("2d", {alpha:false});
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        let data = canvas.toDataURL("image/webp", .82);
+        if (!data.startsWith("data:image/webp")) data = canvas.toDataURL("image/jpeg", .84);
+        return data;
+      } finally {
+        URL.revokeObjectURL(objectUrl);
+      }
+    }
+
+    coverInput.addEventListener("change", async () => {
+      const file = coverInput.files?.[0];
+      if (!file || !file.type.startsWith("image/")) {
+        state.coverOk = false;
+        state.coverData = "";
+        updateChecks();
+        showToast("Selecciona una imagen válida.");
+        return;
+      }
+      try {
+        state.coverData = await imageFileToDataUrl(file);
+        state.coverOk = true;
+        $("coverPreview").src = state.coverData;
+        updateChecks();
+      } catch {
+        state.coverOk = false;
+        showToast("No se pudo preparar esa portada.");
+        updateChecks();
+      }
     });
 
+    function profileFieldsValid() {
+      return state.coverOk && $("liveTitle").value.trim().length >= 5 && $("liveDescription").value.trim().length >= 10;
+    }
+
+    function saveProfile(collapse = true) {
+      if (!profileFieldsValid()) {
+        showToast("Completa correctamente portada, título y descripción.");
+        updateChecks();
+        return false;
+      }
+      const profile = {
+        title: $("liveTitle").value.trim(),
+        description: $("liveDescription").value.trim(),
+        privacy: $("privacy").value,
+        coverData: state.coverData,
+        updatedAt: Date.now()
+      };
+      try {
+        localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
+      } catch {
+        showToast("La portada ocupa demasiado. Prueba con otra imagen.");
+        return false;
+      }
+      refreshSavedSummary();
+      if (collapse) setEditorCollapsed(true);
+      updateChecks();
+      showToast("Datos del LIVE guardados.");
+      return true;
+    }
+
+    $("saveProfile").addEventListener("click", () => saveProfile(true));
+    $("editSaved").addEventListener("click", () => setEditorCollapsed(false));
+    $("editorToggle").addEventListener("click", () => {
+      const collapsed = $("editorBody").classList.contains("collapsed");
+      setEditorCollapsed(!collapsed);
+    });
+    $("coverShortcut").addEventListener("click", () => {
+      setEditorCollapsed(false);
+      $("editorCard").scrollIntoView({behavior:"smooth", block:"center"});
+    });
     ["liveTitle","liveDescription"].forEach(id => $(id).addEventListener("input", updateChecks));
+    $("privacy").addEventListener("change", () => {
+      if (readStoredProfile()) saveProfile(false);
+    });
 
     function setCheck(id, ok) {
       $(id).classList.toggle("ok", ok);
     }
 
     function updateChecks() {
-      const cameraOk = Boolean(state.mainStream?.getVideoTracks().some(track => track.readyState === "live"));
+      const cameraOk = hasLiveTrack(state.mainCameraStream, "video");
       const titleOk = $("liveTitle").value.trim().length >= 5;
       const descriptionOk = $("liveDescription").value.trim().length >= 10;
 
@@ -1000,64 +1322,92 @@
       launchButton.disabled = !ready;
       message.textContent = ready
         ? "Todo aprobado. Ya puedes iniciar el LIVE."
-        : "Completa los puntos rojos para comenzar.";
+        : "Activa la cámara y completa los puntos pendientes.";
       message.style.color = ready ? "#91f0ba" : "#ffb2c3";
     }
 
     function formatTime(seconds) {
-      const m = String(Math.floor(seconds / 60)).padStart(2,"0");
-      const s = String(seconds % 60).padStart(2,"0");
-      return `${m}:${s}`;
+      const safe = Math.max(0, Math.floor(seconds));
+      const h = Math.floor(safe / 3600);
+      const m = Math.floor((safe % 3600) / 60);
+      const s = safe % 60;
+      if (h > 0) return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+      return `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
+    }
+
+    function updateTaskUi() {
+      const totalTarget = TASK_SECONDS * TASK_COUNT;
+      const elapsed = Math.min(state.liveSeconds, totalTarget);
+      const completed = Math.min(TASK_COUNT, Math.floor(elapsed / TASK_SECONDS));
+
+      if (completed >= TASK_COUNT) {
+        $("taskStatus").textContent = "2 DE 2 COMPLETADAS";
+        $("taskTime").textContent = `${formatTime(totalTarget)} TOTAL`;
+        $("taskProgress").style.width = "100%";
+        return;
+      }
+
+      const currentTask = completed + 1;
+      const currentElapsed = elapsed - completed * TASK_SECONDS;
+      $("taskStatus").textContent = `TAREA ${currentTask} DE ${TASK_COUNT}`;
+      $("taskTime").textContent = `${formatTime(currentElapsed)} / ${formatTime(TASK_SECONDS)}`;
+      $("taskProgress").style.width = `${Math.min(100,(currentElapsed / TASK_SECONDS) * 100)}%`;
     }
 
     setInterval(() => {
       if (!state.live) {
         state.prepSeconds++;
         $("prepTimer").textContent = formatTime(state.prepSeconds);
-      } else {
-        state.liveSeconds++;
-        $("liveTimer").textContent = `${formatTime(state.liveSeconds)} · 1 espectador`;
+        return;
+      }
+
+      state.liveSeconds++;
+      $("liveTimer").textContent = `${formatTime(state.liveSeconds)} · 1 espectador`;
+      updateTaskUi();
+
+      if (state.liveSeconds >= TASK_SECONDS && state.milestone < 1) {
+        state.milestone = 1;
+        showToast("Tarea 1 de 2 completada. Empieza la segunda.", 3400);
+      }
+      if (state.liveSeconds >= TASK_SECONDS * TASK_COUNT && state.milestone < 2) {
+        state.milestone = 2;
+        showToast("Tareas 2 de 2 completadas.", 3600);
       }
     },1000);
 
     launchButton.addEventListener("click", async () => {
       updateChecks();
-      if (launchButton.disabled || !state.mainStream) return;
+      if (launchButton.disabled || !state.mainCameraStream) return;
+      if (!saveProfile(true)) return;
 
       state.live = true;
       state.liveSeconds = 0;
+      state.milestone = 0;
+      $("liveTimer").textContent = "00:00 · 1 espectador";
+      updateTaskUi();
       $("prepScreen").hidden = true;
       $("broadcastScreen").hidden = false;
       document.querySelector(".jl-nav").hidden = true;
-
-      broadcastVideo.srcObject = state.mainStream;
-      if (state.pipStream) {
-        broadcastPip.srcObject = state.pipStream;
-        broadcastPip.hidden = false;
-      } else {
-        broadcastPip.hidden = true;
-      }
-
-      await Promise.allSettled([broadcastVideo.play(), state.pipStream ? broadcastPip.play() : Promise.resolve()]);
-      playGru();
+      await refreshBroadcastVideos();
+      playWaterDrop();
     });
 
-    $("endLive").addEventListener("click", async () => {
+    $("endLive").addEventListener("click", () => {
       state.live = false;
       $("broadcastScreen").hidden = true;
       $("prepScreen").hidden = false;
       document.querySelector(".jl-nav").hidden = false;
       detachVideo(broadcastVideo);
       detachVideo(broadcastPip);
-      showToast("LIVE finalizado. La cámara permanece preparada.");
+      showToast("LIVE finalizado. La cámara queda preparada.");
     });
 
     $("liveMic").addEventListener("click", e => {
       state.micEnabled = !state.micEnabled;
-      [state.mainStream,state.pipStream].filter(Boolean).forEach(stream => {
-        stream.getAudioTracks().forEach(track => track.enabled = state.micEnabled);
-      });
+      currentAudioTracks().forEach(track => track.enabled = state.micEnabled);
       e.currentTarget.firstChild.textContent = state.micEnabled ? "🎤" : "🔇";
+      $("micToggle").classList.toggle("on", state.micEnabled);
+      $("micToggle").setAttribute("aria-pressed", String(state.micEnabled));
       showToast(state.micEnabled ? "Micrófono activado." : "Micrófono silenciado.");
     });
 
@@ -1067,17 +1417,16 @@
         return;
       }
       const next = state.mode === "user" ? "environment" : "user";
-      const wasLive = state.live;
+      state.mode = next;
+      markCameraMode(next);
       await activateCamera(next);
-      if (wasLive && state.mainStream) {
-        broadcastVideo.srcObject = state.mainStream;
-        await broadcastVideo.play().catch(()=>{});
-      }
     });
 
     $("liveChatButton").addEventListener("click", () => {
       state.chatEnabled = !state.chatEnabled;
       $("liveChat").hidden = !state.chatEnabled;
+      $("chatToggle").classList.toggle("on", state.chatEnabled);
+      $("chatToggle").setAttribute("aria-pressed", String(state.chatEnabled));
       showToast(state.chatEnabled ? "Chat visible." : "Chat oculto.");
     });
 
@@ -1107,7 +1456,6 @@
     addEventListener("online",updateConnection);
     addEventListener("offline",updateConnection);
 
-    /* MENÚ */
     const menu = $("sideMenu");
     const backdrop = $("menuBackdrop");
     function openMenu() {
@@ -1129,61 +1477,71 @@
     $("menuSearch").addEventListener("input", e => {
       const query = e.target.value.trim().toLowerCase();
       document.querySelectorAll(".jl-menu-item").forEach(item => {
-        item.hidden = query && !item.dataset.search.includes(query);
+        item.hidden = Boolean(query && !item.dataset.search.includes(query));
       });
     });
     document.querySelectorAll(".jl-menu-item[href='#'],.jl-menu-item:not([href])").forEach(button => {
       button.addEventListener("click", () => showToast("Esta función se completará en su módulo correspondiente."));
     });
     $("helpButton").addEventListener("click", () => {
-      showToast("Activa cámara, añade portada, título y descripción. Después inicia el LIVE.");
+      showToast("Los datos del LIVE quedan guardados. Después solo activa cámara, filtro y transmite.", 3600);
     });
 
-    /* Sonido acuático grave: GRU, GRU, GRU */
     let audioContext;
-    function playGru() {
+    function playWaterDrop() {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (!AudioCtx) return;
       audioContext ||= new AudioCtx();
-      if (audioContext.state === "suspended") audioContext.resume().catch(()=>{});
-      const start = audioContext.currentTime + .02;
+      if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
+      const start = audioContext.currentTime + .01;
 
-      [0,.18,.36].forEach((delay,index) => {
-        const t = start + delay;
+      const makeDrop = (frequency, delay, volume, duration) => {
         const oscillator = audioContext.createOscillator();
         const gain = audioContext.createGain();
-        const filter = audioContext.createBiquadFilter();
-
-        oscillator.type = "sawtooth";
-        oscillator.frequency.setValueAtTime(105 - index*5,t);
-        oscillator.frequency.exponentialRampToValueAtTime(58,t+.14);
-
-        filter.type = "lowpass";
-        filter.frequency.setValueAtTime(300,t);
-        filter.frequency.exponentialRampToValueAtTime(135,t+.14);
-        filter.Q.value = 3.5;
-
-        gain.gain.setValueAtTime(.0001,t);
-        gain.gain.exponentialRampToValueAtTime(.13,t+.015);
-        gain.gain.exponentialRampToValueAtTime(.0001,t+.14);
-
-        oscillator.connect(filter);
-        filter.connect(gain);
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(frequency, start + delay);
+        oscillator.frequency.exponentialRampToValueAtTime(190, start + delay + duration);
+        gain.gain.setValueAtTime(.0001, start + delay);
+        gain.gain.exponentialRampToValueAtTime(volume, start + delay + .012);
+        gain.gain.exponentialRampToValueAtTime(.0001, start + delay + duration);
+        oscillator.connect(gain);
         gain.connect(audioContext.destination);
-        oscillator.start(t);
-        oscillator.stop(t+.145);
+        oscillator.start(start + delay);
+        oscillator.stop(start + delay + duration + .01);
+      };
+
+      makeDrop(880, 0, .07, .18);
+      makeDrop(520, .035, .035, .22);
+    }
+
+    document.querySelectorAll(".jl-nav a,.jl-menu-item[href]").forEach(link => {
+      link.addEventListener("pointerdown", playWaterDrop, {passive:true});
+    });
+
+    function syncLiveNav() {
+      document.querySelectorAll(".jl-nav a").forEach(link => {
+        const file = new URL(link.href, location.href).pathname.split("/").pop() || "index.html";
+        link.classList.toggle("active", file === "live.html");
       });
     }
 
-    document.querySelectorAll(".jl-nav a").forEach(link => {
-      link.addEventListener("pointerdown", playGru, {passive:true});
+    addEventListener("pagehide", clearAllMedia);
+    addEventListener("pageshow", event => {
+      syncLiveNav();
+      if (event.persisted || !hasLiveTrack(state.mainCameraStream, "video")) resetCameraUi();
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden && state.mainCameraStream && !hasLiveTrack(state.mainCameraStream, "video")) {
+        resetCameraUi();
+        showToast("La cámara se cerró al salir. Pulsa Reintentar cámara.");
+      }
     });
 
-    addEventListener("pagehide", () => {
-      if (!state.live) clearCameras();
-    });
-
+    loadProfile();
+    applyFilter("natural");
+    updateTaskUi();
     updateChecks();
+    syncLiveNav();
   })();
   </script>
 </body>
