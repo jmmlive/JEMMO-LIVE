@@ -1,3 +1,4 @@
-JEMMO LIVE v0.6.3
-Base estable: v0.6.2
+JEMMO LIVE v0.6.4
+Base estable: v0.6.3
 Actualización incremental y reversible.
+Módulo modificado: LIVE.

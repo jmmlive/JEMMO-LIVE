@@ -1,31 +1,1190 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#09000f"><title>JEMMO LIVE · LIVE</title><link rel="stylesheet" href="inicio.css"><link rel="stylesheet" href="app.css"><style>.stub{min-height:calc(100svh - 90px);padding:12px}.stub-card{margin-top:18px;padding:24px 16px;border:1px solid #ff477e;border-radius:22px;background:radial-gradient(circle at top,#260735,#09000f 68%);text-align:center;box-shadow:0 0 28px #7900aa33}.stub-card .big{font-size:62px;filter:drop-shadow(0 0 14px #ff477e)}.stub-card h1{margin:8px 0;color:#ff477e}.stub-card p{color:#bfb1c5}.mini-header{display:flex;align-items:center;justify-content:space-between}.mini-header button{width:44px;height:44px;border:1px solid #6d198d;border-radius:50%;background:#170321;color:#fff;font-size:22px}.mini-logo{font-weight:950;color:#ffd04f}</style></head><body><main class="stub"><header class="mini-header"><button id="menuOpen">☰</button><div class="mini-logo">JEMMO LIVE</div><button>⌕</button></header><section class="stub-card"><div class="big">🐟</div><h1>LIVE</h1><p>Aquí estará el acceso para preparar e iniciar una transmisión LIVE.</p></section></main>
-  <div class="menu-backdrop" id="menuBackdrop" hidden></div>
-  <aside class="side-menu" id="sideMenu" aria-hidden="true">
-    <div class="menu-top">
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#09000f">
+  <title>JEMMO LIVE · Preparar LIVE · V0.6.4</title>
+  <style>
+    :root{
+      color-scheme:dark;
+      --bg:#050007;
+      --panel:#100316;
+      --panel2:#180522;
+      --violet:#b936ff;
+      --pink:#ff2f85;
+      --gold:#ffd24c;
+      --cyan:#41e4e8;
+      --green:#48e39d;
+      --red:#ff526f;
+      --muted:#b9aabf;
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:#fff}
+    body{
+      min-height:100svh;
+      overflow-x:hidden;
+      background:
+        radial-gradient(circle at 50% -10%,#330743 0,transparent 38%),
+        linear-gradient(180deg,#0a000e,#030004 70%);
+    }
+    button,input,textarea,select{font:inherit}
+    button{cursor:pointer}
+    [hidden]{display:none!important}
+
+    .jl-shell{
+      width:min(100%,720px);
+      margin:auto;
+      min-height:100svh;
+      padding:calc(10px + env(safe-area-inset-top)) 14px calc(105px + env(safe-area-inset-bottom));
+    }
+
+    /* CABECERA COMPACTA */
+    .jl-header{
+      min-height:66px;
+      display:grid;
+      grid-template-columns:42px minmax(0,1fr) 42px;
+      gap:8px;
+      align-items:center;
+      padding:4px 2px 10px;
+    }
+    .jl-round{
+      width:42px;
+      height:42px;
+      min-width:42px;
+      border:1px solid #a43eda88;
+      border-radius:14px;
+      background:#12031a;
+      color:#fff;
+      display:grid;
+      place-items:center;
+      box-shadow:0 0 18px #8700c92c;
+    }
+    .jl-round svg{width:21px;height:21px}
+    .jl-brand{
+      min-width:0;
+      text-align:center;
+    }
+    .jl-brand img{
+      width:min(100%,235px);
+      height:48px;
+      display:block;
+      margin:auto;
+      object-fit:cover;
+      object-position:center;
+      border-radius:10px;
+    }
+    .jl-brand small{
+      display:block;
+      margin-top:2px;
+      color:#b69fbd;
+      font-size:8px;
+      font-weight:800;
+      letter-spacing:.25em;
+    }
+
+    .jl-title-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin:18px 0 12px;
+    }
+    .jl-title-row h1{margin:0;font-size:clamp(25px,7vw,34px)}
+    .jl-timer{
+      min-width:86px;
+      padding:10px 12px;
+      border:1px solid #e6b94955;
+      border-radius:16px;
+      background:#160817;
+      color:var(--gold);
+      text-align:center;
+      font-weight:900;
+      font-variant-numeric:tabular-nums;
+    }
+
+    /* PREVISUALIZACIÓN AISLADA: sin filtros, sin canvas y sin capas fantasma */
+    .jl-camera-card{
+      position:relative;
+      isolation:isolate;
+      contain:layout paint;
+      overflow:hidden;
+      min-height:360px;
+      border:1px solid #a82bea88;
+      border-radius:25px;
+      background:#020003;
+      box-shadow:0 14px 36px #0009,0 0 24px #7c00aa22;
+    }
+    .jl-camera-card video{
+      position:absolute;
+      inset:0;
+      z-index:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center;
+      background:#000;
+      border:0;
+      transform:none!important;
+      filter:none!important;
+      mix-blend-mode:normal!important;
+      backface-visibility:hidden;
+    }
+    .jl-pip{
+      position:absolute!important;
+      inset:auto 12px 78px auto!important;
+      z-index:4!important;
+      width:31%!important;
+      height:36%!important;
+      border:2px solid #ffcf49!important;
+      border-radius:17px!important;
+      overflow:hidden!important;
+      box-shadow:0 8px 24px #000b!important;
+    }
+    .jl-modebar{
+      position:absolute;
+      z-index:6;
+      left:12px;
+      right:62px;
+      top:12px;
+      display:flex;
+      gap:7px;
+    }
+    .jl-mode{
+      min-height:38px;
+      padding:0 13px;
+      border:1px solid #7f477f88;
+      border-radius:15px;
+      background:#080109;
+      color:#c3b4c8;
+      font-size:12px;
+      font-weight:850;
+    }
+    .jl-mode.active{
+      color:#fff;
+      border-color:#ff388b;
+      box-shadow:0 0 16px #ff388b44;
+    }
+    .jl-mode.active::before{
+      content:"";
+      display:inline-block;
+      width:8px;height:8px;
+      margin-right:7px;
+      border-radius:50%;
+      background:var(--green);
+      box-shadow:0 0 9px var(--green);
+    }
+    .jl-switch{
+      position:absolute;
+      z-index:7;
+      top:12px;
+      right:12px;
+    }
+    .jl-empty{
+      position:absolute;
+      z-index:2;
+      inset:58px 16px 126px;
+      display:grid;
+      place-items:center;
+      text-align:center;
+      pointer-events:none;
+    }
+    .jl-empty-inner{
+      display:grid;
+      gap:9px;
+      justify-items:center;
+    }
+    .jl-camera-icon{
+      width:112px;height:112px;
+      display:grid;
+      place-items:center;
+      border:1px solid #ac32ef88;
+      border-radius:34px;
+      background:radial-gradient(circle,#44105d,#190522 72%);
+      color:#bd34ff;
+      font-size:50px;
+      box-shadow:0 0 35px #8f00d044;
+    }
+    .jl-empty strong{font-size:25px}
+    .jl-empty small{color:#ad9db4}
+    .jl-camera-bottom{
+      position:absolute;
+      z-index:7;
+      left:12px;right:12px;bottom:12px;
+      display:flex;
+      justify-content:space-between;
+      gap:8px;
+      pointer-events:none;
+    }
+    .jl-camera-bottom button{pointer-events:auto}
+    .jl-chip{
+      min-height:44px;
+      padding:0 14px;
+      border:1px solid #8d3fa266;
+      border-radius:15px;
+      background:#080109;
+      color:#fff;
+      font-size:12px;
+      font-weight:850;
+    }
+    .jl-chip.gold{color:var(--gold);border-color:#c59b3b66}
+    .jl-chip.active{border-color:var(--green);color:var(--green)}
+
+    .jl-start-camera{
+      position:absolute;
+      z-index:8;
+      left:50%;
+      bottom:69px;
+      transform:translateX(-50%);
+      min-width:190px;
+      min-height:46px;
+      border:0;
+      border-radius:16px;
+      background:linear-gradient(90deg,#ffcf45,#ff5e9e,#b933ff);
+      color:#20041f;
+      font-weight:950;
+      box-shadow:0 8px 28px #0008;
+    }
+
+    .jl-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:12px;
+    }
+    .jl-field,.jl-option{
+      border:1px solid #7d258c66;
+      border-radius:18px;
+      background:linear-gradient(145deg,#16051e,#0a010e);
+      box-shadow:0 10px 24px #0005;
+    }
+    .jl-field{grid-column:1/-1;padding:13px}
+    .jl-field label{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:7px;
+      font-size:12px;
+      font-weight:900;
+    }
+    .jl-required{color:var(--red)}
+    .jl-field input,.jl-field textarea,.jl-field select{
+      width:100%;
+      border:0;
+      outline:0;
+      resize:vertical;
+      background:transparent;
+      color:#fff;
+      font-size:16px;
+    }
+    .jl-field textarea{min-height:68px}
+    .jl-field small{display:block;margin-top:6px;color:#9e8da5;font-size:10px}
+    .jl-cover{
+      display:grid;
+      grid-template-columns:58px minmax(0,1fr);
+      gap:10px;
+      align-items:center;
+    }
+    .jl-cover-preview{
+      width:58px;height:58px;
+      border:1px solid #8a3a9b;
+      border-radius:13px;
+      object-fit:cover;
+      background:#080109;
+    }
+    .jl-cover input{
+      width:100%;
+      min-height:38px;
+      color:#bcaec2;
+      font-size:10px;
+    }
+    .jl-cover input::file-selector-button{
+      min-height:36px;
+      margin-right:8px;
+      padding:0 12px;
+      border:1px solid #a741bd88;
+      border-radius:11px;
+      background:#18051f;
+      color:#fff;
+      font-weight:850;
+    }
+    .jl-option{
+      min-height:76px;
+      padding:11px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+    }
+    .jl-option strong{display:block;font-size:12px}
+    .jl-option small{display:block;margin-top:3px;color:#9f8ea6;font-size:9px}
+    .jl-toggle{
+      width:45px;height:25px;
+      padding:3px;
+      border:0;
+      border-radius:999px;
+      background:#46204f;
+    }
+    .jl-toggle span{
+      display:block;
+      width:19px;height:19px;
+      border-radius:50%;
+      background:#fff;
+      transition:transform .18s ease;
+    }
+    .jl-toggle.on{background:var(--green)}
+    .jl-toggle.on span{transform:translateX(20px)}
+
+    .jl-summary{
+      display:grid;
+      grid-template-columns:1fr 118px;
+      gap:10px;
+      margin-top:12px;
+      align-items:stretch;
+    }
+    .jl-checklist{
+      padding:13px;
+      border:1px solid #71268166;
+      border-radius:18px;
+      background:#0d0312;
+    }
+    .jl-check{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin:5px 0;
+      color:#b6a5bc;
+      font-size:11px;
+    }
+    .jl-dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 8px #ff526f88}
+    .jl-check.ok{color:#c8f9df}
+    .jl-check.ok .jl-dot{background:var(--green);box-shadow:0 0 8px var(--green)}
+    .jl-connection{
+      display:grid;
+      place-items:center;
+      padding:12px 6px;
+      border:1px solid #6b2c7c66;
+      border-radius:18px;
+      background:#13051a;
+      text-align:center;
+    }
+    .jl-connection span{font-size:24px;color:var(--green)}
+    .jl-connection b{font-size:11px}
+    .jl-connection small{color:#a38faa;font-size:9px}
+
+    .jl-launch{
+      position:relative;
+      z-index:2;
+      margin-top:12px;
+      min-height:60px;
+      width:100%;
+      border:0;
+      border-radius:18px;
+      background:linear-gradient(90deg,#ffd146,#ff7c9f,#b837ff);
+      color:#220421;
+      font-size:17px;
+      font-weight:950;
+      box-shadow:0 12px 30px #0008;
+    }
+    .jl-launch:disabled{opacity:.38;filter:grayscale(.4)}
+    .jl-message{
+      min-height:19px;
+      margin:8px 2px 0;
+      color:#ffb2c3;
+      font-size:11px;
+      text-align:center;
+    }
+
+    /* EMISIÓN */
+    .jl-broadcast{
+      position:fixed;
+      inset:0;
+      z-index:100;
+      background:#000;
+      overflow:hidden;
+      isolation:isolate;
+      contain:layout paint;
+    }
+    .jl-broadcast video{
+      position:absolute;
+      inset:0;
+      z-index:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      transform:none!important;
+      filter:none!important;
+      background:#000;
+    }
+    .jl-live-overlay{
+      position:absolute;
+      inset:0;
+      z-index:5;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      padding:calc(14px + env(safe-area-inset-top)) 12px calc(15px + env(safe-area-inset-bottom));
+      background:linear-gradient(180deg,#0008 0,transparent 30%,transparent 62%,#000b 100%);
+      pointer-events:none;
+    }
+    .jl-live-top,.jl-live-bottom{pointer-events:auto}
+    .jl-live-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .jl-host{
+      display:flex;align-items:center;gap:8px;
+      padding:6px 9px 6px 6px;
+      border-radius:999px;
+      background:#120714dc;
+      border:1px solid #fff3;
+    }
+    .jl-avatar{
+      width:34px;height:34px;
+      border-radius:50%;
+      object-fit:cover;
+      border:1px solid #ffd24c;
+    }
+    .jl-host b{display:block;font-size:11px}
+    .jl-host small{display:block;color:#cdbfd0;font-size:8px}
+    .jl-live-badge{
+      padding:8px 10px;
+      border-radius:12px;
+      background:#ff245f;
+      font-size:10px;
+      font-weight:950;
+      box-shadow:0 0 16px #ff245f66;
+    }
+    .jl-live-chat{
+      width:min(82%,390px);
+      max-height:180px;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-end;
+      gap:5px;
+      margin-bottom:10px;
+    }
+    .jl-chat-line{
+      width:max-content;
+      max-width:100%;
+      padding:6px 9px;
+      border-radius:12px;
+      background:#09020dbf;
+      font-size:10px;
+    }
+    .jl-live-actions{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:8px;
+    }
+    .jl-live-actions button{
+      min-height:47px;
+      border:1px solid #fff3;
+      border-radius:15px;
+      background:#100615d9;
+      color:#fff;
+      font-size:18px;
+    }
+    .jl-live-actions button small{display:block;font-size:8px;color:#d8cadb}
+    .jl-end{background:#a9143dd9!important;border-color:#ff5479!important}
+
+    /* MENÚ COMPACTO */
+    .jl-backdrop{
+      position:fixed;
+      inset:0;
+      z-index:201;
+      background:#0009;
+    }
+    .jl-menu{
+      position:fixed;
+      z-index:202;
+      inset:0 auto 0 0;
+      width:min(76vw,286px);
+      padding:calc(12px + env(safe-area-inset-top)) 10px calc(14px + env(safe-area-inset-bottom));
+      overflow-y:auto;
+      background:linear-gradient(180deg,#17051f,#070109);
+      border-right:1px solid #a437d177;
+      transform:translateX(-105%);
+      transition:transform .2s ease;
+      box-shadow:18px 0 50px #000a;
+    }
+    .jl-menu.open{transform:translateX(0)}
+    .jl-menu-head{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:10px}
+    .jl-menu-head h2{margin:2px 0 0;font-size:16px}
+    .jl-menu-head small{font-size:8px;color:#a791ae;letter-spacing:.14em}
+    .jl-close{width:34px;height:34px;border:1px solid #843c9a;border-radius:11px;background:#100317;color:#fff;font-size:22px}
+    .jl-search{
+      min-height:40px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      padding:0 9px;
+      border:1px solid #713780;
+      border-radius:12px;
+      background:#08010c;
+    }
+    .jl-search input{width:100%;border:0;outline:0;background:transparent;color:#fff;font-size:11px}
+    .jl-menu-list{display:grid;gap:5px;margin-top:8px}
+    .jl-menu-item{
+      width:100%;
+      min-height:45px;
+      display:grid;
+      grid-template-columns:30px minmax(0,1fr) 12px;
+      align-items:center;
+      gap:7px;
+      padding:6px 8px;
+      border:1px solid #68287955;
+      border-radius:13px;
+      background:#100316;
+      color:#fff;
+      text-align:left;
+      text-decoration:none;
+    }
+    .jl-menu-icon{
+      width:29px;height:29px;
+      display:grid;place-items:center;
+      border-radius:9px;
+      background:#24072e;
+      font-size:14px;
+    }
+    .jl-menu-item b{font-size:11px}
+    .jl-menu-item small{display:block;margin-top:1px;color:#96849d;font-size:8px}
+    .jl-menu-item i{font-style:normal;color:#a855c4}
+    .jl-version{margin:12px 3px;color:#836e8b;font-size:8px}
+
+    .jl-toast{
+      position:fixed;
+      z-index:300;
+      left:50%;
+      bottom:calc(92px + env(safe-area-inset-bottom));
+      transform:translateX(-50%) translateY(20px);
+      width:min(88%,390px);
+      padding:11px 13px;
+      border:1px solid #b43bd577;
+      border-radius:14px;
+      background:#100316f2;
+      color:#fff;
+      text-align:center;
+      font-size:11px;
+      opacity:0;
+      pointer-events:none;
+      transition:.2s ease;
+    }
+    .jl-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    /* NAVEGACIÓN INFERIOR */
+    .jl-nav{
+      position:fixed;
+      z-index:50;
+      left:0;right:0;bottom:0;
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      min-height:82px;
+      padding:9px 5px max(10px,env(safe-area-inset-bottom));
+      background:#070109f7;
+      border-top:1px solid #6e217c88;
+    }
+    .jl-nav a{
+      position:relative;
+      display:grid;
+      justify-items:center;
+      align-content:center;
+      gap:3px;
+      color:#755980;
+      text-decoration:none;
+      font-size:10px;
+      font-weight:850;
+    }
+    .jl-nav-icon{
+      width:34px;height:34px;
+      display:grid;place-items:center;
+      font-size:21px;
+    }
+    .jl-nav img{
+      width:42px;height:42px;
+      object-fit:cover;
+      border-radius:13px;
+      box-shadow:0 0 18px #ff2f8588;
+    }
+    .jl-nav a.active{color:#ff438a}
+    .jl-nav a.active::after{
+      content:"";
+      width:34px;height:4px;
+      border-radius:99px;
+      background:#ff2f85;
+      box-shadow:0 0 12px #ff2f85;
+    }
+    .jl-badge{
+      position:absolute;
+      top:0;
+      right:25%;
+      min-width:19px;height:19px;
+      display:grid;place-items:center;
+      border-radius:999px;
+      background:#b51f55;
+      color:#fff;
+      font-size:9px;
+    }
+
+    @media(max-width:390px){
+      .jl-shell{padding-left:10px;padding-right:10px}
+      .jl-camera-card{min-height:335px}
+      .jl-mode{padding:0 10px;font-size:11px}
+      .jl-grid{gap:8px}
+      .jl-summary{grid-template-columns:1fr 105px}
+    }
+  </style>
+</head>
+<body>
+  <main class="jl-shell" id="prepScreen">
+    <header class="jl-header">
+      <button class="jl-round" id="menuOpen" aria-label="Abrir menú">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div class="jl-brand">
+        <img src="jemmo-logo-header-wide.webp" alt="JEMMO LIVE">
+        <small>PREPARACIÓN DE TRANSMISIÓN · V0.6.4</small>
+      </div>
+      <button class="jl-round" id="helpButton" aria-label="Ayuda">?</button>
+    </header>
+
+    <div class="jl-title-row">
+      <h1>Prepara tu LIVE</h1>
+      <div class="jl-timer" id="prepTimer">00:00</div>
+    </div>
+
+    <section class="jl-camera-card" id="cameraCard">
+      <video id="mainVideo" autoplay muted playsinline webkit-playsinline disablepictureinpicture></video>
+      <video id="pipVideo" class="jl-pip" autoplay muted playsinline webkit-playsinline disablepictureinpicture hidden></video>
+
+      <div class="jl-modebar">
+        <button class="jl-mode active" data-camera="user">Frontal</button>
+        <button class="jl-mode" data-camera="environment">Trasera</button>
+        <button class="jl-mode" data-camera="both">Ambas</button>
+      </div>
+
+      <button class="jl-round jl-switch" id="switchCamera" aria-label="Cambiar cámara">↔</button>
+
+      <div class="jl-empty" id="cameraEmpty">
+        <div class="jl-empty-inner">
+          <div class="jl-camera-icon">▣</div>
+          <strong>Activa la cámara</strong>
+          <small>Sin espejo · revisa encuadre y luz</small>
+        </div>
+      </div>
+
+      <button class="jl-start-camera" id="startCamera">ACTIVAR CÁMARA</button>
+
+      <div class="jl-camera-bottom">
+        <button class="jl-chip gold" id="coverShortcut">▧ Portada</button>
+        <button class="jl-chip active" type="button">✦ Natural</button>
+      </div>
+    </section>
+
+    <section class="jl-grid">
+      <div class="jl-field">
+        <label for="liveTitle">Título del LIVE <span class="jl-required">Obligatorio</span></label>
+        <input id="liveTitle" maxlength="60" placeholder="Escribe un título claro">
+        <small>Mínimo 5 caracteres.</small>
+      </div>
+
+      <div class="jl-field">
+        <label for="liveDescription">Descripción <span class="jl-required">Obligatoria</span></label>
+        <textarea id="liveDescription" maxlength="180" placeholder="Explica brevemente de qué tratará tu LIVE"></textarea>
+        <small>Mínimo 10 caracteres. La revisión automática bloquea textos no permitidos.</small>
+      </div>
+
+      <div class="jl-field" id="coverField">
+        <label for="coverInput">Portada <span class="jl-required">Obligatoria</span></label>
+        <div class="jl-cover">
+          <img class="jl-cover-preview" id="coverPreview" src="jemmo-logo-header.webp" alt="Vista de portada">
+          <input id="coverInput" type="file" accept="image/*">
+        </div>
+        <small>Usa una imagen clara. No se transmite sin portada aprobada.</small>
+      </div>
+
+      <div class="jl-field">
+        <label for="privacy">Visibilidad</label>
+        <select id="privacy">
+          <option>Público</option>
+          <option>Solo seguidores</option>
+          <option>Privado con contraseña</option>
+        </select>
+      </div>
+
+      <div class="jl-option">
+        <div><strong>Micrófono</strong><small>Audio de la transmisión</small></div>
+        <button class="jl-toggle on" id="micToggle" aria-pressed="true"><span></span></button>
+      </div>
+
+      <div class="jl-option">
+        <div><strong>Comentarios</strong><small>Chat durante el LIVE</small></div>
+        <button class="jl-toggle on" id="chatToggle" aria-pressed="true"><span></span></button>
+      </div>
+    </section>
+
+    <section class="jl-summary">
+      <div class="jl-checklist">
+        <div class="jl-check" id="checkCamera"><span class="jl-dot"></span>Cámara y permisos</div>
+        <div class="jl-check" id="checkCover"><span class="jl-dot"></span>Portada</div>
+        <div class="jl-check" id="checkTitle"><span class="jl-dot"></span>Título</div>
+        <div class="jl-check" id="checkDescription"><span class="jl-dot"></span>Descripción</div>
+      </div>
+      <div class="jl-connection">
+        <span>⌁</span>
+        <b>Conexión</b>
+        <small id="connectionText">Comprobando…</small>
+      </div>
+    </section>
+
+    <button class="jl-launch" id="launchButton" disabled>INICIAR LIVE</button>
+    <div class="jl-message" id="validationMessage">Completa los puntos rojos para comenzar.</div>
+  </main>
+
+  <section class="jl-broadcast" id="broadcastScreen" hidden>
+    <video id="broadcastVideo" autoplay muted playsinline webkit-playsinline disablepictureinpicture></video>
+    <video id="broadcastPip" class="jl-pip" autoplay muted playsinline webkit-playsinline disablepictureinpicture hidden></video>
+
+    <div class="jl-live-overlay">
+      <div class="jl-live-top">
+        <div class="jl-host">
+          <img class="jl-avatar" src="jemmo-logo-header.webp" alt="">
+          <div><b>Mi LIVE</b><small id="liveTimer">00:00 · 1 espectador</small></div>
+        </div>
+        <div class="jl-live-badge">EN DIRECTO</div>
+      </div>
+
+      <div class="jl-live-bottom">
+        <div class="jl-live-chat" id="liveChat">
+          <div class="jl-chat-line">JEMMO: La transmisión ha comenzado.</div>
+          <div class="jl-chat-line">Revisa el encuadre y el micrófono.</div>
+        </div>
+        <div class="jl-live-actions">
+          <button id="liveMic">🎤<small>Micro</small></button>
+          <button id="liveFlip">↔<small>Cámara</small></button>
+          <button id="liveChatButton">💬<small>Chat</small></button>
+          <button id="liveShare">↗<small>Compartir</small></button>
+          <button class="jl-end" id="endLive">■<small>Finalizar</small></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="jl-backdrop" id="menuBackdrop" hidden></div>
+  <aside class="jl-menu" id="sideMenu" aria-hidden="true">
+    <div class="jl-menu-head">
       <div><small>MENÚ DE USUARIO</small><h2>JEMMO LIVE</h2></div>
-      <button class="menu-close" id="menuClose" aria-label="Cerrar menú">×</button>
+      <button class="jl-close" id="menuClose" aria-label="Cerrar menú">×</button>
     </div>
-    <label class="function-search"><span>⌕</span><input id="functionSearch" placeholder="Buscar una función..." autocomplete="off"></label>
-    <div class="search-hint">Escribe, por ejemplo: retirar, idioma, live o perfil.</div>
-    <nav class="menu-list" id="menuList">
-      <button data-search="mi perfil editar perfil foto nombre biografia avatar apariencia" data-route="yo.html"><span>👤</span><b>Mi perfil</b><i>›</i></button>
-      <button data-search="monedero saldo monedas recargar retirar historial pagos intercambios" data-demo="Monedero"><span>🪙</span><b>Monedero</b><small>Saldo, recargas y retiros</small><i>›</i></button>
-      <button data-search="configuracion idioma permisos camara microfono preferencias aplicacion seguridad privacidad" data-demo="Configuración"><span>⚙️</span><b>Configuración</b><small>Idioma y ajustes de la aplicación</small><i>›</i></button>
-      <button data-search="ayuda soporte seguridad privacidad bloquear usuario problemas contacto" data-demo="Ayuda y soporte"><span>❓</span><b>Ayuda y soporte</b><small>Soporte, seguridad y privacidad</small><i>›</i></button>
-      <button class="logout-item" data-search="cerrar sesion salir desconectar cuenta" id="logoutButton"><span>↪</span><b>Cerrar sesión</b><i>›</i></button>
+    <label class="jl-search">⌕<input id="menuSearch" placeholder="Buscar función…"></label>
+    <nav class="jl-menu-list" id="menuList">
+      <a class="jl-menu-item" data-search="perfil yo cuenta foto" href="yo.html"><span class="jl-menu-icon">👤</span><span><b>Mi perfil</b><small>Cuenta y apariencia</small></span><i>›</i></a>
+      <button class="jl-menu-item" data-search="monedero saldo monedas recargar retirar"><span class="jl-menu-icon">🪙</span><span><b>Monedero</b><small>Saldo, recargas y retiros</small></span><i>›</i></button>
+      <button class="jl-menu-item" data-search="configuracion idioma permisos camara microfono"><span class="jl-menu-icon">⚙️</span><span><b>Configuración</b><small>Idioma y permisos</small></span><i>›</i></button>
+      <button class="jl-menu-item" data-search="ayuda soporte seguridad privacidad"><span class="jl-menu-icon">?</span><span><b>Ayuda y soporte</b><small>Seguridad y asistencia</small></span><i>›</i></button>
+      <a class="jl-menu-item" data-search="salir cerrar sesion" href="index.html"><span class="jl-menu-icon">↪</span><span><b>Cerrar sesión</b></span><i>›</i></a>
     </nav>
-    <div class="quick-results" id="quickResults" hidden>
-      <p>Resultados rápidos</p>
-      <button data-demo="Recargar monedas">🪙 Recargar monedas <i>›</i></button>
-      <button data-demo="Retirar ganancias">💸 Retirar ganancias <i>›</i></button>
-      <button data-demo="Historial del monedero">📜 Historial del monedero <i>›</i></button>
-      <button data-route="live.html">🔴 Iniciar LIVE <i>›</i></button>
-      <button data-route="salas.html">🎙️ Salas de audio <i>›</i></button>
-      <button data-route="mensajes.html">💬 Mensajes <i>›</i></button>
-      <button data-demo="Idioma">🌍 Idioma <i>›</i></button>
-      <button data-demo="Seguridad y privacidad">🔒 Seguridad y privacidad <i>›</i></button>
-    </div>
-    <p class="role-note">Este es el menú de usuario. Más adelante cambiará según el rol: emisor, agente o colaborador.</p>
+    <div class="jl-version">V0.6.4 · LIVE restaurado sobre V0.6.3</div>
   </aside>
-  <div class="demo-toast" id="demoToast" role="status"></div>
-<nav class="bottom-nav" data-current="live"><a data-tab="inicio" href="inicio.html"><span class="nav-icon">⌂</span><b>Inicio</b></a><a data-tab="live" href="live.html"><span class="nav-icon">▣</span><b>Live</b></a><a data-tab="salas" href="salas.html"><span class="nav-icon">🎙</span><b>Salas</b></a><a data-tab="mensajes" href="mensajes.html"><span class="badge">8</span><span class="nav-icon">◌</span><b>Mensajes</b></a><a data-tab="yo" href="yo.html"><span class="nav-icon">♙</span><b>Yo</b></a></nav><script src="app.js"></script></body></html>
+
+  <div class="jl-toast" id="toast"></div>
+
+  <nav class="jl-nav" aria-label="Navegación principal">
+    <a href="inicio.html"><span class="jl-nav-icon">⌂</span><b>Inicio</b></a>
+    <a class="active" href="live.html"><img src="jemmo-logo-header.webp" alt=""><b>Live</b></a>
+    <a href="salas.html"><span class="jl-nav-icon">🎙</span><b>Salas</b></a>
+    <a href="mensajes.html"><span class="jl-badge">8</span><span class="jl-nav-icon">◌</span><b>Mensajes</b></a>
+    <a href="yo.html"><span class="jl-nav-icon">♙</span><b>Yo</b></a>
+  </nav>
+
+  <script>
+  (() => {
+    "use strict";
+
+    const $ = id => document.getElementById(id);
+    const state = {
+      mode: "user",
+      mainStream: null,
+      pipStream: null,
+      coverOk: false,
+      live: false,
+      prepSeconds: 0,
+      liveSeconds: 0,
+      micEnabled: true,
+      chatEnabled: true
+    };
+
+    const mainVideo = $("mainVideo");
+    const pipVideo = $("pipVideo");
+    const broadcastVideo = $("broadcastVideo");
+    const broadcastPip = $("broadcastPip");
+    const startCamera = $("startCamera");
+    const cameraEmpty = $("cameraEmpty");
+    const launchButton = $("launchButton");
+    const message = $("validationMessage");
+    const toast = $("toast");
+
+    [mainVideo,pipVideo,broadcastVideo,broadcastPip].forEach(video => {
+      video.muted = true;
+      video.playsInline = true;
+      video.disablePictureInPicture = true;
+    });
+
+    function showToast(text) {
+      toast.textContent = text;
+      toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove("show"), 2600);
+    }
+
+    function stopStream(stream) {
+      if (!stream) return;
+      stream.getTracks().forEach(track => track.stop());
+    }
+
+    function detachVideo(video) {
+      try { video.pause(); } catch {}
+      try { video.srcObject = null; } catch {}
+    }
+
+    async function clearCameras() {
+      stopStream(state.mainStream);
+      stopStream(state.pipStream);
+      state.mainStream = null;
+      state.pipStream = null;
+      [mainVideo,pipVideo,broadcastVideo,broadcastPip].forEach(detachVideo);
+      pipVideo.hidden = true;
+      broadcastPip.hidden = true;
+    }
+
+    async function requestCamera(facingMode) {
+      return navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: facingMode },
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
+        audio: true
+      });
+    }
+
+    async function activateCamera(mode = state.mode) {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        showToast("Este navegador no permite usar la cámara.");
+        return false;
+      }
+
+      startCamera.disabled = true;
+      startCamera.textContent = "ABRIENDO CÁMARA…";
+      await clearCameras();
+
+      try {
+        if (mode === "both") {
+          const rear = await requestCamera("environment");
+          let front;
+          try {
+            front = await navigator.mediaDevices.getUserMedia({
+              video: { facingMode: { ideal: "user" }, width:{ideal:640}, height:{ideal:480} },
+              audio: false
+            });
+          } catch (error) {
+            stopStream(rear);
+            throw new Error("AMBAS_NO_COMPATIBLE");
+          }
+
+          state.mainStream = rear;
+          state.pipStream = front;
+          mainVideo.srcObject = rear;
+          pipVideo.srcObject = front;
+          pipVideo.hidden = false;
+          await Promise.allSettled([mainVideo.play(), pipVideo.play()]);
+        } else {
+          const stream = await requestCamera(mode);
+          state.mainStream = stream;
+          mainVideo.srcObject = stream;
+          pipVideo.hidden = true;
+          await mainVideo.play();
+        }
+
+        state.mode = mode;
+        cameraEmpty.hidden = true;
+        startCamera.hidden = true;
+        updateChecks();
+        return true;
+      } catch (error) {
+        console.error(error);
+        await clearCameras();
+        cameraEmpty.hidden = false;
+        startCamera.hidden = false;
+
+        if (error?.message === "AMBAS_NO_COMPATIBLE") {
+          showToast("Este móvil no permite usar las dos cámaras a la vez.");
+        } else if (error?.name === "NotAllowedError") {
+          showToast("Debes permitir cámara y micrófono.");
+        } else if (error?.name === "NotFoundError") {
+          showToast("No se encontró una cámara disponible.");
+        } else {
+          showToast("No se pudo abrir la cámara.");
+        }
+        return false;
+      } finally {
+        startCamera.disabled = false;
+        startCamera.textContent = "ACTIVAR CÁMARA";
+      }
+    }
+
+    document.querySelectorAll(".jl-mode").forEach(button => {
+      button.addEventListener("click", async () => {
+        document.querySelectorAll(".jl-mode").forEach(item => item.classList.remove("active"));
+        button.classList.add("active");
+        const mode = button.dataset.camera;
+        state.mode = mode;
+        if (state.mainStream) await activateCamera(mode);
+      });
+    });
+
+    startCamera.addEventListener("click", () => activateCamera(state.mode));
+    $("switchCamera").addEventListener("click", async () => {
+      const next = state.mode === "user" ? "environment" : "user";
+      state.mode = next;
+      document.querySelectorAll(".jl-mode").forEach(item => {
+        item.classList.toggle("active", item.dataset.camera === next);
+      });
+      await activateCamera(next);
+    });
+
+    function toggleButton(button, key) {
+      state[key] = !state[key];
+      button.classList.toggle("on", state[key]);
+      button.setAttribute("aria-pressed", String(state[key]));
+      if (key === "micEnabled") {
+        [state.mainStream,state.pipStream].filter(Boolean).forEach(stream => {
+          stream.getAudioTracks().forEach(track => track.enabled = state[key]);
+        });
+      }
+    }
+    $("micToggle").addEventListener("click", e => toggleButton(e.currentTarget,"micEnabled"));
+    $("chatToggle").addEventListener("click", e => toggleButton(e.currentTarget,"chatEnabled"));
+
+    const coverInput = $("coverInput");
+    coverInput.addEventListener("change", () => {
+      const file = coverInput.files?.[0];
+      state.coverOk = Boolean(file && file.type.startsWith("image/") && file.size > 0);
+      if (state.coverOk) {
+        const url = URL.createObjectURL(file);
+        $("coverPreview").src = url;
+      }
+      updateChecks();
+    });
+    $("coverShortcut").addEventListener("click", () => {
+      $("coverField").scrollIntoView({behavior:"smooth",block:"center"});
+      coverInput.click();
+    });
+
+    ["liveTitle","liveDescription"].forEach(id => $(id).addEventListener("input", updateChecks));
+
+    function setCheck(id, ok) {
+      $(id).classList.toggle("ok", ok);
+    }
+
+    function updateChecks() {
+      const cameraOk = Boolean(state.mainStream?.getVideoTracks().some(track => track.readyState === "live"));
+      const titleOk = $("liveTitle").value.trim().length >= 5;
+      const descriptionOk = $("liveDescription").value.trim().length >= 10;
+
+      setCheck("checkCamera", cameraOk);
+      setCheck("checkCover", state.coverOk);
+      setCheck("checkTitle", titleOk);
+      setCheck("checkDescription", descriptionOk);
+
+      const ready = cameraOk && state.coverOk && titleOk && descriptionOk;
+      launchButton.disabled = !ready;
+      message.textContent = ready
+        ? "Todo aprobado. Ya puedes iniciar el LIVE."
+        : "Completa los puntos rojos para comenzar.";
+      message.style.color = ready ? "#91f0ba" : "#ffb2c3";
+    }
+
+    function formatTime(seconds) {
+      const m = String(Math.floor(seconds / 60)).padStart(2,"0");
+      const s = String(seconds % 60).padStart(2,"0");
+      return `${m}:${s}`;
+    }
+
+    setInterval(() => {
+      if (!state.live) {
+        state.prepSeconds++;
+        $("prepTimer").textContent = formatTime(state.prepSeconds);
+      } else {
+        state.liveSeconds++;
+        $("liveTimer").textContent = `${formatTime(state.liveSeconds)} · 1 espectador`;
+      }
+    },1000);
+
+    launchButton.addEventListener("click", async () => {
+      updateChecks();
+      if (launchButton.disabled || !state.mainStream) return;
+
+      state.live = true;
+      state.liveSeconds = 0;
+      $("prepScreen").hidden = true;
+      $("broadcastScreen").hidden = false;
+      document.querySelector(".jl-nav").hidden = true;
+
+      broadcastVideo.srcObject = state.mainStream;
+      if (state.pipStream) {
+        broadcastPip.srcObject = state.pipStream;
+        broadcastPip.hidden = false;
+      } else {
+        broadcastPip.hidden = true;
+      }
+
+      await Promise.allSettled([broadcastVideo.play(), state.pipStream ? broadcastPip.play() : Promise.resolve()]);
+      playGru();
+    });
+
+    $("endLive").addEventListener("click", async () => {
+      state.live = false;
+      $("broadcastScreen").hidden = true;
+      $("prepScreen").hidden = false;
+      document.querySelector(".jl-nav").hidden = false;
+      detachVideo(broadcastVideo);
+      detachVideo(broadcastPip);
+      showToast("LIVE finalizado. La cámara permanece preparada.");
+    });
+
+    $("liveMic").addEventListener("click", e => {
+      state.micEnabled = !state.micEnabled;
+      [state.mainStream,state.pipStream].filter(Boolean).forEach(stream => {
+        stream.getAudioTracks().forEach(track => track.enabled = state.micEnabled);
+      });
+      e.currentTarget.firstChild.textContent = state.micEnabled ? "🎤" : "🔇";
+      showToast(state.micEnabled ? "Micrófono activado." : "Micrófono silenciado.");
+    });
+
+    $("liveFlip").addEventListener("click", async () => {
+      if (state.mode === "both") {
+        showToast("En modo Ambas ya están activas las dos cámaras.");
+        return;
+      }
+      const next = state.mode === "user" ? "environment" : "user";
+      const wasLive = state.live;
+      await activateCamera(next);
+      if (wasLive && state.mainStream) {
+        broadcastVideo.srcObject = state.mainStream;
+        await broadcastVideo.play().catch(()=>{});
+      }
+    });
+
+    $("liveChatButton").addEventListener("click", () => {
+      state.chatEnabled = !state.chatEnabled;
+      $("liveChat").hidden = !state.chatEnabled;
+      showToast(state.chatEnabled ? "Chat visible." : "Chat oculto.");
+    });
+
+    $("liveShare").addEventListener("click", async () => {
+      try {
+        if (navigator.share) {
+          await navigator.share({title:"JEMMO LIVE",text:"Estoy en directo en JEMMO LIVE"});
+        } else {
+          showToast("Enlace de LIVE preparado para compartir.");
+        }
+      } catch {}
+    });
+
+    function updateConnection() {
+      const text = $("connectionText");
+      if (!navigator.onLine) {
+        text.textContent = "Sin conexión";
+        text.style.color = "#ff526f";
+        return;
+      }
+      const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      const type = connection?.effectiveType?.toUpperCase();
+      text.textContent = type ? `Buena · ${type}` : "Buena";
+      text.style.color = "#9eeec2";
+    }
+    updateConnection();
+    addEventListener("online",updateConnection);
+    addEventListener("offline",updateConnection);
+
+    /* MENÚ */
+    const menu = $("sideMenu");
+    const backdrop = $("menuBackdrop");
+    function openMenu() {
+      menu.classList.add("open");
+      menu.setAttribute("aria-hidden","false");
+      backdrop.hidden = false;
+      document.body.style.overflow = "hidden";
+    }
+    function closeMenu() {
+      menu.classList.remove("open");
+      menu.setAttribute("aria-hidden","true");
+      backdrop.hidden = true;
+      document.body.style.overflow = "";
+    }
+    $("menuOpen").addEventListener("click",openMenu);
+    $("menuClose").addEventListener("click",closeMenu);
+    backdrop.addEventListener("click",closeMenu);
+
+    $("menuSearch").addEventListener("input", e => {
+      const query = e.target.value.trim().toLowerCase();
+      document.querySelectorAll(".jl-menu-item").forEach(item => {
+        item.hidden = query && !item.dataset.search.includes(query);
+      });
+    });
+    document.querySelectorAll(".jl-menu-item[href='#'],.jl-menu-item:not([href])").forEach(button => {
+      button.addEventListener("click", () => showToast("Esta función se completará en su módulo correspondiente."));
+    });
+    $("helpButton").addEventListener("click", () => {
+      showToast("Activa cámara, añade portada, título y descripción. Después inicia el LIVE.");
+    });
+
+    /* Sonido acuático grave: GRU, GRU, GRU */
+    let audioContext;
+    function playGru() {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      audioContext ||= new AudioCtx();
+      if (audioContext.state === "suspended") audioContext.resume().catch(()=>{});
+      const start = audioContext.currentTime + .02;
+
+      [0,.18,.36].forEach((delay,index) => {
+        const t = start + delay;
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        const filter = audioContext.createBiquadFilter();
+
+        oscillator.type = "sawtooth";
+        oscillator.frequency.setValueAtTime(105 - index*5,t);
+        oscillator.frequency.exponentialRampToValueAtTime(58,t+.14);
+
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(300,t);
+        filter.frequency.exponentialRampToValueAtTime(135,t+.14);
+        filter.Q.value = 3.5;
+
+        gain.gain.setValueAtTime(.0001,t);
+        gain.gain.exponentialRampToValueAtTime(.13,t+.015);
+        gain.gain.exponentialRampToValueAtTime(.0001,t+.14);
+
+        oscillator.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioContext.destination);
+        oscillator.start(t);
+        oscillator.stop(t+.145);
+      });
+    }
+
+    document.querySelectorAll(".jl-nav a").forEach(link => {
+      link.addEventListener("pointerdown", playGru, {passive:true});
+    });
+
+    addEventListener("pagehide", () => {
+      if (!state.live) clearCameras();
+    });
+
+    updateChecks();
+  })();
+  </script>
+</body>
+</html>

@@ -1,19 +1,29 @@
-# JEMMO LIVE v0.6.3
+# JEMMO LIVE v0.6.4
 
-Base estable: **v0.6.2**.
+Base estable: **v0.6.3**.
 
-Actualización incremental, sin reconstruir el Inicio aprobado.
+Actualización incremental centrada únicamente en el módulo **LIVE**.
 
-## Cambios
+## Cambios incluidos
 
-- Cabecera completa de lado a lado con el logo oficial adaptado a formato horizontal.
-- Menú y monedero flotantes sobre la cabecera.
-- Bloqueo real del scroll del fondo al abrir el Centro de monedas.
-- Cabecera del chat reducida a estado, ojo y espectadores.
-- Chat local de v0.6.2 conservado.
-- Carrusel de Casas en batalla debajo del chat.
-- Filtros compactos LIVE, PK LIVE, Juegos y Streaming.
+- Se sustituye el LIVE vacío de v0.6.3 por el asistente de preparación.
+- Cámara frontal y trasera.
+- Intento de ambas cámaras con aviso claro cuando el móvil no lo permite.
+- Cámara sin modo espejo.
+- Portada, título y descripción obligatorios.
+- Indicadores rojo/verde antes de iniciar.
+- Pantalla de emisión con micrófono, cambio de cámara, chat, compartir y finalizar.
+- Menú lateral y botón de tres rayas reducidos.
+- Vídeo aislado dentro de su contenedor para impedir franjas y capas mezcladas.
+- Sonido acuático grave «gru, gru, gru».
+
+## Alcance técnico
+
+Esta entrega restaura y prueba la interfaz y la cámara local del LIVE. La emisión multiusuario real requiere el servicio de streaming y el backend correspondiente; no se presenta esta parte como producción terminada.
 
 ## Seguridad de versión
 
-La v0.6.3 se instala encima de la v0.6.2. La v0.6.2 sigue siendo un respaldo independiente y restaurable.
+- No modifica Acceso.
+- No modifica el Inicio aprobado.
+- No modifica Casas, Salas, Mensajes ni Perfil.
+- La v0.6.3 permanece como respaldo independiente.
