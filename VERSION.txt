@@ -1,5 +1,5 @@
-JEMMO LIVE V0.6.12 PRUEBAS
-Base requerida: V0.6.11 PRUEBAS
-Tipo: actualización incremental
-Módulo modificado: LIVE
-No modifica Acceso, Inicio, Salas, Mensajes ni Perfil.
+JEMMO LIVE V0.6.13 INSTALABLE · PRUEBA TÉCNICA
+Fecha: 20/07/2026
+Base inmediata: V0.6.12 suministrada por Jesús
+LIVE conservado: V0.6.12
+Cambio: arranque por sesión, cierre real e instalación PWA.

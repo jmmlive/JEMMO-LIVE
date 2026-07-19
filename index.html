@@ -1,1 +1,66 @@
-<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="refresh" content="0;url=acceso.html">
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#09000f">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <title>JEMMO LIVE</title>
+  <style>
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#050007;color:#fff;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+    body{min-height:100svh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 0,#3c0752,transparent 45%),#050007}
+    main{width:min(100%,430px);text-align:center}img{width:100%;max-height:160px;object-fit:contain;border-radius:22px}h1{margin:18px 0 6px;color:#ffd24c}p{color:#c9b7d0}.loader{width:54px;height:54px;margin:22px auto;border:5px solid #35113f;border-top-color:#d43cff;border-radius:50%;animation:spin .8s linear infinite}button{min-height:48px;padding:0 22px;border:1px solid #bd42de;border-radius:16px;background:#17051e;color:#fff;font-weight:900}button[hidden]{display:none}@keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+  <main>
+    <img src="jemmo-logo-header.webp" alt="JEMMO LIVE">
+    <h1>JEMMO LIVE</h1>
+    <p id="status">Comprobando tu sesión…</p>
+    <div class="loader" id="loader"></div>
+    <button id="retry" hidden>REINTENTAR</button>
+  </main>
+  <script src="pwa-register.js"></script>
+  <script type="module">
+    import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
+    import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+    const firebaseConfig = {
+  apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
+  authDomain: 'jemmo-live.firebaseapp.com',
+  projectId: 'jemmo-live',
+  storageBucket: 'jemmo-live.firebasestorage.app',
+  messagingSenderId: '355540892255',
+  appId: '1:355540892255:web:d15a8dd03b2915e31939ea'
+};
+    const status = document.getElementById('status');
+    const retry = document.getElementById('retry');
+    const loader = document.getElementById('loader');
+    async function route() {
+      retry.hidden = true; loader.hidden = false; status.textContent = 'Comprobando tu sesión…';
+      try {
+        const app = getApps()[0] || initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        await setPersistence(auth, browserLocalPersistence);
+        onAuthStateChanged(auth, user => {
+          if (user) localStorage.setItem('jemmo_active_uid', user.uid);
+          else localStorage.removeItem('jemmo_active_uid');
+          location.replace(user ? 'inicio.html' : 'acceso.html');
+        }, error => { throw error; });
+      } catch (error) {
+        console.error(error);
+        loader.hidden = true;
+        status.textContent = navigator.onLine ? 'No se pudo comprobar la sesión. Pulsa Reintentar.' : 'Sin conexión. Conéctate a internet y pulsa Reintentar.';
+        retry.hidden = false;
+      }
+    }
+    retry.addEventListener('click', route);
+    window.addEventListener('online', route, { once:true });
+    route();
+  </script>
+</body>
+</html>

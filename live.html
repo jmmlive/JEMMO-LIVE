@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#09000f">
-  <title>JEMMO LIVE · Preparar LIVE · V0.6.12 PRUEBAS</title>
+  <meta name="theme-color" content="#09000f"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/icon-192.png"><style>html.jemmo-auth-pending body{visibility:hidden}</style><script>document.documentElement.classList.add("jemmo-auth-pending");setTimeout(()=>document.documentElement.classList.remove("jemmo-auth-pending"),7000)</script>
+  <title>JEMMO LIVE · Preparar LIVE · V0.6.13 INSTALABLE</title>
   <style>
     :root{
       color-scheme:dark;
@@ -1309,9 +1309,9 @@
       <button type="button"><span>🪙</span><span><b>Monedero</b><small>Saldo, recargas y retiros</small></span><i>›</i></button>
       <button type="button"><span>⚙️</span><span><b>Configuración</b><small>Idioma y permisos</small></span><i>›</i></button>
       <button type="button"><span>?</span><span><b>Ayuda y soporte</b><small>Seguridad y asistencia</small></span><i>›</i></button>
-      <a href="index.html"><span>↪</span><span><b>Cerrar sesión</b></span><i>›</i></a>
+      <a href="acceso.html" data-jemmo-logout><span>↪</span><span><b>Cerrar sesión</b></span><i>›</i></a>
     </nav>
-    <div class="jl-version">V0.6.12 PRUEBAS · actualización sobre V0.6.11</div>
+    <div class="jl-version">V0.6.13 INSTALABLE · conserva LIVE V0.6.12</div>
   </aside>
 
   <div class="jl-toast" id="toast"></div>
@@ -1334,12 +1334,14 @@
     </a>
   </nav>
 
+  <script type="module" src="jemmo-session.js"></script>
+  <script src="pwa-register.js"></script>
   <script>
   (() => {
     "use strict";
 
     const $ = id => document.getElementById(id);
-    const PROFILE_KEY = "jemmo_live_profile_v065";
+    const PROFILE_KEY = `jemmo_live_profile_v065:${localStorage.getItem("jemmo_active_uid")||"local"}`;
     const state = {
       mode:"user",
       mainStream:null,

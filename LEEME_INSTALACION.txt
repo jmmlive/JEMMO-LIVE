@@ -1,17 +1,20 @@
-JEMMO LIVE V0.6.12 · INSTALACIÓN
+JEMMO LIVE V0.6.13 INSTALABLE
 
-1. Conserva el ZIP V0.6.11 como respaldo estable.
-2. Sustituye únicamente el archivo live.html por el incluido en este ZIP.
-3. No reemplaces Acceso, Inicio, Salas, Mensajes, Perfil ni los recursos gráficos.
-4. Publica los cambios y limpia la caché del navegador antes de probar.
+BASE
+Esta entrega parte de la V0.6.12 real enviada por Jesús.
 
-PRUEBAS EN MÓVIL
-- Inicia el LIVE y comprueba que la interfaz es más pequeña.
-- Abre una solicitud de silla: el vídeo no debe ponerse borroso.
-- Cierra el panel con X, fondo y botón Atrás de Android.
-- Abre regalos, pulsa + RECARGAR y vuelve al panel de regalos.
-- Intenta enviar un regalo más caro que el saldo para probar la recarga automática.
-- Abre el botón ✦ y prueba Juegos, Normas, Historial y Ranking.
-- Comprueba que la Batalla queda debajo de las sillas.
+INSTALACIÓN SOBRE EL PROYECTO ACTUAL
+1. Conserva una copia de seguridad de la V0.6.12.
+2. Sube todos los archivos del ZIP de actualización a la misma raíz del proyecto.
+3. Permite sustituir los archivos que tengan el mismo nombre.
+4. Publica el proyecto mediante HTTPS.
+5. Abre el enlace en Chrome Android y utiliza INSTALAR JEMMO LIVE cuando aparezca.
 
-Base requerida: V0.6.11 PRUEBAS.
+PRUEBAS OBLIGATORIAS
+- Con sesión activa: cerrar la app y abrirla desde el icono; debe entrar en Inicio.
+- Pulsar Cerrar sesión, cerrar la app y abrirla; debe permanecer en Acceso.
+- Probar el registro con red inestable; los campos no deben borrarse y debe aparecer Reintentar.
+- Comprobar cámara, chat, sillas, regalos, stickers y batalla del LIVE V0.6.12.
+
+IMPORTANTE
+Es una aplicación web instalable (PWA). El APK/AAB definitivo para Play Store requiere el proyecto Android y firma de publicación.
