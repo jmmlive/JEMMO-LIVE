@@ -1,22 +1,14 @@
-# Changelog JEMMO LIVE
+# Changelog v0.6.2
 
-## v0.6.5 · Acceso y LIVE compacto
-
-- Acceso móvil reducido para evitar desplazamiento innecesario.
-- Botones de Google, Apple y Facebook visibles, alineados y conectados a Firebase Auth.
-- Google queda listo para uso inmediato si el proveedor y el dominio están autorizados.
-- Apple y Facebook quedan cableados y muestran un error claro si todavía no están habilitados en Firebase.
-- Preparación del LIVE reconstruida en una sola vista compacta: cámara siempre visible, ajustes rápidos en cuadrícula y botón de inicio accesible.
-- Cámara frontal, trasera y ambas cámaras con aviso de incompatibilidad.
-- Micrófono, filtros, título, descripción, categoría, privacidad, portada y conexión.
-- Validación previa antes de emitir.
-- Pantalla de emisión local con cámara, chat, sillas, regalos y controles.
-- Menú lateral del Inicio ajustado al tamaño móvil aprobado.
-- Navegación inferior con chicharros JEMMO en las cinco secciones.
-- Sonido breve “blup blup” al cambiar de sección, generado localmente con Web Audio.
+- Restaurado el recorte ancho del logo del encabezado (`object-fit: cover`).
+- Eliminado el escalado que reducía el logo dentro del contenedor.
+- Activado el formulario del chat de batalla.
+- Envío mediante botón e Intro.
+- Mensajes creados con DOM seguro, sin insertar HTML del usuario.
+- Persistencia local de los últimos 20 mensajes.
+- Sin cambios visuales o funcionales fuera del logo y el chat.
 
 ## v0.6.3
-
 - Cabecera horizontal completa.
 - Scroll de fondo bloqueado en el monedero.
 - Chat compacto.
