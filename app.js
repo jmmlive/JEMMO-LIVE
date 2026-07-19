@@ -69,5 +69,43 @@
  });
  loadChat();
 
- const nav=qs('.bottom-nav');if(nav){const current=nav.dataset.current||'inicio';qsa('a',nav).forEach(a=>a.classList.toggle('active',a.dataset.tab===current));const active=qs('a.active',nav);if(active&&!qs('.active-fish',active)){const fish=document.createElement('img');fish.className='active-fish';fish.src='jemmo-fish-nav.webp';fish.alt='Pez JEMMO';active.append(fish)}qsa('a',nav).forEach(a=>a.addEventListener('click',e=>{if(a.classList.contains('active'))return;e.preventDefault();qsa('a',nav).forEach(x=>x.classList.remove('active'));a.classList.add('active');const old=qs('.active-fish',nav);old?.remove();const fish=document.createElement('img');fish.className='active-fish';fish.src='jemmo-fish-nav.webp';fish.alt='Pez JEMMO';a.append(fish);setTimeout(()=>location.href=a.href,180)}))}
+ const nav=qs('.bottom-nav');
+ const playBubble=()=>{
+  if(localStorage.getItem('jemmo_nav_sound')==='off')return;
+  try{
+   const AC=window.AudioContext||window.webkitAudioContext;
+   if(!AC)return;
+   const ctx=window.__jemmoAudio||(window.__jemmoAudio=new AC());
+   if(ctx.state==='suspended')ctx.resume();
+   const now=ctx.currentTime;
+   [0,.085].forEach((delay,index)=>{
+    const osc=ctx.createOscillator(),gain=ctx.createGain();
+    osc.type='sine';
+    osc.frequency.setValueAtTime(index?610:540,now+delay);
+    osc.frequency.exponentialRampToValueAtTime(index?300:260,now+delay+.12);
+    gain.gain.setValueAtTime(.0001,now+delay);
+    gain.gain.exponentialRampToValueAtTime(.035,now+delay+.012);
+    gain.gain.exponentialRampToValueAtTime(.0001,now+delay+.14);
+    osc.connect(gain);gain.connect(ctx.destination);osc.start(now+delay);osc.stop(now+delay+.15);
+   });
+  }catch(_){ }
+ };
+ if(nav){
+  const current=nav.dataset.current||'inicio';
+  const links=qsa('a',nav);
+  links.forEach(a=>{
+   a.classList.toggle('active',a.dataset.tab===current);
+   if(!qs('.nav-fish',a)){
+    const fish=document.createElement('img');
+    fish.className='nav-fish';fish.src='jemmo-fish-nav.webp';fish.alt='Pez JEMMO';
+    const icon=qs('.nav-icon',a);a.insertBefore(fish,icon||a.firstChild);
+   }
+  });
+  links.forEach(a=>a.addEventListener('click',e=>{
+   if(a.classList.contains('active')){playBubble();return}
+   e.preventDefault();playBubble();
+   links.forEach(x=>x.classList.remove('active'));a.classList.add('active');
+   setTimeout(()=>location.href=a.href,230);
+  }))
+ }
 })();

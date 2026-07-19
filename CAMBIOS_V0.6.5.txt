@@ -1,0 +1,15 @@
+JEMMO LIVE V0.6.5
+
+CORREGIDO
+- Acceso demasiado alto.
+- Botones sociales desactivados o confusos.
+- LIVE demasiado largo y con demasiado scroll.
+- Navegación inferior sin pescaditos.
+- Menú de Inicio más grande que el menú aprobado.
+
+AÑADIDO
+- Preparación LIVE compacta.
+- Cámara frontal, trasera y dual.
+- Ajustes rápidos.
+- Sonido blup blup en la navegación.
+- Validación de portada, título, descripción, categoría, cámara, micrófono y conexión.

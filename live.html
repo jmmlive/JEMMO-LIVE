@@ -6,108 +6,315 @@
   <meta name="theme-color" content="#09000f">
   <meta name="color-scheme" content="dark">
   <title>JEMMO LIVE · Preparar LIVE</title>
+  <link rel="stylesheet" href="app.css">
   <link rel="stylesheet" href="live.css">
 </head>
 <body>
-<svg width="0" height="0" class="sprite" aria-hidden="true">
-  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
-  <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.7 9a2.5 2.5 0 0 1 4.8 1c0 1.8-2.5 2-2.5 4M12 18h.01"/></symbol>
-  <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
-  <symbol id="i-cameras" viewBox="0 0 24 24"><rect x="3" y="5" width="12" height="12" rx="2"/><rect x="9" y="8" width="12" height="12" rx="2"/></symbol>
-  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.6-4.2 3-6.2 7-6.2s6.4 2 7 6.2"/></symbol>
-  <symbol id="i-landscape" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="9" r="1.5"/><path d="m5 18 5-5 3 3 2-2 4 4"/></symbol>
-  <symbol id="i-switch" viewBox="0 0 24 24"><path d="M7 7h10l-3-3M17 17H7l3 3M18 7a7 7 0 0 1 1 8M6 17a7 7 0 0 1-1-8"/></symbol>
-  <symbol id="i-wand" viewBox="0 0 24 24"><path d="m4 20 11-11M13 5l1-2 1 2 2 1-2 1-1 2-1-2-2-1zM17 12l.8-1.7.8 1.7 1.7.8-1.7.8-.8 1.7-.8-1.7-1.7-.8z"/></symbol>
-  <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></symbol>
-  <symbol id="i-title" viewBox="0 0 24 24"><path d="M4 6h16M9 6v14M15 6v14M7 20h10"/></symbol>
-  <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 6h14M5 10h14M5 14h10M5 18h7"/></symbol>
-  <symbol id="i-category" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></symbol>
-  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
-  <symbol id="i-signal" viewBox="0 0 24 24"><path d="M5 18h.01M9 14a5 5 0 0 1 6 0M6 10a9 9 0 0 1 12 0M3 6a13 13 0 0 1 18 0"/></symbol>
-  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7h.01"/></symbol>
-  <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8M5 10v10h14V10M9 20v-6h6v6"/></symbol>
-  <symbol id="i-live" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="4"/><path d="m10 9 5 3-5 3z"/></symbol>
-  <symbol id="i-rooms" viewBox="0 0 24 24"><circle cx="12" cy="7" r="3"/><path d="M5 20c.5-4 2.8-6 7-6s6.5 2 7 6M4 8v5M20 8v5"/></symbol>
-  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v12H9l-5 4z"/></symbol>
-  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="2.5"/></symbol>
-  <symbol id="i-x" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
-  <symbol id="i-gift" viewBox="0 0 24 24"><path d="M4 10h16v10H4zM3 7h18v3H3zM12 7v13M12 7H8.5A2.5 2.5 0 1 1 11 4.5zM12 7h3.5A2.5 2.5 0 1 0 13 4.5z"/></symbol>
-  <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.8 7.6-4.6M8.2 13.2l7.6 4.6"/></symbol>
-  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
-  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 0 0-.1-1l2-1.5-2-3.4-2.4 1a8 8 0 0 0-1.7-1L14.5 3h-5L9 6.1a8 8 0 0 0-1.7 1l-2.4-1-2 3.4L5 11a7 7 0 0 0 0 2l-2.1 1.5 2 3.4 2.4-1a8 8 0 0 0 1.7 1l.5 3.1h5l.5-3.1a8 8 0 0 0 1.7-1l2.4 1 2-3.4L19 13a7 7 0 0 0 0-1z"/></symbol>
-  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.4 5.4 0 0 0-7.6 0L12 5.8l-1.2-1.2a5.4 5.4 0 1 0-7.6 7.6L12 21l8.8-8.8a5.4 5.4 0 0 0 0-7.6z"/></symbol>
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+  <symbol id="jl-i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="jl-i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.7 9a2.5 2.5 0 0 1 4.8 1c0 1.8-2.5 2-2.5 4M12 18h.01"/></symbol>
+  <symbol id="jl-i-camera" viewBox="0 0 24 24"><path d="M4 8h3l1.5-2h7L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+  <symbol id="jl-i-switch" viewBox="0 0 24 24"><path d="M7 7h10l-3-3M17 17H7l3 3M18 7a7 7 0 0 1 1 8M6 17a7 7 0 0 1-1-8"/></symbol>
+  <symbol id="jl-i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></symbol>
+  <symbol id="jl-i-title" viewBox="0 0 24 24"><path d="M4 6h16M9 6v14M15 6v14M7 20h10"/></symbol>
+  <symbol id="jl-i-text" viewBox="0 0 24 24"><path d="M5 6h14M5 10h14M5 14h10M5 18h7"/></symbol>
+  <symbol id="jl-i-category" viewBox="0 0 24 24"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></symbol>
+  <symbol id="jl-i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></symbol>
+  <symbol id="jl-i-signal" viewBox="0 0 24 24"><path d="M5 18h.01M9 14a5 5 0 0 1 6 0M6 10a9 9 0 0 1 12 0M3 6a13 13 0 0 1 18 0"/></symbol>
+  <symbol id="jl-i-wand" viewBox="0 0 24 24"><path d="m4 20 11-11M13 5l1-2 1 2 2 1-2 1-1 2-1-2-2-1zM17 12l.8-1.7.8 1.7 1.7.8-1.7.8-.8 1.7-.8-1.7-1.7-.8z"/></symbol>
+  <symbol id="jl-i-image" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8" cy="9" r="1.5"/><path d="m5 18 5-5 3 3 2-2 4 4"/></symbol>
+  <symbol id="jl-i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.6-4.2 3-6.2 7-6.2s6.4 2 7 6.2"/></symbol>
+  <symbol id="jl-i-wallet" viewBox="0 0 24 24"><path d="M4 7h14a2 2 0 0 1 2 2v9H4zM4 7V5h12v2M15 12h5v4h-5a2 2 0 1 1 0-4z"/></symbol>
+  <symbol id="jl-i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 14.5l1.5 1.2-2 3.4-1.9-.7a8 8 0 0 1-2.1 1.2L14.2 22h-4.4l-.3-2.4a8 8 0 0 1-2.1-1.2l-1.9.7-2-3.4L5 14.5a8 8 0 0 1 0-2.5l-1.5-1.2 2-3.4 1.9.7a8 8 0 0 1 2.1-1.2L9.8 4h4.4l.3 2.9a8 8 0 0 1 2.1 1.2l1.9-.7 2 3.4L19 12a8 8 0 0 1 0 2.5z"/></symbol>
+  <symbol id="jl-i-gift" viewBox="0 0 24 24"><path d="M4 10h16v10H4zM3 7h18v4H3zM12 7v13M12 7H8.5A2.5 2.5 0 1 1 12 3.5zM12 7h3.5A2.5 2.5 0 1 0 12 3.5z"/></symbol>
+  <symbol id="jl-i-chat" viewBox="0 0 24 24"><path d="M4 5h16v12H8l-4 3z"/></symbol>
+  <symbol id="jl-i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.2 10.9 7.6-4.7M8.2 13.1l7.6 4.7"/></symbol>
+  <symbol id="jl-i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol>
+  <symbol id="jl-i-speaker" viewBox="0 0 24 24"><path d="M4 10h4l5-4v12l-5-4H4zM16 9a4 4 0 0 1 0 6M18 6a8 8 0 0 1 0 12"/></symbol>
 </svg>
 
-<div class="app">
-  <header class="topbar" id="prepHeader">
-    <button class="orb" id="menuOpen" aria-label="Abrir menú"><svg class="icon"><use href="#i-menu"/></svg></button>
-    <div class="brand"><div class="brand-main"><span class="j">J</span><span class="emmo">EMMO</span><span class="live">LIVE</span></div><small>PREPARACIÓN DE TRANSMISIÓN</small></div>
-    <button class="orb" id="helpOpen" aria-label="Ayuda"><svg class="icon"><use href="#i-help"/></svg></button>
+<main class="jl-app" id="prepScreen">
+  <header class="jl-topbar">
+    <button class="jl-orb" id="jlMenuOpen" aria-label="Abrir menú"><svg><use href="#jl-i-menu"/></svg></button>
+    <div class="jl-brand">
+      <div class="jl-brand-main"><span class="j">J</span><span class="emmo">EMMO</span><span class="live">LIVE</span></div>
+      <small>PREPARACIÓN DE TRANSMISIÓN</small>
+    </div>
+    <button class="jl-orb" id="jlHelp" aria-label="Ayuda"><svg><use href="#jl-i-help"/></svg></button>
   </header>
 
-  <main id="prepScreen" class="prep">
-    <section class="intro">
-      <div class="intro-row"><div><h1>Prepara tu LIVE</h1><p>Cámara, sonido y detalles antes de entrar en directo.</p></div><span class="version">V0.6.4</span></div>
-      <div class="ready-line" id="readyLine"><i></i><span id="readyText">Completa la preparación</span></div>
-    </section>
+  <section class="jl-main">
+    <div class="jl-summary">
+      <div><h1>Prepara tu LIVE</h1><p>Todo visible y listo sin bajar por una pantalla interminable.</p></div>
+      <div class="jl-task"><b id="taskClock">00:00</b><small>Objetivo 120 min</small></div>
+    </div>
 
-    <div class="steps"><div class="step active"><b>1</b><span>Preparación</span></div><div class="step active"><b>2</b><span>Detalles</span></div><div class="step"><b>3</b><span>Listo</span></div></div>
-
-    <section class="preview-card">
-      <div class="camera-stage">
-        <video id="mainVideo" autoplay playsinline muted></video>
-        <video id="pipVideo" class="hidden" autoplay playsinline muted></video>
-        <div class="camera-placeholder" id="cameraPlaceholder"><div><div class="lens"><svg class="icon"><use href="#i-camera"/></svg></div><strong>Activa la cámara</strong><span>La vista previa será la imagen real de tu móvil.</span></div></div>
-        <div class="preview-top"><span class="mode-pill"><i></i><span id="modeLabel">Cámara frontal</span></span><button class="preview-action" id="switchCameraTop" aria-label="Cambiar cámara"><svg class="icon"><use href="#i-switch"/></svg></button></div>
-        <div class="preview-tools"><button class="tool" id="filterTool"><svg class="icon"><use href="#i-wand"/></svg><small>Filtro</small></button><button class="tool" id="lightTool"><svg class="icon"><use href="#i-settings"/></svg><small>Ajustar</small></button></div>
-        <button class="cover-chip" id="coverButton"><svg class="icon"><use href="#i-camera"/></svg><span id="coverText">Portada automática</span></button>
+    <section class="jl-preview" id="preview">
+      <video id="mainVideo" autoplay muted playsinline></video>
+      <video id="pipVideo" class="jl-pip jl-hidden" autoplay muted playsinline></video>
+      <div class="jl-camera-empty" id="cameraEmpty">
+        <div>
+          <button id="activateCamera" aria-label="Activar cámara"><svg><use href="#jl-i-camera"/></svg></button>
+          <strong>Activa la cámara</strong><span>Sin espejo · revisa encuadre y luz</span>
+        </div>
+      </div>
+      <div class="jl-modebar" aria-label="Modo de cámara">
+        <button class="jl-mode active" data-mode="front">Frontal</button>
+        <button class="jl-mode" data-mode="rear">Trasera</button>
+        <button class="jl-mode" data-mode="dual">Ambas</button>
+      </div>
+      <button class="jl-swap" id="swapCamera" aria-label="Cambiar cámara"><svg><use href="#jl-i-switch"/></svg></button>
+      <div class="jl-preview-bottom">
+        <button class="jl-chip gold" data-open="cover"><svg><use href="#jl-i-image"/></svg><span id="coverChip">Portada</span></button>
+        <button class="jl-chip" data-open="filter"><svg><use href="#jl-i-wand"/></svg><span id="filterChip">Natural</span></button>
       </div>
     </section>
 
-    <div class="mode-title"><svg class="icon"><use href="#i-cameras"/></svg>Modo de cámara</div>
-    <div class="camera-modes">
-      <button class="mode-btn active" data-mode="front"><svg class="icon"><use href="#i-user"/></svg><span><strong>Frontal</strong><small>Solo tú</small></span></button>
-      <button class="mode-btn" data-mode="rear"><svg class="icon"><use href="#i-landscape"/></svg><span><strong>Trasera</strong><small>Lo que enseñas</small></span></button>
-      <button class="mode-btn" data-mode="dual"><svg class="icon"><use href="#i-cameras"/></svg><span><strong>Ambas</strong><small>Tú + escena</small></span></button>
-    </div>
-    <div class="info-note"><svg class="icon"><use href="#i-info"/></svg><span>Si el móvil no permite usar las dos cámaras al mismo tiempo, JEMMO mostrará un aviso claro.</span></div>
-
-    <section class="timer-card"><div><small>CRONÓMETRO DE TAREA</small><strong id="prepTimer">00:00:00</strong></div><div class="goal"><b>120 min</b><span>objetivo diario</span></div></section>
-
-    <section class="setup-list">
-      <article class="setup-row" id="rowFilter"><div class="row-icon"><svg class="icon"><use href="#i-wand"/></svg></div><div><h3>1. Coloca un filtro</h3><p>Opcional. Mejora luz y color.</p></div><div class="control"><button class="small-btn" id="filterButton">Natural</button></div></article>
-      <article class="setup-row" id="rowMic"><div class="row-icon"><svg class="icon"><use href="#i-mic"/></svg></div><div><h3>2. Enciende el micrófono</h3><p>Necesario para que puedan escucharte.</p></div><div class="control"><button class="switch" id="micToggle" role="switch" aria-checked="false"></button></div></article>
-      <article class="setup-row" id="rowCamera"><div class="row-icon"><svg class="icon"><use href="#i-camera"/></svg></div><div><h3>3. Activa y ajusta tu cámara</h3><p>Sin espejo. Revisa enfoque y luz.</p></div><div class="control"><button class="switch" id="cameraToggle" role="switch" aria-checked="false"></button></div></article>
-      <article class="setup-row" id="rowTitle"><div class="row-icon"><svg class="icon"><use href="#i-title"/></svg></div><div><h3>4. Coloca un título atractivo</h3><p>Obligatorio. Mínimo 5 caracteres.</p></div><div class="wide-field field-wrap"><input id="liveTitle" maxlength="80" placeholder="Escribe el título de tu LIVE..."><span class="counter" id="titleCounter">0/80</span></div></article>
-      <article class="setup-row" id="rowDescription"><div class="row-icon"><svg class="icon"><use href="#i-text"/></svg></div><div><h3>5. Añade una descripción</h3><p>Obligatoria. Explica qué harás.</p></div><div class="wide-field field-wrap"><textarea id="liveDescription" maxlength="180" placeholder="Cuenta brevemente qué verá la gente..."></textarea><span class="counter" id="descriptionCounter">0/180</span></div></article>
-      <article class="setup-row" id="rowCategory"><div class="row-icon"><svg class="icon"><use href="#i-category"/></svg></div><div><h3>6. Elige una categoría</h3><p>Ayuda a encontrar el LIVE correcto.</p></div><div class="wide-field field-wrap"><select id="liveCategory"><option value="">Seleccionar categoría</option><option>Charlando</option><option>Cocina</option><option>Música</option><option>Talento</option><option>Juegos</option><option>Vida diaria</option><option>Formación</option><option>Otro</option></select></div></article>
-      <article class="setup-row" id="rowPrivacy"><div class="row-icon"><svg class="icon"><use href="#i-lock"/></svg></div><div><h3>7. Privacidad y sillas</h3><p>Define quién entra y solicita silla.</p></div><div class="wide-field two-fields"><div class="field-wrap"><select id="privacy"><option>Público</option><option>Seguidores</option><option>Privado con contraseña</option></select></div><div class="field-wrap"><select id="chairs"><option>Por invitación</option><option>Club de fans</option><option>Seguidores</option><option>Libre</option><option>Sillas cerradas</option></select></div></div></article>
-      <article class="setup-row" id="rowConnection"><div class="row-icon"><svg class="icon"><use href="#i-signal"/></svg></div><div><h3>8. Revisa tu conexión</h3><p id="connectionDetail">Comprobando la red disponible.</p></div><div class="control"><span class="status-pill" id="connectionPill">Revisando</span></div></article>
+    <section class="jl-grid" aria-label="Ajustes rápidos">
+      <button class="jl-quick bad" id="micQuick" data-action="mic"><span class="jl-dot"></span><svg><use href="#jl-i-mic"/></svg><b>Micrófono</b><small id="micState">Apagado</small></button>
+      <button class="jl-quick bad" id="cameraQuick" data-action="camera"><span class="jl-dot"></span><svg><use href="#jl-i-camera"/></svg><b>Cámara</b><small id="cameraState">Apagada</small></button>
+      <button class="jl-quick bad" id="titleQuick" data-open="title"><span class="jl-dot"></span><svg><use href="#jl-i-title"/></svg><b>Título</b><small id="titleState">Pendiente</small></button>
+      <button class="jl-quick bad" id="descriptionQuick" data-open="description"><span class="jl-dot"></span><svg><use href="#jl-i-text"/></svg><b>Descripción</b><small id="descriptionState">Pendiente</small></button>
+      <button class="jl-quick bad" id="categoryQuick" data-open="category"><span class="jl-dot"></span><svg><use href="#jl-i-category"/></svg><b>Categoría</b><small id="categoryState">Elegir</small></button>
+      <button class="jl-quick ok" id="privacyQuick" data-open="privacy"><span class="jl-dot"></span><svg><use href="#jl-i-lock"/></svg><b>Privacidad</b><small id="privacyState">Público</small></button>
+      <button class="jl-quick bad" id="coverQuick" data-open="cover"><span class="jl-dot"></span><svg><use href="#jl-i-image"/></svg><b>Portada</b><small id="coverState">Pendiente</small></button>
+      <button class="jl-quick" id="connectionQuick" data-open="connection"><span class="jl-dot"></span><svg><use href="#jl-i-signal"/></svg><b>Conexión</b><small id="connectionState">Comprobando</small></button>
     </section>
 
-    <section class="preflight"><h3>Revisión antes de emitir</h3><div class="checks"><div class="check" id="checkCamera"><i>•</i>Cámara</div><div class="check" id="checkMic"><i>•</i>Micrófono</div><div class="check" id="checkTitle"><i>•</i>Título</div><div class="check" id="checkDescription"><i>•</i>Descripción</div><div class="check" id="checkCategory"><i>•</i>Categoría</div><div class="check" id="checkConnection"><i>•</i>Conexión</div></div><div class="errors" id="validationErrors"></div></section>
-    <div class="start-wrap"><button class="start-btn" id="startLive"><span class="pulse"></span>INICIAR TRANSMISIÓN LIVE</button></div>
-  </main>
+    <section class="jl-launch">
+      <div class="jl-readiness" id="readiness"><i></i><div><b id="readyTitle">Faltan ajustes</b><small id="readyText">Toca los puntos rojos para completarlos.</small></div></div>
+      <button class="jl-start" id="startLive"><span></span>INICIAR LIVE</button>
+    </section>
+  </section>
+</main>
 
-  <main id="broadcastScreen" class="broadcast hidden">
-    <video id="broadcastVideo" autoplay playsinline muted></video><video id="broadcastPip" class="hidden" autoplay playsinline muted></video>
-    <div class="camera-off-layer hidden" id="broadcastCameraOff"><div><svg class="icon"><use href="#i-camera"/></svg><strong>Cámara pausada</strong><p>Tu audio puede seguir activo.</p></div></div><div class="broadcast-shade"></div>
-    <div class="live-top"><div class="host"><div class="avatar">J</div><div class="host-text"><strong>Jesús · JEMMO</strong><small id="broadcastTitle">Mi transmisión</small></div></div><span class="live-badge">LIVE</span><span class="live-clock" id="liveClock">00:00:00</span><span class="viewer"><svg class="icon"><use href="#i-eye"/></svg><b id="viewerCount">1</b></span><button class="end-btn" id="endLive"><svg class="icon"><use href="#i-x"/></svg></button></div>
-    <aside class="battle-mini"><header><span>BATALLA DE CASAS</span><time>03:12</time></header><div class="vs-row"><div><div class="crest-mini">JT</div><span class="score gold">12,500</span></div><b>VS</b><div><div class="crest-mini pink">JU</div><span class="score pink">9,800</span></div></div></aside>
-    <div class="seats"><button class="seat" data-seat="1"><svg class="icon"><use href="#i-user"/></svg><small>1</small></button><button class="seat" data-seat="2"><svg class="icon"><use href="#i-user"/></svg><small>2</small></button><button class="seat" data-seat="3"><svg class="icon"><use href="#i-user"/></svg><small>3</small></button><button class="seat" data-seat="4"><b>+</b><small>4</small></button></div>
-    <div class="chat" id="liveChat"><div class="msg system"><b>Sistema:</b> Tu LIVE ha comenzado.</div><div class="msg"><b>Casa Tenerife:</b> Bienvenido al directo.</div><div class="msg"><b>JEMMO Guard:</b> La transmisión está en revisión preventiva.</div></div>
-    <button class="gift-fab" id="giftButton"><svg class="icon"><use href="#i-gift"/></svg></button>
-    <div class="live-compose"><input class="compose-field" id="chatInput" placeholder="Di algo..."><button class="round-action" id="sendChat"><svg class="icon"><use href="#i-chat"/></svg></button><button class="round-action" id="heartButton"><svg class="icon"><use href="#i-heart"/></svg></button><button class="round-action" id="shareTop"><svg class="icon"><use href="#i-share"/></svg></button></div>
-    <div class="live-controls"><button class="live-control active" id="liveMic"><svg class="icon"><use href="#i-mic"/></svg><span>Micrófono</span></button><button class="live-control active" id="liveCamera"><svg class="icon"><use href="#i-camera"/></svg><span>Cámara</span></button><button class="live-control" id="liveSwitch"><svg class="icon"><use href="#i-switch"/></svg><span>Cambiar</span></button><button class="live-control" id="liveEffects"><svg class="icon"><use href="#i-wand"/></svg><span>Efectos</span></button><button class="live-control" id="liveShare"><svg class="icon"><use href="#i-share"/></svg><span>Compartir</span></button><button class="live-control" id="liveMore"><svg class="icon"><use href="#i-more"/></svg><span>Más</span></button></div>
-  </main>
-</div>
+<nav class="bottom-nav" data-current="live" aria-label="Navegación principal">
+  <a data-tab="inicio" href="inicio.html"><span class="nav-icon">⌂</span><b>Inicio</b></a>
+  <a data-tab="live" href="live.html"><span class="nav-icon">▣</span><b>Live</b></a>
+  <a data-tab="salas" href="salas.html"><span class="nav-icon">◉</span><b>Salas</b></a>
+  <a data-tab="mensajes" href="mensajes.html"><span class="badge">8</span><span class="nav-icon">□</span><b>Mensajes</b></a>
+  <a data-tab="yo" href="yo.html"><span class="nav-icon">♙</span><b>Yo</b></a>
+</nav>
 
-<div class="backdrop hidden" id="menuBackdrop"></div>
-<aside class="side-menu" id="sideMenu" aria-hidden="true"><div class="menu-head"><div><small>MENÚ DE USUARIO</small><h2>JEMMO LIVE</h2></div><button class="orb" id="menuClose"><svg class="icon"><use href="#i-x"/></svg></button></div><nav class="menu-list"><a href="yo.html"><span><svg class="icon"><use href="#i-user"/></svg></span><div><b>Mi perfil</b><small>Cuenta, nivel e identidad</small></div><i>›</i></a><button data-menu-action="wallet"><span><svg class="icon"><use href="#i-gift"/></svg></span><div><b>Monedero</b><small>Saldo, recargas y retiros</small></div><i>›</i></button><button data-menu-action="settings"><span><svg class="icon"><use href="#i-settings"/></svg></span><div><b>Configuración LIVE</b><small>Cámara, sonido y privacidad</small></div><i>›</i></button><button data-menu-action="help"><span><svg class="icon"><use href="#i-help"/></svg></span><div><b>Ayuda y soporte</b><small>Permisos y problemas técnicos</small></div><i>›</i></button><button data-menu-action="logout"><span><svg class="icon"><use href="#i-x"/></svg></span><div><b>Cerrar sesión</b><small>Salir de esta cuenta</small></div><i>›</i></button></nav></aside>
+<div class="jl-menu-backdrop jl-hidden" id="jlMenuBackdrop"></div>
+<aside class="jl-side-menu" id="jlSideMenu" aria-hidden="true">
+  <div class="jl-menu-head">
+    <div><small>MENÚ DE USUARIO</small><h2>JEMMO LIVE</h2></div>
+    <button class="jl-orb" id="jlMenuClose" aria-label="Cerrar menú">×</button>
+  </div>
+  <nav class="jl-menu-list">
+    <a class="jl-menu-item" href="yo.html"><span class="mi"><svg><use href="#jl-i-user"/></svg></span><span><b>Mi perfil</b><small>Cuenta, nivel e identidad</small></span><i>›</i></a>
+    <button class="jl-menu-item" data-menu-modal="Monedero"><span class="mi"><svg><use href="#jl-i-wallet"/></svg></span><span><b>Monedero</b><small>Saldo, recargas y retiros</small></span><i>›</i></button>
+    <button class="jl-menu-item" data-menu-modal="Configuración LIVE"><span class="mi"><svg><use href="#jl-i-settings"/></svg></span><span><b>Configuración LIVE</b><small>Cámara, sonido y privacidad</small></span><i>›</i></button>
+    <button class="jl-menu-item" data-menu-modal="Ayuda y soporte"><span class="mi"><svg><use href="#jl-i-help"/></svg></span><span><b>Ayuda y soporte</b><small>Permisos y problemas técnicos</small></span><i>›</i></button>
+    <button class="jl-menu-item" id="jlLogout"><span class="mi">×</span><span><b>Cerrar sesión</b><small>Salir de esta cuenta</small></span><i>›</i></button>
+  </nav>
+</aside>
 
-<nav class="bottom-nav"><a href="inicio.html"><span class="nav-orb"><svg class="icon"><use href="#i-home"/></svg></span><b>Inicio</b></a><a href="live.html" class="active"><span class="nav-orb"><svg class="icon"><use href="#i-live"/></svg></span><b>Live</b></a><a href="salas.html"><span class="nav-orb"><svg class="icon"><use href="#i-rooms"/></svg></span><b>Salas</b></a><a href="mensajes.html"><span class="badge">8</span><span class="nav-orb"><svg class="icon"><use href="#i-chat"/></svg></span><b>Mensajes</b></a><a href="yo.html"><span class="nav-orb"><svg class="icon"><use href="#i-user"/></svg></span><b>Yo</b></a></nav>
+<div class="jl-sheet-backdrop jl-hidden" id="sheetBackdrop"></div>
+<section class="jl-sheet" id="sheet" aria-hidden="true">
+  <div class="jl-sheet-head"><div><h2 id="sheetTitle">Ajuste</h2><p id="sheetSubtitle"></p></div><button class="jl-sheet-close" id="sheetClose" aria-label="Cerrar">×</button></div>
+  <div class="jl-sheet-body" id="sheetBody"></div>
+</section>
 
-<div class="backdrop hidden" id="modalBackdrop"></div><section class="modal hidden" id="modal" role="dialog" aria-modal="true"><h2 id="modalTitle">Aviso</h2><p id="modalText"></p><div class="modal-actions"><button id="modalCancel">Cancelar</button><button class="primary" id="modalConfirm">Aceptar</button></div></section><div class="toast" id="toast" role="status"></div>
-<script src="live.js"></script>
+<section class="jl-broadcast jl-hidden" id="broadcastScreen" aria-label="Transmisión LIVE">
+  <video id="broadcastVideo" autoplay muted playsinline></video>
+  <video id="broadcastPip" class="jl-pip jl-hidden" autoplay muted playsinline></video>
+  <div class="jl-broadcast-shade"></div>
+  <div class="jl-camera-off jl-hidden" id="broadcastCameraOff"><div><svg><use href="#jl-i-camera"/></svg><h2>Cámara apagada</h2><p>La transmisión continúa con audio.</p></div></div>
+  <div class="jl-live-top">
+    <div class="jl-host"><div class="jl-avatar">J</div><div><b>Jesús · Emisor</b><small id="broadcastTitle">JEMMO LIVE</small></div></div>
+    <span class="jl-live-badge">LIVE</span><span class="jl-live-time" id="liveClock">00:00</span><span class="jl-viewers">◉ <b id="viewerCount">1</b></span><button class="jl-end" id="endLive" aria-label="Finalizar">×</button>
+  </div>
+  <div class="jl-live-seats">
+    <button class="jl-seat"><svg><use href="#jl-i-user"/></svg><small>1</small></button>
+    <button class="jl-seat"><svg><use href="#jl-i-user"/></svg><small>2</small></button>
+    <button class="jl-seat"><svg><use href="#jl-i-user"/></svg><small>3</small></button>
+    <button class="jl-seat"><svg><use href="#jl-i-user"/></svg><small>4</small></button>
+  </div>
+  <div class="jl-live-chat" id="liveChat">
+    <div class="jl-msg system"><b>JEMMO:</b> Transmisión iniciada. Mantén una comunidad segura.</div>
+    <div class="jl-msg"><b>Casa Tenerife:</b> ¡Bienvenido al LIVE!</div>
+  </div>
+  <button class="jl-gift" aria-label="Regalos"><svg><use href="#jl-i-gift"/></svg></button>
+  <form class="jl-compose" id="chatForm"><input id="chatInput" placeholder="Escribe en el chat…" maxlength="120"><button class="jl-round" type="submit"><svg><use href="#jl-i-chat"/></svg></button><button class="jl-round" type="button"><svg><use href="#jl-i-gift"/></svg></button></form>
+  <div class="jl-live-controls">
+    <button class="jl-live-control on" id="liveMic"><svg><use href="#jl-i-mic"/></svg><span>Micro</span></button>
+    <button class="jl-live-control on" id="liveCamera"><svg><use href="#jl-i-camera"/></svg><span>Cámara</span></button>
+    <button class="jl-live-control" id="liveSwap"><svg><use href="#jl-i-switch"/></svg><span>Cambiar</span></button>
+    <button class="jl-live-control"><svg><use href="#jl-i-wand"/></svg><span>Filtros</span></button>
+    <button class="jl-live-control"><svg><use href="#jl-i-share"/></svg><span>Compartir</span></button>
+    <button class="jl-live-control danger"><svg><use href="#jl-i-more"/></svg><span>Control</span></button>
+  </div>
+</section>
+
+<div class="demo-toast" id="demoToast" role="status"></div>
+<script src="app.js"></script>
+<script>
+(()=>{
+  const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+  const state={mode:'front',mainStream:null,pipStream:null,cameraOn:false,micOn:false,title:'',description:'',category:'',privacy:'Público',filter:'Natural',coverName:'',connection:'Comprobando',liveStarted:0,timer:null};
+  const mainVideo=$('#mainVideo'),pipVideo=$('#pipVideo'),broadcastVideo=$('#broadcastVideo'),broadcastPip=$('#broadcastPip');
+  const toast=text=>{const el=$('#demoToast');if(!el)return;el.textContent=text;el.classList.add('show');clearTimeout(window.__jlToast);window.__jlToast=setTimeout(()=>el.classList.remove('show'),1900)};
+  const stopStream=s=>s?.getTracks().forEach(t=>t.stop());
+  const stopAll=()=>{stopStream(state.mainStream);stopStream(state.pipStream);state.mainStream=state.pipStream=null;[mainVideo,pipVideo,broadcastVideo,broadcastPip].forEach(v=>{try{v.srcObject=null}catch(_){}})};
+  const videoConstraints=facing=>({facingMode:{ideal:facing},width:{ideal:1280},height:{ideal:720},frameRate:{ideal:30,max:30}});
+  async function getStream(facing,audio=true){return navigator.mediaDevices.getUserMedia({video:videoConstraints(facing),audio:audio?{echoCancellation:true,noiseSuppression:true,autoGainControl:true}:false})}
+  function applyFilter(){const map={Natural:'',Brillo:'jl-filter-bright',Cálido:'jl-filter-warm',Frío:'jl-filter-cool',Suave:'jl-filter-soft'};[mainVideo,pipVideo,broadcastVideo,broadcastPip].forEach(v=>v.className=v.className.split(' ').filter(c=>!c.startsWith('jl-filter-')).concat(map[state.filter]||[]).filter(Boolean).join(' '));pipVideo.classList.add('jl-pip');broadcastPip.classList.add('jl-pip')}
+  function setMic(on){state.micOn=!!on;[state.mainStream,state.pipStream].filter(Boolean).forEach(s=>s.getAudioTracks().forEach(t=>t.enabled=state.micOn));updateUI()}
+  async function activateCamera(mode=state.mode){
+    if(!navigator.mediaDevices?.getUserMedia){openInfo('Cámara no disponible','Abre JEMMO mediante HTTPS y concede permisos de cámara y micrófono.');return false}
+    stopAll();state.cameraOn=false;state.micOn=false;updateUI();
+    try{
+      if(mode==='dual'){
+        const front=await getStream('user',true);let rear;
+        try{rear=await getStream('environment',false)}catch(e){stopStream(front);throw e}
+        if(!front.getVideoTracks().some(t=>t.readyState==='live')||!rear.getVideoTracks().some(t=>t.readyState==='live')){stopStream(front);stopStream(rear);throw Error('dual-not-supported')}
+        state.mainStream=rear;state.pipStream=front;mainVideo.srcObject=rear;pipVideo.srcObject=front;pipVideo.classList.remove('jl-hidden');
+      }else{
+        state.mainStream=await getStream(mode==='rear'?'environment':'user',true);mainVideo.srcObject=state.mainStream;pipVideo.classList.add('jl-hidden');
+      }
+      state.mode=mode;state.cameraOn=true;state.micOn=true;$('#cameraEmpty').classList.add('jl-hidden');applyFilter();updateUI();toast(mode==='dual'?'Ambas cámaras activadas':'Cámara activada');return true;
+    }catch(e){
+      stopAll();state.cameraOn=false;state.micOn=false;$('#cameraEmpty').classList.remove('jl-hidden');pipVideo.classList.add('jl-hidden');updateUI();
+      openInfo(mode==='dual'?'Este móvil no admite ambas cámaras':(e?.name==='NotAllowedError'?'Permiso bloqueado':'No se pudo abrir la cámara'),mode==='dual'?'El dispositivo o navegador no permite abrir la cámara frontal y trasera al mismo tiempo. Usa frontal o trasera.':(e?.name==='NotAllowedError'?'Permite cámara y micrófono en los ajustes del navegador.':'Comprueba que ninguna otra aplicación esté usando la cámara.'));
+      return false;
+    }
+  }
+  function deactivateCamera(){stopAll();state.cameraOn=false;state.micOn=false;$('#cameraEmpty').classList.remove('jl-hidden');pipVideo.classList.add('jl-hidden');updateUI()}
+  function short(text,n=12){return text.length>n?text.slice(0,n-1)+'…':text}
+  function connectionQuality(){
+    if(!navigator.onLine){state.connection='Sin conexión';return}
+    const c=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+    if(!c){state.connection='Aceptable';return}
+    if(c.saveData||['slow-2g','2g'].includes(c.effectiveType))state.connection='Baja';
+    else if(c.effectiveType==='3g')state.connection='Aceptable';
+    else state.connection='Buena';
+  }
+  function valid(){return{camera:state.cameraOn,mic:state.micOn,title:state.title.trim().length>=5,description:state.description.trim().length>=5,category:!!state.category,cover:!!state.coverName,connection:navigator.onLine}}
+  function setQuick(id,ok,small){const el=$(id);el.classList.toggle('ok',ok);el.classList.toggle('bad',!ok);if(small)$(small[0]).textContent=small[1]}
+  function updateUI(){
+    connectionQuality();const v=valid();
+    $$('.jl-mode').forEach(b=>b.classList.toggle('active',b.dataset.mode===state.mode));
+    setQuick('#micQuick',v.mic,['#micState',v.mic?'Encendido':'Apagado']);
+    setQuick('#cameraQuick',v.camera,['#cameraState',v.camera?state.mode==='dual'?'Ambas':state.mode==='rear'?'Trasera':'Frontal':'Apagada']);
+    setQuick('#titleQuick',v.title,['#titleState',v.title?short(state.title):'Pendiente']);
+    setQuick('#descriptionQuick',v.description,['#descriptionState',v.description?'Completa':'Pendiente']);
+    setQuick('#categoryQuick',v.category,['#categoryState',v.category||'Elegir']);
+    setQuick('#coverQuick',v.cover,['#coverState',v.cover?short(state.coverName,10):'Pendiente']);
+    const connOk=v.connection&&state.connection!=='Baja';setQuick('#connectionQuick',connOk,['#connectionState',state.connection]);
+    $('#privacyState').textContent=state.privacy;$('#coverChip').textContent=v.cover?'Portada lista':'Portada';$('#coverChip').parentElement.classList.toggle('ready',v.cover);$('#filterChip').textContent=state.filter;
+    const missing=Object.entries(v).filter(([,ok])=>!ok).map(([k])=>k);const ready=missing.length===0;
+    $('#readiness').classList.toggle('ready',ready);$('#readyTitle').textContent=ready?'Todo listo para emitir':`Faltan ${missing.length} ajustes`;$('#readyText').textContent=ready?'Cámara visible y controles revisados.':'Toca los puntos rojos para completarlos.';$('#startLive').disabled=!ready;
+    $('#liveMic')?.classList.toggle('on',state.micOn);$('#liveCamera')?.classList.toggle('on',state.cameraOn);$('#broadcastCameraOff')?.classList.toggle('jl-hidden',state.cameraOn);
+  }
+  const sheet=$('#sheet'),sheetBody=$('#sheetBody'),sheetBackdrop=$('#sheetBackdrop');
+  function showSheet(title,subtitle,html,onReady){$('#sheetTitle').textContent=title;$('#sheetSubtitle').textContent=subtitle||'';sheetBody.innerHTML=html;sheetBackdrop.classList.remove('jl-hidden');sheet.classList.add('open');sheet.setAttribute('aria-hidden','false');onReady?.()}
+  function closeSheet(){sheet.classList.remove('open');sheet.setAttribute('aria-hidden','true');sheetBackdrop.classList.add('jl-hidden')}
+  function openInfo(title,text){showSheet(title,'',`<div class="jl-errors">${text}</div><button class="jl-save" id="infoOk">ENTENDIDO</button>`,()=>$('#infoOk').onclick=closeSheet)}
+  function openEditor(type){
+    if(type==='title'){
+      const safeTitle=state.title.replaceAll('"','&quot;');
+      showSheet('Título del LIVE','Obligatorio · mínimo 5 caracteres',
+        `<div class="jl-field"><label>Título</label><input id="editTitle" maxlength="80" value="${safeTitle}" placeholder="Ej.: Noche de música en JEMMO"></div><button class="jl-save" id="saveEditor">GUARDAR</button>`,
+        ()=>{
+          $('#editTitle').focus();
+          $('#saveEditor').onclick=()=>{
+            const value=$('#editTitle').value.trim();
+            if(value.length<5){toast('Escribe al menos 5 caracteres');return}
+            state.title=value;closeSheet();updateUI();
+          };
+        }
+      );
+      return;
+    }
+    if(type==='description'){
+      showSheet('Descripción','Explica brevemente qué harás',
+        `<div class="jl-field"><label>Descripción</label><textarea id="editDescription" maxlength="180" placeholder="Describe tu transmisión…">${state.description}</textarea></div><button class="jl-save" id="saveEditor">GUARDAR</button>`,
+        ()=>{
+          $('#editDescription').focus();
+          $('#saveEditor').onclick=()=>{
+            const value=$('#editDescription').value.trim();
+            if(value.length<5){toast('Escribe al menos 5 caracteres');return}
+            state.description=value;closeSheet();updateUI();
+          };
+        }
+      );
+      return;
+    }
+    if(type==='category'){
+      const opts=['Conversación','Música','Talento','Belleza','Juegos','Cocina','Familia JEMMO','Otro'];
+      showSheet('Categoría','Ayuda a encontrar el LIVE correcto',
+        `<div class="jl-option-grid">${opts.map(x=>`<button class="jl-option ${state.category===x?'active':''}" data-value="${x}">${x}</button>`).join('')}</div>`,
+        ()=>$$('.jl-option',sheetBody).forEach(b=>b.onclick=()=>{state.category=b.dataset.value;closeSheet();updateUI();})
+      );
+      return;
+    }
+    if(type==='privacy'){
+      const opts=['Público','Seguidores','Por invitación','Privado'];
+      showSheet('Privacidad y sillas','Define quién puede entrar',
+        `<div class="jl-option-grid">${opts.map(x=>`<button class="jl-option ${state.privacy===x?'active':''}" data-value="${x}">${x}</button>`).join('')}</div>`,
+        ()=>$$('.jl-option',sheetBody).forEach(b=>b.onclick=()=>{state.privacy=b.dataset.value;closeSheet();updateUI();})
+      );
+      return;
+    }
+    if(type==='filter'){
+      const opts=['Natural','Brillo','Cálido','Frío','Suave'];
+      showSheet('Filtros de cámara','Cambian solo la imagen, no el audio',
+        `<div class="jl-option-grid">${opts.map(x=>`<button class="jl-option ${state.filter===x?'active':''}" data-value="${x}">${x}</button>`).join('')}</div>`,
+        ()=>$$('.jl-option',sheetBody).forEach(b=>b.onclick=()=>{state.filter=b.dataset.value;applyFilter();closeSheet();updateUI();})
+      );
+      return;
+    }
+    if(type==='cover'){
+      showSheet('Portada del LIVE','Obligatoria · selecciona una imagen clara',
+        `<div class="jl-field"><label>Imagen de portada</label><input id="coverInput" type="file" accept="image/*"></div><div class="jl-errors">JEMMO comprobará calidad y contenido antes de publicar. En esta versión la comprobación es local.</div><button class="jl-save" id="saveCover">USAR ESTA PORTADA</button>`,
+        ()=>{
+          $('#saveCover').onclick=()=>{
+            const file=$('#coverInput').files[0];
+            if(!file){toast('Selecciona una imagen');return}
+            if(!file.type.startsWith('image/')){toast('El archivo debe ser una imagen');return}
+            state.coverName=file.name;closeSheet();updateUI();
+          };
+        }
+      );
+      return;
+    }
+    if(type==='connection'){
+      showSheet('Estado de conexión','JEMMO adaptará la calidad automáticamente',
+        `<div class="jl-option-grid"><div class="jl-option active">Estado<br><small>${state.connection}</small></div><div class="jl-option">En línea<br><small>${navigator.onLine?'Sí':'No'}</small></div></div><div class="jl-errors">Con señal baja se reducirá la calidad para evitar cortes. La transmisión real se conectará al servidor LIVE en una fase posterior.</div><button class="jl-save" id="infoOk">CERRAR</button>`,
+        ()=>{$('#infoOk').onclick=closeSheet;}
+      );
+    }
+  }
+  $('#sheetClose').onclick=closeSheet;sheetBackdrop.onclick=closeSheet;
+  $$('[data-open]').forEach(b=>b.onclick=()=>openEditor(b.dataset.open));
+  $('#activateCamera').onclick=()=>activateCamera(state.mode);
+  $('#cameraQuick').onclick=()=>state.cameraOn?deactivateCamera():activateCamera(state.mode);
+  $('#micQuick').onclick=async()=>{if(!state.cameraOn){const ok=await activateCamera(state.mode);if(!ok)return}setMic(!state.micOn)};
+  $$('.jl-mode').forEach(b=>b.onclick=()=>{state.mode=b.dataset.mode;state.cameraOn?activateCamera(state.mode):updateUI()});
+  $('#swapCamera').onclick=()=>{const next=state.mode==='front'?'rear':'front';state.mode=next;state.cameraOn?activateCamera(next):updateUI()};
+  window.addEventListener('online',updateUI);window.addEventListener('offline',updateUI);navigator.connection?.addEventListener?.('change',updateUI);
+  $('#jlHelp').onclick=()=>openInfo('Preparación rápida','La cámara permanece visible. Completa los ajustes en los botones pequeños y pulsa INICIAR LIVE cuando todos estén verdes.');
+  const menu=$('#jlSideMenu'),menuBg=$('#jlMenuBackdrop');
+  function openMenu(){menu.classList.add('open');menuBg.classList.remove('jl-hidden');menu.setAttribute('aria-hidden','false')}
+  function closeMenu(){menu.classList.remove('open');menuBg.classList.add('jl-hidden');menu.setAttribute('aria-hidden','true')}
+  $('#jlMenuOpen').onclick=openMenu;$('#jlMenuClose').onclick=closeMenu;menuBg.onclick=closeMenu;
+  $$('[data-menu-modal]').forEach(b=>b.onclick=()=>{closeMenu();openInfo(b.dataset.menuModal,'Este acceso mantiene el tamaño aprobado. Su función completa se conecta en su fase correspondiente.')});
+  $('#jlLogout').onclick=()=>{localStorage.removeItem('jemmo_session');sessionStorage.clear();location.href='acceso.html'};
+  function copyStreamsToBroadcast(){broadcastVideo.srcObject=state.mainStream;broadcastPip.srcObject=state.pipStream;broadcastPip.classList.toggle('jl-hidden',!state.pipStream);applyFilter()}
+  function startTimer(){state.liveStarted=Date.now();clearInterval(state.timer);state.timer=setInterval(()=>{const secs=Math.floor((Date.now()-state.liveStarted)/1000),m=String(Math.floor(secs/60)).padStart(2,'0'),s=String(secs%60).padStart(2,'0');$('#liveClock').textContent=`${m}:${s}`;$('#taskClock').textContent=`${m}:${s}`},1000)}
+  $('#startLive').onclick=()=>{const v=valid();const missing=Object.entries(v).filter(([,ok])=>!ok).map(([k])=>({camera:'Cámara',mic:'Micrófono',title:'Título',description:'Descripción',category:'Categoría',cover:'Portada',connection:'Conexión'}[k]));if(missing.length){openInfo('Aún no puedes transmitir',`Falta completar: ${missing.join(', ')}.`);return}copyStreamsToBroadcast();$('#broadcastTitle').textContent=state.title;$('#broadcastScreen').classList.remove('jl-hidden');document.body.classList.add('jl-live-active');$('.bottom-nav').classList.add('jl-hidden');startTimer();toast('Transmisión LIVE iniciada')};
+  function finishLive(){clearInterval(state.timer);$('#broadcastScreen').classList.add('jl-hidden');$('.bottom-nav').classList.remove('jl-hidden');$('#taskClock').textContent='00:00';openInfo('Transmisión finalizada','La sesión de prueba terminó correctamente. La cámara queda preparada para volver a emitir.')}
+  $('#endLive').onclick=finishLive;
+  $('#liveMic').onclick=()=>setMic(!state.micOn);
+  $('#liveCamera').onclick=()=>{state.cameraOn=!state.cameraOn;state.mainStream?.getVideoTracks().forEach(t=>t.enabled=state.cameraOn);state.pipStream?.getVideoTracks().forEach(t=>t.enabled=state.cameraOn);updateUI()};
+  $('#liveSwap').onclick=async()=>{const next=state.mode==='front'?'rear':'front';await activateCamera(next);copyStreamsToBroadcast()};
+  $('#chatForm').onsubmit=e=>{e.preventDefault();const input=$('#chatInput'),text=input.value.trim();if(!text)return;const row=document.createElement('div');row.className='jl-msg';row.innerHTML='<b>Tú:</b> ';row.append(document.createTextNode(text));$('#liveChat').append(row);input.value=''};
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&$('#broadcastScreen').classList.contains('jl-hidden')){/* conserva la cámara mientras se prepara */}});
+  window.addEventListener('beforeunload',stopAll);
+  updateUI();
+})();
+</script>
 </body>
 </html>
