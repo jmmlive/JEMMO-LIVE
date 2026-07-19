@@ -1,16 +1,13 @@
-JEMMO LIVE V0.6.10 · INSTALACIÓN
+JEMMO LIVE V0.6.11 · INSTALACIÓN
 
-1. Conserva guardada tu V0.6.9 como respaldo.
-2. Abre el ZIP descargado.
-3. Sustituye únicamente el archivo live.html de tu proyecto por el live.html incluido.
-4. No borres Acceso, Inicio, Salas, Mensajes, Perfil ni los recursos existentes.
-5. Publica los cambios y limpia la caché del navegador antes de probar.
+1. Conserva la V0.6.10 como respaldo.
+2. Sustituye únicamente el archivo live.html por el incluido en este ZIP.
+3. No borres ni reemplaces Acceso, Inicio, Salas, Mensajes, Perfil ni los recursos gráficos.
+4. Publica los cambios y limpia la caché del navegador antes de probar.
 
-PRUEBAS EN MÓVIL
-- En preparación debe aparecer la barra oficial del Inicio.
-- La pestaña Live debe mostrar el pez JEMMO activo.
-- Al iniciar la transmisión, la barra inferior debe desaparecer por completo.
-- La Batalla debe verse como una tarjeta horizontal y separada de las sillas.
-- Al tocar la navegación debe sentirse un sonido acuático muy suave, sin vibración.
-
-Base requerida: V0.6.9 PRUEBAS.
+COMPROBACIONES
+- Abrir stickers y tocar varios emojis.
+- Abrir regalos y enviar un regalo.
+- Abrir una solicitud de silla y probar sus cuatro botones.
+- Abrir un panel y cerrarlo con la X, el fondo y el botón Atrás de Android.
+- Confirmar que la Batalla aparece debajo de las sillas, compacta, y se despliega al tocarla.

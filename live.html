@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#09000f">
-  <title>JEMMO LIVE · Preparar LIVE · V0.6.10 PRUEBAS</title>
+  <title>JEMMO LIVE · Preparar LIVE · V0.6.11 PRUEBAS</title>
   <style>
     :root{
       color-scheme:dark;
@@ -554,32 +554,84 @@
     }
     .jl-live-badge span{font-size:16px}
 
-    /* BATALLA: TARJETA DE COMPETICIÓN, NO PARECE SILLA NI PERSONA */
+    /* BATALLA V0.6.11: debajo de las sillas, encima de regalos, compacta y desplegable */
     .jl-battle-card{
       position:absolute;
-      z-index:10;
-      top:calc(95px + env(safe-area-inset-top));
-      left:64px;
-      right:64px;
-      min-height:93px;
-      padding:8px 11px 9px;
+      z-index:13;
+      top:calc(426px + env(safe-area-inset-top));
+      right:9px;
+      left:auto;
+      width:112px;
+      min-height:48px;
+      padding:0;
+      overflow:hidden;
       border:1px solid #ffd24ca8;
-      border-left:5px solid var(--gold);
-      border-right:5px solid var(--pink);
-      border-radius:10px 3px 10px 3px;
-      background:
-        linear-gradient(90deg,#211400ed 0 47%,#21041bed 53% 100%);
-      box-shadow:0 12px 30px #000b,0 0 20px #ffcf4930;
-      clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));
+      border-left:4px solid var(--gold);
+      border-right:4px solid var(--pink);
+      border-radius:12px 4px 12px 4px;
+      background:linear-gradient(110deg,#251700f2,#20051df2);
+      color:#fff;
+      box-shadow:0 10px 26px #000b,0 0 16px #ffcf4930;
+      clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,9px 100%,0 calc(100% - 9px));
       pointer-events:auto;
+      touch-action:manipulation;
+      transition:width .2s ease,min-height .2s ease,transform .2s ease;
     }
+    .jl-battle-card:active{transform:scale(.97)}
+    .jl-battle-compact{
+      min-height:48px;
+      display:grid;
+      grid-template-columns:25px minmax(0,1fr) 15px;
+      align-items:center;
+      gap:5px;
+      padding:6px 6px 6px 7px;
+    }
+    .jl-battle-compact>span{
+      width:25px;height:25px;
+      display:grid;place-items:center;
+      border:1px solid #ffd24c77;
+      border-radius:7px;
+      background:#0d050be0;
+      font-size:14px;
+    }
+    .jl-battle-compact b{
+      display:block;
+      color:#ffe17c;
+      font-size:8px;
+      letter-spacing:.08em;
+      white-space:nowrap;
+    }
+    .jl-battle-compact time{
+      display:block;
+      margin-top:2px;
+      color:#d7c8db;
+      font-size:8px;
+      font-weight:900;
+      font-variant-numeric:tabular-nums;
+    }
+    .jl-battle-compact i{
+      color:#f06cff;
+      font-style:normal;
+      font-size:17px;
+      transition:transform .2s ease;
+    }
+    .jl-battle-details{
+      display:none;
+      padding:0 10px 10px;
+      border-top:1px solid #ffffff1f;
+    }
+    .jl-battle-card.expanded{
+      width:min(78vw,330px);
+      min-height:111px;
+    }
+    .jl-battle-card.expanded .jl-battle-compact i{transform:rotate(90deg)}
+    .jl-battle-card.expanded .jl-battle-details{display:block}
     .jl-battle-head{
       display:flex;
       justify-content:space-between;
       align-items:center;
       gap:8px;
-      padding-bottom:6px;
-      border-bottom:1px solid #ffffff24;
+      padding:7px 0 6px;
     }
     .jl-battle-head b{font-size:9px;color:#ffe37d;letter-spacing:.12em}
     .jl-battle-head time{
@@ -596,7 +648,7 @@
       grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr);
       align-items:center;
       gap:8px;
-      margin-top:7px;
+      margin-top:2px;
     }
     .jl-battle-team{text-align:center;min-width:0}
     .jl-battle-team strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;text-transform:uppercase}
@@ -716,7 +768,7 @@
     .jl-action.settings{font-size:16px}
 
     /* PANELES */
-    .jl-backdrop{position:absolute;inset:0;z-index:30;background:#0009;backdrop-filter:blur(2px)}
+    .jl-backdrop{position:absolute;inset:0;z-index:30;background:#0009;backdrop-filter:blur(2px);pointer-events:auto;touch-action:manipulation}
     .jl-sheet{
       position:absolute;
       z-index:31;
@@ -729,6 +781,8 @@
       border-radius:22px;
       background:linear-gradient(180deg,#1a0622f8,#09010cf8);
       box-shadow:0 -14px 45px #000c;
+      pointer-events:auto;
+      touch-action:manipulation;
     }
     .jl-sheet-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
     .jl-sheet-head h3{margin:0;font-size:18px}
@@ -836,16 +890,20 @@
       .jl-camera-icon{width:118px;height:118px}
       .jl-empty strong{font-size:28px}
       .jl-filter{padding:0 9px;font-size:10px}
-      .jl-battle-card{left:58px;right:58px}
+      .jl-battle-card{right:9px;left:auto}
       .jl-battle-head b{font-size:8px}
       .jl-seat-stack{top:calc(204px + env(safe-area-inset-top))}
       .jl-gifts{grid-template-columns:repeat(3,1fr)}
+    }
+    @media(max-height:760px){
+      .jl-seat-stack{top:calc(174px + env(safe-area-inset-top))}
+      .jl-battle-card{top:calc(393px + env(safe-area-inset-top))}
     }
     @media(max-width:360px){
       .jl-mode{padding:0 9px}
       .jl-camera-bottom{gap:4px}
       .jl-chip{padding:0 10px}
-      .jl-battle-card{left:53px;right:53px;padding-left:8px;padding-right:8px}
+      .jl-battle-card{right:9px;left:auto}
       .jl-battle-teams{gap:5px;grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr)}
       .jl-chatbar{grid-template-columns:1fr 43px 43px 43px}
       .jl-options{grid-template-columns:1fr}
@@ -859,7 +917,7 @@
       <div class="jl-brand">
         <img id="brandLogo" src="jemmo-logo-header.webp" alt="JEMMO LIVE">
         <strong id="brandFallback">JEMMO LIVE</strong>
-        <small>PREPARACIÓN DE TRANSMISIÓN · V0.6.10<br>PRUEBAS</small>
+        <small>PREPARACIÓN DE TRANSMISIÓN · V0.6.11<br>PRUEBAS</small>
       </div>
       <button class="jl-round" id="helpButton" type="button" aria-label="Ayuda">?</button>
     </header>
@@ -966,14 +1024,21 @@
         </div>
       </header>
 
-      <button class="jl-battle-card" id="battleCard" type="button" aria-label="Abrir batalla">
-        <div class="jl-battle-head"><b>🏆 BATALLA OFICIAL</b><time id="battleClock">06:42</time></div>
-        <div class="jl-battle-teams">
-          <div class="jl-battle-team"><strong>Casa Tenerife</strong><em id="scoreA">12,500</em></div>
-          <span class="jl-battle-vs">VS</span>
-          <div class="jl-battle-team"><strong>Casa Unicornio</strong><em id="scoreB">9,800</em></div>
+      <button class="jl-battle-card" id="battleCard" type="button" aria-label="Abrir o cerrar batalla" aria-expanded="false">
+        <div class="jl-battle-compact">
+          <span>🏆</span>
+          <div><b>BATALLA</b><time id="battleClockMini">06:42</time></div>
+          <i>›</i>
         </div>
-        <div class="jl-battle-track"><i class="a" id="barA"></i><i class="b" id="barB"></i></div>
+        <div class="jl-battle-details">
+          <div class="jl-battle-head"><b>BATALLA OFICIAL</b><time id="battleClock">06:42</time></div>
+          <div class="jl-battle-teams">
+            <div class="jl-battle-team"><strong>Casa Tenerife</strong><em id="scoreA">12,500</em></div>
+            <span class="jl-battle-vs">VS</span>
+            <div class="jl-battle-team"><strong>Casa Unicornio</strong><em id="scoreB">9,800</em></div>
+          </div>
+          <div class="jl-battle-track"><i class="a" id="barA"></i><i class="b" id="barB"></i></div>
+        </div>
       </button>
 
       <aside class="jl-seat-stack" aria-label="Sillas del LIVE">
@@ -1061,7 +1126,7 @@
       <button type="button"><span>?</span><span><b>Ayuda y soporte</b><small>Seguridad y asistencia</small></span><i>›</i></button>
       <a href="index.html"><span>↪</span><span><b>Cerrar sesión</b></span><i>›</i></a>
     </nav>
-    <div class="jl-version">V0.6.10 PRUEBAS · actualización sobre V0.6.9</div>
+    <div class="jl-version">V0.6.11 PRUEBAS · actualización sobre V0.6.9</div>
   </aside>
 
   <div class="jl-toast" id="toast"></div>
@@ -1560,30 +1625,78 @@
     window.visualViewport?.addEventListener("scroll",keyboardOffset);
     keyboardOffset();
 
+    document.querySelectorAll(".jl-sheet button").forEach(button=>button.type="button");
+
     const sheets=["settingsSheet","stickersSheet","giftsSheet","seatSheet","battleSheet"];
+    let activeSheet=null;
+    let closingFromHistory=false;
+
     function openSheet(id){
       sheets.forEach(name=>$(name).hidden=name!==id);
       $("liveBackdrop").hidden=false;
+      activeSheet=id;
+      if(!history.state?.jemmoSheet){
+        history.pushState({jemmoSheet:id},"");
+      }else{
+        history.replaceState({jemmoSheet:id},"");
+      }
     }
-    function closeSheets(){
+    function hideSheetsOnly(){
       sheets.forEach(name=>$(name).hidden=true);
       $("liveBackdrop").hidden=true;
+      activeSheet=null;
     }
-    document.querySelectorAll("[data-close-sheet]").forEach(button=>button.addEventListener("click",closeSheets));
-    $("liveBackdrop").addEventListener("click",closeSheets);
+    function closeSheets(){
+      const shouldReturn=Boolean(activeSheet && history.state?.jemmoSheet && !closingFromHistory);
+      hideSheetsOnly();
+      if(shouldReturn) history.back();
+    }
+    window.addEventListener("popstate",()=>{
+      closingFromHistory=true;
+      hideSheetsOnly();
+      if($("battleCard").classList.contains("expanded")){
+        $("battleCard").classList.remove("expanded");
+        $("battleCard").setAttribute("aria-expanded","false");
+      }
+      closingFromHistory=false;
+    });
+    document.querySelectorAll("[data-close-sheet]").forEach(button=>button.addEventListener("click",event=>{
+      event.preventDefault();
+      event.stopPropagation();
+      closeSheets();
+    }));
+    $("liveBackdrop").addEventListener("click",event=>{
+      event.preventDefault();
+      closeSheets();
+    });
     $("settingsButton").addEventListener("click",()=>openSheet("settingsSheet"));
     $("stickersButton").addEventListener("click",()=>openSheet("stickersSheet"));
     $("giftsButton").addEventListener("click",()=>openSheet("giftsSheet"));
-    $("battleCard").addEventListener("click",()=>openSheet("battleSheet"));
+    $("battleCard").addEventListener("click",()=>{
+      const card=$("battleCard");
+      const expanded=!card.classList.contains("expanded");
+      card.classList.toggle("expanded",expanded);
+      card.setAttribute("aria-expanded",String(expanded));
+      if(expanded && !history.state?.jemmoBattle){
+        history.pushState({jemmoBattle:true},"");
+      }else if(!expanded && history.state?.jemmoBattle){
+        history.back();
+      }
+    });
 
     document.querySelectorAll(".jl-stickers button").forEach(button=>{
-      button.addEventListener("click",()=>{
+      button.type="button";
+      button.addEventListener("click",event=>{
+        event.preventDefault();
+        event.stopPropagation();
         addChat(`Tú: ${button.textContent}`);
+        showToast(`Sticker ${button.textContent} enviado.`);
         closeSheets();
       });
     });
 
     function updateBattle(){
+      if($("battleClockMini") && $("battleClock")) $("battleClockMini").textContent=$("battleClock").textContent;
       $("scoreA").textContent=state.scoreA.toLocaleString("es-ES");
       $("scoreB").textContent=state.scoreB.toLocaleString("es-ES");
       const total=Math.max(1,state.scoreA+state.scoreB);
@@ -1592,7 +1705,10 @@
       $("barB").style.width=`${100-a}%`;
     }
     document.querySelectorAll("[data-gift]").forEach(button=>{
-      button.addEventListener("click",()=>{
+      button.type="button";
+      button.addEventListener("click",event=>{
+        event.preventDefault();
+        event.stopPropagation();
         const cost=Number(button.dataset.cost||0);
         if(state.balance<cost){
           showToast("Saldo insuficiente.");
@@ -1624,26 +1740,34 @@
         openSheet("seatSheet");
       });
     });
-    $("seatAccept").addEventListener("click",()=>{
+    $("seatAccept").addEventListener("click",event=>{
+      event.preventDefault();
+      event.stopPropagation();
       const seat=document.querySelector(`.jl-seat[data-seat="${state.activeSeat}"]`);
       seat?.classList.remove("request");
       seat?.classList.add("occupied");
       showToast("Participante conectado a la silla.");
       closeSheets();
     });
-    $("seatMute").addEventListener("click",()=>{
+    $("seatMute").addEventListener("click",event=>{
+      event.preventDefault();
+      event.stopPropagation();
       const seat=document.querySelector(`.jl-seat[data-seat="${state.activeSeat}"]`);
       seat?.classList.toggle("muted");
       showToast(seat?.classList.contains("muted")?"Participante silenciado.":"Micrófono reactivado.");
       closeSheets();
     });
-    $("seatDown").addEventListener("click",()=>{
+    $("seatDown").addEventListener("click",event=>{
+      event.preventDefault();
+      event.stopPropagation();
       const seat=document.querySelector(`.jl-seat[data-seat="${state.activeSeat}"]`);
       seat?.classList.remove("occupied","request","muted");
       showToast("Participante bajado de la silla.");
       closeSheets();
     });
-    $("seatKick").addEventListener("click",()=>{
+    $("seatKick").addEventListener("click",event=>{
+      event.preventDefault();
+      event.stopPropagation();
       const seat=document.querySelector(`.jl-seat[data-seat="${state.activeSeat}"]`);
       seat?.classList.remove("occupied","request","muted");
       showToast("Participante expulsado durante 15 minutos.");

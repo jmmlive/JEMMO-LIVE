@@ -1,5 +1,5 @@
-JEMMO LIVE V0.6.10 PRUEBAS
-Base instalada requerida: V0.6.9 PRUEBAS
+JEMMO LIVE V0.6.11 PRUEBAS
+Base requerida: V0.6.10 PRUEBAS
 Tipo: actualización incremental
 Módulo modificado: LIVE
 No modifica Acceso, Inicio, Salas, Mensajes ni Perfil.
