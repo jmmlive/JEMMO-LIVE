@@ -1,9 +1,17 @@
-JEMMO LIVE V0.6.7 · ACTUALIZACIÓN INCREMENTAL
+JEMMO LIVE V0.6.8 · ACTUALIZACIÓN INCREMENTAL
 
-1. Conserva guardada la V0.6.6 como respaldo.
-2. Esta actualización se instala SOBRE la V0.6.6.
-3. Sustituye únicamente live.html por el archivo V0.6.7.
-4. Publica por HTTPS y limpia la caché antes de probar.
-5. En móvil, inicia el LIVE y toca una persona/silla lateral para comprobar el mini perfil.
+1. Conserva V0.6.6 y V0.6.7 como respaldo.
+2. Instala esta actualización SOBRE la V0.6.7.
+3. Sustituye únicamente live.html por el archivo incluido.
+4. Conserva los recursos gráficos existentes de la aplicación.
+5. Publica por HTTPS y limpia la caché del navegador.
+6. Prueba en móvil:
+   - sillas en el lateral derecho;
+   - pestaña de batalla debajo de las sillas;
+   - caja de regalos lateral;
+   - chat escribible y plegable;
+   - navegación inferior;
+   - tarea verde, naranja con Cobrar, roja y desaparición;
+   - sonido de navegación a volumen bajo.
 
-No borres la V0.6.6 hasta confirmar que la V0.6.7 funciona correctamente.
+No borres las versiones anteriores hasta confirmar esta prueba en el móvil.

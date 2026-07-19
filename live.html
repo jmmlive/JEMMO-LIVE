@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#09000f">
-  <title>JEMMO LIVE · Preparar LIVE · V0.6.7 PRUEBAS</title>
+  <title>JEMMO LIVE · Preparar LIVE · V0.6.8 PRUEBAS</title>
   <style>
     :root{
       color-scheme:dark;
@@ -576,7 +576,7 @@
     .jl-sheet-actions button{min-height:45px;border:1px solid #8f3aa477;border-radius:13px;background:#17051e;color:#fff;font-weight:850;font-size:11px}
     .jl-sheet-actions .accept{border-color:#48e39d99;background:#123e31;color:#a8ffd8}
     .jl-sheet-actions .danger{border-color:#ff526f99;background:#461121;color:#ffd1da}
-    /* MINI PERFIL DEL PARTICIPANTE · V0.6.7 */
+    /* MINI PERFIL DEL PARTICIPANTE · V0.6.8 */
     .jl-person-card{
       margin-top:13px;
       padding:13px;
@@ -781,7 +781,7 @@
     }
 
 
-    /* V0.6.7 · LIVE COMPACTO, MINI PERFIL, SILLAS, REGALOS Y BATALLAS */
+    /* V0.6.8 · LIVE PROFESIONAL, CHAT, TAREAS, SILLAS, REGALOS Y BATALLAS */
     .jl-filterbar{display:flex;gap:5px;pointer-events:auto;min-width:0}
     .jl-filterbar .jl-chip{padding:0 9px;min-height:38px;font-size:10px}
     .jl-filter.active{border-color:var(--green);color:var(--green);box-shadow:0 0 12px #48e39d33}
@@ -819,6 +819,272 @@
     .jl-nav a:not(.active) .jl-nav-icon{font-size:24px}
     @media(max-width:390px){.jl-filterbar .jl-chip{padding:0 7px;font-size:9px}.jl-camera-bottom{gap:5px}.jl-camera-bottom>.jl-chip{padding:0 10px}.jl-task-card{max-width:68vw}}
 
+  
+    /* V0.6.8 · CORRECCIÓN REAL DEL LIVE */
+    .jl-live-overlay{
+      padding-bottom:calc(76px + env(safe-area-inset-bottom));
+    }
+    .jl-live-top-right{display:flex;align-items:center;gap:6px}
+    .jl-live-stage-tools{
+      position:absolute;
+      z-index:18;
+      top:34%;
+      right:8px;
+      left:auto;
+      width:50px;
+      display:grid;
+      justify-items:end;
+      align-content:start;
+      gap:7px;
+      transform:none;
+      pointer-events:none;
+    }
+    .jl-seat-stack,.jl-rail-tab,.jl-gift-fab{pointer-events:auto}
+    .jl-seat-stack{display:grid;gap:6px;justify-items:end}
+    .jl-seat{width:44px;height:44px;border-radius:15px}
+    .jl-rail-tab,.jl-gift-fab{
+      width:46px;
+      min-height:43px;
+      padding:4px 2px;
+      display:grid;
+      place-items:center;
+      gap:1px;
+      border:1px solid #b14bd18a;
+      border-radius:14px;
+      background:#100416e8;
+      color:#fff;
+      box-shadow:0 8px 22px #0008,0 0 15px #8b18c832;
+    }
+    .jl-rail-tab span,.jl-gift-fab>span{font-size:18px;line-height:1}
+    .jl-rail-tab small,.jl-gift-fab small{font-size:7px;color:#dccfe0;font-weight:900}
+    .jl-battle-rail-tab{border-color:#d24cff99}
+    .jl-battle-rail-tab[aria-expanded="true"]{background:#2b0a37;border-color:#ef6cff}
+    .jl-gift-fab{
+      position:relative;
+      border-color:#e9bd4f9c;
+      background:linear-gradient(145deg,#281b08e8,#12060fe8);
+    }
+    .jl-gift-fab b{
+      position:absolute;
+      right:-4px;
+      top:-5px;
+      min-width:19px;
+      height:19px;
+      padding:0 4px;
+      display:grid;
+      place-items:center;
+      border-radius:999px;
+      background:#f7bd39;
+      color:#291704;
+      font-size:8px;
+      box-shadow:0 0 10px #f7bd3988;
+    }
+    .jl-battle-drawer{
+      position:absolute;
+      z-index:17;
+      top:calc(34% + 198px);
+      right:61px;
+      width:min(52vw,230px);
+      margin:0;
+      padding:10px;
+      border-radius:17px 4px 17px 17px;
+      transform:translateX(10px);
+      opacity:0;
+      transition:opacity .18s ease,transform .18s ease;
+    }
+    .jl-battle-drawer.open{
+      transform:translateX(0);
+      opacity:1;
+    }
+    .jl-chat-dock{
+      position:absolute;
+      z-index:24;
+      left:8px;
+      right:8px;
+      bottom:calc(72px + env(safe-area-inset-bottom));
+      border:1px solid #8d3ba66e;
+      border-radius:17px 17px 5px 5px;
+      background:linear-gradient(180deg,#16051edb,#08010ceb);
+      box-shadow:0 -10px 30px #0008;
+      transform:translateY(0);
+      transition:transform .22s ease,opacity .18s ease;
+    }
+    .jl-chat-dock.collapsed{
+      left:10px;
+      right:auto;
+      bottom:calc(76px + env(safe-area-inset-bottom));
+      width:108px;
+      border-radius:14px;
+      background:#100416e9;
+    }
+    .jl-chat-handle{
+      width:100%;
+      min-height:34px;
+      padding:5px 9px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      border:0;
+      border-radius:inherit;
+      background:transparent;
+      color:#fff;
+      font-size:9px;
+      font-weight:900;
+    }
+    .jl-chat-handle i{font-style:normal;color:#da62ff}
+    .jl-chat-dock.collapsed .jl-chat-panel{display:none}
+    .jl-chat-dock:not(.collapsed) .jl-chat-handle{
+      justify-content:space-between;
+      border-radius:16px 16px 0 0;
+      border-bottom:1px solid #7b318b55;
+    }
+    .jl-chat-panel{padding:7px}
+    .jl-live-chat{
+      width:100%;
+      max-height:145px;
+      min-height:68px;
+      margin:0 0 7px;
+      overflow:auto;
+      padding:2px;
+    }
+    .jl-chat-form{
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:6px;
+    }
+    .jl-chat-form input{
+      min-width:0;
+      min-height:40px;
+      padding:0 12px;
+      border:1px solid #8b3a9f78;
+      border-radius:13px;
+      outline:0;
+      background:#070109e8;
+      color:#fff;
+      font-size:12px;
+    }
+    .jl-chat-form button{
+      min-width:67px;
+      border:1px solid #4be1a080;
+      border-radius:13px;
+      background:#123a2d;
+      color:#a6f7d2;
+      font-size:10px;
+      font-weight:950;
+    }
+    .jl-nav{
+      min-height:68px;
+      padding:5px 5px max(6px,env(safe-area-inset-bottom));
+      transition:transform .22s ease;
+    }
+    .jl-nav.live-mode{z-index:140}
+    .jl-nav.chat-hidden{transform:translateY(115%)}
+    .jl-nav.live-mode .jl-nav-icon{height:30px}
+    .jl-nav.live-mode .jl-nav img{width:36px;height:36px}
+    .jl-live-sheet{
+      left:0;
+      right:0;
+      bottom:0;
+      max-height:min(50vh,440px);
+      border-radius:22px 22px 0 0;
+      padding:14px 14px calc(14px + env(safe-area-inset-bottom));
+    }
+    .jl-lucky-box{
+      margin-top:10px;
+      padding:10px;
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      gap:9px;
+      align-items:center;
+      border:1px solid #f0c45277;
+      border-radius:15px;
+      background:linear-gradient(145deg,#251708,#120710);
+    }
+    .jl-lucky-box b{display:block;color:#ffd969;font-size:11px}
+    .jl-lucky-box small{display:block;margin-top:3px;color:#c7b6c8;font-size:8px}
+    .jl-lucky-box button{
+      min-height:39px;
+      padding:0 11px;
+      border:1px solid #f3cb5a;
+      border-radius:12px;
+      background:#ffd35a;
+      color:#2a1800;
+      font-size:9px;
+      font-weight:950;
+    }
+    .jl-task-card{cursor:default}
+    .jl-task-card.claim{
+      border-color:#ff9b43aa;
+      background:#211107ed;
+      box-shadow:0 0 15px #ff9b4333;
+    }
+    .jl-task-card.claim .jl-task-dot{
+      background:#ff9b43;
+      box-shadow:0 0 9px #ff9b43;
+      animation:none;
+    }
+    .jl-task-card.claim .jl-task-time{color:#ffc18b}
+    .jl-task-card.claimed{
+      border-color:#ff526faa;
+      background:#2b0811ed;
+      box-shadow:0 0 15px #ff526f3b;
+    }
+    .jl-task-card.claimed .jl-task-dot{
+      background:#ff526f;
+      box-shadow:0 0 9px #ff526f;
+      animation:none;
+    }
+    .jl-task-card.claimed .jl-task-time{color:#ff9bad}
+    .jl-task-claim{
+      min-height:22px;
+      padding:0 8px;
+      border:1px solid #ffc182;
+      border-radius:999px;
+      background:#ff9b43;
+      color:#2b1200;
+      font-size:8px;
+      font-weight:950;
+    }
+    @media(max-width:390px){
+      .jl-live-stage-tools{top:33%;right:7px}
+      .jl-battle-drawer{top:calc(33% + 195px);right:58px;width:min(56vw,218px)}
+      .jl-chat-dock:not(.collapsed){left:6px;right:6px}
+    }
+
+    /* Navegación inferior oficial del Inicio */
+    .bottom-nav .nav-icon{
+      width:42px!important;
+      height:35px!important;
+      display:grid!important;
+      place-items:center!important;
+      overflow:visible!important;
+      transition:transform .18s ease,filter .18s ease!important;
+    }
+    .bottom-nav .nav-icon svg{
+      width:39px!important;
+      height:29px!important;
+      overflow:visible!important;
+      filter:grayscale(.4) brightness(.72);
+    }
+    .bottom-nav a.is-current .nav-icon{
+      transform:translateY(-5px) scale(1.16)!important;
+    }
+    .bottom-nav a.is-current .nav-icon svg{
+      filter:drop-shadow(0 0 8px currentColor)!important;
+    }
+    .bottom-nav a.is-current{
+      color:var(--tab-color,#ff3986)!important;
+    }
+    .bottom-nav a.is-current::after{
+      content:"";
+      width:34px;
+      height:4px;
+      border-radius:99px;
+      background:currentColor;
+      box-shadow:0 0 12px currentColor;
+    }
+
   </style>
 </head>
 <body>
@@ -829,7 +1095,7 @@
       </button>
       <div class="jl-brand">
         <img src="jemmo-logo-header-wide.webp" alt="JEMMO LIVE">
-        <small>PREPARACIÓN DE TRANSMISIÓN · V0.6.7 PRUEBAS</small>
+        <small>PREPARACIÓN DE TRANSMISIÓN · V0.6.8 PRUEBAS</small>
       </div>
       <button class="jl-round" id="helpButton" aria-label="Ayuda">?</button>
     </header>
@@ -960,19 +1226,19 @@
             <img class="jl-avatar" src="jemmo-logo-header.webp" alt="">
             <div><b>Mi LIVE</b><small id="liveTimer">00:00 · 1 espectador</small></div>
           </div>
-          <div class="jl-task-card" id="taskCard">
+          <div class="jl-task-card active" id="taskCard">
             <span class="jl-task-dot" aria-hidden="true"></span>
             <b id="taskStatus">Tarea 1 de 2</b>
             <span class="jl-task-time" id="taskTime">00:00</span>
+            <button class="jl-task-claim" id="taskClaim" type="button" hidden>Cobrar</button>
           </div>
         </div>
         <div class="jl-live-top-right">
           <div class="jl-live-badge">EN DIRECTO</div>
-          <div class="jl-gift-counter">🎁 <span id="giftTotal">0</span></div>
         </div>
       </div>
 
-      <div class="jl-live-stage-tools">
+      <div class="jl-live-stage-tools" aria-label="Herramientas laterales">
         <div class="jl-seat-stack" id="seatStack" aria-label="Sillas laterales">
           <button class="jl-seat" data-seat="0" aria-label="Silla lateral 1"><span>+</span><small>S1</small></button>
           <button class="jl-seat" data-seat="1" aria-label="Silla lateral 2"><span>+</span><small>S2</small></button>
@@ -980,38 +1246,47 @@
           <button class="jl-seat" data-seat="3" aria-label="Silla lateral 4"><span>+</span><small>S4</small></button>
         </div>
 
-        <article class="jl-battle-mini" id="battleCard" aria-label="Batalla popular">
-          <div class="jl-battle-mini-head"><b>MÁS POPULAR</b><span id="battleViewers">2.8K viendo</span></div>
-          <div class="jl-battle-teams">
-            <div class="jl-battle-team"><strong id="battleTeamA">Casa Tenerife</strong><em id="battleScoreA">8.4K</em></div>
-            <div class="jl-battle-vs">VS</div>
-            <div class="jl-battle-team"><strong id="battleTeamB">Casa Unicornio</strong><em id="battleScoreB">7.9K</em></div>
-          </div>
-          <div class="jl-battle-track"><i class="a" id="battleBarA"></i><i class="b" id="battleBarB"></i></div>
-          <p class="jl-battle-winner" id="battleWinner">Va ganando Casa Tenerife</p>
-          <div class="jl-battle-controls">
-            <button id="battlePrev" type="button" aria-label="Batalla anterior">‹</button>
-            <button class="jl-battle-open" id="battleOpen" type="button">VER BATALLA</button>
-            <button id="battleNext" type="button" aria-label="Batalla siguiente">›</button>
-          </div>
-        </article>
+        <button class="jl-rail-tab jl-battle-rail-tab" id="battleToggle" type="button" aria-expanded="false" aria-controls="battleCard">
+          <span>⚔</span><small>Batalla</small>
+        </button>
+
+        <button class="jl-gift-fab" id="liveGifts" type="button" aria-label="Abrir caja de regalos">
+          <span>🎁</span><small>Regalos</small><b id="giftTotal">0</b>
+        </button>
       </div>
 
-      <div class="jl-live-bottom">
+      <article class="jl-battle-mini jl-battle-drawer" id="battleCard" aria-label="Batalla popular" hidden>
+        <div class="jl-battle-mini-head"><b>MÁS POPULAR</b><span id="battleViewers">2.8K viendo</span></div>
+        <div class="jl-battle-teams">
+          <div class="jl-battle-team"><strong id="battleTeamA">Casa Tenerife</strong><em id="battleScoreA">8.4K</em></div>
+          <div class="jl-battle-vs">VS</div>
+          <div class="jl-battle-team"><strong id="battleTeamB">Casa Unicornio</strong><em id="battleScoreB">7.9K</em></div>
+        </div>
+        <div class="jl-battle-track"><i class="a" id="battleBarA"></i><i class="b" id="battleBarB"></i></div>
+        <p class="jl-battle-winner" id="battleWinner">Va ganando Casa Tenerife</p>
+        <div class="jl-battle-controls">
+          <button id="battlePrev" type="button" aria-label="Batalla anterior">‹</button>
+          <button class="jl-battle-open" id="battleOpen" type="button">DETALLES</button>
+          <button id="battleNext" type="button" aria-label="Batalla siguiente">›</button>
+        </div>
+      </article>
+    </div>
+
+    <section class="jl-chat-dock collapsed" id="chatDock" aria-label="Chat del LIVE">
+      <button class="jl-chat-handle" id="chatHandle" type="button" aria-expanded="false">
+        <span>💬</span><b id="chatHandleText">Abrir chat</b><i>⌃</i>
+      </button>
+      <div class="jl-chat-panel">
         <div class="jl-live-chat" id="liveChat">
           <div class="jl-chat-line">JEMMO: La transmisión ha comenzado.</div>
           <div class="jl-chat-line">Revisa el encuadre y el micrófono.</div>
         </div>
-        <div class="jl-live-actions">
-          <button id="liveMic">🎤<small>Micro</small></button>
-          <button id="liveFlip">↔<small>Cámara</small></button>
-          <button id="liveChatButton">💬<small>Chat</small></button>
-          <button id="liveGifts">🎁<small>Regalos</small></button>
-          <button id="liveShare">↗<small>Compartir</small></button>
-          <button class="jl-end" id="endLive">■<small>Finalizar</small></button>
-        </div>
+        <form class="jl-chat-form" id="liveChatForm">
+          <input id="liveChatInput" maxlength="160" autocomplete="off" placeholder="Escribe un mensaje…" aria-label="Mensaje del chat">
+          <button type="submit">Enviar</button>
+        </form>
       </div>
-    </div>
+    </section>
 
     <div class="jl-live-modal-backdrop" id="liveModalBackdrop" hidden></div>
 
@@ -1065,6 +1340,10 @@
         <button class="jl-gift-item" data-gift="diamond" type="button"><span>💎</span><b>Diamante</b><small>900 JEMMOS</small></button>
         <button class="jl-gift-item" data-gift="castle" type="button"><span>🏰</span><b>Castillo</b><small>1.500 JEMMOS</small></button>
       </div>
+      <section class="jl-lucky-box" aria-label="Afortunado">
+        <div><b>AFORTUNADO</b><small>Prueba de juego sorpresa, sin apuesta con dinero real.</small></div>
+        <button id="luckyGift" type="button">PROBAR SUERTE</button>
+      </section>
       <div class="jl-gift-balance">Saldo de prueba: <span id="giftBalance">8.590</span> JEMMOS</div>
     </section>
 
@@ -1094,17 +1373,17 @@
       <button class="jl-menu-item" data-search="ayuda soporte seguridad privacidad"><span class="jl-menu-icon">?</span><span><b>Ayuda y soporte</b><small>Seguridad y asistencia</small></span><i>›</i></button>
       <a class="jl-menu-item" data-search="salir cerrar sesion" href="index.html"><span class="jl-menu-icon">↪</span><span><b>Cerrar sesión</b></span><i>›</i></a>
     </nav>
-    <div class="jl-version">V0.6.7 PRUEBAS · actualización sobre V0.6.6</div>
+    <div class="jl-version">V0.6.8 PRUEBAS · actualización sobre V0.6.7</div>
   </aside>
 
   <div class="jl-toast" id="toast"></div>
 
-  <nav class="jl-nav" aria-label="Navegación principal">
-    <a href="inicio.html"><span class="jl-nav-icon">⌂</span><b>Inicio</b></a>
-    <a class="active" href="live.html"><img class="jl-active-fish" src="jemmo-fish-nav.webp" alt="Pez JEMMO"><b>Live</b></a>
-    <a href="salas.html"><span class="jl-nav-icon">🎙</span><b>Salas</b></a>
-    <a href="mensajes.html"><span class="jl-badge">8</span><span class="jl-nav-icon">◌</span><b>Mensajes</b></a>
-    <a href="yo.html"><span class="jl-nav-icon">♙</span><b>Yo</b></a>
+  <nav class="jl-nav bottom-nav" data-current="live" aria-label="Navegación principal">
+    <a data-tab="inicio" href="inicio.html" style="--tab-color:#29d5e7"><span class="jl-nav-icon nav-icon" data-fish-color="#29d5e7"></span><b>Inicio</b></a>
+    <a data-tab="live" href="live.html" style="--tab-color:#ff3986"><span class="jl-nav-icon nav-icon" data-fish-color="#ff3986"></span><b>Live</b></a>
+    <a data-tab="salas" href="salas.html" style="--tab-color:#9d5bff"><span class="jl-nav-icon nav-icon" data-fish-color="#9d5bff"></span><b>Salas</b></a>
+    <a data-tab="mensajes" href="mensajes.html" style="--tab-color:#4c8dff"><span class="jl-badge badge">8</span><span class="jl-nav-icon nav-icon" data-fish-color="#4c8dff"></span><b>Mensajes</b></a>
+    <a data-tab="yo" href="yo.html" style="--tab-color:#ffd04f"><span class="jl-nav-icon nav-icon" data-fish-color="#ffd04f"></span><b>Yo</b></a>
   </nav>
 
   <script>
@@ -1132,8 +1411,10 @@
       filter: "natural",
       activationToken: 0,
       milestone: 0,
-      taskCelebrationUntil: 0,
-      taskCompletionText: "",
+      taskIndex: 0,
+      taskElapsed: 0,
+      taskState: "active",
+      taskClaimedUntil: 0,
       battleIndex: 0,
       giftBalance: 8590,
       giftTotal: 0,
@@ -1228,7 +1509,10 @@
       state.audioStream = null;
       $("broadcastScreen").hidden = true;
       $("prepScreen").hidden = false;
-      document.querySelector(".jl-nav").hidden = false;
+      const nav = document.querySelector(".jl-nav");
+      nav.hidden = false;
+      nav.classList.remove("live-mode","chat-hidden");
+      $("chatDock")?.classList.add("collapsed");
       if (typeof closeLiveSheets === "function") closeLiveSheets();
       if (typeof clearSeatRequestTimers === "function") clearSeatRequestTimers();
       resetCameraUi();
@@ -1632,38 +1916,53 @@
 
     function updateTaskUi() {
       const card = $("taskCard");
-      if (!card) return;
+      const claim = $("taskClaim");
+      if (!card || !claim) return;
 
-      if (Date.now() < state.taskCelebrationUntil) {
-        card.hidden = false;
-        card.classList.add("completed");
-        $("taskStatus").textContent = state.taskCompletionText || "Tarea completada";
-        $("taskTime").textContent = "✓";
-        return;
-      }
+      card.classList.remove("active","claim","claimed","completed");
+      claim.hidden = true;
 
-      const totalTarget = TASK_SECONDS * TASK_COUNT;
-      const elapsed = Math.min(state.liveSeconds, totalTarget);
-      const completed = Math.min(TASK_COUNT, Math.floor(elapsed / TASK_SECONDS));
-
-      if (completed >= TASK_COUNT) {
+      if (state.taskState === "done") {
         card.hidden = true;
         return;
       }
 
-      const currentTask = completed + 1;
-      const currentElapsed = elapsed - completed * TASK_SECONDS;
       card.hidden = false;
-      card.classList.remove("completed");
-      $("taskStatus").textContent = `Tarea ${currentTask} de ${TASK_COUNT}`;
-      $("taskTime").textContent = formatTime(currentElapsed);
+      const taskNumber = Math.min(TASK_COUNT, state.taskIndex + 1);
+
+      if (state.taskState === "claim") {
+        card.classList.add("claim");
+        $("taskStatus").textContent = `Tarea ${taskNumber} terminada`;
+        $("taskTime").textContent = "Pendiente";
+        claim.hidden = false;
+        claim.textContent = "Cobrar";
+        return;
+      }
+
+      if (state.taskState === "claimed") {
+        card.classList.add("claimed");
+        $("taskStatus").textContent = "Tarea cobrada";
+        $("taskTime").textContent = "✓";
+        return;
+      }
+
+      card.classList.add("active");
+      $("taskStatus").textContent = `Tarea ${taskNumber} de ${TASK_COUNT}`;
+      $("taskTime").textContent = formatTime(state.taskElapsed);
     }
 
-    function celebrateTask(text, duration = 3400) {
-      state.taskCompletionText = text;
-      state.taskCelebrationUntil = Date.now() + duration;
+    function claimCurrentTask() {
+      if (state.taskState !== "claim") return;
+      state.taskState = "claimed";
+      state.taskClaimedUntil = Date.now() + 4000;
       updateTaskUi();
+      showToast("Tarea cobrada correctamente.", 2600);
     }
+
+    $("taskClaim").addEventListener("click", event => {
+      event.stopPropagation();
+      claimCurrentTask();
+    });
 
     setInterval(() => {
       if (!state.live) {
@@ -1674,18 +1973,25 @@
 
       state.liveSeconds++;
       $("liveTimer").textContent = `${formatTime(state.liveSeconds)} · 1 espectador`;
-      updateTaskUi();
 
-      if (state.liveSeconds >= TASK_SECONDS && state.milestone < 1) {
-        state.milestone = 1;
-        celebrateTask("Tarea 1 completada", 3200);
-        showToast("Tarea 1 completada. Comienza la segunda.", 3000);
+      if (state.taskState === "active") {
+        state.taskElapsed++;
+        if (state.taskElapsed >= TASK_SECONDS) {
+          state.taskElapsed = TASK_SECONDS;
+          state.taskState = "claim";
+          showToast("Tarea terminada. Pulsa Cobrar.", 3200);
+        }
+      } else if (state.taskState === "claimed" && Date.now() >= state.taskClaimedUntil) {
+        if (state.taskIndex + 1 >= TASK_COUNT) {
+          state.taskState = "done";
+        } else {
+          state.taskIndex++;
+          state.taskElapsed = 0;
+          state.taskState = "active";
+        }
       }
-      if (state.liveSeconds >= TASK_SECONDS * TASK_COUNT && state.milestone < 2) {
-        state.milestone = 2;
-        celebrateTask("Tareas completadas", 3800);
-        showToast("Las dos tareas están completadas.", 3400);
-      }
+
+      updateTaskUi();
     },1000);
 
     launchButton.addEventListener("click", async () => {
@@ -1696,8 +2002,10 @@
       state.live = true;
       state.liveSeconds = 0;
       state.milestone = 0;
-      state.taskCelebrationUntil = 0;
-      state.taskCompletionText = "";
+      state.taskIndex = 0;
+      state.taskElapsed = 0;
+      state.taskState = "active";
+      state.taskClaimedUntil = 0;
       $("liveTimer").textContent = "00:00 · 1 espectador";
       $("taskCard").hidden = false;
       resetSeats();
@@ -1707,52 +2015,42 @@
       updateTaskUi();
       $("prepScreen").hidden = true;
       $("broadcastScreen").hidden = false;
-      document.querySelector(".jl-nav").hidden = true;
+      const liveNav = document.querySelector(".jl-nav");
+      liveNav.hidden = false;
+      liveNav.classList.add("live-mode");
+      liveNav.classList.remove("chat-hidden");
+      $("chatDock").classList.add("collapsed");
+      $("chatHandle").setAttribute("aria-expanded","false");
+      $("chatHandleText").textContent = "Abrir chat";
       await refreshBroadcastVideos();
       playWaterDrop();
     });
 
-    $("endLive").addEventListener("click", () => {
-      state.live = false;
-      closeLiveSheets();
-      clearSeatRequestTimers();
-      $("broadcastScreen").hidden = true;
-      $("prepScreen").hidden = false;
-      document.querySelector(".jl-nav").hidden = false;
-      detachVideo(broadcastVideo);
-      detachVideo(broadcastPip);
-      showToast("LIVE finalizado. La cámara queda preparada.");
+    function setChatOpen(open) {
+      const dock = $("chatDock");
+      const nav = document.querySelector(".jl-nav");
+      dock.classList.toggle("collapsed", !open);
+      $("chatHandle").setAttribute("aria-expanded", String(open));
+      $("chatHandleText").textContent = open ? "Cerrar chat" : "Abrir chat";
+      nav?.classList.toggle("chat-hidden", open);
+      if (open) setTimeout(() => $("liveChatInput")?.focus(), 120);
+    }
+
+    $("chatHandle").addEventListener("click", () => {
+      setChatOpen($("chatDock").classList.contains("collapsed"));
     });
 
-    $("liveMic").addEventListener("click", e => {
-      state.micEnabled = !state.micEnabled;
-      currentAudioTracks().forEach(track => track.enabled = state.micEnabled);
-      e.currentTarget.firstChild.textContent = state.micEnabled ? "🎤" : "🔇";
-      $("micToggle").classList.toggle("on", state.micEnabled);
-      $("micToggle").setAttribute("aria-pressed", String(state.micEnabled));
-      showToast(state.micEnabled ? "Micrófono activado." : "Micrófono silenciado.");
+    $("liveChatForm").addEventListener("submit", event => {
+      event.preventDefault();
+      const input = $("liveChatInput");
+      const value = input.value.trim();
+      if (!value) return;
+      addLiveChatLine(`Tú: ${value}`);
+      input.value = "";
+      input.focus();
     });
 
-    $("liveFlip").addEventListener("click", async () => {
-      if (state.mode === "both") {
-        showToast("En modo Ambas ya están activas las dos cámaras.");
-        return;
-      }
-      const next = state.mode === "user" ? "environment" : "user";
-      state.mode = next;
-      markCameraMode(next);
-      await activateCamera(next);
-    });
-
-    $("liveChatButton").addEventListener("click", () => {
-      state.chatEnabled = !state.chatEnabled;
-      $("liveChat").hidden = !state.chatEnabled;
-      $("chatToggle").classList.toggle("on", state.chatEnabled);
-      $("chatToggle").setAttribute("aria-pressed", String(state.chatEnabled));
-      showToast(state.chatEnabled ? "Chat visible." : "Chat oculto.");
-    });
-
-    /* V0.6.7 · MINI PERFIL, SILLAS LATERALES, REGALOS Y CARRUSEL DE BATALLAS */
+    /* V0.6.8 · MINI PERFIL, SILLAS DERECHA, CHAT, REGALOS Y BATALLAS */
     const seatUsers = [
       {id:"demo-luna",name:"Luna",initial:"L",country:"España",house:"Casa Tenerife",level:12,badge:"Emisora",connected:false},
       {id:"demo-alex",name:"Alex",initial:"A",country:"Cuba",house:"Casa Cuba",level:9,badge:"Creador",connected:false},
@@ -1962,6 +2260,13 @@
       openLiveSheet("giftSheet");
     });
     $("giftSheetClose").addEventListener("click", closeLiveSheets);
+    $("luckyGift").addEventListener("click", () => {
+      const options = Object.values(gifts);
+      const gift = options[Math.floor(Math.random() * options.length)];
+      showGiftBurst(gift);
+      addLiveChatLine(`Afortunado eligió ${gift.icon} ${gift.name}.`);
+      showToast(`Afortunado: ${gift.name}. Prueba local sin apuesta real.`, 3000);
+    });
     document.querySelectorAll("[data-gift]").forEach(button => {
       button.addEventListener("click", () => {
         const gift = gifts[button.dataset.gift];
@@ -2016,6 +2321,17 @@
 
     $("battlePrev").addEventListener("click", () => cycleBattle(-1));
     $("battleNext").addEventListener("click", () => cycleBattle(1));
+    function setBattleOpen(open) {
+      const card = $("battleCard");
+      const toggle = $("battleToggle");
+      card.hidden = !open;
+      toggle.setAttribute("aria-expanded", String(open));
+      requestAnimationFrame(() => card.classList.toggle("open", open));
+    }
+
+    $("battleToggle").addEventListener("click", () => {
+      setBattleOpen($("battleCard").hidden);
+    });
     $("battleOpen").addEventListener("click", () => { renderBattle(); openLiveSheet("battleSheet"); });
     $("battleSheetClose").addEventListener("click", closeLiveSheets);
     $("battleKeepWatching").addEventListener("click", closeLiveSheets);
@@ -2031,16 +2347,6 @@
     setInterval(() => {
       if (state.live && $("battleSheet").hidden) cycleBattle(1);
     }, 7000);
-
-    $("liveShare").addEventListener("click", async () => {
-      try {
-        if (navigator.share) {
-          await navigator.share({title:"JEMMO LIVE",text:"Estoy en directo en JEMMO LIVE"});
-        } else {
-          showToast("Enlace de LIVE preparado para compartir.");
-        }
-      } catch {}
-    });
 
     function updateConnection() {
       const text = $("connectionText");
@@ -2097,34 +2403,52 @@
       if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
       const start = audioContext.currentTime + .01;
 
-      const makeDrop = (frequency, delay, volume, duration) => {
+      const droplet = (frequency, delay, volume, duration) => {
         const oscillator = audioContext.createOscillator();
         const gain = audioContext.createGain();
         oscillator.type = "sine";
         oscillator.frequency.setValueAtTime(frequency, start + delay);
-        oscillator.frequency.exponentialRampToValueAtTime(190, start + delay + duration);
+        oscillator.frequency.exponentialRampToValueAtTime(260, start + delay + duration);
         gain.gain.setValueAtTime(.0001, start + delay);
-        gain.gain.exponentialRampToValueAtTime(volume, start + delay + .012);
+        gain.gain.exponentialRampToValueAtTime(volume, start + delay + .008);
         gain.gain.exponentialRampToValueAtTime(.0001, start + delay + duration);
         oscillator.connect(gain);
         gain.connect(audioContext.destination);
         oscillator.start(start + delay);
-        oscillator.stop(start + delay + duration + .01);
+        oscillator.stop(start + delay + duration + .02);
       };
 
-      makeDrop(880, 0, .07, .18);
-      makeDrop(520, .035, .035, .22);
+      droplet(720, 0, .014, .13);
+      droplet(390, .045, .006, .16);
     }
 
     document.querySelectorAll(".jl-nav a,.jl-menu-item[href]").forEach(link => {
       link.addEventListener("pointerdown", playWaterDrop, {passive:true});
     });
 
+    function fishSvg(color) {
+      const id = "g" + color.replace(/\W/g,"");
+      return `<svg viewBox="0 0 80 56" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" x2="1"><stop stop-color="${color}"/><stop offset="1" stop-color="#6d1bb1"/></linearGradient></defs><path d="M10 29C22 8 52 8 64 24l13-10-3 15 3 14-13-9C52 50 22 49 10 29Z" fill="url(#${id})" stroke="#ffd24c" stroke-width="2"/><circle cx="34" cy="23" r="4.5" fill="#55ddff" stroke="white" stroke-width="1.8"/><path d="M40 37c8 4 15 1 19-4" fill="none" stroke="#ffd24c" stroke-width="2" stroke-linecap="round"/><text x="45" y="32" text-anchor="middle" fill="#ffd24c" font-family="Georgia" font-size="13" font-style="italic">J</text></svg>`;
+    }
+
     function syncLiveNav() {
-      document.querySelectorAll(".jl-nav a").forEach(link => {
-        const file = new URL(link.href, location.href).pathname.split("/").pop() || "index.html";
-        link.classList.toggle("active", file === "live.html");
+      document.querySelectorAll(".bottom-nav [data-fish-color]").forEach(node => {
+        node.innerHTML = fishSvg(node.dataset.fishColor);
       });
+      const file = (location.pathname.split("/").pop() || "live.html").toLowerCase();
+      const current = file.includes("salas") ? "salas"
+        : file.includes("mensajes") ? "mensajes"
+        : file.includes("yo") ? "yo"
+        : file.includes("live") ? "live"
+        : "inicio";
+      document.querySelectorAll(".bottom-nav a").forEach(link => {
+        const active = link.dataset.tab === current;
+        link.classList.remove("active","on");
+        link.classList.toggle("is-current", active);
+        if (active) link.setAttribute("aria-current","page");
+        else link.removeAttribute("aria-current");
+      });
+      document.querySelector(".bottom-nav")?.setAttribute("data-current", current);
     }
 
     addEventListener("pagehide", clearAllMedia);
@@ -2143,6 +2467,7 @@
     applyFilter("natural");
     resetSeats();
     renderBattle();
+    setBattleOpen(false);
     updateGiftUi();
     updateTaskUi();
     updateChecks();

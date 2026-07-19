@@ -1,5 +1,5 @@
-JEMMO LIVE V0.6.7 PRUEBAS
-Base instalada requerida: V0.6.6 PRUEBAS
+JEMMO LIVE V0.6.8 PRUEBAS
+Base instalada requerida: V0.6.7 PRUEBAS
 Tipo: actualización incremental sobre la versión actual
 Módulo modificado: LIVE
-Cambio principal: mini perfil emergente de participantes dentro del LIVE
+Objetivo: corregir distribución lateral, chat escribible, regalos, tareas y sonido
