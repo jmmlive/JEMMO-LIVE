@@ -1,6 +1,5 @@
-JEMMO LIVE
-VERSIÓN: V0.6.9 PRUEBAS
-BASE: V0.6.8 oficial
-FECHA: 19/07/2026
-ALCANCE: Corrección exclusiva del módulo LIVE.
-ESTADO: Lista para subir e instalar como actualización de prueba.
+JEMMO LIVE V0.6.10 PRUEBAS
+Base instalada requerida: V0.6.9 PRUEBAS
+Tipo: actualización incremental
+Módulo modificado: LIVE
+No modifica Acceso, Inicio, Salas, Mensajes ni Perfil.

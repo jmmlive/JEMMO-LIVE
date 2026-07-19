@@ -1,18 +1,16 @@
-JEMMO LIVE · V0.6.9 PRUEBAS
+JEMMO LIVE V0.6.10 · INSTALACIÓN
 
-PAQUETE COMPLETO DE ACTUALIZACIÓN SOBRE V0.6.8
+1. Conserva guardada tu V0.6.9 como respaldo.
+2. Abre el ZIP descargado.
+3. Sustituye únicamente el archivo live.html de tu proyecto por el live.html incluido.
+4. No borres Acceso, Inicio, Salas, Mensajes, Perfil ni los recursos existentes.
+5. Publica los cambios y limpia la caché del navegador antes de probar.
 
-1. Sube este ZIP completo de la misma forma que las actualizaciones anteriores.
-2. Permite que sustituya los archivos incluidos.
-3. No borres ni reinicies el proyecto antes de subirlo.
-4. Abre la aplicación y limpia la caché si todavía aparece V0.6.8.
-5. Comprueba en móvil: pescaditos durante la preparación, ocultación al iniciar LIVE, chat compacto, botón Ajustes y aviso de silla.
+PRUEBAS EN MÓVIL
+- En preparación debe aparecer la barra oficial del Inicio.
+- La pestaña Live debe mostrar el pez JEMMO activo.
+- Al iniciar la transmisión, la barra inferior debe desaparecer por completo.
+- La Batalla debe verse como una tarjeta horizontal y separada de las sillas.
+- Al tocar la navegación debe sentirse un sonido acuático muy suave, sin vibración.
 
-ARCHIVOS INCLUIDOS
-- live.html
-- jemmo-fish-nav.webp
-- VERSION.txt
-- CAMBIOS_V0.6.9.md
-- LEEME_INSTALACION.txt
-
-No modifica Acceso, Inicio, Casas ni los demás módulos aprobados.
+Base requerida: V0.6.9 PRUEBAS.

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#09000f">
-  <title>JEMMO LIVE · Preparar LIVE · V0.6.9 PRUEBAS</title>
+  <title>JEMMO LIVE · Preparar LIVE · V0.6.10 PRUEBAS</title>
   <style>
     :root{
       color-scheme:dark;
@@ -16,8 +16,10 @@
       --gold:#ffd24c;
       --cyan:#41e4e8;
       --green:#48e39d;
+      --orange:#ff9b43;
       --red:#ff526f;
       --muted:#b9aabf;
+      --keyboard:0px;
       font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
     }
     *{box-sizing:border-box}
@@ -26,248 +28,252 @@
       min-height:100svh;
       overflow-x:hidden;
       background:
-        radial-gradient(circle at 50% -10%,#330743 0,transparent 38%),
-        linear-gradient(180deg,#0a000e,#030004 70%);
+        radial-gradient(circle at 50% -10%,#39064b 0,transparent 38%),
+        linear-gradient(180deg,#0b000f,#030004 72%);
     }
     button,input,textarea,select{font:inherit}
     button{cursor:pointer}
     [hidden]{display:none!important}
+    img{max-width:100%}
 
+    /* PREPARACIÓN */
     .jl-shell{
       width:min(100%,720px);
       margin:auto;
       min-height:100svh;
-      padding:calc(10px + env(safe-area-inset-top)) 14px calc(105px + env(safe-area-inset-bottom));
+      padding:calc(10px + env(safe-area-inset-top)) 14px calc(110px + env(safe-area-inset-bottom));
     }
-
-    /* CABECERA COMPACTA */
     .jl-header{
-      min-height:66px;
       display:grid;
-      grid-template-columns:42px minmax(0,1fr) 42px;
-      gap:8px;
+      grid-template-columns:48px minmax(0,1fr) 48px;
+      gap:10px;
       align-items:center;
-      padding:4px 2px 10px;
+      padding:5px 2px 10px;
     }
     .jl-round{
-      width:42px;
-      height:42px;
-      min-width:42px;
-      border:1px solid #a43eda88;
-      border-radius:14px;
-      background:#12031a;
+      width:48px;height:48px;
+      border:1px solid #9e35c988;
+      border-radius:16px;
+      background:#110218;
       color:#fff;
       display:grid;
       place-items:center;
-      box-shadow:0 0 18px #8700c92c;
+      box-shadow:0 0 20px #8d00c72d;
+      font-size:25px;
     }
-    .jl-round svg{width:21px;height:21px}
-    .jl-brand{
-      min-width:0;
-      text-align:center;
-    }
+    .jl-brand{text-align:center;min-width:0}
     .jl-brand img{
-      width:min(100%,235px);
-      height:48px;
       display:block;
+      width:min(100%,440px);
+      height:58px;
       margin:auto;
       object-fit:cover;
       object-position:center;
-      border-radius:10px;
+      border-radius:12px;
+      background:#16021e;
     }
+    .jl-brand strong{display:none;font-size:22px;color:#ffd24c;letter-spacing:.04em}
     .jl-brand small{
       display:block;
-      margin-top:2px;
-      color:#b69fbd;
+      margin-top:3px;
+      color:#c0a8c8;
       font-size:8px;
-      font-weight:800;
-      letter-spacing:.25em;
+      font-weight:900;
+      letter-spacing:.22em;
+      line-height:1.45;
     }
-
     .jl-title-row{
       display:flex;
-      align-items:center;
       justify-content:space-between;
+      align-items:center;
       gap:12px;
       margin:18px 0 12px;
     }
-    .jl-title-row h1{margin:0;font-size:clamp(25px,7vw,34px)}
-    .jl-timer{
-      min-width:86px;
-      padding:10px 12px;
-      border:1px solid #e6b94955;
-      border-radius:16px;
-      background:#160817;
+    .jl-title-row h1{margin:0;font-size:clamp(29px,8vw,42px);font-weight:500;letter-spacing:-.03em}
+    .jl-prep-timer{
+      min-width:104px;
+      padding:15px 13px;
+      border:1px solid #c594355e;
+      border-radius:20px;
+      background:#170918;
       color:var(--gold);
+      font-size:22px;
+      font-weight:950;
       text-align:center;
-      font-weight:900;
       font-variant-numeric:tabular-nums;
     }
-
-    /* PREVISUALIZACIÓN AISLADA: sin filtros, sin canvas y sin capas fantasma */
     .jl-camera-card{
       position:relative;
       isolation:isolate;
-      contain:layout paint;
       overflow:hidden;
-      min-height:360px;
+      min-height:460px;
       border:1px solid #a82bea88;
-      border-radius:25px;
-      background:#020003;
-      box-shadow:0 14px 36px #0009,0 0 24px #7c00aa22;
+      border-radius:27px;
+      background:#010002;
+      box-shadow:0 15px 40px #000a,0 0 28px #7c00aa25;
     }
     .jl-camera-card video{
       position:absolute;
       inset:0;
-      z-index:0;
-      width:100%;
-      height:100%;
+      z-index:1;
+      width:100%;height:100%;
       object-fit:cover;
       object-position:center;
       background:#000;
-      border:0;
-      -webkit-transform:scaleX(1)!important;
       transform:scaleX(1)!important;
-      filter:var(--camera-filter,none)!important;
-      mix-blend-mode:normal!important;
-      backface-visibility:hidden;
+      -webkit-transform:scaleX(1)!important;
+      filter:var(--camera-filter,none);
     }
-    .jl-pip{
-      position:absolute!important;
-      inset:auto 12px 78px auto!important;
-      z-index:4!important;
-      width:31%!important;
-      height:36%!important;
-      border:2px solid #ffcf49!important;
-      border-radius:17px!important;
-      overflow:hidden!important;
-      box-shadow:0 8px 24px #000b!important;
+    .jl-camera-card video.pip{
+      inset:auto 13px 83px auto;
+      z-index:4;
+      width:31%;height:35%;
+      border:2px solid var(--gold);
+      border-radius:18px;
+      box-shadow:0 8px 30px #000c;
     }
     .jl-modebar{
       position:absolute;
-      z-index:6;
-      left:12px;
-      right:62px;
-      top:12px;
+      z-index:8;
+      top:13px;left:13px;right:72px;
       display:flex;
       gap:7px;
     }
     .jl-mode{
-      min-height:38px;
-      padding:0 13px;
-      border:1px solid #7f477f88;
-      border-radius:15px;
-      background:#080109;
-      color:#c3b4c8;
-      font-size:12px;
-      font-weight:850;
+      min-height:45px;
+      padding:0 18px;
+      border:1px solid #72507390;
+      border-radius:18px;
+      background:#080109e8;
+      color:#c6b8cb;
+      font-size:13px;
+      font-weight:900;
     }
     .jl-mode.active{
       color:#fff;
-      border-color:#ff388b;
-      box-shadow:0 0 16px #ff388b44;
+      border-color:#ff3e91;
+      box-shadow:0 0 16px #ff3e9155;
     }
     .jl-mode.active::before{
       content:"";
       display:inline-block;
-      width:8px;height:8px;
-      margin-right:7px;
+      width:9px;height:9px;
+      margin-right:8px;
       border-radius:50%;
       background:var(--green);
-      box-shadow:0 0 9px var(--green);
+      box-shadow:0 0 11px var(--green);
     }
     .jl-switch{
       position:absolute;
-      z-index:7;
-      top:12px;
-      right:12px;
+      z-index:9;
+      top:13px;right:13px;
+      width:55px;height:55px;
+      border:1px solid #a638da88;
+      border-radius:17px;
+      background:#100316e8;
+      color:#fff;
+      font-size:25px;
     }
     .jl-empty{
       position:absolute;
-      z-index:2;
-      inset:58px 16px 126px;
+      z-index:3;
+      inset:68px 18px 125px;
       display:grid;
       place-items:center;
       text-align:center;
       pointer-events:none;
     }
-    .jl-empty-inner{
-      display:grid;
-      gap:9px;
-      justify-items:center;
-    }
+    .jl-empty-inner{display:grid;justify-items:center;gap:12px}
     .jl-camera-icon{
-      width:112px;height:112px;
+      width:138px;height:138px;
       display:grid;
       place-items:center;
       border:1px solid #ac32ef88;
-      border-radius:34px;
-      background:radial-gradient(circle,#44105d,#190522 72%);
+      border-radius:42px;
+      background:radial-gradient(circle,#481260,#16031d 72%);
       color:#bd34ff;
-      font-size:50px;
-      box-shadow:0 0 35px #8f00d044;
+      font-size:59px;
+      box-shadow:0 0 38px #8f00d044;
     }
-    .jl-empty strong{font-size:25px}
-    .jl-empty small{color:#ad9db4}
-    .jl-camera-bottom{
-      position:absolute;
-      z-index:7;
-      left:12px;right:12px;bottom:12px;
-      display:flex;
-      justify-content:space-between;
-      gap:8px;
-      pointer-events:none;
-    }
-    .jl-camera-bottom button{pointer-events:auto}
-    .jl-chip{
-      min-height:44px;
-      padding:0 14px;
-      border:1px solid #8d3fa266;
-      border-radius:15px;
-      background:#080109;
-      color:#fff;
-      font-size:12px;
-      font-weight:850;
-    }
-    .jl-chip.gold{color:var(--gold);border-color:#c59b3b66}
-    .jl-chip.active{border-color:var(--green);color:var(--green)}
-
+    .jl-empty strong{font-size:34px}
+    .jl-empty small{color:#b0a0b7;font-size:15px}
     .jl-start-camera{
       position:absolute;
-      z-index:8;
-      left:50%;
-      bottom:69px;
+      z-index:9;
+      left:50%;bottom:95px;
       transform:translateX(-50%);
-      min-width:190px;
-      min-height:46px;
+      min-width:270px;
+      min-height:61px;
       border:0;
-      border-radius:16px;
-      background:linear-gradient(90deg,#ffcf45,#ff5e9e,#b933ff);
-      color:#20041f;
+      border-radius:20px;
+      background:linear-gradient(90deg,#ffd14b,#ff5e9d,#b934ff);
+      color:#21041f;
+      font-size:18px;
       font-weight:950;
-      box-shadow:0 8px 28px #0008;
+      box-shadow:0 10px 30px #0009;
     }
+    .jl-camera-bottom{
+      position:absolute;
+      z-index:9;
+      left:13px;right:13px;bottom:14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:7px;
+    }
+    .jl-chip,.jl-filter{
+      min-height:49px;
+      padding:0 15px;
+      border:1px solid #81399177;
+      border-radius:17px;
+      background:#080109e8;
+      color:#fff;
+      font-size:12px;
+      font-weight:900;
+    }
+    .jl-chip.gold{color:var(--gold);border-color:#b78c395e}
+    .jl-filterbar{display:flex;gap:6px}
+    .jl-filter{padding:0 13px}
+    .jl-filter.active{border-color:var(--green);color:var(--green);box-shadow:0 0 15px #48e39d2d}
 
-    .jl-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-      margin-top:12px;
-    }
-    .jl-field,.jl-option{
+    .jl-editor{
+      margin-top:15px;
       border:1px solid #7d258c66;
-      border-radius:18px;
-      background:linear-gradient(145deg,#16051e,#0a010e);
-      box-shadow:0 10px 24px #0005;
+      border-radius:24px;
+      overflow:hidden;
+      background:linear-gradient(145deg,#16051e,#09010d);
+      box-shadow:0 12px 28px #0006;
     }
-    .jl-field{grid-column:1/-1;padding:13px}
+    .jl-editor-toggle{
+      width:100%;
+      min-height:78px;
+      padding:14px 18px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border:0;
+      background:transparent;
+      color:#fff;
+      text-align:left;
+    }
+    .jl-editor-toggle b{display:block;font-size:21px}
+    .jl-editor-toggle small{display:block;margin-top:4px;color:#ad9bb3;font-size:12px}
+    .jl-editor-toggle i{font-style:normal;color:#dd54ff;font-size:27px}
+    .jl-editor-body{padding:0 14px 16px}
+    .jl-field{
+      margin-top:10px;
+      padding:13px;
+      border:1px solid #71278066;
+      border-radius:17px;
+      background:#0c0210;
+    }
     .jl-field label{
       display:flex;
       justify-content:space-between;
       gap:10px;
-      margin-bottom:7px;
+      margin-bottom:8px;
       font-size:12px;
-      font-weight:900;
+      font-weight:950;
     }
     .jl-required{color:var(--red)}
     .jl-field input,.jl-field textarea,.jl-field select{
@@ -279,1335 +285,803 @@
       color:#fff;
       font-size:16px;
     }
-    .jl-field textarea{min-height:68px}
-    .jl-field small{display:block;margin-top:6px;color:#9e8da5;font-size:10px}
-    .jl-cover{
-      display:grid;
-      grid-template-columns:58px minmax(0,1fr);
-      gap:10px;
-      align-items:center;
-    }
-    .jl-cover-preview{
-      width:58px;height:58px;
-      border:1px solid #8a3a9b;
-      border-radius:13px;
-      object-fit:cover;
-      background:#080109;
-    }
-    .jl-cover input{
-      width:100%;
-      min-height:38px;
-      color:#bcaec2;
-      font-size:10px;
-    }
+    .jl-field textarea{min-height:76px}
+    .jl-cover{display:grid;grid-template-columns:68px minmax(0,1fr);gap:11px;align-items:center}
+    .jl-cover-preview{width:68px;height:68px;border:1px solid #9e3ab5;border-radius:15px;object-fit:cover;background:#050006}
+    .jl-cover input{font-size:11px;color:#bcaec2}
     .jl-cover input::file-selector-button{
-      min-height:36px;
+      min-height:39px;
       margin-right:8px;
       padding:0 12px;
       border:1px solid #a741bd88;
-      border-radius:11px;
-      background:#18051f;
+      border-radius:12px;
+      background:#19051f;
       color:#fff;
-      font-weight:850;
+      font-weight:900;
     }
+    .jl-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:11px}
     .jl-option{
-      min-height:76px;
-      padding:11px;
+      min-height:78px;
+      padding:12px;
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:8px;
+      border:1px solid #71278066;
+      border-radius:17px;
+      background:#0c0210;
     }
-    .jl-option strong{display:block;font-size:12px}
-    .jl-option small{display:block;margin-top:3px;color:#9f8ea6;font-size:9px}
+    .jl-option b{display:block;font-size:12px}
+    .jl-option small{display:block;margin-top:3px;color:#9d8da4;font-size:9px}
     .jl-toggle{
-      width:45px;height:25px;
-      padding:3px;
-      border:0;
-      border-radius:999px;
+      width:46px;height:26px;padding:3px;
+      border:0;border-radius:999px;
       background:#46204f;
     }
-    .jl-toggle span{
-      display:block;
-      width:19px;height:19px;
-      border-radius:50%;
-      background:#fff;
-      transition:transform .18s ease;
-    }
+    .jl-toggle span{display:block;width:20px;height:20px;border-radius:50%;background:#fff;transition:.18s}
     .jl-toggle.on{background:var(--green)}
     .jl-toggle.on span{transform:translateX(20px)}
-
+    .jl-save-profile{
+      width:100%;
+      min-height:49px;
+      margin-top:12px;
+      border:1px solid #52e6a488;
+      border-radius:15px;
+      background:linear-gradient(90deg,#238c70,#38d99e);
+      color:#061f18;
+      font-weight:950;
+    }
     .jl-summary{
       display:grid;
-      grid-template-columns:1fr 118px;
+      grid-template-columns:1fr 124px;
       gap:10px;
-      margin-top:12px;
-      align-items:stretch;
+      margin-top:14px;
     }
-    .jl-checklist{
+    .jl-checklist,.jl-connection{
       padding:13px;
       border:1px solid #71268166;
-      border-radius:18px;
+      border-radius:19px;
       background:#0d0312;
     }
-    .jl-check{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      margin:5px 0;
-      color:#b6a5bc;
-      font-size:11px;
-    }
+    .jl-check{display:flex;align-items:center;gap:8px;margin:6px 0;color:#b4a4ba;font-size:11px}
     .jl-dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 8px #ff526f88}
-    .jl-check.ok{color:#c8f9df}
+    .jl-check.ok{color:#cdf9e1}
     .jl-check.ok .jl-dot{background:var(--green);box-shadow:0 0 8px var(--green)}
-    .jl-connection{
-      display:grid;
-      place-items:center;
-      padding:12px 6px;
-      border:1px solid #6b2c7c66;
-      border-radius:18px;
-      background:#13051a;
-      text-align:center;
-    }
-    .jl-connection span{font-size:24px;color:var(--green)}
-    .jl-connection b{font-size:11px}
-    .jl-connection small{color:#a38faa;font-size:9px}
-
+    .jl-connection{display:grid;place-items:center;text-align:center}
+    .jl-connection span{font-size:26px;color:var(--green)}
+    .jl-connection b{font-size:12px}
+    .jl-connection small{color:#a18fa7;font-size:9px}
     .jl-launch{
-      position:relative;
-      z-index:2;
-      margin-top:12px;
-      min-height:60px;
       width:100%;
+      min-height:64px;
+      margin-top:14px;
       border:0;
-      border-radius:18px;
-      background:linear-gradient(90deg,#ffd146,#ff7c9f,#b837ff);
+      border-radius:19px;
+      background:linear-gradient(90deg,#ffd146,#ff749e,#b837ff);
       color:#220421;
-      font-size:17px;
+      font-size:18px;
       font-weight:950;
-      box-shadow:0 12px 30px #0008;
+      box-shadow:0 13px 31px #0009;
     }
-    .jl-launch:disabled{opacity:.38;filter:grayscale(.4)}
-    .jl-message{
-      min-height:19px;
-      margin:8px 2px 0;
-      color:#ffb2c3;
-      font-size:11px;
-      text-align:center;
-    }
+    .jl-launch:disabled{opacity:.4;filter:grayscale(.4)}
+    .jl-validation{min-height:22px;margin:9px 2px 0;color:#ffb5c5;font-size:11px;text-align:center}
 
-    /* EMISIÓN */
-    .jl-broadcast{
-      position:fixed;
-      inset:0;
-      z-index:100;
-      background:#000;
-      overflow:hidden;
-      isolation:isolate;
-      contain:layout paint;
-    }
-    .jl-broadcast video{
-      position:absolute;
-      inset:0;
-      z-index:0;
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      -webkit-transform:scaleX(1)!important;
-      transform:scaleX(1)!important;
-      filter:var(--camera-filter,none)!important;
-      background:#000;
-    }
-    .jl-live-overlay{
-      position:absolute;
-      inset:0;
-      z-index:5;
-      display:flex;
-      flex-direction:column;
-      justify-content:space-between;
-      padding:calc(14px + env(safe-area-inset-top)) 12px calc(15px + env(safe-area-inset-bottom));
-      background:linear-gradient(180deg,#0008 0,transparent 30%,transparent 62%,#000b 100%);
-      pointer-events:none;
-    }
-    .jl-live-top,.jl-live-bottom{pointer-events:auto}
-    .jl-live-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-    .jl-host{
-      display:flex;align-items:center;gap:8px;
-      padding:6px 9px 6px 6px;
-      border-radius:999px;
-      background:#120714dc;
-      border:1px solid #fff3;
-    }
-    .jl-avatar{
-      width:34px;height:34px;
-      border-radius:50%;
-      object-fit:cover;
-      border:1px solid #ffd24c;
-    }
-    .jl-host b{display:block;font-size:11px}
-    .jl-host small{display:block;color:#cdbfd0;font-size:8px}
-    .jl-live-badge{
-      padding:8px 10px;
-      border-radius:12px;
-      background:#ff245f;
-      font-size:10px;
-      font-weight:950;
-      box-shadow:0 0 16px #ff245f66;
-    }
-    .jl-live-chat{
-      width:min(82%,390px);
-      max-height:180px;
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
-      justify-content:flex-end;
-      gap:5px;
-      margin-bottom:10px;
-    }
-    .jl-chat-line{
-      width:max-content;
-      max-width:100%;
-      padding:6px 9px;
-      border-radius:12px;
-      background:#09020dbf;
-      font-size:10px;
-    }
-    .jl-live-actions{
-      display:grid;
-      grid-template-columns:repeat(6,minmax(0,1fr));
-      gap:5px;
-    }
-    .jl-live-actions button{
-      min-width:0;
-      min-height:47px;
-      padding:4px 2px;
-      border:1px solid #fff3;
-      border-radius:14px;
-      background:#100615d9;
-      color:#fff;
-      font-size:17px;
-    }
-    .jl-live-actions button small{display:block;margin-top:2px;font-size:7px;color:#d8cadb;white-space:nowrap}
-    .jl-end{background:#a9143dd9!important;border-color:#ff5479!important}
-
-    /* HERRAMIENTAS LATERALES DEL LIVE */
-    .jl-live-top-right{display:grid;justify-items:end;gap:6px}
-    .jl-gift-counter{padding:5px 8px;border:1px solid #ffce5280;border-radius:999px;background:#160914dc;color:#ffd66d;font-size:9px;font-weight:900}
-    .jl-live-stage-tools{
-      position:absolute;
-      z-index:8;
-      top:94px;
-      left:12px;
-      right:12px;
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-      pointer-events:none;
-    }
-    .jl-seat-stack,.jl-battle-mini{pointer-events:auto}
-    .jl-seat-stack{display:grid;gap:7px}
-    .jl-seat{
-      position:relative;
-      width:46px;
-      height:46px;
-      padding:0;
-      display:grid;
-      place-items:center;
-      border:1px solid #c966ef99;
-      border-radius:16px;
-      background:#100415d9;
-      color:#fff;
-      box-shadow:0 8px 18px #0007;
-    }
-    .jl-seat span{font-size:18px;font-weight:900;line-height:1}
-    .jl-seat small{position:absolute;right:-4px;bottom:-4px;min-width:20px;height:17px;display:grid;place-items:center;border-radius:999px;background:#210629;border:1px solid #9d42ba;color:#d9c5df;font-size:7px}
-    .jl-seat.request{border-color:#ff9a43;box-shadow:0 0 18px #ff9a4366}
-    .jl-seat.request::before{content:"";position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:#ff9a43;box-shadow:0 0 10px #ff9a43}
-    .jl-seat.occupied{border-color:#48e39d;background:#0b211bdb;box-shadow:0 0 18px #48e39d55}
-    .jl-seat.muted::after{content:"🔇";position:absolute;left:-5px;bottom:-5px;font-size:11px}
-
-    .jl-battle-mini{
-      width:min(47vw,190px);
-      padding:9px;
-      border:1px solid #d14cff88;
-      border-radius:17px;
-      background:linear-gradient(145deg,#18061edb,#08010cde);
-      box-shadow:0 10px 26px #0009,0 0 18px #7c00aa33;
-    }
-    .jl-battle-mini-head{display:flex;align-items:center;justify-content:space-between;gap:5px}
-    .jl-battle-mini-head b{font-size:8px;color:#ffd24c;letter-spacing:.04em}
-    .jl-battle-mini-head span{font-size:7px;color:#cbb8d1}
-    .jl-battle-teams{display:grid;grid-template-columns:1fr auto 1fr;gap:5px;align-items:center;margin-top:7px}
-    .jl-battle-team{min-width:0;text-align:center}
-    .jl-battle-team strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:9px}
-    .jl-battle-team em{display:block;margin-top:2px;color:#fff;font-style:normal;font-size:11px;font-weight:950}
-    .jl-battle-vs{color:#e94dff;font-size:10px;font-weight:950}
-    .jl-battle-track{height:5px;margin-top:7px;display:flex;overflow:hidden;border-radius:999px;background:#2f1834}
-    .jl-battle-track i{display:block;height:100%;transition:width .25s ease}
-    .jl-battle-track .a{background:#ffd24c}.jl-battle-track .b{background:#ff3c9a}
-    .jl-battle-winner{margin:6px 0 0;color:#89f2bb;font-size:8px;font-weight:850;text-align:center}
-    .jl-battle-controls{display:grid;grid-template-columns:28px 1fr 28px;gap:5px;margin-top:7px}
-    .jl-battle-controls button{min-height:27px;border:1px solid #9b3db377;border-radius:9px;background:#16051c;color:#fff;font-size:10px}
-    .jl-battle-open{font-size:8px!important;font-weight:900}
-
-    /* PANEL INFERIOR DEL LIVE */
-    .jl-live-modal-backdrop{position:absolute;inset:0;z-index:30;background:#0009;backdrop-filter:blur(2px)}
-    .jl-live-sheet{
-      position:absolute;
-      z-index:31;
-      left:10px;
-      right:10px;
-      bottom:calc(10px + env(safe-area-inset-bottom));
-      max-height:min(74vh,560px);
-      overflow:auto;
-      padding:15px;
-      border:1px solid #ad3bd68c;
-      border-radius:22px;
-      background:linear-gradient(180deg,#1a0622f7,#09010cf7);
-      box-shadow:0 -14px 45px #000b;
-    }
-    .jl-sheet-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-    .jl-sheet-head h3{margin:0;font-size:17px}.jl-sheet-head p{margin:4px 0 0;color:#ae9ab5;font-size:10px}
-    .jl-sheet-close{width:34px;height:34px;border:1px solid #9241a8;border-radius:11px;background:#140419;color:#fff;font-size:20px}
-    .jl-sheet-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
-    .jl-sheet-actions.three{grid-template-columns:repeat(3,1fr)}
-    .jl-sheet-actions button{min-height:45px;border:1px solid #8f3aa477;border-radius:13px;background:#17051e;color:#fff;font-weight:850;font-size:11px}
-    .jl-sheet-actions .accept{border-color:#48e39d99;background:#123e31;color:#a8ffd8}
-    .jl-sheet-actions .danger{border-color:#ff526f99;background:#461121;color:#ffd1da}
-    /* MINI PERFIL DEL PARTICIPANTE · V0.6.9 */
-    .jl-person-card{
-      margin-top:13px;
-      padding:13px;
-      display:grid;
-      grid-template-columns:58px minmax(0,1fr);
-      gap:11px;
-      border:1px solid #9f42bc7a;
-      border-radius:18px;
-      background:
-        radial-gradient(circle at 14% 12%,#71309a3d,transparent 38%),
-        linear-gradient(145deg,#18051f,#0b020f);
-      box-shadow:inset 0 1px 0 #ffffff0c,0 10px 26px #0006;
-    }
-    .jl-person-avatar{
-      width:58px;height:58px;
-      display:grid;place-items:center;
-      border:2px solid #d45bff;
-      border-radius:18px;
-      background:linear-gradient(145deg,#7224a2,#24102e);
-      color:#fff;
-      font-size:23px;
-      font-weight:950;
-      box-shadow:0 0 18px #a12ee755;
-    }
-    .jl-person-main{min-width:0}
-    .jl-person-name-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
-    .jl-person-name-row strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px}
-    .jl-person-state{flex:0 0 auto;padding:4px 7px;border:1px solid #4ce2a77a;border-radius:999px;background:#0d2a21;color:#8df1c4;font-size:8px;font-weight:950}
-    .jl-person-state.request{border-color:#ff9b4388;background:#2a1608;color:#ffc28c}
-    .jl-person-meta{margin:5px 0 0;color:#c0aec7;font-size:9px;line-height:1.45}
-    .jl-person-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
-    .jl-person-badges span{padding:4px 7px;border:1px solid #7d3b8c75;border-radius:999px;background:#110417;color:#e0d1e5;font-size:8px;font-weight:800}
-    .jl-person-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:1px}
-    .jl-person-actions button{min-height:41px;border:1px solid #8e3ca577;border-radius:13px;background:#17051e;color:#fff;font-size:10px;font-weight:900}
-    .jl-person-actions .connect{border-color:#49e1a080;background:#10372b;color:#9ff5d0}
-    .jl-person-actions .connect.connected{border-color:#8a759177;background:#1b111e;color:#c7b9cc}
-    .jl-seat-help{margin:10px 2px 0;color:#907e98;font-size:8px;text-align:center}
-    .jl-gift-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:13px}
-    .jl-gift-item{min-height:82px;padding:7px 3px;border:1px solid #87369b77;border-radius:14px;background:#120419;color:#fff}
-    .jl-gift-item span{display:block;font-size:27px}.jl-gift-item b{display:block;font-size:9px}.jl-gift-item small{display:block;margin-top:3px;color:#ffd76b;font-size:8px}
-    .jl-gift-balance{margin-top:11px;padding:9px 11px;border:1px solid #d1aa4677;border-radius:13px;background:#180f08;color:#ffd86a;font-size:11px;font-weight:900;text-align:center}
-    .jl-gift-burst{position:absolute;z-index:45;left:50%;top:44%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;animation:jlGiftBurst 1.8s ease both}
-    .jl-gift-burst span{display:block;font-size:72px;filter:drop-shadow(0 0 20px #ff5db6)}
-    .jl-gift-burst b{display:block;margin-top:5px;padding:6px 12px;border-radius:999px;background:#100316dc;font-size:12px}
-    @keyframes jlGiftBurst{0%{opacity:0;transform:translate(-50%,-25%) scale(.55)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-80%) scale(.9)}}
-    .jl-battle-detail{margin-top:13px;padding:13px;border:1px solid #8a379d77;border-radius:16px;background:#0d0212;text-align:center}
-    .jl-battle-detail strong{font-size:15px}.jl-battle-detail p{margin:7px 0 0;color:#c7b5cd;font-size:11px}
-
-    @media(max-width:390px){
-      .jl-live-stage-tools{top:91px;left:9px;right:9px}
-      .jl-seat{width:43px;height:43px;border-radius:15px}
-      .jl-battle-mini{width:min(48vw,174px);padding:8px}
-      .jl-live-actions{gap:4px}
-      .jl-live-actions button{font-size:16px}
-      .jl-gift-grid{grid-template-columns:repeat(3,1fr)}
-    }
-
-    /* MENÚ COMPACTO */
-    .jl-backdrop{
-      position:fixed;
-      inset:0;
-      z-index:201;
-      background:#0009;
-    }
-    .jl-menu{
-      position:fixed;
-      z-index:202;
-      inset:0 auto 0 0;
-      width:min(76vw,286px);
-      padding:calc(12px + env(safe-area-inset-top)) 10px calc(14px + env(safe-area-inset-bottom));
-      overflow-y:auto;
-      background:linear-gradient(180deg,#17051f,#070109);
-      border-right:1px solid #a437d177;
-      transform:translateX(-105%);
-      transition:transform .2s ease;
-      box-shadow:18px 0 50px #000a;
-    }
-    .jl-menu.open{transform:translateX(0)}
-    .jl-menu-head{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:10px}
-    .jl-menu-head h2{margin:2px 0 0;font-size:16px}
-    .jl-menu-head small{font-size:8px;color:#a791ae;letter-spacing:.14em}
-    .jl-close{width:34px;height:34px;border:1px solid #843c9a;border-radius:11px;background:#100317;color:#fff;font-size:22px}
-    .jl-search{
-      min-height:40px;
-      display:flex;
-      align-items:center;
-      gap:6px;
-      padding:0 9px;
-      border:1px solid #713780;
-      border-radius:12px;
-      background:#08010c;
-    }
-    .jl-search input{width:100%;border:0;outline:0;background:transparent;color:#fff;font-size:11px}
-    .jl-menu-list{display:grid;gap:5px;margin-top:8px}
-    .jl-menu-item{
-      width:100%;
-      min-height:45px;
-      display:grid;
-      grid-template-columns:30px minmax(0,1fr) 12px;
-      align-items:center;
-      gap:7px;
-      padding:6px 8px;
-      border:1px solid #68287955;
-      border-radius:13px;
-      background:#100316;
-      color:#fff;
-      text-align:left;
-      text-decoration:none;
-    }
-    .jl-menu-icon{
-      width:29px;height:29px;
-      display:grid;place-items:center;
-      border-radius:9px;
-      background:#24072e;
-      font-size:14px;
-    }
-    .jl-menu-item b{font-size:11px}
-    .jl-menu-item small{display:block;margin-top:1px;color:#96849d;font-size:8px}
-    .jl-menu-item i{font-style:normal;color:#a855c4}
-    .jl-version{margin:12px 3px;color:#836e8b;font-size:8px}
-
-    .jl-toast{
-      position:fixed;
-      z-index:300;
-      left:50%;
-      bottom:calc(92px + env(safe-area-inset-bottom));
-      transform:translateX(-50%) translateY(20px);
-      width:min(88%,390px);
-      padding:11px 13px;
-      border:1px solid #b43bd577;
-      border-radius:14px;
-      background:#100316f2;
-      color:#fff;
-      text-align:center;
-      font-size:11px;
-      opacity:0;
-      pointer-events:none;
-      transition:.2s ease;
-    }
-    .jl-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-    /* NAVEGACIÓN INFERIOR */
+    /* NAVEGACIÓN: EXACTAMENTE EL MISMO SISTEMA DEL INICIO */
     .jl-nav{
       position:fixed;
-      z-index:50;
+      z-index:80;
       left:0;right:0;bottom:0;
+      min-height:91px;
       display:grid;
       grid-template-columns:repeat(5,1fr);
-      min-height:82px;
-      padding:9px 5px max(10px,env(safe-area-inset-bottom));
-      background:#070109f7;
+      padding:9px 6px max(11px,env(safe-area-inset-bottom));
       border-top:1px solid #6e217c88;
+      background:#070109f8;
+      box-shadow:0 -12px 35px #000a;
+      transition:transform .2s ease,opacity .2s ease;
     }
     .jl-nav a{
       position:relative;
       display:grid;
       justify-items:center;
       align-content:center;
-      gap:3px;
-      color:#755980;
+      gap:5px;
+      color:#6d5677;
       text-decoration:none;
-      font-size:10px;
-      font-weight:850;
+      font-size:11px;
+      font-weight:900;
+      -webkit-tap-highlight-color:transparent;
     }
-    .jl-nav-icon{
-      width:34px;height:34px;
-      display:grid;place-items:center;
-      font-size:21px;
+    .jl-nav .nav-icon{
+      width:43px;height:42px;
+      display:grid;
+      place-items:center;
+      color:var(--tab-color);
     }
-    .jl-nav img{
-      width:42px;height:42px;
+    .jl-nav .nav-icon svg{width:31px;height:31px;stroke:currentColor;fill:none;stroke-width:2}
+    .jl-nav .active-fish{
+      width:48px;height:48px;
       object-fit:cover;
-      border-radius:13px;
-      box-shadow:0 0 18px #ff2f8588;
+      object-position:center;
+      border-radius:50%;
+      filter:drop-shadow(0 0 9px var(--tab-color));
+      transform:translateY(-4px) scale(1.1);
     }
-    .jl-nav a.active{color:#ff438a}
-    .jl-nav a.active::after{
+    .jl-nav a.is-current{color:var(--tab-color)}
+    .jl-nav a.is-current::after{
       content:"";
-      width:34px;height:4px;
-      border-radius:99px;
-      background:#ff2f85;
-      box-shadow:0 0 12px #ff2f85;
+      width:38px;height:5px;
+      border-radius:999px;
+      background:currentColor;
+      box-shadow:0 0 12px currentColor;
     }
     .jl-badge{
       position:absolute;
-      top:0;
-      right:25%;
-      min-width:19px;height:19px;
+      top:2px;right:24%;
+      min-width:20px;height:20px;
       display:grid;place-items:center;
       border-radius:999px;
-      background:#b51f55;
+      background:#bd2258;
       color:#fff;
       font-size:9px;
+      z-index:3;
+    }
+    .jl-nav a:active .nav-icon,.jl-nav a:active .active-fish{transform:scale(.91)}
+    body.live-running .jl-nav,
+    .jl-nav.live-mode,
+    #broadcastScreen:not([hidden]) ~ .jl-nav{
+      display:none!important;
+      visibility:hidden!important;
+      opacity:0!important;
+      pointer-events:none!important;
+      transform:translateY(140%)!important;
     }
 
-    @media(max-width:390px){
-      .jl-shell{padding-left:10px;padding-right:10px}
-      .jl-camera-card{min-height:335px}
-      .jl-mode{padding:0 10px;font-size:11px}
-      .jl-grid{gap:8px}
-      .jl-summary{grid-template-columns:1fr 105px}
+    /* EMISIÓN */
+    .jl-broadcast{
+      position:fixed;
+      inset:0;
+      z-index:1000;
+      overflow:hidden;
+      background:#000;
+      isolation:isolate;
     }
-
-
-    /* V0.6.9 · LIVE PROFESIONAL, CHAT, TAREAS, SILLAS, REGALOS Y BATALLAS */
-    .jl-filterbar{display:flex;gap:5px;pointer-events:auto;min-width:0}
-    .jl-filterbar .jl-chip{padding:0 9px;min-height:38px;font-size:10px}
-    .jl-filter.active{border-color:var(--green);color:var(--green);box-shadow:0 0 12px #48e39d33}
-    .jl-editor{margin-top:12px;border:1px solid #7d258c66;border-radius:20px;background:linear-gradient(145deg,#16051e,#0a010e);box-shadow:0 10px 24px #0005;overflow:hidden}
-    .jl-editor-toggle{width:100%;min-height:66px;padding:13px 15px;border:0;background:transparent;color:#fff;display:flex;align-items:center;justify-content:space-between;text-align:left}
-    .jl-editor-toggle b{display:block;font-size:14px}.jl-editor-toggle small{display:block;margin-top:3px;color:#a995af;font-size:10px}.jl-editor-toggle i{font-style:normal;color:#d560ff;font-size:22px}
-    .jl-editor-body{padding:0 12px 13px}.jl-editor-body.collapsed{display:none}
-    .jl-editor-saved{margin:0 12px 13px;padding:10px;border:1px solid #78358a66;border-radius:15px;background:#0b020f;display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:10px;align-items:center}
-    .jl-editor-saved[hidden]{display:none!important}.jl-editor-saved img{width:48px;height:48px;border-radius:12px;object-fit:cover;border:1px solid #a73fc4}.jl-editor-saved b,.jl-editor-saved small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.jl-editor-saved b{font-size:12px}.jl-editor-saved small{margin-top:3px;color:#a792ae;font-size:9px}.jl-editor-saved button{min-height:38px;padding:0 12px;border:1px solid #a23ec1;border-radius:12px;background:#21072b;color:#fff;font-weight:850}
-    .jl-save-profile{width:100%;min-height:48px;margin-top:10px;border:1px solid #52e6a488;border-radius:15px;background:linear-gradient(90deg,#1f8f70,#36d89c);color:#061f18;font-weight:950}
-    .jl-options-grid{margin-top:10px}
-    .jl-live-top-left{display:grid;gap:5px;min-width:0}
+    .jl-broadcast>video{
+      position:absolute;
+      inset:0;
+      width:100%;height:100%;
+      object-fit:cover;
+      background:#000;
+      transform:scaleX(1)!important;
+      -webkit-transform:scaleX(1)!important;
+      filter:var(--camera-filter,none);
+    }
+    .jl-broadcast>video.pip{
+      inset:auto 11px 145px auto;
+      width:30%;height:28%;
+      border:2px solid var(--gold);
+      border-radius:17px;
+      box-shadow:0 8px 28px #000c;
+      z-index:4;
+    }
+    .jl-live-shade{
+      position:absolute;
+      inset:0;
+      z-index:5;
+      background:linear-gradient(180deg,#000a 0,transparent 26%,transparent 63%,#000d 100%);
+      pointer-events:none;
+    }
+    .jl-live-ui{
+      position:absolute;
+      inset:0;
+      z-index:8;
+      pointer-events:none;
+    }
+    .jl-live-top{
+      position:absolute;
+      top:calc(12px + env(safe-area-inset-top));
+      left:10px;right:10px;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:8px;
+      pointer-events:auto;
+    }
+    .jl-live-top-left{display:grid;gap:6px;min-width:0}
+    .jl-host{
+      width:max-content;
+      max-width:70vw;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:5px 9px 5px 5px;
+      border:1px solid #fff3;
+      border-radius:999px;
+      background:#100511dc;
+    }
+    .jl-avatar{
+      width:35px;height:35px;
+      border:1px solid var(--gold);
+      border-radius:50%;
+      object-fit:cover;
+      background:#28062e;
+    }
+    .jl-host b{display:block;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .jl-host small{display:block;color:#c7b9ca;font-size:8px}
     .jl-task-card{
       width:max-content;
-      max-width:min(235px,72vw);
-      min-height:28px;
+      max-width:72vw;
+      min-height:29px;
       display:flex;
       align-items:center;
       gap:6px;
       padding:5px 9px;
       border:1px solid #48e39d88;
       border-radius:999px;
-      background:#0a1915e8;
+      background:#091a15e8;
       box-shadow:0 0 14px #48e39d22;
       white-space:nowrap;
     }
-    .jl-task-card.completed{border-color:#ff9b43aa;background:#211107ed;box-shadow:0 0 15px #ff9b4333}
-    .jl-task-dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:var(--green);box-shadow:0 0 9px var(--green);animation:jlTaskPulse 1.2s ease infinite}
-    .jl-task-card.completed .jl-task-dot{background:#ff9b43;box-shadow:0 0 9px #ff9b43;animation:none}
-    .jl-task-card b{overflow:hidden;text-overflow:ellipsis;font-size:9px;color:#eefdf5}
-    .jl-task-time{color:#8ef0bd;font-size:9px;font-weight:950;font-variant-numeric:tabular-nums}
-    .jl-task-card.completed .jl-task-time{color:#ffc18b}
-    @keyframes jlTaskPulse{50%{opacity:.45;transform:scale(.82)}}
-    .jl-active-fish{width:42px!important;height:42px!important;border-radius:45%!important;object-fit:cover!important;object-position:center 42%!important;filter:drop-shadow(0 0 7px #a821ff)!important;box-shadow:none!important}
-    .jl-nav a:not(.active) .jl-nav-icon{font-size:24px}
-    @media(max-width:390px){.jl-filterbar .jl-chip{padding:0 7px;font-size:9px}.jl-camera-bottom{gap:5px}.jl-camera-bottom>.jl-chip{padding:0 10px}.jl-task-card{max-width:68vw}}
-
-  
-    /* V0.6.9 · CORRECCIÓN REAL DEL LIVE */
-    .jl-live-overlay{
-      padding-bottom:calc(76px + env(safe-area-inset-bottom));
-    }
+    .jl-task-card.complete{border-color:#ff9b43aa;background:#241207ed}
+    .jl-task-dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:var(--green);box-shadow:0 0 9px var(--green)}
+    .jl-task-card.complete .jl-task-dot{background:var(--orange);box-shadow:0 0 9px var(--orange)}
+    .jl-task-card b{overflow:hidden;text-overflow:ellipsis;font-size:9px}
+    .jl-task-card time{font-size:9px;font-weight:950;color:#8ef0bd;font-variant-numeric:tabular-nums}
+    .jl-task-card.complete time{color:#ffc18b}
     .jl-live-top-right{display:flex;align-items:center;gap:6px}
-    .jl-live-stage-tools{
-      position:absolute;
-      z-index:18;
-      top:34%;
-      right:8px;
-      left:auto;
-      width:50px;
-      display:grid;
-      justify-items:end;
-      align-content:start;
-      gap:7px;
-      transform:none;
-      pointer-events:none;
-    }
-    .jl-seat-stack,.jl-rail-tab,.jl-gift-fab{pointer-events:auto}
-    .jl-seat-stack{display:grid;gap:6px;justify-items:end}
-    .jl-seat{width:44px;height:44px;border-radius:15px}
-    .jl-rail-tab,.jl-gift-fab{
-      width:46px;
-      min-height:43px;
-      padding:4px 2px;
-      display:grid;
-      place-items:center;
-      gap:1px;
-      border:1px solid #b14bd18a;
-      border-radius:14px;
-      background:#100416e8;
-      color:#fff;
-      box-shadow:0 8px 22px #0008,0 0 15px #8b18c832;
-    }
-    .jl-rail-tab span,.jl-gift-fab>span{font-size:18px;line-height:1}
-    .jl-rail-tab small,.jl-gift-fab small{font-size:7px;color:#dccfe0;font-weight:900}
-    .jl-battle-rail-tab{border-color:#d24cff99}
-    .jl-battle-rail-tab[aria-expanded="true"]{background:#2b0a37;border-color:#ef6cff}
-    .jl-gift-fab{
-      position:relative;
-      border-color:#e9bd4f9c;
-      background:linear-gradient(145deg,#281b08e8,#12060fe8);
-    }
-    .jl-gift-fab b{
-      position:absolute;
-      right:-4px;
-      top:-5px;
-      min-width:19px;
-      height:19px;
-      padding:0 4px;
-      display:grid;
-      place-items:center;
+    .jl-gift-count{
+      padding:6px 8px;
+      border:1px solid #ffce5280;
       border-radius:999px;
-      background:#f7bd39;
-      color:#291704;
-      font-size:8px;
-      box-shadow:0 0 10px #f7bd3988;
+      background:#160914dc;
+      color:#ffd66d;
+      font-size:9px;
+      font-weight:950;
     }
-    .jl-battle-drawer{
-      position:absolute;
-      z-index:17;
-      top:calc(34% + 198px);
-      right:61px;
-      width:min(52vw,230px);
-      margin:0;
-      padding:10px;
-      border-radius:17px 4px 17px 17px;
-      transform:translateX(10px);
-      opacity:0;
-      transition:opacity .18s ease,transform .18s ease;
-    }
-    .jl-battle-drawer.open{
-      transform:translateX(0);
-      opacity:1;
-    }
-    .jl-chat-dock{
-      position:absolute;
-      z-index:24;
-      left:8px;
-      right:8px;
-      bottom:calc(72px + env(safe-area-inset-bottom));
-      border:1px solid #8d3ba66e;
-      border-radius:17px 17px 5px 5px;
-      background:linear-gradient(180deg,#16051edb,#08010ceb);
-      box-shadow:0 -10px 30px #0008;
-      transform:translateY(0);
-      transition:transform .22s ease,opacity .18s ease;
-    }
-    .jl-chat-dock.collapsed{
-      left:10px;
-      right:auto;
-      bottom:calc(76px + env(safe-area-inset-bottom));
-      width:108px;
-      border-radius:14px;
-      background:#100416e9;
-    }
-    .jl-chat-handle{
-      width:100%;
-      min-height:34px;
-      padding:5px 9px;
+    .jl-live-badge{
+      min-height:38px;
       display:flex;
       align-items:center;
-      justify-content:center;
-      gap:6px;
-      border:0;
-      border-radius:inherit;
-      background:transparent;
+      gap:7px;
+      padding:0 10px;
+      border:1px solid #ff5d7c;
+      border-radius:13px;
+      background:#d91d4e;
       color:#fff;
       font-size:9px;
+      font-weight:950;
+      box-shadow:0 0 17px #ff245f55;
+    }
+    .jl-live-badge span{font-size:16px}
+
+    /* BATALLA: TARJETA DE COMPETICIÓN, NO PARECE SILLA NI PERSONA */
+    .jl-battle-card{
+      position:absolute;
+      z-index:10;
+      top:calc(95px + env(safe-area-inset-top));
+      left:64px;
+      right:64px;
+      min-height:93px;
+      padding:8px 11px 9px;
+      border:1px solid #ffd24ca8;
+      border-left:5px solid var(--gold);
+      border-right:5px solid var(--pink);
+      border-radius:10px 3px 10px 3px;
+      background:
+        linear-gradient(90deg,#211400ed 0 47%,#21041bed 53% 100%);
+      box-shadow:0 12px 30px #000b,0 0 20px #ffcf4930;
+      clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));
+      pointer-events:auto;
+    }
+    .jl-battle-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      padding-bottom:6px;
+      border-bottom:1px solid #ffffff24;
+    }
+    .jl-battle-head b{font-size:9px;color:#ffe37d;letter-spacing:.12em}
+    .jl-battle-head time{
+      padding:3px 7px;
+      border:1px solid #ffffff2b;
+      border-radius:6px;
+      background:#080109bd;
+      color:#ddd0e1;
+      font-size:8px;
       font-weight:900;
     }
-    .jl-chat-handle i{font-style:normal;color:#da62ff}
-    .jl-chat-dock.collapsed .jl-chat-panel{display:none}
-    .jl-chat-dock:not(.collapsed) .jl-chat-handle{
-      justify-content:space-between;
-      border-radius:16px 16px 0 0;
-      border-bottom:1px solid #7b318b55;
-    }
-    .jl-chat-panel{padding:7px}
-    .jl-live-chat{
-      width:100%;
-      max-height:145px;
-      min-height:68px;
-      margin:0 0 7px;
-      overflow:auto;
-      padding:2px;
-    }
-    .jl-chat-form{
+    .jl-battle-teams{
       display:grid;
-      grid-template-columns:minmax(0,1fr) auto;
-      gap:6px;
-    }
-    .jl-chat-form input{
-      min-width:0;
-      min-height:40px;
-      padding:0 12px;
-      border:1px solid #8b3a9f78;
-      border-radius:13px;
-      outline:0;
-      background:#070109e8;
-      color:#fff;
-      font-size:12px;
-    }
-    .jl-chat-form button{
-      min-width:67px;
-      border:1px solid #4be1a080;
-      border-radius:13px;
-      background:#123a2d;
-      color:#a6f7d2;
-      font-size:10px;
-      font-weight:950;
-    }
-    .jl-nav{
-      min-height:68px;
-      padding:5px 5px max(6px,env(safe-area-inset-bottom));
-      transition:transform .22s ease;
-    }
-    .jl-nav.live-mode{z-index:140}
-    .jl-nav.chat-hidden{transform:translateY(115%)}
-    .jl-nav.live-mode .jl-nav-icon{height:30px}
-    .jl-nav.live-mode .jl-nav img{width:36px;height:36px}
-    .jl-live-sheet{
-      left:0;
-      right:0;
-      bottom:0;
-      max-height:min(50vh,440px);
-      border-radius:22px 22px 0 0;
-      padding:14px 14px calc(14px + env(safe-area-inset-bottom));
-    }
-    .jl-lucky-box{
-      margin-top:10px;
-      padding:10px;
-      display:grid;
-      grid-template-columns:minmax(0,1fr) auto;
-      gap:9px;
+      grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr);
       align-items:center;
-      border:1px solid #f0c45277;
-      border-radius:15px;
-      background:linear-gradient(145deg,#251708,#120710);
+      gap:8px;
+      margin-top:7px;
     }
-    .jl-lucky-box b{display:block;color:#ffd969;font-size:11px}
-    .jl-lucky-box small{display:block;margin-top:3px;color:#c7b6c8;font-size:8px}
-    .jl-lucky-box button{
-      min-height:39px;
-      padding:0 11px;
-      border:1px solid #f3cb5a;
-      border-radius:12px;
-      background:#ffd35a;
-      color:#2a1800;
-      font-size:9px;
+    .jl-battle-team{text-align:center;min-width:0}
+    .jl-battle-team strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;text-transform:uppercase}
+    .jl-battle-team em{display:block;margin-top:2px;font-style:normal;font-size:13px;font-weight:950}
+    .jl-battle-vs{
+      width:38px;height:31px;
+      display:grid;place-items:center;
+      border:1px solid #ef5cff99;
+      border-radius:8px;
+      background:#27042de8;
+      color:#f071ff;
+      font-size:12px;
       font-weight:950;
+      box-shadow:0 0 12px #d936ff44;
     }
-    .jl-task-card{cursor:default}
-    .jl-task-card.claim{
-      border-color:#ff9b43aa;
-      background:#211107ed;
-      box-shadow:0 0 15px #ff9b4333;
-    }
-    .jl-task-card.claim .jl-task-dot{
-      background:#ff9b43;
-      box-shadow:0 0 9px #ff9b43;
-      animation:none;
-    }
-    .jl-task-card.claim .jl-task-time{color:#ffc18b}
-    .jl-task-card.claimed{
-      border-color:#ff526faa;
-      background:#2b0811ed;
-      box-shadow:0 0 15px #ff526f3b;
-    }
-    .jl-task-card.claimed .jl-task-dot{
-      background:#ff526f;
-      box-shadow:0 0 9px #ff526f;
-      animation:none;
-    }
-    .jl-task-card.claimed .jl-task-time{color:#ff9bad}
-    .jl-task-claim{
-      min-height:22px;
-      padding:0 8px;
-      border:1px solid #ffc182;
-      border-radius:999px;
-      background:#ff9b43;
-      color:#2b1200;
-      font-size:8px;
-      font-weight:950;
-    }
-    @media(max-width:390px){
-      .jl-live-stage-tools{top:33%;right:7px}
-      .jl-battle-drawer{top:calc(33% + 195px);right:58px;width:min(56vw,218px)}
-      .jl-chat-dock:not(.collapsed){left:6px;right:6px}
-    }
+    .jl-battle-track{height:6px;margin-top:7px;display:flex;overflow:hidden;border:1px solid #ffffff1b;border-radius:999px;background:#150518}
+    .jl-battle-track i{display:block;height:100%}
+    .jl-battle-track .a{width:58%;background:var(--gold)}
+    .jl-battle-track .b{width:42%;background:var(--pink)}
 
-    /* Navegación inferior oficial del Inicio */
-    .bottom-nav .nav-icon{
-      width:42px!important;
-      height:35px!important;
-      display:grid!important;
-      place-items:center!important;
-      overflow:visible!important;
-      transition:transform .18s ease,filter .18s ease!important;
-    }
-    .bottom-nav .nav-icon svg{
-      width:39px!important;
-      height:29px!important;
-      overflow:visible!important;
-      filter:grayscale(.4) brightness(.72);
-    }
-    .bottom-nav a.is-current .nav-icon{
-      transform:translateY(-5px) scale(1.16)!important;
-    }
-    .bottom-nav a.is-current .nav-icon svg{
-      filter:drop-shadow(0 0 8px currentColor)!important;
-    }
-    .bottom-nav a.is-current{
-      color:var(--tab-color,#ff3986)!important;
-    }
-    .bottom-nav a.is-current::after{
-      content:"";
-      width:34px;
-      height:4px;
-      border-radius:99px;
-      background:currentColor;
-      box-shadow:0 0 12px currentColor;
-    }
-
-
-    /* V0.6.9 · CORRECCIÓN PRIORITARIA: NAVEGACIÓN, CHAT, AJUSTES Y SOLICITUDES */
-    .jl-nav{
-      min-height:82px;
-      padding:9px 5px max(10px,env(safe-area-inset-bottom));
-    }
-    .jl-nav.live-mode{z-index:50}
-    .jl-nav.chat-hidden{transform:none}
-    .jl-nav.live-mode .jl-nav-icon{height:35px}
-    .jl-nav.live-mode .jl-nav img{width:42px;height:42px}
-
-    .jl-live-overlay{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
-    .jl-chat-dock{
+    /* SILLAS SEPARADAS DE LA BATALLA */
+    .jl-seat-stack{
       position:absolute;
-      z-index:24;
-      left:8px;
-      right:8px;
-      bottom:calc(8px + env(safe-area-inset-bottom));
-      width:auto;
-      border:0;
-      border-radius:0;
-      background:transparent;
-      box-shadow:none;
-      pointer-events:none;
-      transition:none;
+      z-index:11;
+      top:calc(208px + env(safe-area-inset-top));
+      right:9px;
+      display:grid;
+      gap:7px;
+      pointer-events:auto;
     }
-    .jl-chat-dock.collapsed{
-      left:8px;
-      right:8px;
-      bottom:calc(8px + env(safe-area-inset-bottom));
-      width:auto;
-      border:0;
-      border-radius:0;
-      background:transparent;
-    }
-    .jl-live-chat{
-      width:min(78vw,380px);
-      max-height:126px;
-      min-height:0;
-      margin:0 0 7px;
+    .jl-seat{
+      position:relative;
+      width:47px;height:47px;
       padding:0;
+      display:grid;place-items:center;
+      border:1px solid #c966ef99;
+      border-radius:16px;
+      background:#100415dd;
+      color:#fff;
+      box-shadow:0 8px 18px #0008;
+    }
+    .jl-seat svg{width:21px;height:21px;stroke:#d8c6dd;fill:none;stroke-width:2}
+    .jl-seat small{
+      position:absolute;
+      right:-4px;bottom:-4px;
+      min-width:19px;height:17px;
+      display:grid;place-items:center;
+      border:1px solid #9d42ba;
+      border-radius:999px;
+      background:#210629;
+      color:#e1d0e6;
+      font-size:7px;
+    }
+    .jl-seat.request{border-color:var(--orange);box-shadow:0 0 17px #ff9a4360}
+    .jl-seat.request::before{content:"";position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:var(--orange);box-shadow:0 0 10px var(--orange)}
+    .jl-seat.occupied{border-color:var(--green);background:#0b211bdb}
+    .jl-seat.muted::after{content:"🔇";position:absolute;left:-5px;bottom:-5px;font-size:11px}
+
+    .jl-live-bottom{
+      position:absolute;
+      z-index:12;
+      left:9px;right:9px;
+      bottom:calc(10px + env(safe-area-inset-bottom) + var(--keyboard));
+      pointer-events:auto;
+      transition:bottom .16s ease;
+    }
+    .jl-chat-layer{
+      width:min(78%,390px);
+      max-height:165px;
       overflow:hidden;
       display:flex;
       flex-direction:column;
       justify-content:flex-end;
       gap:5px;
-      pointer-events:none;
+      margin-bottom:8px;
     }
     .jl-chat-line{
       width:max-content;
       max-width:100%;
       padding:6px 9px;
-      border:1px solid #ffffff19;
-      border-radius:13px 13px 13px 4px;
-      background:#09020dbc;
-      box-shadow:0 4px 14px #0005;
+      border-radius:12px;
+      background:#09020dc9;
+      color:#fff;
       font-size:10px;
-      line-height:1.25;
+      text-shadow:0 1px 2px #000;
+      animation:messageIn .18s ease;
     }
-    .jl-chat-bottom-row{
+    @keyframes messageIn{from{opacity:0;transform:translateY(5px)}}
+    .jl-chatbar{
       display:grid;
-      grid-template-columns:minmax(0,1fr) 50px;
-      gap:7px;
-      align-items:end;
-      pointer-events:auto;
+      grid-template-columns:1fr 45px 45px 45px;
+      gap:6px;
+      align-items:center;
     }
-    .jl-chat-entry{min-width:0}
-    .jl-chat-handle{
-      width:100%;
+    .jl-chatbar form{
       min-height:46px;
-      padding:0 14px;
       display:flex;
       align-items:center;
-      justify-content:flex-start;
-      gap:8px;
-      border:1px solid #9a46ae88;
-      border-radius:16px;
-      background:#100416e9;
-      color:#fff;
-      box-shadow:0 8px 24px #0008;
-      font-size:11px;
-      font-weight:900;
-    }
-    .jl-chat-handle span{font-size:17px}
-    .jl-chat-dock:not(.collapsed) .jl-chat-handle{display:none}
-    .jl-chat-form{
-      display:none;
-      grid-template-columns:38px minmax(0,1fr) 42px;
       gap:5px;
-      min-height:46px;
-      padding:4px;
-      border:1px solid #9a46ae88;
+      padding:0 6px 0 12px;
+      border:1px solid #ffffff35;
       border-radius:16px;
-      background:#100416f1;
-      box-shadow:0 8px 24px #0008;
+      background:#0c0310e8;
+      backdrop-filter:blur(7px);
     }
-    .jl-chat-dock:not(.collapsed) .jl-chat-form{display:grid}
-    .jl-chat-form input{
-      min-width:0;
-      min-height:38px;
-      padding:0 8px;
-      border:0;
-      border-radius:11px;
-      outline:0;
-      background:#050108b5;
+    .jl-chatbar input{width:100%;border:0;outline:0;background:transparent;color:#fff;font-size:12px}
+    .jl-chatbar form button,.jl-action{
+      width:39px;height:39px;
+      border:1px solid #ffffff2f;
+      border-radius:13px;
+      background:#15051be5;
       color:#fff;
-      font-size:12px;
+      font-size:18px;
     }
-    .jl-chat-form button{
-      min-width:0;
-      min-height:38px;
-      padding:0;
-      border:1px solid #7f398f78;
-      border-radius:11px;
-      background:#21072b;
-      color:#fff;
-      font-size:17px;
-      font-weight:950;
-    }
-    .jl-chat-form .jl-chat-send{
-      border-color:#4be1a080;
-      background:#123a2d;
-      color:#a6f7d2;
-    }
-    .jl-chat-settings{
-      width:50px;
-      min-height:46px;
-      padding:4px 2px;
-      display:grid;
-      place-items:center;
-      align-content:center;
-      gap:1px;
-      border:1px solid #b14bd18a;
-      border-radius:15px;
-      background:#100416eb;
-      color:#fff;
-      box-shadow:0 8px 24px #0008;
-    }
-    .jl-chat-settings span{font-size:18px;line-height:1}
-    .jl-chat-settings small{font-size:7px;color:#d9cadd;font-weight:900}
-    .jl-chat-dock.comments-off .jl-chat-entry{opacity:.48}
-    .jl-chat-dock.comments-off .jl-live-chat{display:none}
+    .jl-action{width:45px;height:45px}
+    .jl-action.gift{border-color:#ffd24c7d;color:#ffd24c}
+    .jl-action.settings{font-size:16px}
 
-    .jl-settings-sheet{max-height:min(58vh,470px)}
-    .jl-settings-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:8px;
-      margin-top:12px;
+    /* PANELES */
+    .jl-backdrop{position:absolute;inset:0;z-index:30;background:#0009;backdrop-filter:blur(2px)}
+    .jl-sheet{
+      position:absolute;
+      z-index:31;
+      left:10px;right:10px;
+      bottom:calc(10px + env(safe-area-inset-bottom));
+      max-height:min(75vh,580px);
+      overflow:auto;
+      padding:15px;
+      border:1px solid #ad3bd68c;
+      border-radius:22px;
+      background:linear-gradient(180deg,#1a0622f8,#09010cf8);
+      box-shadow:0 -14px 45px #000c;
     }
-    .jl-settings-grid button{
-      min-height:72px;
-      padding:9px 7px;
-      display:grid;
-      place-items:center;
-      align-content:center;
-      gap:2px;
-      border:1px solid #8f3aa477;
+    .jl-sheet-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .jl-sheet-head h3{margin:0;font-size:18px}
+    .jl-sheet-head p{margin:4px 0 0;color:#af9bb6;font-size:10px}
+    .jl-sheet-close{width:35px;height:35px;border:1px solid #9340a9;border-radius:11px;background:#140419;color:#fff;font-size:21px}
+    .jl-sheet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}
+    .jl-sheet-grid button{
+      min-height:67px;
+      padding:7px 4px;
+      border:1px solid #8c389f77;
       border-radius:14px;
-      background:#17051e;
+      background:#15041b;
       color:#fff;
+      font-size:18px;
     }
-    .jl-settings-grid button span{font-size:20px;line-height:1}
-    .jl-settings-grid button b{font-size:10px}
-    .jl-settings-grid button small{font-size:8px;color:#aa98b0}
-    .jl-settings-grid button.danger{border-color:#ff526f99;background:#461121;color:#ffd1da}
+    .jl-sheet-grid button small{display:block;margin-top:4px;color:#c8b9cc;font-size:8px}
+    .jl-stickers{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:13px}
+    .jl-stickers button{min-height:55px;border:1px solid #79318c77;border-radius:14px;background:#130319;font-size:27px}
+    .jl-gifts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:13px}
+    .jl-gifts button{min-height:83px;padding:7px 3px;border:1px solid #87369b77;border-radius:14px;background:#120419;color:#fff}
+    .jl-gifts button span{display:block;font-size:28px}
+    .jl-gifts button b{display:block;font-size:9px}
+    .jl-gifts button small{display:block;margin-top:3px;color:#ffd76b;font-size:8px}
+    .jl-balance{margin-top:10px;padding:9px;border:1px solid #d1aa4677;border-radius:13px;background:#180f08;color:#ffd86a;text-align:center;font-size:11px;font-weight:950}
+    .jl-person-card{margin-top:13px;padding:13px;border:1px solid #9f42bc7a;border-radius:18px;background:linear-gradient(145deg,#18051f,#0b020f)}
+    .jl-person-card h4{margin:0 0 5px}.jl-person-card p{margin:0;color:#bca9c2;font-size:10px;line-height:1.5}
+    .jl-person-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:11px}
+    .jl-person-actions button{min-height:43px;border:1px solid #8e3ca577;border-radius:13px;background:#17051e;color:#fff;font-size:10px;font-weight:900}
+    .jl-person-actions .danger{border-color:#ff526f8f;background:#45101f;color:#ffd3db}
+    .jl-person-actions .accept{border-color:#48e39d8f;background:#10372b;color:#a5f6d3}
 
-    #seatSheet.request-mode{
-      left:12px;
-      right:12px;
-      top:calc(84px + env(safe-area-inset-top));
-      bottom:auto;
-      max-height:min(48vh,360px);
-      padding:10px;
-      border-radius:17px;
+    .jl-gift-burst{
+      position:absolute;
+      z-index:50;
+      left:50%;top:44%;
+      transform:translate(-50%,-50%);
+      text-align:center;
+      pointer-events:none;
+      animation:giftBurst 1.7s ease both;
     }
-    #seatSheet.request-mode .jl-sheet-head h3{font-size:14px}
-    #seatSheet.request-mode .jl-sheet-head p{font-size:9px}
-    #seatSheet.request-mode .jl-sheet-close{width:30px;height:30px;border-radius:10px;font-size:18px}
-    #seatSheet.request-mode .jl-person-card{
-      margin-top:8px;
-      padding:8px;
-      grid-template-columns:43px minmax(0,1fr);
+    .jl-gift-burst span{display:block;font-size:78px;filter:drop-shadow(0 0 20px #ff5db6)}
+    .jl-gift-burst b{display:block;margin-top:5px;padding:6px 12px;border-radius:999px;background:#100316dc;font-size:12px}
+    @keyframes giftBurst{0%{opacity:0;transform:translate(-50%,-25%) scale(.55)}20%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-80%) scale(.9)}}
+
+    /* MENÚ PREPARACIÓN */
+    .jl-menu-backdrop{position:fixed;inset:0;z-index:201;background:#0009}
+    .jl-menu{
+      position:fixed;
+      z-index:202;
+      inset:0 auto 0 0;
+      width:min(78vw,292px);
+      padding:calc(13px + env(safe-area-inset-top)) 11px calc(15px + env(safe-area-inset-bottom));
+      overflow-y:auto;
+      border-right:1px solid #a437d177;
+      background:linear-gradient(180deg,#17051f,#070109);
+      box-shadow:18px 0 50px #000b;
+      transform:translateX(-105%);
+      transition:transform .2s ease;
+    }
+    .jl-menu.open{transform:translateX(0)}
+    .jl-menu-head{display:flex;justify-content:space-between;align-items:center;gap:8px}
+    .jl-menu-head h2{margin:2px 0 0;font-size:17px}.jl-menu-head small{font-size:8px;color:#a792ae}
+    .jl-menu-close{width:35px;height:35px;border:1px solid #843c9a;border-radius:11px;background:#100317;color:#fff;font-size:22px}
+    .jl-menu-list{display:grid;gap:6px;margin-top:14px}
+    .jl-menu-list a,.jl-menu-list button{
+      min-height:49px;
+      display:grid;
+      grid-template-columns:31px minmax(0,1fr) 12px;
+      align-items:center;
       gap:8px;
+      padding:7px 9px;
+      border:1px solid #68287955;
       border-radius:14px;
+      background:#100316;
+      color:#fff;
+      text-decoration:none;
+      text-align:left;
     }
-    #seatSheet.request-mode .jl-person-avatar{width:43px;height:43px;border-radius:13px;font-size:18px}
-    #seatSheet.request-mode .jl-person-name-row strong{font-size:13px}
-    #seatSheet.request-mode .jl-person-meta{font-size:8px}
-    #seatSheet.request-mode .jl-person-badges{margin-top:5px}
-    #seatSheet.request-mode .jl-person-actions,
-    #seatSheet.request-mode .jl-seat-help{display:none}
-    #seatSheet.request-mode .jl-sheet-actions{gap:7px;margin-top:8px}
-    #seatSheet.request-mode .jl-sheet-actions button{min-height:38px;border-radius:11px;font-size:10px}
-
-    @media(max-width:390px){
-      .jl-chat-dock,.jl-chat-dock.collapsed{left:6px;right:6px}
-      .jl-chat-bottom-row{grid-template-columns:minmax(0,1fr) 47px;gap:5px}
-      .jl-chat-settings{width:47px}
-      .jl-settings-grid button{min-height:66px}
-      #seatSheet.request-mode{top:calc(76px + env(safe-area-inset-top));left:8px;right:8px}
+    .jl-menu-list b{font-size:11px}.jl-menu-list small{display:block;margin-top:2px;color:#97859e;font-size:8px}
+    .jl-version{margin:13px 4px;color:#85718d;font-size:8px}
+    .jl-toast{
+      position:fixed;
+      z-index:3000;
+      left:50%;
+      bottom:calc(100px + env(safe-area-inset-bottom));
+      transform:translateX(-50%) translateY(20px);
+      width:min(88%,410px);
+      padding:11px 13px;
+      border:1px solid #b43bd577;
+      border-radius:14px;
+      background:#100316f3;
+      text-align:center;
+      font-size:11px;
+      opacity:0;
+      pointer-events:none;
+      transition:.2s;
     }
+    .jl-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
+    @media(max-width:430px){
+      .jl-shell{padding-left:10px;padding-right:10px}
+      .jl-camera-card{min-height:405px}
+      .jl-mode{padding:0 12px;font-size:11px}
+      .jl-start-camera{min-width:230px}
+      .jl-camera-icon{width:118px;height:118px}
+      .jl-empty strong{font-size:28px}
+      .jl-filter{padding:0 9px;font-size:10px}
+      .jl-battle-card{left:58px;right:58px}
+      .jl-battle-head b{font-size:8px}
+      .jl-seat-stack{top:calc(204px + env(safe-area-inset-top))}
+      .jl-gifts{grid-template-columns:repeat(3,1fr)}
+    }
+    @media(max-width:360px){
+      .jl-mode{padding:0 9px}
+      .jl-camera-bottom{gap:4px}
+      .jl-chip{padding:0 10px}
+      .jl-battle-card{left:53px;right:53px;padding-left:8px;padding-right:8px}
+      .jl-battle-teams{gap:5px;grid-template-columns:minmax(0,1fr) 34px minmax(0,1fr)}
+      .jl-chatbar{grid-template-columns:1fr 43px 43px 43px}
+      .jl-options{grid-template-columns:1fr}
+    }
   </style>
 </head>
 <body>
   <main class="jl-shell" id="prepScreen">
     <header class="jl-header">
-      <button class="jl-round" id="menuOpen" aria-label="Abrir menú">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
-      </button>
+      <button class="jl-round" id="menuOpen" type="button" aria-label="Abrir menú">☰</button>
       <div class="jl-brand">
-        <img src="jemmo-logo-header-wide.webp" alt="JEMMO LIVE">
-        <small>PREPARACIÓN DE TRANSMISIÓN · V0.6.9 PRUEBAS</small>
+        <img id="brandLogo" src="jemmo-logo-header.webp" alt="JEMMO LIVE">
+        <strong id="brandFallback">JEMMO LIVE</strong>
+        <small>PREPARACIÓN DE TRANSMISIÓN · V0.6.10<br>PRUEBAS</small>
       </div>
-      <button class="jl-round" id="helpButton" aria-label="Ayuda">?</button>
+      <button class="jl-round" id="helpButton" type="button" aria-label="Ayuda">?</button>
     </header>
 
     <div class="jl-title-row">
       <h1>Prepara tu LIVE</h1>
-      <div class="jl-timer" id="prepTimer">00:00</div>
+      <div class="jl-prep-timer" id="prepTimer">00:00</div>
     </div>
 
-    <section class="jl-camera-card" id="cameraCard">
-      <video id="mainVideo" autoplay muted playsinline webkit-playsinline disablepictureinpicture></video>
-      <video id="pipVideo" class="jl-pip" autoplay muted playsinline webkit-playsinline disablepictureinpicture hidden></video>
+    <section class="jl-camera-card">
+      <video id="mainVideo" autoplay muted playsinline disablepictureinpicture></video>
+      <video id="pipVideo" class="pip" autoplay muted playsinline disablepictureinpicture hidden></video>
 
       <div class="jl-modebar">
-        <button class="jl-mode active" data-camera="user">Frontal</button>
-        <button class="jl-mode" data-camera="environment">Trasera</button>
-        <button class="jl-mode" data-camera="both">Ambas</button>
+        <button class="jl-mode active" data-mode="user">Frontal</button>
+        <button class="jl-mode" data-mode="environment">Trasera</button>
+        <button class="jl-mode" data-mode="both">Ambas</button>
       </div>
-
-      <button class="jl-round jl-switch" id="switchCamera" aria-label="Cambiar cámara">↔</button>
+      <button class="jl-switch" id="switchCamera" type="button" aria-label="Cambiar cámara">↔</button>
 
       <div class="jl-empty" id="cameraEmpty">
         <div class="jl-empty-inner">
           <div class="jl-camera-icon">▣</div>
           <strong>Activa la cámara</strong>
-          <small>Sin espejo · revisa encuadre y luz</small>
+          <small>Sin espejo · calidad adaptada a tu móvil</small>
         </div>
       </div>
 
-      <button class="jl-start-camera" id="startCamera">ACTIVAR CÁMARA</button>
+      <button class="jl-start-camera" id="startCamera" type="button">ACTIVAR CÁMARA</button>
 
       <div class="jl-camera-bottom">
-        <button class="jl-chip gold" id="coverShortcut" type="button">▧ Datos LIVE</button>
-        <div class="jl-filterbar" aria-label="Filtros de cámara">
-          <button class="jl-chip jl-filter active" type="button" data-filter="natural">Natural</button>
-          <button class="jl-chip jl-filter" type="button" data-filter="suave">Suave</button>
-          <button class="jl-chip jl-filter" type="button" data-filter="luz">Luz</button>
+        <button class="jl-chip gold" id="openEditor" type="button">▧ Datos LIVE</button>
+        <div class="jl-filterbar">
+          <button class="jl-filter active" data-filter="natural">Natural</button>
+          <button class="jl-filter" data-filter="soft">Suave</button>
+          <button class="jl-filter" data-filter="light">Luz</button>
         </div>
       </div>
     </section>
 
-    <section class="jl-editor" id="editorCard">
-      <button class="jl-editor-toggle" id="editorToggle" type="button" aria-expanded="true">
-        <span><b>Datos del LIVE</b><small id="editorStatus">Configura portada, título y descripción</small></span>
-        <i id="editorArrow">⌃</i>
+    <section class="jl-editor">
+      <button class="jl-editor-toggle" id="editorToggle" type="button">
+        <span><b>Datos del LIVE</b><small id="editorStatus">Completa y guarda tus datos</small></span><i id="editorArrow">⌄</i>
       </button>
-
-      <div class="jl-editor-saved" id="editorSaved" hidden>
-        <img id="savedCover" src="jemmo-logo-header.webp" alt="Portada guardada">
-        <div><b id="savedTitle">Mi LIVE</b><small id="savedDescription">Datos guardados</small></div>
-        <button id="editSaved" type="button">Editar</button>
-      </div>
-
       <div class="jl-editor-body" id="editorBody">
-        <div class="jl-grid">
-          <div class="jl-field">
-            <label for="liveTitle">Título del LIVE <span class="jl-required">Obligatorio</span></label>
-            <input id="liveTitle" maxlength="60" placeholder="Escribe un título claro">
-            <small>Mínimo 5 caracteres.</small>
+        <div class="jl-field">
+          <label>Foto de portada <span class="jl-required">Obligatoria</span></label>
+          <div class="jl-cover">
+            <img class="jl-cover-preview" id="coverPreview" alt="Portada">
+            <input id="coverInput" type="file" accept="image/*">
           </div>
-
-          <div class="jl-field">
-            <label for="liveDescription">Descripción <span class="jl-required">Obligatoria</span></label>
-            <textarea id="liveDescription" maxlength="180" placeholder="Explica brevemente de qué tratará tu LIVE"></textarea>
-            <small>Mínimo 10 caracteres. La revisión automática bloquea textos no permitidos.</small>
-          </div>
-
-          <div class="jl-field" id="coverField">
-            <label for="coverInput">Portada <span class="jl-required">Obligatoria</span></label>
-            <div class="jl-cover">
-              <img class="jl-cover-preview" id="coverPreview" src="jemmo-logo-header.webp" alt="Vista de portada">
-              <input id="coverInput" type="file" accept="image/*">
-            </div>
-            <small>Se guarda en este dispositivo. No tendrás que elegirla en cada LIVE.</small>
-          </div>
-
-          <div class="jl-field">
-            <label for="privacy">Visibilidad</label>
-            <select id="privacy">
-              <option>Público</option>
-              <option>Solo seguidores</option>
-              <option>Privado con contraseña</option>
-            </select>
-          </div>
+        </div>
+        <div class="jl-field">
+          <label for="liveTitle">Título <span class="jl-required">Obligatorio</span></label>
+          <input id="liveTitle" maxlength="70" placeholder="Pon un título para tu LIVE">
+        </div>
+        <div class="jl-field">
+          <label for="liveDescription">Descripción <span class="jl-required">Obligatoria</span></label>
+          <textarea id="liveDescription" maxlength="240" placeholder="Explica qué vas a compartir"></textarea>
+        </div>
+        <div class="jl-field">
+          <label for="liveVisibility">Visibilidad</label>
+          <select id="liveVisibility"><option value="public">Público</option><option value="followers">Seguidores</option><option value="private">Privado</option></select>
+        </div>
+        <div class="jl-options">
+          <article class="jl-option"><span><b>Micrófono</b><small>Audio de la transmisión</small></span><button class="jl-toggle on" id="micToggle" type="button"><span></span></button></article>
+          <article class="jl-option"><span><b>Comentarios</b><small>Chat visible en el LIVE</small></span><button class="jl-toggle on" id="chatToggle" type="button"><span></span></button></article>
         </div>
         <button class="jl-save-profile" id="saveProfile" type="button">GUARDAR DATOS DEL LIVE</button>
       </div>
     </section>
 
-    <section class="jl-grid jl-options-grid">
-      <div class="jl-option">
-        <div><strong>Micrófono</strong><small>Audio de la transmisión</small></div>
-        <button class="jl-toggle on" id="micToggle" aria-pressed="true"><span></span></button>
-      </div>
-
-      <div class="jl-option">
-        <div><strong>Comentarios</strong><small>Chat durante el LIVE</small></div>
-        <button class="jl-toggle on" id="chatToggle" aria-pressed="true"><span></span></button>
-      </div>
-    </section>
-
-    <section class="jl-summary">
-      <div class="jl-checklist">
-        <div class="jl-check" id="checkCamera"><span class="jl-dot"></span>Cámara y permisos</div>
+    <div class="jl-summary">
+      <section class="jl-checklist">
+        <div class="jl-check" id="checkCamera"><span class="jl-dot"></span>Cámara</div>
         <div class="jl-check" id="checkCover"><span class="jl-dot"></span>Portada</div>
         <div class="jl-check" id="checkTitle"><span class="jl-dot"></span>Título</div>
         <div class="jl-check" id="checkDescription"><span class="jl-dot"></span>Descripción</div>
-      </div>
-      <div class="jl-connection">
-        <span>⌁</span>
-        <b>Conexión</b>
-        <small id="connectionText">Comprobando…</small>
-      </div>
-    </section>
+      </section>
+      <section class="jl-connection"><span>⌁</span><b>Conexión</b><small id="connectionText">Comprobando</small></section>
+    </div>
 
-    <button class="jl-launch" id="launchButton" disabled>INICIAR LIVE</button>
-    <div class="jl-message" id="validationMessage">Completa los puntos rojos para comenzar.</div>
+    <button class="jl-launch" id="launchLive" type="button" disabled>INICIAR TRANSMISIÓN LIVE</button>
+    <div class="jl-validation" id="validationMessage"></div>
   </main>
 
   <section class="jl-broadcast" id="broadcastScreen" hidden>
-    <video id="broadcastVideo" autoplay muted playsinline webkit-playsinline disablepictureinpicture></video>
-    <video id="broadcastPip" class="jl-pip" autoplay muted playsinline webkit-playsinline disablepictureinpicture hidden></video>
+    <video id="broadcastVideo" autoplay muted playsinline disablepictureinpicture></video>
+    <video id="broadcastPip" class="pip" autoplay muted playsinline disablepictureinpicture hidden></video>
+    <div class="jl-live-shade"></div>
 
-    <div class="jl-live-overlay">
-      <div class="jl-live-top">
+    <div class="jl-live-ui">
+      <header class="jl-live-top">
         <div class="jl-live-top-left">
           <div class="jl-host">
-            <img class="jl-avatar" src="jemmo-logo-header.webp" alt="">
-            <div><b>Mi LIVE</b><small id="liveTimer">00:00 · 1 espectador</small></div>
+            <img class="jl-avatar" id="hostAvatar" src="jemmo-fish-nav.webp" alt="">
+            <span><b>Jesús · JEMMO</b><small id="liveTimer">00:00 · 1 espectador</small></span>
           </div>
-          <div class="jl-task-card active" id="taskCard">
-            <span class="jl-task-dot" aria-hidden="true"></span>
-            <b id="taskStatus">Tarea 1 de 2</b>
-            <span class="jl-task-time" id="taskTime">00:00</span>
-            <button class="jl-task-claim" id="taskClaim" type="button" hidden>Cobrar</button>
-          </div>
+          <div class="jl-task-card" id="taskCard"><span class="jl-task-dot"></span><b id="taskText">Tarea 1 en curso</b><time id="taskTime">00:00</time></div>
         </div>
         <div class="jl-live-top-right">
-          <div class="jl-live-badge">EN DIRECTO</div>
+          <span class="jl-gift-count" id="giftCount">🎁 0</span>
+          <button class="jl-live-badge" id="endLive" type="button">EN DIRECTO <span>×</span></button>
         </div>
-      </div>
+      </header>
 
-      <div class="jl-live-stage-tools" aria-label="Herramientas laterales">
-        <div class="jl-seat-stack" id="seatStack" aria-label="Sillas laterales">
-          <button class="jl-seat" data-seat="0" aria-label="Silla lateral 1"><span>+</span><small>S1</small></button>
-          <button class="jl-seat" data-seat="1" aria-label="Silla lateral 2"><span>+</span><small>S2</small></button>
-          <button class="jl-seat" data-seat="2" aria-label="Silla lateral 3"><span>+</span><small>S3</small></button>
-          <button class="jl-seat" data-seat="3" aria-label="Silla lateral 4"><span>+</span><small>S4</small></button>
-        </div>
-
-        <button class="jl-rail-tab jl-battle-rail-tab" id="battleToggle" type="button" aria-expanded="false" aria-controls="battleCard">
-          <span>⚔</span><small>Batalla</small>
-        </button>
-
-        <button class="jl-gift-fab" id="liveGifts" type="button" aria-label="Abrir caja de regalos">
-          <span>🎁</span><small>Regalos</small><b id="giftTotal">0</b>
-        </button>
-      </div>
-
-      <article class="jl-battle-mini jl-battle-drawer" id="battleCard" aria-label="Batalla popular" hidden>
-        <div class="jl-battle-mini-head"><b>MÁS POPULAR</b><span id="battleViewers">2.8K viendo</span></div>
+      <button class="jl-battle-card" id="battleCard" type="button" aria-label="Abrir batalla">
+        <div class="jl-battle-head"><b>🏆 BATALLA OFICIAL</b><time id="battleClock">06:42</time></div>
         <div class="jl-battle-teams">
-          <div class="jl-battle-team"><strong id="battleTeamA">Casa Tenerife</strong><em id="battleScoreA">8.4K</em></div>
-          <div class="jl-battle-vs">VS</div>
-          <div class="jl-battle-team"><strong id="battleTeamB">Casa Unicornio</strong><em id="battleScoreB">7.9K</em></div>
+          <div class="jl-battle-team"><strong>Casa Tenerife</strong><em id="scoreA">12,500</em></div>
+          <span class="jl-battle-vs">VS</span>
+          <div class="jl-battle-team"><strong>Casa Unicornio</strong><em id="scoreB">9,800</em></div>
         </div>
-        <div class="jl-battle-track"><i class="a" id="battleBarA"></i><i class="b" id="battleBarB"></i></div>
-        <p class="jl-battle-winner" id="battleWinner">Va ganando Casa Tenerife</p>
-        <div class="jl-battle-controls">
-          <button id="battlePrev" type="button" aria-label="Batalla anterior">‹</button>
-          <button class="jl-battle-open" id="battleOpen" type="button">DETALLES</button>
-          <button id="battleNext" type="button" aria-label="Batalla siguiente">›</button>
+        <div class="jl-battle-track"><i class="a" id="barA"></i><i class="b" id="barB"></i></div>
+      </button>
+
+      <aside class="jl-seat-stack" aria-label="Sillas del LIVE">
+        <button class="jl-seat request" data-seat="1" type="button" aria-label="Silla 1"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/></svg><small>1</small></button>
+        <button class="jl-seat" data-seat="2" type="button" aria-label="Silla 2"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/></svg><small>2</small></button>
+        <button class="jl-seat occupied" data-seat="3" type="button" aria-label="Silla 3"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/></svg><small>3</small></button>
+        <button class="jl-seat" data-seat="4" type="button" aria-label="Silla 4"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><small>4</small></button>
+      </aside>
+
+      <div class="jl-live-bottom">
+        <div class="jl-chat-layer" id="chatLayer">
+          <div class="jl-chat-line">Sistema: Tu LIVE ha comenzado.</div>
+          <div class="jl-chat-line">Luna: ¡Muchísima suerte! 💜</div>
         </div>
-      </article>
-    </div>
-
-    <section class="jl-chat-dock collapsed" id="chatDock" aria-label="Chat y ajustes del LIVE">
-      <div class="jl-live-chat" id="liveChat" aria-live="polite">
-        <div class="jl-chat-line">JEMMO: La transmisión ha comenzado.</div>
-        <div class="jl-chat-line">Revisa el encuadre y el micrófono.</div>
-      </div>
-      <div class="jl-chat-bottom-row">
-        <div class="jl-chat-entry">
-          <button class="jl-chat-handle" id="chatHandle" type="button" aria-expanded="false">
-            <span>💬</span><b id="chatHandleText">Iniciar chat</b>
-          </button>
-          <form class="jl-chat-form" id="liveChatForm">
-            <button class="jl-sticker-button" id="liveStickerButton" type="button" aria-label="Abrir stickers">☺</button>
-            <input id="liveChatInput" maxlength="160" autocomplete="off" enterkeyhint="send" placeholder="Escribe un mensaje…" aria-label="Mensaje del chat">
-            <button class="jl-chat-send" type="submit" aria-label="Enviar mensaje">➤</button>
-          </form>
+        <div class="jl-chatbar">
+          <form id="chatForm"><input id="chatInput" placeholder="Escribe un mensaje…" autocomplete="off"><button type="submit">➤</button></form>
+          <button class="jl-action" id="stickersButton" type="button" aria-label="Stickers">☺</button>
+          <button class="jl-action gift" id="giftsButton" type="button" aria-label="Regalos">🎁</button>
+          <button class="jl-action settings" id="settingsButton" type="button" aria-label="Ajustes">⚙</button>
         </div>
-        <button class="jl-chat-settings" id="liveSettingsButton" type="button" aria-label="Abrir ajustes del LIVE">
-          <span>⚙</span><small>Ajustes</small>
-        </button>
-      </div>
-    </section>
-
-    <div class="jl-live-modal-backdrop" id="liveModalBackdrop" hidden></div>
-
-    <section class="jl-live-sheet" id="seatSheet" hidden aria-label="Mini perfil y control de participante">
-      <div class="jl-sheet-head">
-        <div><h3 id="seatSheetTitle">Perfil del participante</h3><p id="seatSheetText">Información rápida sin salir del LIVE.</p></div>
-        <button class="jl-sheet-close" id="seatSheetClose" type="button" aria-label="Cerrar">×</button>
       </div>
 
-      <article class="jl-person-card" id="seatProfileCard" aria-label="Mini perfil">
-        <div class="jl-person-avatar" id="seatProfileAvatar">J</div>
-        <div class="jl-person-main">
-          <div class="jl-person-name-row">
-            <strong id="seatProfileName">Participante</strong>
-            <span class="jl-person-state" id="seatProfileState">EN LIVE</span>
-          </div>
-          <p class="jl-person-meta" id="seatProfileMeta">España · Casa Tenerife</p>
-          <div class="jl-person-badges">
-            <span id="seatProfileLevel">Nivel 8</span>
-            <span id="seatProfileBadge">Emisor</span>
-          </div>
+      <div class="jl-backdrop" id="liveBackdrop" hidden></div>
+
+      <section class="jl-sheet" id="settingsSheet" hidden>
+        <div class="jl-sheet-head"><div><h3>Ajustes del LIVE</h3><p>Controles compactos de la sala</p></div><button class="jl-sheet-close" data-close-sheet>×</button></div>
+        <div class="jl-sheet-grid">
+          <button id="shareLive">↗<small>Compartir</small></button>
+          <button id="liveMic">🎙<small>Micrófono</small></button>
+          <button id="liveCamera">▣<small>Cámara</small></button>
+          <button id="liveSwitch">↔<small>Cambiar</small></button>
+          <button id="liveComments">💬<small>Comentarios</small></button>
+          <button id="roomControls">⚙<small>Controles</small></button>
         </div>
-        <div class="jl-person-actions">
-          <button class="connect" id="seatConnect" type="button">CONECTAR</button>
-          <button id="seatFullProfile" type="button">VER PERFIL</button>
-        </div>
-      </article>
-
-      <div class="jl-sheet-actions" id="seatRequestActions">
-        <button class="danger" id="seatReject" type="button">RECHAZAR</button>
-        <button class="accept" id="seatAccept" type="button">ACEPTAR</button>
-      </div>
-      <div class="jl-sheet-actions three" id="seatHostControls" hidden>
-        <button id="seatMute" type="button">SILENCIAR</button>
-        <button id="seatLower" type="button">BAJAR</button>
-        <button class="danger" id="seatExpel" type="button">EXPULSAR</button>
-      </div>
-      <p class="jl-seat-help">El mini perfil permanece dentro de la transmisión. La conexión real se enlazará al backend del perfil.</p>
-    </section>
-
-    <section class="jl-live-sheet jl-settings-sheet" id="settingsSheet" hidden aria-label="Ajustes del LIVE">
-      <div class="jl-sheet-head">
-        <div><h3>Ajustes del LIVE</h3><p>Controles principales sin salir de la transmisión.</p></div>
-        <button class="jl-sheet-close" id="settingsSheetClose" type="button" aria-label="Cerrar">×</button>
-      </div>
-      <div class="jl-settings-grid">
-        <button id="settingsCamera" type="button"><span>↔</span><b>Cambiar cámara</b><small>Frontal o trasera</small></button>
-        <button id="settingsMic" type="button"><span>🎤</span><b>Micrófono</b><small id="settingsMicState">Activo</small></button>
-        <button id="settingsComments" type="button"><span>💬</span><b>Comentarios</b><small id="settingsCommentsState">Activos</small></button>
-        <button id="settingsShare" type="button"><span>↗</span><b>Compartir LIVE</b><small>Enviar enlace</small></button>
-        <button id="settingsRoom" type="button"><span>🛡</span><b>Control de sala</b><small>Sillas y participantes</small></button>
-        <button class="danger" id="settingsEnd" type="button"><span>■</span><b>Finalizar LIVE</b><small>Cerrar transmisión</small></button>
-      </div>
-    </section>
-
-    <section class="jl-live-sheet" id="giftSheet" hidden aria-label="Caja de regalos">
-      <div class="jl-sheet-head">
-        <div><h3>Caja de regalos</h3><p>Selecciona un regalo para probar su envío durante el LIVE.</p></div>
-        <button class="jl-sheet-close" id="giftSheetClose" type="button" aria-label="Cerrar">×</button>
-      </div>
-      <div class="jl-gift-grid">
-        <button class="jl-gift-item" data-gift="rose" type="button"><span>🌹</span><b>Rosa</b><small>10 JEMMOS</small></button>
-        <button class="jl-gift-item" data-gift="fish" type="button"><span>🐟</span><b>Chicharro</b><small>50 JEMMOS</small></button>
-        <button class="jl-gift-item" data-gift="crown" type="button"><span>👑</span><b>Corona</b><small>250 JEMMOS</small></button>
-        <button class="jl-gift-item" data-gift="rocket" type="button"><span>🚀</span><b>Cohete</b><small>500 JEMMOS</small></button>
-        <button class="jl-gift-item" data-gift="diamond" type="button"><span>💎</span><b>Diamante</b><small>900 JEMMOS</small></button>
-        <button class="jl-gift-item" data-gift="castle" type="button"><span>🏰</span><b>Castillo</b><small>1.500 JEMMOS</small></button>
-      </div>
-      <section class="jl-lucky-box" aria-label="Afortunado">
-        <div><b>AFORTUNADO</b><small>Prueba de juego sorpresa, sin apuesta con dinero real.</small></div>
-        <button id="luckyGift" type="button">PROBAR SUERTE</button>
       </section>
-      <div class="jl-gift-balance">Saldo de prueba: <span id="giftBalance">8.590</span> JEMMOS</div>
-    </section>
 
-    <section class="jl-live-sheet" id="battleSheet" hidden aria-label="Detalle de batalla">
-      <div class="jl-sheet-head">
-        <div><h3>Batalla destacada</h3><p>El LIVE actual continúa abierto mientras revisas el marcador.</p></div>
-        <button class="jl-sheet-close" id="battleSheetClose" type="button" aria-label="Cerrar">×</button>
-      </div>
-      <div class="jl-battle-detail" id="battleDetail"></div>
-      <div class="jl-sheet-actions"><button class="accept" id="battleKeepWatching" type="button">SEGUIR EN MI LIVE</button><button id="battleCycle" type="button">OTRA BATALLA</button></div>
-    </section>
+      <section class="jl-sheet" id="stickersSheet" hidden>
+        <div class="jl-sheet-head"><div><h3>Stickers JEMMO</h3><p>Toca uno para enviarlo al chat</p></div><button class="jl-sheet-close" data-close-sheet>×</button></div>
+        <div class="jl-stickers">
+          <button>🐟</button><button>💜</button><button>🔥</button><button>👑</button><button>🎉</button>
+          <button>🌊</button><button>⭐</button><button>🦄</button><button>🏆</button><button>✨</button>
+        </div>
+      </section>
 
-    <div class="jl-gift-burst" id="giftBurst" hidden><span id="giftBurstIcon">🎁</span><b id="giftBurstText">Regalo enviado</b></div>
+      <section class="jl-sheet" id="giftsSheet" hidden>
+        <div class="jl-sheet-head"><div><h3>Regalos</h3><p>Prueba local de animaciones y puntuación</p></div><button class="jl-sheet-close" data-close-sheet>×</button></div>
+        <div class="jl-gifts">
+          <button data-gift="🌹" data-cost="10"><span>🌹</span><b>Rosa</b><small>10</small></button>
+          <button data-gift="💎" data-cost="50"><span>💎</span><b>Diamante</b><small>50</small></button>
+          <button data-gift="👑" data-cost="120"><span>👑</span><b>Corona</b><small>120</small></button>
+          <button data-gift="🐟" data-cost="250"><span>🐟</span><b>Chicharro</b><small>250</small></button>
+          <button data-gift="🚀" data-cost="500"><span>🚀</span><b>Cohete</b><small>500</small></button>
+          <button data-gift="🏰" data-cost="900"><span>🏰</span><b>Castillo</b><small>900</small></button>
+        </div>
+        <div class="jl-balance" id="giftBalance">Saldo: 8,590 JEMMOS</div>
+      </section>
+
+      <section class="jl-sheet" id="seatSheet" hidden>
+        <div class="jl-sheet-head"><div><h3 id="seatTitle">Silla del LIVE</h3><p id="seatSubtitle">Gestión individual del participante</p></div><button class="jl-sheet-close" data-close-sheet>×</button></div>
+        <div class="jl-person-card"><h4 id="seatPerson">Luna · Nivel 12</h4><p>Casa Tenerife · España<br>Perfil emergente sin abandonar la transmisión.</p></div>
+        <div class="jl-person-actions">
+          <button class="accept" id="seatAccept">Aceptar / conectar</button>
+          <button id="seatMute">Silenciar</button>
+          <button id="seatDown">Bajar de la silla</button>
+          <button class="danger" id="seatKick">Expulsar 15 min</button>
+        </div>
+      </section>
+
+      <section class="jl-sheet" id="battleSheet" hidden>
+        <div class="jl-sheet-head"><div><h3>Batalla oficial</h3><p>Tarjeta de competición separada de las sillas</p></div><button class="jl-sheet-close" data-close-sheet>×</button></div>
+        <div class="jl-person-card"><h4>Casa Tenerife VS Casa Unicornio</h4><p>Los regalos enviados suman puntos al marcador de la batalla. Esta simulación es local.</p></div>
+      </section>
+
+      <div class="jl-gift-burst" id="giftBurst" hidden><span id="giftBurstIcon">🎁</span><b id="giftBurstText">Regalo enviado</b></div>
+    </div>
   </section>
 
-  <div class="jl-backdrop" id="menuBackdrop" hidden></div>
+  <div class="jl-menu-backdrop" id="menuBackdrop" hidden></div>
   <aside class="jl-menu" id="sideMenu" aria-hidden="true">
-    <div class="jl-menu-head">
-      <div><small>MENÚ DE USUARIO</small><h2>JEMMO LIVE</h2></div>
-      <button class="jl-close" id="menuClose" aria-label="Cerrar menú">×</button>
-    </div>
-    <label class="jl-search">⌕<input id="menuSearch" placeholder="Buscar función…"></label>
-    <nav class="jl-menu-list" id="menuList">
-      <a class="jl-menu-item" data-search="perfil yo cuenta foto" href="yo.html"><span class="jl-menu-icon">👤</span><span><b>Mi perfil</b><small>Cuenta y apariencia</small></span><i>›</i></a>
-      <button class="jl-menu-item" data-search="monedero saldo monedas recargar retirar"><span class="jl-menu-icon">🪙</span><span><b>Monedero</b><small>Saldo, recargas y retiros</small></span><i>›</i></button>
-      <button class="jl-menu-item" data-search="configuracion idioma permisos camara microfono"><span class="jl-menu-icon">⚙️</span><span><b>Configuración</b><small>Idioma y permisos</small></span><i>›</i></button>
-      <button class="jl-menu-item" data-search="ayuda soporte seguridad privacidad"><span class="jl-menu-icon">?</span><span><b>Ayuda y soporte</b><small>Seguridad y asistencia</small></span><i>›</i></button>
-      <a class="jl-menu-item" data-search="salir cerrar sesion" href="index.html"><span class="jl-menu-icon">↪</span><span><b>Cerrar sesión</b></span><i>›</i></a>
+    <div class="jl-menu-head"><div><small>MENÚ DE USUARIO</small><h2>JEMMO LIVE</h2></div><button class="jl-menu-close" id="menuClose">×</button></div>
+    <nav class="jl-menu-list">
+      <a href="yo.html"><span>👤</span><span><b>Mi perfil</b><small>Cuenta y apariencia</small></span><i>›</i></a>
+      <button type="button"><span>🪙</span><span><b>Monedero</b><small>Saldo, recargas y retiros</small></span><i>›</i></button>
+      <button type="button"><span>⚙️</span><span><b>Configuración</b><small>Idioma y permisos</small></span><i>›</i></button>
+      <button type="button"><span>?</span><span><b>Ayuda y soporte</b><small>Seguridad y asistencia</small></span><i>›</i></button>
+      <a href="index.html"><span>↪</span><span><b>Cerrar sesión</b></span><i>›</i></a>
     </nav>
-    <div class="jl-version">V0.6.9 PRUEBAS · actualización sobre V0.6.8</div>
+    <div class="jl-version">V0.6.10 PRUEBAS · actualización sobre V0.6.9</div>
   </aside>
 
   <div class="jl-toast" id="toast"></div>
 
-  <nav class="jl-nav bottom-nav" data-current="live" aria-label="Navegación principal">
-    <a data-tab="inicio" href="inicio.html" style="--tab-color:#29d5e7"><span class="jl-nav-icon nav-icon" data-fish-color="#29d5e7"></span><b>Inicio</b></a>
-    <a data-tab="live" href="live.html" style="--tab-color:#ff3986"><span class="jl-nav-icon nav-icon" data-fish-color="#ff3986"></span><b>Live</b></a>
-    <a data-tab="salas" href="salas.html" style="--tab-color:#9d5bff"><span class="jl-nav-icon nav-icon" data-fish-color="#9d5bff"></span><b>Salas</b></a>
-    <a data-tab="mensajes" href="mensajes.html" style="--tab-color:#4c8dff"><span class="jl-badge badge">8</span><span class="jl-nav-icon nav-icon" data-fish-color="#4c8dff"></span><b>Mensajes</b></a>
-    <a data-tab="yo" href="yo.html" style="--tab-color:#ffd04f"><span class="jl-nav-icon nav-icon" data-fish-color="#ffd04f"></span><b>Yo</b></a>
+  <nav class="jl-nav bottom-nav" id="bottomNav" data-current="live" aria-label="Navegación principal">
+    <a data-tab="inicio" href="inicio.html" style="--tab-color:#29d5e7">
+      <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M3 11 12 3l9 8v10h-6v-6H9v6H3z"/></svg></span><b>Inicio</b>
+    </a>
+    <a class="is-current" data-tab="live" href="live.html" style="--tab-color:#ff3986" aria-current="page">
+      <img class="active-fish" src="jemmo-fish-nav.webp" alt="Pez JEMMO"><b>Live</b>
+    </a>
+    <a data-tab="salas" href="salas.html" style="--tab-color:#9d5bff">
+      <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg></span><b>Salas</b>
+    </a>
+    <a data-tab="mensajes" href="mensajes.html" style="--tab-color:#4c8dff">
+      <span class="jl-badge">8</span><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M21 12a8.5 8.5 0 0 1-9 8 10 10 0 0 1-4-.8L3 21l1.7-4A8.3 8.3 0 0 1 3 12a9 9 0 0 1 18 0Z" stroke-dasharray="2.2 2.2"/></svg></span><b>Mensajes</b>
+    </a>
+    <a data-tab="yo" href="yo.html" style="--tab-color:#ffd04f">
+      <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 22c1-6 4-9 8-9s7 3 8 9"/></svg></span><b>Yo</b>
+    </a>
   </nav>
 
   <script>
@@ -1616,1164 +1090,636 @@
 
     const $ = id => document.getElementById(id);
     const PROFILE_KEY = "jemmo_live_profile_v065";
-    const TASK_SECONDS = 60;
-    const TASK_COUNT = 2;
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-
     const state = {
-      mode: "user",
-      mainCameraStream: null,
-      pipCameraStream: null,
-      audioStream: null,
-      coverOk: false,
-      coverData: "",
-      live: false,
-      prepSeconds: 0,
-      liveSeconds: 0,
-      micEnabled: true,
-      chatEnabled: true,
-      filter: "natural",
-      activationToken: 0,
-      milestone: 0,
-      taskIndex: 0,
-      taskElapsed: 0,
-      taskState: "active",
-      taskClaimedUntil: 0,
-      battleIndex: 0,
-      giftBalance: 8590,
-      giftTotal: 0,
-      activeSeatIndex: null,
-      seatRequestTimers: []
+      mode:"user",
+      mainStream:null,
+      pipStream:null,
+      audioStream:null,
+      filter:"natural",
+      mic:true,
+      comments:true,
+      coverData:"",
+      live:false,
+      prepSeconds:0,
+      liveSeconds:0,
+      taskIndex:0,
+      taskElapsed:0,
+      gifts:0,
+      balance:8590,
+      scoreA:12500,
+      scoreB:9800,
+      activeSeat:null,
+      cameraEnabled:true
     };
 
-    const mainVideo = $("mainVideo");
-    const pipVideo = $("pipVideo");
-    const broadcastVideo = $("broadcastVideo");
-    const broadcastPip = $("broadcastPip");
-    const startCamera = $("startCamera");
-    const cameraEmpty = $("cameraEmpty");
-    const launchButton = $("launchButton");
-    const message = $("validationMessage");
-    const toast = $("toast");
-    const coverInput = $("coverInput");
+    const videos = {
+      main:$("mainVideo"),
+      pip:$("pipVideo"),
+      broadcast:$("broadcastVideo"),
+      broadcastPip:$("broadcastPip")
+    };
 
-    [mainVideo,pipVideo,broadcastVideo,broadcastPip].forEach(video => {
+    [videos.main,videos.pip,videos.broadcast,videos.broadcastPip].forEach(video => {
       video.muted = true;
       video.playsInline = true;
       video.disablePictureInPicture = true;
     });
 
-    function showToast(text, duration = 2600) {
-      toast.textContent = text;
+    function showToast(text,duration=2600){
+      const toast=$("toast");
+      toast.textContent=text;
       toast.classList.add("show");
       clearTimeout(showToast.timer);
-      showToast.timer = setTimeout(() => toast.classList.remove("show"), duration);
+      showToast.timer=setTimeout(()=>toast.classList.remove("show"),duration);
     }
 
-    function stopStream(stream) {
-      if (!stream) return;
-      stream.getTracks().forEach(track => {
-        try { track.stop(); } catch {}
+    /* Sonido JEMMO: pez entrando suavemente en el agua. Muy bajo y sin vibración. */
+    let audioContext=null;
+    function playFishSplash(){
+      try{
+        audioContext ||= new (window.AudioContext||window.webkitAudioContext)();
+        if(audioContext.state==="suspended") audioContext.resume().catch(()=>{});
+        const ctx=audioContext;
+        const t=ctx.currentTime+.004;
+        const master=ctx.createGain();
+        master.gain.setValueAtTime(.0001,t);
+        master.gain.exponentialRampToValueAtTime(.012,t+.008);
+        master.gain.exponentialRampToValueAtTime(.0001,t+.16);
+        master.connect(ctx.destination);
+
+        const osc=ctx.createOscillator();
+        const og=ctx.createGain();
+        const filter=ctx.createBiquadFilter();
+        osc.type="sine";
+        osc.frequency.setValueAtTime(510,t);
+        osc.frequency.exponentialRampToValueAtTime(175,t+.13);
+        og.gain.setValueAtTime(.0001,t);
+        og.gain.exponentialRampToValueAtTime(.36,t+.007);
+        og.gain.exponentialRampToValueAtTime(.0001,t+.14);
+        filter.type="lowpass";
+        filter.frequency.value=950;
+        osc.connect(filter);filter.connect(og);og.connect(master);
+        osc.start(t);osc.stop(t+.145);
+
+        const length=Math.floor(ctx.sampleRate*.075);
+        const buffer=ctx.createBuffer(1,length,ctx.sampleRate);
+        const data=buffer.getChannelData(0);
+        for(let i=0;i<length;i++){
+          const fade=1-i/length;
+          data[i]=(Math.random()*2-1)*fade*fade;
+        }
+        const noise=ctx.createBufferSource();
+        const ng=ctx.createGain();
+        const nf=ctx.createBiquadFilter();
+        noise.buffer=buffer;
+        nf.type="bandpass";nf.frequency.value=700;nf.Q.value=.8;
+        ng.gain.setValueAtTime(.09,t);
+        ng.gain.exponentialRampToValueAtTime(.0001,t+.075);
+        noise.connect(nf);nf.connect(ng);ng.connect(master);
+        noise.start(t);
+      }catch{}
+    }
+
+    document.querySelectorAll(".jl-nav a,.jl-menu-list a").forEach(link=>{
+      link.addEventListener("click",event=>{
+        if(event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey) return;
+        const url=new URL(link.href,location.href);
+        if(url.origin!==location.origin) return;
+        event.preventDefault();
+        playFishSplash();
+        setTimeout(()=>location.href=url.href,65);
+      },true);
+    });
+
+    const brandLogo=$("brandLogo");
+    brandLogo.addEventListener("error",()=>{
+      brandLogo.hidden=true;
+      $("brandFallback").style.display="block";
+    });
+    $("hostAvatar").addEventListener("error",event=>{
+      event.currentTarget.style.visibility="hidden";
+    });
+
+    function formatTime(seconds){
+      const m=Math.floor(seconds/60).toString().padStart(2,"0");
+      const s=(seconds%60).toString().padStart(2,"0");
+      return `${m}:${s}`;
+    }
+    setInterval(()=>{
+      if(state.live){
+        state.liveSeconds++;
+        $("liveTimer").textContent=`${formatTime(state.liveSeconds)} · 1 espectador`;
+        updateTask();
+      }else{
+        state.prepSeconds++;
+        $("prepTimer").textContent=formatTime(state.prepSeconds);
+      }
+    },1000);
+
+    function updateTask(){
+      const total=60;
+      state.taskElapsed++;
+      if(state.taskIndex>=2) return;
+      const remaining=Math.max(0,total-state.taskElapsed);
+      $("taskTime").textContent=formatTime(state.taskElapsed);
+      $("taskText").textContent=`Tarea ${state.taskIndex+1} en curso`;
+      if(remaining===0){
+        $("taskCard").classList.add("complete");
+        $("taskText").textContent=`Tarea ${state.taskIndex+1} completada`;
+        $("taskTime").textContent="LISTA";
+        setTimeout(()=>{
+          state.taskIndex++;
+          state.taskElapsed=0;
+          if(state.taskIndex>=2){
+            $("taskCard").hidden=true;
+          }else{
+            $("taskCard").classList.remove("complete");
+            $("taskCard").hidden=false;
+          }
+        },2600);
+      }
+    }
+
+    function stopStream(stream){
+      stream?.getTracks().forEach(track=>{try{track.stop()}catch{}});
+    }
+    function detach(video){
+      try{video.pause()}catch{}
+      try{video.srcObject=null}catch{}
+    }
+    async function attach(video,stream){
+      detach(video);
+      video.style.transform="scaleX(1)";
+      video.style.webkitTransform="scaleX(1)";
+      video.srcObject=stream;
+      await video.play().catch(()=>{});
+    }
+    function cameraConstraints(facingMode){
+      return {
+        audio:false,
+        video:{
+          facingMode:{ideal:facingMode},
+          width:{ideal:1920},
+          height:{ideal:1080},
+          frameRate:{ideal:30,max:30}
+        }
+      };
+    }
+    async function ensureAudio(){
+      if(!state.mic) return;
+      if(state.audioStream?.getAudioTracks().some(t=>t.readyState==="live")) return;
+      state.audioStream=await navigator.mediaDevices.getUserMedia({
+        audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true},
+        video:false
       });
     }
-
-    function detachVideo(video) {
-      try { video.pause(); } catch {}
-      try { video.srcObject = null; } catch {}
-    }
-
-    function hasLiveTrack(stream, kind) {
-      return Boolean(stream?.getTracks().some(track => track.kind === kind && track.readyState === "live"));
-    }
-
-    function currentAudioTracks() {
-      return state.audioStream?.getAudioTracks().filter(track => track.readyState === "live") || [];
-    }
-
-    function composeBroadcastStream(cameraStream) {
-      const tracks = [
-        ...(cameraStream?.getVideoTracks().filter(track => track.readyState === "live") || []),
-        ...currentAudioTracks()
+    function compose(stream){
+      const tracks=[
+        ...(stream?.getVideoTracks().filter(t=>t.readyState==="live")||[]),
+        ...(state.mic?(state.audioStream?.getAudioTracks().filter(t=>t.readyState==="live")||[]):[])
       ];
       return new MediaStream(tracks);
     }
 
-    async function attachVideo(video, stream) {
-      detachVideo(video);
-      video.style.transform = "scaleX(1)";
-      video.style.webkitTransform = "scaleX(1)";
-      stream?.getVideoTracks().forEach(track => {
-        try { track.contentHint = "detail"; } catch {}
-      });
-      video.srcObject = stream;
-      await new Promise(resolve => {
-        if (video.readyState >= 1) return resolve();
-        const done = () => resolve();
-        video.addEventListener("loadedmetadata", done, {once:true});
-        setTimeout(done, 900);
-      });
-      await video.play().catch(() => {});
-    }
-
-    function stopVideoCameras() {
-      stopStream(state.mainCameraStream);
-      stopStream(state.pipCameraStream);
-      state.mainCameraStream = null;
-      state.pipCameraStream = null;
-      [mainVideo,pipVideo,broadcastVideo,broadcastPip].forEach(detachVideo);
-      pipVideo.hidden = true;
-      broadcastPip.hidden = true;
-    }
-
-    function clearAllMedia() {
-      state.activationToken++;
-      state.live = false;
-      stopVideoCameras();
-      stopStream(state.audioStream);
-      state.audioStream = null;
-      $("broadcastScreen").hidden = true;
-      $("prepScreen").hidden = false;
-      const nav = document.querySelector(".jl-nav");
-      nav.hidden = false;
-      nav.classList.remove("live-mode","chat-hidden");
-      $("chatDock")?.classList.add("collapsed");
-      if (typeof closeLiveSheets === "function") closeLiveSheets();
-      if (typeof clearSeatRequestTimers === "function") clearSeatRequestTimers();
-      resetCameraUi();
-    }
-
-    function resetCameraUi() {
-      cameraEmpty.hidden = false;
-      startCamera.hidden = false;
-      startCamera.disabled = false;
-      startCamera.textContent = "ACTIVAR CÁMARA";
-      updateChecks();
-    }
-
-    const audioConstraints = {
-      echoCancellation: true,
-      noiseSuppression: true,
-      autoGainControl: true
-    };
-
-    function videoConstraints(facingMode, compact = false) {
-      return {
-        facingMode: {ideal:facingMode},
-        width: {ideal:compact ? 960 : 1920},
-        height: {ideal:compact ? 540 : 1080},
-        frameRate: {ideal:30,max:30},
-        aspectRatio: {ideal:16/9},
-        resizeMode: {ideal:"none"}
-      };
-    }
-
-    function prepareVideoTracks(stream) {
-      stream?.getVideoTracks().forEach(track => {
-        try { track.contentHint = "detail"; } catch {}
-      });
-      return stream;
-    }
-
-    function cameraQuality(stream) {
-      const settings = stream?.getVideoTracks?.()[0]?.getSettings?.() || {};
-      if (!settings.width || !settings.height) return "calidad automática";
-      const fps = settings.frameRate ? ` · ${Math.round(settings.frameRate)} FPS` : "";
-      return `${settings.width}×${settings.height}${fps}`;
-    }
-
-    async function requestPrimaryCamera(facingMode) {
-      const needAudio = !hasLiveTrack(state.audioStream, "audio");
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: videoConstraints(facingMode),
-        audio: needAudio ? audioConstraints : false
-      });
-      prepareVideoTracks(stream);
-      const cameraStream = new MediaStream(stream.getVideoTracks());
-      if (needAudio) {
-        state.audioStream = new MediaStream(stream.getAudioTracks());
-        state.audioStream.getAudioTracks().forEach(track => track.enabled = state.micEnabled);
-      }
-      return cameraStream;
-    }
-
-    async function requestSecondaryCamera(facingMode) {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: videoConstraints(facingMode, true),
-        audio: false
-      });
-      prepareVideoTracks(stream);
-      return new MediaStream(stream.getVideoTracks());
-    }
-
-    function markCameraMode(mode) {
-      document.querySelectorAll(".jl-mode").forEach(item => {
-        item.classList.toggle("active", item.dataset.camera === mode);
-      });
-    }
-
-    function watchTrack(stream) {
-      stream?.getVideoTracks().forEach(track => {
-        track.addEventListener("ended", () => {
-          if (state.live) showToast("La cámara se detuvo. Pulsa Cámara para volver a abrirla.");
-          updateChecks();
-        }, {once:true});
-      });
-    }
-
-    async function activateCamera(mode = state.mode) {
-      if (!navigator.mediaDevices?.getUserMedia) {
+    async function activateCamera(mode=state.mode){
+      if(!navigator.mediaDevices?.getUserMedia){
         showToast("Este navegador no permite usar la cámara.");
         return false;
       }
+      const button=$("startCamera");
+      button.disabled=true;
+      button.textContent="ACTIVANDO…";
+      stopStream(state.mainStream);
+      stopStream(state.pipStream);
+      state.mainStream=null;
+      state.pipStream=null;
+      videos.pip.hidden=true;
 
-      const token = ++state.activationToken;
-      startCamera.disabled = true;
-      startCamera.hidden = false;
-      startCamera.textContent = "ABRIENDO CÁMARA…";
-      document.querySelectorAll(".jl-mode").forEach(button => button.disabled = true);
-
-      stopVideoCameras();
-      await sleep(220);
-
-      let main = null;
-      let pip = null;
-      try {
-        const mainFacing = mode === "both" ? "environment" : mode;
-        main = await requestPrimaryCamera(mainFacing);
-        if (token !== state.activationToken) {
-          stopStream(main);
-          return false;
-        }
-
-        if (mode === "both") {
-          try {
-            pip = await requestSecondaryCamera("user");
-          } catch (error) {
-            mode = "environment";
-            markCameraMode(mode);
-            showToast("Este móvil no admite las dos cámaras a la vez. Se mantiene la trasera.", 3600);
+      try{
+        await ensureAudio().catch(()=>{});
+        if(mode==="both"){
+          state.mainStream=await navigator.mediaDevices.getUserMedia(cameraConstraints("environment"));
+          try{
+            state.pipStream=await navigator.mediaDevices.getUserMedia(cameraConstraints("user"));
+          }catch(error){
+            stopStream(state.mainStream);
+            state.mainStream=null;
+            throw new Error("Este móvil no admite las dos cámaras a la vez.");
           }
+          await attach(videos.main,state.mainStream);
+          await attach(videos.pip,state.pipStream);
+          videos.pip.hidden=false;
+        }else{
+          state.mainStream=await navigator.mediaDevices.getUserMedia(cameraConstraints(mode));
+          await attach(videos.main,state.mainStream);
         }
-
-        if (token !== state.activationToken) {
-          stopStream(main);
-          stopStream(pip);
-          return false;
-        }
-
-        state.mainCameraStream = main;
-        state.pipCameraStream = pip;
-        state.mode = mode;
-        watchTrack(main);
-        watchTrack(pip);
-
-        await attachVideo(mainVideo, main);
-        if (pip) {
-          pipVideo.hidden = false;
-          await attachVideo(pipVideo, pip);
-        } else {
-          pipVideo.hidden = true;
-        }
-
-        cameraEmpty.hidden = true;
-        startCamera.hidden = true;
-        applyFilter(state.filter);
-        showToast(`Cámara ${cameraQuality(main)} · sin espejo`, 2500);
-
-        if (state.live) await refreshBroadcastVideos();
+        state.mode=mode;
+        state.cameraEnabled=true;
+        $("cameraEmpty").hidden=true;
+        button.hidden=true;
         updateChecks();
         return true;
-      } catch (error) {
-        console.error(error);
-        stopStream(main);
-        stopStream(pip);
-        stopVideoCameras();
-        resetCameraUi();
-        startCamera.textContent = "REINTENTAR CÁMARA";
-
-        if (error?.name === "NotAllowedError" || error?.name === "SecurityError") {
-          showToast("Debes permitir cámara y micrófono en el navegador.");
-        } else if (error?.name === "NotFoundError" || error?.name === "OverconstrainedError") {
-          showToast("No se encontró la cámara seleccionada.");
-        } else if (error?.name === "NotReadableError" || error?.name === "AbortError") {
-          showToast("La cámara estaba ocupada. Espera un momento y pulsa Reintentar.", 3600);
-        } else {
-          showToast("No se pudo abrir la cámara. Pulsa Reintentar.");
-        }
+      }catch(error){
+        $("cameraEmpty").hidden=false;
+        button.hidden=false;
+        button.disabled=false;
+        button.textContent="REINTENTAR CÁMARA";
+        showToast(error.message||"No se pudo activar la cámara.",3500);
+        updateChecks();
         return false;
-      } finally {
-        document.querySelectorAll(".jl-mode").forEach(button => button.disabled = false);
-        startCamera.disabled = false;
-        if (!startCamera.hidden && startCamera.textContent === "ABRIENDO CÁMARA…") {
-          startCamera.textContent = "REINTENTAR CÁMARA";
-        }
       }
     }
 
-    async function refreshBroadcastVideos() {
-      if (!state.mainCameraStream) return;
-      await attachVideo(broadcastVideo, composeBroadcastStream(state.mainCameraStream));
-      if (state.pipCameraStream) {
-        broadcastPip.hidden = false;
-        await attachVideo(broadcastPip, state.pipCameraStream);
-      } else {
-        broadcastPip.hidden = true;
-        detachVideo(broadcastPip);
-      }
-      applyFilter(state.filter);
-    }
-
-    document.querySelectorAll(".jl-mode").forEach(button => {
-      button.addEventListener("click", async () => {
-        const mode = button.dataset.camera;
-        state.mode = mode;
-        markCameraMode(mode);
-        if (state.mainCameraStream || state.live) await activateCamera(mode);
+    $("startCamera").addEventListener("click",()=>activateCamera());
+    document.querySelectorAll(".jl-mode").forEach(button=>{
+      button.addEventListener("click",async()=>{
+        document.querySelectorAll(".jl-mode").forEach(b=>b.classList.toggle("active",b===button));
+        state.mode=button.dataset.mode;
+        if(state.mainStream) await activateCamera(state.mode);
       });
     });
-
-    startCamera.addEventListener("click", () => activateCamera(state.mode));
-    $("switchCamera").addEventListener("click", async () => {
-      const next = state.mode === "user" ? "environment" : "user";
-      state.mode = next;
-      markCameraMode(next);
+    $("switchCamera").addEventListener("click",async()=>{
+      if(state.mode==="both"){
+        showToast("En modo Ambas ya están activas las dos cámaras.");
+        return;
+      }
+      const next=state.mode==="user"?"environment":"user";
+      document.querySelectorAll(".jl-mode").forEach(b=>b.classList.toggle("active",b.dataset.mode===next));
       await activateCamera(next);
     });
 
-    const filterValues = {
-      natural: "none",
-      suave: "brightness(1.05) saturate(1.05) contrast(.96)",
-      luz: "brightness(1.18) saturate(1.08) contrast(1.02)"
-    };
-
-    function applyFilter(name) {
-      state.filter = filterValues[name] ? name : "natural";
-      const value = filterValues[state.filter];
-      [mainVideo,pipVideo,broadcastVideo,broadcastPip].forEach(video => {
-        video.style.setProperty("--camera-filter", value);
-      });
-      document.querySelectorAll(".jl-filter").forEach(button => {
-        button.classList.toggle("active", button.dataset.filter === state.filter);
-      });
+    const filterMap={natural:"none",soft:"brightness(1.05) saturate(.94) contrast(.96)",light:"brightness(1.18) saturate(1.05)"};
+    function applyFilter(name){
+      state.filter=name;
+      document.documentElement.style.setProperty("--camera-filter",filterMap[name]||"none");
+      document.querySelectorAll(".jl-filter").forEach(b=>b.classList.toggle("active",b.dataset.filter===name));
     }
+    document.querySelectorAll(".jl-filter").forEach(button=>button.addEventListener("click",()=>applyFilter(button.dataset.filter)));
 
-    document.querySelectorAll(".jl-filter").forEach(button => {
-      button.addEventListener("click", () => applyFilter(button.dataset.filter));
+    function toggle(button,key){
+      state[key]=!state[key];
+      button.classList.toggle("on",state[key]);
+      if(key==="mic"){
+        state.audioStream?.getAudioTracks().forEach(track=>track.enabled=state.mic);
+      }
+      if(key==="comments") $("chatLayer").hidden=!state.comments;
+      updateChecks();
+    }
+    $("micToggle").addEventListener("click",()=>toggle($("micToggle"),"mic"));
+    $("chatToggle").addEventListener("click",()=>toggle($("chatToggle"),"comments"));
+
+    function readProfile(){
+      try{
+        const raw=JSON.parse(localStorage.getItem(PROFILE_KEY)||"null");
+        if(!raw) return null;
+        return {
+          title:raw.title||raw.liveTitle||"",
+          description:raw.description||raw.liveDescription||"",
+          visibility:raw.visibility||"public",
+          coverData:raw.coverData||raw.cover||""
+        };
+      }catch{return null}
+    }
+    function loadProfile(){
+      const profile=readProfile();
+      if(!profile) return;
+      $("liveTitle").value=profile.title;
+      $("liveDescription").value=profile.description;
+      $("liveVisibility").value=profile.visibility;
+      state.coverData=profile.coverData;
+      if(state.coverData) $("coverPreview").src=state.coverData;
+      if(profile.title&&profile.description&&profile.coverData){
+        setEditorCollapsed(true);
+        $("editorStatus").textContent="Guardado · toca para editar";
+      }
+      updateChecks();
+    }
+    function setEditorCollapsed(collapsed){
+      $("editorBody").hidden=collapsed;
+      $("editorArrow").textContent=collapsed?"⌄":"⌃";
+    }
+    $("editorToggle").addEventListener("click",()=>setEditorCollapsed(!$("editorBody").hidden));
+    $("openEditor").addEventListener("click",()=>{
+      setEditorCollapsed(false);
+      $("editorToggle").scrollIntoView({behavior:"smooth",block:"center"});
     });
-
-    function toggleButton(button, key) {
-      state[key] = !state[key];
-      button.classList.toggle("on", state[key]);
-      button.setAttribute("aria-pressed", String(state[key]));
-      if (key === "micEnabled") {
-        currentAudioTracks().forEach(track => track.enabled = state[key]);
-      }
-    }
-    $("micToggle").addEventListener("click", e => { toggleButton(e.currentTarget,"micEnabled"); syncLiveSettingsUi?.(); });
-    $("chatToggle").addEventListener("click", e => { toggleButton(e.currentTarget,"chatEnabled"); syncLiveSettingsUi?.(); });
-
-    function readStoredProfile() {
-      try {
-        const profile = JSON.parse(localStorage.getItem(PROFILE_KEY) || "null");
-        if (!profile) return null;
-        if ((profile.title || "").trim().length < 5) return null;
-        if ((profile.description || "").trim().length < 10) return null;
-        if (!String(profile.coverData || "").startsWith("data:image/")) return null;
-        return profile;
-      } catch {
-        return null;
-      }
-    }
-
-    function setEditorCollapsed(collapsed) {
-      $("editorBody").classList.toggle("collapsed", collapsed);
-      $("editorSaved").hidden = !collapsed;
-      $("editorToggle").setAttribute("aria-expanded", String(!collapsed));
-      $("editorArrow").textContent = collapsed ? "⌄" : "⌃";
-    }
-
-    function refreshSavedSummary() {
-      $("savedCover").src = state.coverData || "jemmo-logo-header.webp";
-      $("savedTitle").textContent = $("liveTitle").value.trim() || "Mi LIVE";
-      $("savedDescription").textContent = $("liveDescription").value.trim() || "Datos guardados";
-      $("editorStatus").textContent = state.coverOk ? "Guardado · toca para editar" : "Configura portada, título y descripción";
-    }
-
-    function loadProfile() {
-      const profile = readStoredProfile();
-      if (!profile) {
-        setEditorCollapsed(false);
-        refreshSavedSummary();
-        return;
-      }
-      $("liveTitle").value = profile.title;
-      $("liveDescription").value = profile.description;
-      $("privacy").value = profile.privacy || "Público";
-      state.coverData = profile.coverData;
-      state.coverOk = true;
-      $("coverPreview").src = profile.coverData;
-      refreshSavedSummary();
-      setEditorCollapsed(true);
-    }
-
-    async function imageFileToDataUrl(file) {
-      const objectUrl = URL.createObjectURL(file);
-      try {
-        const image = new Image();
-        image.decoding = "async";
-        await new Promise((resolve, reject) => {
-          image.onload = resolve;
-          image.onerror = reject;
-          image.src = objectUrl;
-        });
-        const maxSide = 720;
-        const scale = Math.min(1, maxSide / Math.max(image.naturalWidth, image.naturalHeight));
-        const canvas = document.createElement("canvas");
-        canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
-        canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
-        const context = canvas.getContext("2d", {alpha:false});
-        context.drawImage(image, 0, 0, canvas.width, canvas.height);
-        let data = canvas.toDataURL("image/webp", .82);
-        if (!data.startsWith("data:image/webp")) data = canvas.toDataURL("image/jpeg", .84);
-        return data;
-      } finally {
-        URL.revokeObjectURL(objectUrl);
-      }
-    }
-
-    coverInput.addEventListener("change", async () => {
-      const file = coverInput.files?.[0];
-      if (!file || !file.type.startsWith("image/")) {
-        state.coverOk = false;
-        state.coverData = "";
-        updateChecks();
+    $("coverInput").addEventListener("change",()=>{
+      const file=$("coverInput").files?.[0];
+      if(!file) return;
+      if(!file.type.startsWith("image/")){
         showToast("Selecciona una imagen válida.");
         return;
       }
-      try {
-        state.coverData = await imageFileToDataUrl(file);
-        state.coverOk = true;
-        $("coverPreview").src = state.coverData;
+      const reader=new FileReader();
+      reader.onload=()=>{
+        state.coverData=String(reader.result||"");
+        $("coverPreview").src=state.coverData;
         updateChecks();
-      } catch {
-        state.coverOk = false;
-        showToast("No se pudo preparar esa portada.");
-        updateChecks();
-      }
-    });
-
-    function profileFieldsValid() {
-      return state.coverOk && $("liveTitle").value.trim().length >= 5 && $("liveDescription").value.trim().length >= 10;
-    }
-
-    function saveProfile(collapse = true) {
-      if (!profileFieldsValid()) {
-        showToast("Completa correctamente portada, título y descripción.");
-        updateChecks();
-        return false;
-      }
-      const profile = {
-        title: $("liveTitle").value.trim(),
-        description: $("liveDescription").value.trim(),
-        privacy: $("privacy").value,
-        coverData: state.coverData,
-        updatedAt: Date.now()
       };
-      try {
-        localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-      } catch {
-        showToast("La portada ocupa demasiado. Prueba con otra imagen.");
-        return false;
+      reader.readAsDataURL(file);
+    });
+    ["liveTitle","liveDescription"].forEach(id=>$(id).addEventListener("input",updateChecks));
+    $("saveProfile").addEventListener("click",()=>{
+      const profile={
+        title:$("liveTitle").value.trim(),
+        description:$("liveDescription").value.trim(),
+        visibility:$("liveVisibility").value,
+        coverData:state.coverData
+      };
+      if(!profile.coverData||!profile.title||!profile.description){
+        showToast("Faltan portada, título o descripción.");
+        updateChecks();
+        return;
       }
-      refreshSavedSummary();
-      if (collapse) setEditorCollapsed(true);
+      try{localStorage.setItem(PROFILE_KEY,JSON.stringify(profile))}catch{}
+      $("editorStatus").textContent="Guardado · toca para editar";
+      setEditorCollapsed(true);
       updateChecks();
       showToast("Datos del LIVE guardados.");
-      return true;
-    }
-
-    $("saveProfile").addEventListener("click", () => saveProfile(true));
-    $("editSaved").addEventListener("click", () => setEditorCollapsed(false));
-    $("editorToggle").addEventListener("click", () => {
-      const collapsed = $("editorBody").classList.contains("collapsed");
-      setEditorCollapsed(!collapsed);
-    });
-    $("coverShortcut").addEventListener("click", () => {
-      setEditorCollapsed(false);
-      $("editorCard").scrollIntoView({behavior:"smooth", block:"center"});
-    });
-    ["liveTitle","liveDescription"].forEach(id => $(id).addEventListener("input", updateChecks));
-    $("privacy").addEventListener("change", () => {
-      if (readStoredProfile()) saveProfile(false);
     });
 
-    function setCheck(id, ok) {
-      $(id).classList.toggle("ok", ok);
+    function hasCamera(){
+      return Boolean(state.mainStream?.getVideoTracks().some(t=>t.readyState==="live"));
+    }
+    function setCheck(id,ok){
+      $(id).classList.toggle("ok",ok);
+    }
+    function updateChecks(){
+      const camera=hasCamera();
+      const cover=Boolean(state.coverData);
+      const title=Boolean($("liveTitle").value.trim());
+      const description=Boolean($("liveDescription").value.trim());
+      setCheck("checkCamera",camera);
+      setCheck("checkCover",cover);
+      setCheck("checkTitle",title);
+      setCheck("checkDescription",description);
+      const ready=camera&&cover&&title&&description;
+      $("launchLive").disabled=!ready;
+      const missing=[];
+      if(!camera) missing.push("cámara");
+      if(!cover) missing.push("portada");
+      if(!title) missing.push("título");
+      if(!description) missing.push("descripción");
+      $("validationMessage").textContent=missing.length?`Falta: ${missing.join(", ")}.`:"Todo preparado para transmitir.";
     }
 
-    function updateChecks() {
-      const cameraOk = hasLiveTrack(state.mainCameraStream, "video");
-      const titleOk = $("liveTitle").value.trim().length >= 5;
-      const descriptionOk = $("liveDescription").value.trim().length >= 10;
-
-      setCheck("checkCamera", cameraOk);
-      setCheck("checkCover", state.coverOk);
-      setCheck("checkTitle", titleOk);
-      setCheck("checkDescription", descriptionOk);
-
-      const ready = cameraOk && state.coverOk && titleOk && descriptionOk;
-      launchButton.disabled = !ready;
-      message.textContent = ready
-        ? "Todo aprobado. Ya puedes iniciar el LIVE."
-        : "Activa la cámara y completa los puntos pendientes.";
-      message.style.color = ready ? "#91f0ba" : "#ffb2c3";
-    }
-
-    function formatTime(seconds) {
-      const safe = Math.max(0, Math.floor(seconds));
-      const h = Math.floor(safe / 3600);
-      const m = Math.floor((safe % 3600) / 60);
-      const s = safe % 60;
-      if (h > 0) return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
-      return `${String(m).padStart(2,"0")}:${String(s).padStart(2,"0")}`;
-    }
-
-    function updateTaskUi() {
-      const card = $("taskCard");
-      const claim = $("taskClaim");
-      if (!card || !claim) return;
-
-      card.classList.remove("active","claim","claimed","completed");
-      claim.hidden = true;
-
-      if (state.taskState === "done") {
-        card.hidden = true;
+    function updateConnection(){
+      const text=$("connectionText");
+      if(!navigator.onLine){
+        text.textContent="Sin conexión";
+        text.style.color=varColor("--red","#ff526f");
         return;
       }
+      const connection=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
+      text.textContent=connection?.effectiveType?`Buena · ${connection.effectiveType.toUpperCase()}`:"Buena";
+      text.style.color="#9eeec2";
+    }
+    function varColor(name,fallback){
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim()||fallback;
+    }
+    addEventListener("online",updateConnection);
+    addEventListener("offline",updateConnection);
+    updateConnection();
 
-      card.hidden = false;
-      const taskNumber = Math.min(TASK_COUNT, state.taskIndex + 1);
-
-      if (state.taskState === "claim") {
-        card.classList.add("claim");
-        $("taskStatus").textContent = `Tarea ${taskNumber} terminada`;
-        $("taskTime").textContent = "Pendiente";
-        claim.hidden = false;
-        claim.textContent = "Cobrar";
-        return;
+    async function refreshBroadcast(){
+      if(state.mainStream) await attach(videos.broadcast,compose(state.mainStream));
+      if(state.pipStream){
+        await attach(videos.broadcastPip,state.pipStream);
+        videos.broadcastPip.hidden=false;
+      }else{
+        videos.broadcastPip.hidden=true;
       }
-
-      if (state.taskState === "claimed") {
-        card.classList.add("claimed");
-        $("taskStatus").textContent = "Tarea cobrada";
-        $("taskTime").textContent = "✓";
-        return;
-      }
-
-      card.classList.add("active");
-      $("taskStatus").textContent = `Tarea ${taskNumber} de ${TASK_COUNT}`;
-      $("taskTime").textContent = formatTime(state.taskElapsed);
     }
 
-    function claimCurrentTask() {
-      if (state.taskState !== "claim") return;
-      state.taskState = "claimed";
-      state.taskClaimedUntil = Date.now() + 4000;
-      updateTaskUi();
-      showToast("Tarea cobrada correctamente.", 2600);
-    }
-
-    $("taskClaim").addEventListener("click", event => {
-      event.stopPropagation();
-      claimCurrentTask();
-    });
-
-    setInterval(() => {
-      if (!state.live) {
-        state.prepSeconds++;
-        $("prepTimer").textContent = formatTime(state.prepSeconds);
-        return;
-      }
-
-      state.liveSeconds++;
-      $("liveTimer").textContent = `${formatTime(state.liveSeconds)} · 1 espectador`;
-
-      if (state.taskState === "active") {
-        state.taskElapsed++;
-        if (state.taskElapsed >= TASK_SECONDS) {
-          state.taskElapsed = TASK_SECONDS;
-          state.taskState = "claim";
-          showToast("Tarea terminada. Pulsa Cobrar.", 3200);
-        }
-      } else if (state.taskState === "claimed" && Date.now() >= state.taskClaimedUntil) {
-        if (state.taskIndex + 1 >= TASK_COUNT) {
-          state.taskState = "done";
-        } else {
-          state.taskIndex++;
-          state.taskElapsed = 0;
-          state.taskState = "active";
-        }
-      }
-
-      updateTaskUi();
-    },1000);
-
-    launchButton.addEventListener("click", async () => {
+    $("launchLive").addEventListener("click",async()=>{
       updateChecks();
-      if (launchButton.disabled || !state.mainCameraStream) return;
-      if (!saveProfile(true)) return;
-
-      state.live = true;
-      state.liveSeconds = 0;
-      state.milestone = 0;
-      state.taskIndex = 0;
-      state.taskElapsed = 0;
-      state.taskState = "active";
-      state.taskClaimedUntil = 0;
-      $("liveTimer").textContent = "00:00 · 1 espectador";
-      $("taskCard").hidden = false;
-      resetSeats();
-      scheduleSeatRequests();
-      renderBattle();
-      updateGiftUi();
-      updateTaskUi();
-      $("prepScreen").hidden = true;
-      $("broadcastScreen").hidden = false;
-      const liveNav = document.querySelector(".jl-nav");
-      liveNav.hidden = true;
-      liveNav.classList.remove("live-mode","chat-hidden");
-      $("chatDock").classList.add("collapsed");
-      $("chatDock").classList.toggle("comments-off", !state.chatEnabled);
-      $("chatHandle").setAttribute("aria-expanded","false");
-      $("chatHandleText").textContent = "Iniciar chat";
-      syncLiveSettingsUi();
-      await refreshBroadcastVideos();
-      playWaterDrop();
+      if($("launchLive").disabled) return;
+      state.live=true;
+      state.liveSeconds=0;
+      state.taskIndex=0;
+      state.taskElapsed=0;
+      $("taskCard").hidden=false;
+      $("taskCard").classList.remove("complete");
+      $("prepScreen").hidden=true;
+      $("broadcastScreen").hidden=false;
+      document.body.classList.add("live-running");
+      const nav=$("bottomNav");
+      nav.hidden=true;
+      nav.classList.add("live-mode");
+      nav.setAttribute("aria-hidden","true");
+      await refreshBroadcast();
+      playFishSplash();
     });
 
-    function setChatOpen(open) {
-      const dock = $("chatDock");
-      if (open && !state.chatEnabled) {
-        showToast("Los comentarios están desactivados. Actívalos desde Ajustes.");
-        return;
-      }
-      dock.classList.toggle("collapsed", !open);
-      $("chatHandle").setAttribute("aria-expanded", String(open));
-      $("chatHandleText").textContent = "Iniciar chat";
-      if (open) setTimeout(() => $("liveChatInput")?.focus(), 120);
+    function endBroadcast(){
+      state.live=false;
+      $("broadcastScreen").hidden=true;
+      $("prepScreen").hidden=false;
+      document.body.classList.remove("live-running");
+      const nav=$("bottomNav");
+      nav.hidden=false;
+      nav.classList.remove("live-mode");
+      nav.setAttribute("aria-hidden","false");
+      closeSheets();
+      attach(videos.main,state.mainStream).catch(()=>{});
+      if(state.pipStream) attach(videos.pip,state.pipStream).catch(()=>{});
+      window.scrollTo({top:0,behavior:"smooth"});
+      showToast("Transmisión finalizada. La cámara queda preparada.");
     }
-
-    $("chatHandle").addEventListener("click", () => {
-      setChatOpen(true);
+    $("endLive").addEventListener("click",()=>{
+      if(confirm("¿Finalizar esta transmisión LIVE?")) endBroadcast();
     });
 
-    $("liveChatForm").addEventListener("submit", event => {
+    function addChat(text){
+      const line=document.createElement("div");
+      line.className="jl-chat-line";
+      line.textContent=text;
+      $("chatLayer").append(line);
+      while($("chatLayer").children.length>6) $("chatLayer").firstElementChild?.remove();
+    }
+    $("chatForm").addEventListener("submit",event=>{
       event.preventDefault();
-      const input = $("liveChatInput");
-      const value = input.value.trim();
-      if (!value) return;
-      addLiveChatLine(`Tú: ${value}`);
-      input.value = "";
+      const input=$("chatInput");
+      const text=input.value.trim();
+      if(!text) return;
+      addChat(`Tú: ${text}`);
+      input.value="";
       input.focus();
     });
 
-
-    function syncLiveSettingsUi() {
-      $("settingsMicState").textContent = state.micEnabled ? "Activo" : "Silenciado";
-      $("settingsCommentsState").textContent = state.chatEnabled ? "Activos" : "Desactivados";
-      $("settingsMic").setAttribute("aria-pressed", String(state.micEnabled));
-      $("settingsComments").setAttribute("aria-pressed", String(state.chatEnabled));
-      $("chatDock").classList.toggle("comments-off", !state.chatEnabled);
-      $("micToggle")?.classList.toggle("on", state.micEnabled);
-      $("micToggle")?.setAttribute("aria-pressed", String(state.micEnabled));
-      $("chatToggle")?.classList.toggle("on", state.chatEnabled);
-      $("chatToggle")?.setAttribute("aria-pressed", String(state.chatEnabled));
-    }
-
-    $("liveSettingsButton").addEventListener("click", () => {
-      syncLiveSettingsUi();
-      openLiveSheet("settingsSheet");
-    });
-    $("settingsSheetClose").addEventListener("click", closeLiveSheets);
-
-    $("settingsCamera").addEventListener("click", async () => {
-      const next = state.mode === "user" ? "environment" : "user";
-      state.mode = next;
-      markCameraMode(next);
-      closeLiveSheets();
-      await activateCamera(next);
-      if (state.live) await refreshBroadcastVideos();
-      showToast(next === "user" ? "Cámara frontal activada." : "Cámara trasera activada.");
-    });
-
-    $("settingsMic").addEventListener("click", () => {
-      state.micEnabled = !state.micEnabled;
-      currentAudioTracks().forEach(track => track.enabled = state.micEnabled);
-      syncLiveSettingsUi();
-      showToast(state.micEnabled ? "Micrófono activado." : "Micrófono silenciado.");
-    });
-
-    $("settingsComments").addEventListener("click", () => {
-      state.chatEnabled = !state.chatEnabled;
-      if (!state.chatEnabled) setChatOpen(false);
-      syncLiveSettingsUi();
-      showToast(state.chatEnabled ? "Comentarios activados." : "Comentarios desactivados.");
-    });
-
-    $("settingsShare").addEventListener("click", async () => {
-      const shareData = {title:"JEMMO LIVE", text:"Estoy en directo en JEMMO LIVE", url:location.href};
-      try {
-        if (navigator.share) await navigator.share(shareData);
-        else if (navigator.clipboard?.writeText) {
-          await navigator.clipboard.writeText(location.href);
-          showToast("Enlace del LIVE copiado.");
-        } else showToast("Compartir estará disponible al publicar el LIVE.");
-      } catch (error) {
-        if (error?.name !== "AbortError") showToast("No se pudo compartir el LIVE.");
-      }
-    });
-
-    $("settingsRoom").addEventListener("click", () => {
-      closeLiveSheets();
-      showToast("Toca una silla para gestionar participantes, silenciar, bajar o expulsar.", 3400);
-    });
-
-    $("settingsEnd").addEventListener("click", () => {
-      if (!confirm("¿Quieres finalizar esta transmisión?")) return;
-      closeLiveSheets();
-      clearAllMedia();
-      showToast("LIVE finalizado.");
-    });
-
-    $("liveStickerButton").addEventListener("click", () => {
-      showToast("Panel de stickers JEMMO: siguiente revisión del LIVE.");
-    });
-
-    /* V0.6.9 · MINI PERFIL, SILLAS DERECHA, CHAT, REGALOS Y BATALLAS */
-    const seatUsers = [
-      {id:"demo-luna",name:"Luna",initial:"L",country:"España",house:"Casa Tenerife",level:12,badge:"Emisora",connected:false},
-      {id:"demo-alex",name:"Alex",initial:"A",country:"Cuba",house:"Casa Cuba",level:9,badge:"Creador",connected:false},
-      {id:"demo-mia",name:"Mía",initial:"M",country:"México",house:"Casa Fénix",level:15,badge:"Emisora",connected:false},
-      {id:"demo-king",name:"King",initial:"K",country:"Rep. Dominicana",house:"Casa Dragón",level:11,badge:"Creador",connected:false}
-    ];
-    const seatStates = Array.from({length:4}, () => ({status:"free",user:null,muted:false}));
-
-    function seatButtons() {
-      return [...document.querySelectorAll(".jl-seat")];
-    }
-
-    function clearSeatRequestTimers() {
-      state.seatRequestTimers.forEach(timer => clearTimeout(timer));
-      state.seatRequestTimers = [];
-    }
-
-    function renderSeat(index) {
-      const button = seatButtons()[index];
-      const seat = seatStates[index];
-      if (!button || !seat) return;
-      button.classList.toggle("request", seat.status === "request");
-      button.classList.toggle("occupied", seat.status === "occupied");
-      button.classList.toggle("muted", Boolean(seat.muted));
-      button.querySelector("span").textContent = seat.status === "free" ? "+" : (seat.user?.initial || "•");
-      button.querySelector("small").textContent = seat.status === "free" ? `S${index+1}` : (seat.status === "request" ? "PIDE" : "LIVE");
-      button.setAttribute("aria-label", seat.status === "free"
-        ? `Silla lateral ${index+1} libre`
-        : `${seat.user?.name || "Invitado"} en silla ${index+1}`);
-    }
-
-    function resetSeats() {
-      clearSeatRequestTimers();
-      seatStates.forEach((seat,index) => {
-        seat.status = "free";
-        seat.user = null;
-        seat.muted = false;
-        renderSeat(index);
-      });
-      state.activeSeatIndex = null;
-    }
-
-    function queueSeatRequest(index, announce = true) {
-      if (!state.live || !seatStates[index] || seatStates[index].status !== "free") return;
-      seatStates[index].status = "request";
-      seatStates[index].user = seatUsers[index % seatUsers.length];
-      seatStates[index].muted = false;
-      renderSeat(index);
-      if (announce) showToast(`${seatStates[index].user.name} solicita subir a la silla ${index+1}.`, 3200);
-    }
-
-    function scheduleSeatRequests() {
-      clearSeatRequestTimers();
-      state.seatRequestTimers.push(setTimeout(() => queueSeatRequest(0), 4200));
-      state.seatRequestTimers.push(setTimeout(() => queueSeatRequest(1), 11500));
-    }
-
-    function openLiveSheet(id) {
-      ["seatSheet","settingsSheet","giftSheet","battleSheet"].forEach(sheetId => $(sheetId).hidden = sheetId !== id);
-      $("liveModalBackdrop").hidden = false;
-    }
-
-    function closeLiveSheets() {
-      ["seatSheet","settingsSheet","giftSheet","battleSheet"].forEach(id => $(id).hidden = true);
-      $("seatSheet")?.classList.remove("request-mode");
-      $("liveModalBackdrop").hidden = true;
-    }
-
-    function renderSeatProfile(index) {
-      const seat = seatStates[index];
-      const user = seat?.user;
-      if (!seat || !user) return;
-      const isRequest = seat.status === "request";
-      $("seatProfileAvatar").textContent = user.initial || user.name?.charAt(0)?.toUpperCase() || "J";
-      $("seatProfileName").textContent = user.name || "Participante";
-      $("seatProfileMeta").textContent = `${user.country || "País sin indicar"} · ${user.house || "Sin Casa"}`;
-      $("seatProfileLevel").textContent = `Nivel ${user.level || 1}`;
-      $("seatProfileBadge").textContent = user.badge || "Usuario";
-      $("seatProfileState").textContent = isRequest ? "SOLICITA" : "EN LIVE";
-      $("seatProfileState").classList.toggle("request", isRequest);
-      $("seatConnect").textContent = user.connected ? "CONECTADO" : "CONECTAR";
-      $("seatConnect").classList.toggle("connected", Boolean(user.connected));
-      $("seatConnect").setAttribute("aria-pressed", String(Boolean(user.connected)));
-    }
-
-    function openSeatControls(index) {
-      const seat = seatStates[index];
-      if (!seat) return;
-      state.activeSeatIndex = index;
-      if (seat.status === "free") queueSeatRequest(index, false);
-      const current = seatStates[index];
-      const isRequest = current.status === "request";
-      $("seatSheetTitle").textContent = isRequest ? "Perfil y solicitud" : "Perfil del participante";
-      $("seatSheetText").textContent = isRequest
-        ? `${current.user?.name || "Una persona"} quiere subir a tu LIVE.`
-        : `Vista rápida de ${current.user?.name || "la persona"} sin abandonar la transmisión.`;
-      renderSeatProfile(index);
-      $("seatRequestActions").hidden = !isRequest;
-      $("seatHostControls").hidden = isRequest;
-      $("seatSheet").classList.toggle("request-mode", isRequest);
-      $("seatMute").textContent = current.muted ? "ACTIVAR AUDIO" : "SILENCIAR";
-      openLiveSheet("seatSheet");
-    }
-
-    seatButtons().forEach((button,index) => button.addEventListener("click", () => openSeatControls(index)));
-    $("seatSheetClose").addEventListener("click", closeLiveSheets);
-    $("liveModalBackdrop").addEventListener("click", closeLiveSheets);
-
-    $("seatConnect").addEventListener("click", () => {
-      const index = state.activeSeatIndex;
-      const user = index == null ? null : seatStates[index]?.user;
-      if (!user) return;
-      user.connected = !user.connected;
-      renderSeatProfile(index);
-      showToast(user.connected
-        ? `Ahora estás conectado con ${user.name}.`
-        : `Has quitado la conexión con ${user.name}.`);
-    });
-
-    $("seatFullProfile").addEventListener("click", () => {
-      const index = state.activeSeatIndex;
-      const user = index == null ? null : seatStates[index]?.user;
-      if (!user) return;
-      showToast(`Perfil completo de ${user.name}: preparado para conectarse al perfil real.`, 3400);
-    });
-
-    $("seatReject").addEventListener("click", () => {
-      const index = state.activeSeatIndex;
-      if (index == null) return;
-      const name = seatStates[index].user?.name || "La solicitud";
-      seatStates[index] = {status:"free",user:null,muted:false};
-      renderSeat(index);
-      closeLiveSheets();
-      showToast(`${name} no subió al LIVE.`);
-    });
-
-    $("seatAccept").addEventListener("click", () => {
-      const index = state.activeSeatIndex;
-      if (index == null) return;
-      seatStates[index].status = "occupied";
-      seatStates[index].muted = false;
-      renderSeat(index);
-      closeLiveSheets();
-      showToast(`${seatStates[index].user?.name || "Invitado"} ya está en la silla ${index+1}.`);
-      addLiveChatLine(`${seatStates[index].user?.name || "Invitado"} se unió al LIVE.`);
-    });
-
-    $("seatMute").addEventListener("click", () => {
-      const index = state.activeSeatIndex;
-      if (index == null) return;
-      seatStates[index].muted = !seatStates[index].muted;
-      renderSeat(index);
-      $("seatMute").textContent = seatStates[index].muted ? "ACTIVAR AUDIO" : "SILENCIAR";
-      showToast(seatStates[index].muted ? "Invitado silenciado." : "Audio del invitado activado.");
-    });
-
-    function removeSeatUser(action) {
-      const index = state.activeSeatIndex;
-      if (index == null) return;
-      const name = seatStates[index].user?.name || "Invitado";
-      seatStates[index] = {status:"free",user:null,muted:false};
-      renderSeat(index);
-      closeLiveSheets();
-      showToast(`${name}: ${action}.`);
-    }
-    $("seatLower").addEventListener("click", () => removeSeatUser("bajado de la silla"));
-    $("seatExpel").addEventListener("click", () => removeSeatUser("expulsado del LIVE"));
-
-    function addLiveChatLine(text) {
-      const line = document.createElement("div");
-      line.className = "jl-chat-line";
-      line.textContent = text;
-      $("liveChat").append(line);
-      while ($("liveChat").children.length > 5) $("liveChat").firstElementChild?.remove();
-    }
-
-    const gifts = {
-      rose:{icon:"🌹",name:"Rosa",price:10},
-      fish:{icon:"🐟",name:"Chicharro",price:50},
-      crown:{icon:"👑",name:"Corona",price:250},
-      rocket:{icon:"🚀",name:"Cohete",price:500},
-      diamond:{icon:"💎",name:"Diamante",price:900},
-      castle:{icon:"🏰",name:"Castillo",price:1500}
-    };
-
-    function formatNumber(value) {
-      return new Intl.NumberFormat("es-ES").format(value);
-    }
-
-    function updateGiftUi() {
-      $("giftBalance").textContent = formatNumber(state.giftBalance);
-      $("giftTotal").textContent = formatNumber(state.giftTotal);
-    }
-
-    function showGiftBurst(gift) {
-      const burst = $("giftBurst");
-      $("giftBurstIcon").textContent = gift.icon;
-      $("giftBurstText").textContent = `${gift.name} · ${formatNumber(gift.price)} JEMMOS`;
-      burst.hidden = false;
-      burst.style.animation = "none";
-      void burst.offsetWidth;
-      burst.style.animation = "jlGiftBurst 1.8s ease both";
-      clearTimeout(showGiftBurst.timer);
-      showGiftBurst.timer = setTimeout(() => burst.hidden = true, 1850);
-    }
-
-    $("liveGifts").addEventListener("click", () => {
-      updateGiftUi();
-      openLiveSheet("giftSheet");
-    });
-    $("giftSheetClose").addEventListener("click", closeLiveSheets);
-    $("luckyGift").addEventListener("click", () => {
-      const options = Object.values(gifts);
-      const gift = options[Math.floor(Math.random() * options.length)];
-      showGiftBurst(gift);
-      addLiveChatLine(`Afortunado eligió ${gift.icon} ${gift.name}.`);
-      showToast(`Afortunado: ${gift.name}. Prueba local sin apuesta real.`, 3000);
-    });
-    document.querySelectorAll("[data-gift]").forEach(button => {
-      button.addEventListener("click", () => {
-        const gift = gifts[button.dataset.gift];
-        if (!gift) return;
-        if (state.giftBalance < gift.price) {
-          showToast("Saldo de prueba insuficiente.");
-          return;
-        }
-        state.giftBalance -= gift.price;
-        state.giftTotal += gift.price;
-        updateGiftUi();
-        showGiftBurst(gift);
-        addLiveChatLine(`Alex envió ${gift.icon} ${gift.name}.`);
-      });
-    });
-
-    const battles = [
-      {a:"Casa Tenerife",b:"Casa Unicornio",scoreA:8420,scoreB:7910,viewers:2840},
-      {a:"Casa Cuba",b:"Casa Fénix",scoreA:6150,scoreB:7020,viewers:2130},
-      {a:"Casa Dragón",b:"Casa Estrella",scoreA:5340,scoreB:4980,viewers:1760}
-    ];
-
-    function compactScore(value) {
-      if (value >= 1000) return `${(value/1000).toFixed(1)}K`;
-      return String(value);
-    }
-
-    function currentBattle() {
-      return battles[(state.battleIndex + battles.length) % battles.length];
-    }
-
-    function renderBattle() {
-      const battle = currentBattle();
-      const total = Math.max(1,battle.scoreA + battle.scoreB);
-      const aPercent = Math.round((battle.scoreA / total) * 100);
-      const winner = battle.scoreA >= battle.scoreB ? battle.a : battle.b;
-      $("battleTeamA").textContent = battle.a;
-      $("battleTeamB").textContent = battle.b;
-      $("battleScoreA").textContent = compactScore(battle.scoreA);
-      $("battleScoreB").textContent = compactScore(battle.scoreB);
-      $("battleViewers").textContent = `${compactScore(battle.viewers)} viendo`;
-      $("battleBarA").style.width = `${aPercent}%`;
-      $("battleBarB").style.width = `${100-aPercent}%`;
-      $("battleWinner").textContent = `Va ganando ${winner}`;
-      $("battleDetail").innerHTML = `<strong>${battle.a} ${compactScore(battle.scoreA)} · VS · ${compactScore(battle.scoreB)} ${battle.b}</strong><p>${compactScore(battle.viewers)} espectadores. Ahora va ganando <b>${winner}</b>.</p>`;
-    }
-
-    function cycleBattle(step = 1) {
-      state.battleIndex = (state.battleIndex + step + battles.length) % battles.length;
-      renderBattle();
-    }
-
-    $("battlePrev").addEventListener("click", () => cycleBattle(-1));
-    $("battleNext").addEventListener("click", () => cycleBattle(1));
-    function setBattleOpen(open) {
-      const card = $("battleCard");
-      const toggle = $("battleToggle");
-      card.hidden = !open;
-      toggle.setAttribute("aria-expanded", String(open));
-      requestAnimationFrame(() => card.classList.toggle("open", open));
-    }
-
-    $("battleToggle").addEventListener("click", () => {
-      setBattleOpen($("battleCard").hidden);
-    });
-    $("battleOpen").addEventListener("click", () => { renderBattle(); openLiveSheet("battleSheet"); });
-    $("battleSheetClose").addEventListener("click", closeLiveSheets);
-    $("battleKeepWatching").addEventListener("click", closeLiveSheets);
-    $("battleCycle").addEventListener("click", () => { cycleBattle(1); renderBattle(); });
-
-    let battleTouchX = 0;
-    $("battleCard").addEventListener("touchstart", event => { battleTouchX = event.changedTouches[0]?.clientX || 0; }, {passive:true});
-    $("battleCard").addEventListener("touchend", event => {
-      const endX = event.changedTouches[0]?.clientX || 0;
-      if (Math.abs(endX - battleTouchX) > 35) cycleBattle(endX < battleTouchX ? 1 : -1);
-    }, {passive:true});
-
-    setInterval(() => {
-      if (state.live && $("battleSheet").hidden) cycleBattle(1);
-    }, 7000);
-
-    function updateConnection() {
-      const text = $("connectionText");
-      if (!navigator.onLine) {
-        text.textContent = "Sin conexión";
-        text.style.color = "#ff526f";
+    function keyboardOffset(){
+      const viewport=window.visualViewport;
+      if(!viewport){
+        document.documentElement.style.setProperty("--keyboard","0px");
         return;
       }
-      const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-      const type = connection?.effectiveType?.toUpperCase();
-      text.textContent = type ? `Buena · ${type}` : "Buena";
-      text.style.color = "#9eeec2";
+      const offset=Math.max(0,Math.round(window.innerHeight-viewport.height-viewport.offsetTop));
+      document.documentElement.style.setProperty("--keyboard",`${offset}px`);
     }
-    updateConnection();
-    addEventListener("online",updateConnection);
-    addEventListener("offline",updateConnection);
+    window.visualViewport?.addEventListener("resize",keyboardOffset);
+    window.visualViewport?.addEventListener("scroll",keyboardOffset);
+    keyboardOffset();
 
-    const menu = $("sideMenu");
-    const backdrop = $("menuBackdrop");
-    function openMenu() {
-      menu.classList.add("open");
-      menu.setAttribute("aria-hidden","false");
-      backdrop.hidden = false;
-      document.body.style.overflow = "hidden";
+    const sheets=["settingsSheet","stickersSheet","giftsSheet","seatSheet","battleSheet"];
+    function openSheet(id){
+      sheets.forEach(name=>$(name).hidden=name!==id);
+      $("liveBackdrop").hidden=false;
     }
-    function closeMenu() {
-      menu.classList.remove("open");
-      menu.setAttribute("aria-hidden","true");
-      backdrop.hidden = true;
-      document.body.style.overflow = "";
+    function closeSheets(){
+      sheets.forEach(name=>$(name).hidden=true);
+      $("liveBackdrop").hidden=true;
     }
+    document.querySelectorAll("[data-close-sheet]").forEach(button=>button.addEventListener("click",closeSheets));
+    $("liveBackdrop").addEventListener("click",closeSheets);
+    $("settingsButton").addEventListener("click",()=>openSheet("settingsSheet"));
+    $("stickersButton").addEventListener("click",()=>openSheet("stickersSheet"));
+    $("giftsButton").addEventListener("click",()=>openSheet("giftsSheet"));
+    $("battleCard").addEventListener("click",()=>openSheet("battleSheet"));
+
+    document.querySelectorAll(".jl-stickers button").forEach(button=>{
+      button.addEventListener("click",()=>{
+        addChat(`Tú: ${button.textContent}`);
+        closeSheets();
+      });
+    });
+
+    function updateBattle(){
+      $("scoreA").textContent=state.scoreA.toLocaleString("es-ES");
+      $("scoreB").textContent=state.scoreB.toLocaleString("es-ES");
+      const total=Math.max(1,state.scoreA+state.scoreB);
+      const a=Math.round(state.scoreA/total*100);
+      $("barA").style.width=`${a}%`;
+      $("barB").style.width=`${100-a}%`;
+    }
+    document.querySelectorAll("[data-gift]").forEach(button=>{
+      button.addEventListener("click",()=>{
+        const cost=Number(button.dataset.cost||0);
+        if(state.balance<cost){
+          showToast("Saldo insuficiente.");
+          return;
+        }
+        state.balance-=cost;
+        state.gifts+=cost;
+        state.scoreA+=cost;
+        $("giftCount").textContent=`🎁 ${state.gifts}`;
+        $("giftBalance").textContent=`Saldo: ${state.balance.toLocaleString("es-ES")} JEMMOS`;
+        $("giftBurstIcon").textContent=button.dataset.gift;
+        $("giftBurstText").textContent=`${button.dataset.gift} enviado · +${cost}`;
+        $("giftBurst").hidden=false;
+        $("giftBurst").style.animation="none";
+        void $("giftBurst").offsetWidth;
+        $("giftBurst").style.animation="";
+        setTimeout(()=>$("giftBurst").hidden=true,1750);
+        addChat(`Tú enviaste ${button.dataset.gift} · +${cost} puntos`);
+        updateBattle();
+        closeSheets();
+      });
+    });
+
+    document.querySelectorAll(".jl-seat").forEach(button=>{
+      button.addEventListener("click",()=>{
+        state.activeSeat=Number(button.dataset.seat);
+        $("seatTitle").textContent=`Silla ${state.activeSeat}`;
+        $("seatPerson").textContent=state.activeSeat===1?"Luna · Solicitud pendiente":state.activeSeat===3?"Alex · En la silla":"Silla disponible";
+        openSheet("seatSheet");
+      });
+    });
+    $("seatAccept").addEventListener("click",()=>{
+      const seat=document.querySelector(`.jl-seat[data-seat="${state.activeSeat}"]`);
+      seat?.classList.remove("request");
+      seat?.classList.add("occupied");
+      showToast("Participante conectado a la silla.");
+      closeSheets();
+    });
+    $("seatMute").addEventListener("click",()=>{
+      const seat=document.querySelector(`.jl-seat[data-seat="${state.activeSeat}"]`);
+      seat?.classList.toggle("muted");
+      showToast(seat?.classList.contains("muted")?"Participante silenciado.":"Micrófono reactivado.");
+      closeSheets();
+    });
+    $("seatDown").addEventListener("click",()=>{
+      const seat=document.querySelector(`.jl-seat[data-seat="${state.activeSeat}"]`);
+      seat?.classList.remove("occupied","request","muted");
+      showToast("Participante bajado de la silla.");
+      closeSheets();
+    });
+    $("seatKick").addEventListener("click",()=>{
+      const seat=document.querySelector(`.jl-seat[data-seat="${state.activeSeat}"]`);
+      seat?.classList.remove("occupied","request","muted");
+      showToast("Participante expulsado durante 15 minutos.");
+      closeSheets();
+    });
+
+    $("shareLive").addEventListener("click",async()=>{
+      try{
+        if(navigator.share) await navigator.share({title:"JEMMO LIVE",text:"Estoy en directo en JEMMO LIVE"});
+        else showToast("Enlace del LIVE preparado para compartir.");
+      }catch{}
+    });
+    $("liveMic").addEventListener("click",()=>{
+      state.mic=!state.mic;
+      state.audioStream?.getAudioTracks().forEach(track=>track.enabled=state.mic);
+      showToast(state.mic?"Micrófono activado.":"Micrófono silenciado.");
+    });
+    $("liveCamera").addEventListener("click",()=>{
+      state.cameraEnabled=!state.cameraEnabled;
+      [state.mainStream,state.pipStream].filter(Boolean).forEach(stream=>stream.getVideoTracks().forEach(track=>track.enabled=state.cameraEnabled));
+      showToast(state.cameraEnabled?"Cámara reactivada.":"Cámara pausada.");
+    });
+    $("liveSwitch").addEventListener("click",async()=>{
+      closeSheets();
+      if(state.mode==="both") return showToast("En modo Ambas ya están activas las dos cámaras.");
+      const next=state.mode==="user"?"environment":"user";
+      await activateCamera(next);
+      if(state.live) await refreshBroadcast();
+    });
+    $("liveComments").addEventListener("click",()=>{
+      state.comments=!state.comments;
+      $("chatLayer").hidden=!state.comments;
+      showToast(state.comments?"Comentarios visibles.":"Comentarios ocultos.");
+    });
+    $("roomControls").addEventListener("click",()=>showToast("Controles de moderación preparados."));
+
+    const menu=$("sideMenu"),menuBackdrop=$("menuBackdrop");
+    function openMenu(){menu.classList.add("open");menu.setAttribute("aria-hidden","false");menuBackdrop.hidden=false}
+    function closeMenu(){menu.classList.remove("open");menu.setAttribute("aria-hidden","true");menuBackdrop.hidden=true}
     $("menuOpen").addEventListener("click",openMenu);
     $("menuClose").addEventListener("click",closeMenu);
-    backdrop.addEventListener("click",closeMenu);
+    menuBackdrop.addEventListener("click",closeMenu);
+    $("helpButton").addEventListener("click",()=>showToast("Activa cámara, revisa los datos guardados y pulsa iniciar LIVE.",3400));
+    document.querySelectorAll(".jl-menu-list button").forEach(button=>button.addEventListener("click",()=>showToast("Esta función se completa en su módulo correspondiente.")));
 
-    $("menuSearch").addEventListener("input", e => {
-      const query = e.target.value.trim().toLowerCase();
-      document.querySelectorAll(".jl-menu-item").forEach(item => {
-        item.hidden = Boolean(query && !item.dataset.search.includes(query));
-      });
+    /* Garantía adicional: la barra nunca aparece dentro de la transmisión. */
+    const observer=new MutationObserver(()=>{
+      const running=!$("broadcastScreen").hidden;
+      document.body.classList.toggle("live-running",running);
+      $("bottomNav").hidden=running;
+      $("bottomNav").classList.toggle("live-mode",running);
     });
-    document.querySelectorAll(".jl-menu-item[href='#'],.jl-menu-item:not([href])").forEach(button => {
-      button.addEventListener("click", () => showToast("Esta función se completará en su módulo correspondiente."));
+    observer.observe($("broadcastScreen"),{attributes:true,attributeFilter:["hidden","class","style"]});
+
+    addEventListener("pagehide",()=>{
+      stopStream(state.mainStream);
+      stopStream(state.pipStream);
+      stopStream(state.audioStream);
     });
-    $("helpButton").addEventListener("click", () => {
-      showToast("Los datos del LIVE quedan guardados. Después solo activa cámara, filtro y transmite.", 3600);
-    });
-
-    let audioContext;
-    function playWaterDrop() {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      audioContext ||= new AudioCtx();
-      if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
-      const start = audioContext.currentTime + .01;
-
-      const droplet = (frequency, delay, volume, duration) => {
-        const oscillator = audioContext.createOscillator();
-        const gain = audioContext.createGain();
-        oscillator.type = "sine";
-        oscillator.frequency.setValueAtTime(frequency, start + delay);
-        oscillator.frequency.exponentialRampToValueAtTime(260, start + delay + duration);
-        gain.gain.setValueAtTime(.0001, start + delay);
-        gain.gain.exponentialRampToValueAtTime(volume, start + delay + .008);
-        gain.gain.exponentialRampToValueAtTime(.0001, start + delay + duration);
-        oscillator.connect(gain);
-        gain.connect(audioContext.destination);
-        oscillator.start(start + delay);
-        oscillator.stop(start + delay + duration + .02);
-      };
-
-      droplet(720, 0, .014, .13);
-      droplet(390, .045, .006, .16);
-    }
-
-    document.querySelectorAll(".jl-nav a,.jl-menu-item[href]").forEach(link => {
-      link.addEventListener("pointerdown", playWaterDrop, {passive:true});
-    });
-
-    function fishSvg(color) {
-      const id = "g" + color.replace(/\W/g,"");
-      return `<svg viewBox="0 0 80 56" aria-hidden="true"><defs><linearGradient id="${id}" x1="0" x2="1"><stop stop-color="${color}"/><stop offset="1" stop-color="#6d1bb1"/></linearGradient></defs><path d="M10 29C22 8 52 8 64 24l13-10-3 15 3 14-13-9C52 50 22 49 10 29Z" fill="url(#${id})" stroke="#ffd24c" stroke-width="2"/><circle cx="34" cy="23" r="4.5" fill="#55ddff" stroke="white" stroke-width="1.8"/><path d="M40 37c8 4 15 1 19-4" fill="none" stroke="#ffd24c" stroke-width="2" stroke-linecap="round"/><text x="45" y="32" text-anchor="middle" fill="#ffd24c" font-family="Georgia" font-size="13" font-style="italic">J</text></svg>`;
-    }
-
-    function syncLiveNav() {
-      document.querySelectorAll(".bottom-nav [data-fish-color]").forEach(node => {
-        node.innerHTML = fishSvg(node.dataset.fishColor);
-      });
-      const file = (location.pathname.split("/").pop() || "live.html").toLowerCase();
-      const current = file.includes("salas") ? "salas"
-        : file.includes("mensajes") ? "mensajes"
-        : file.includes("yo") ? "yo"
-        : file.includes("live") ? "live"
-        : "inicio";
-      document.querySelectorAll(".bottom-nav a").forEach(link => {
-        const active = link.dataset.tab === current;
-        link.classList.remove("active","on");
-        link.classList.toggle("is-current", active);
-        if (active) link.setAttribute("aria-current","page");
-        else link.removeAttribute("aria-current");
-      });
-      document.querySelector(".bottom-nav")?.setAttribute("data-current", current);
-    }
-
-    addEventListener("pagehide", clearAllMedia);
-    addEventListener("pageshow", event => {
-      syncLiveNav();
-      if (event.persisted || !hasLiveTrack(state.mainCameraStream, "video")) resetCameraUi();
-    });
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden && state.mainCameraStream && !hasLiveTrack(state.mainCameraStream, "video")) {
-        resetCameraUi();
-        showToast("La cámara se cerró al salir. Pulsa Reintentar cámara.");
+    addEventListener("pageshow",()=>{
+      document.body.classList.remove("live-running");
+      $("bottomNav").hidden=false;
+      $("bottomNav").classList.remove("live-mode");
+      if(!hasCamera()){
+        $("cameraEmpty").hidden=false;
+        $("startCamera").hidden=false;
+        $("startCamera").disabled=false;
+        $("startCamera").textContent="ACTIVAR CÁMARA";
       }
+      updateChecks();
     });
 
     loadProfile();
     applyFilter("natural");
-    resetSeats();
-    renderBattle();
-    setBattleOpen(false);
-    updateGiftUi();
-    updateTaskUi();
+    updateBattle();
     updateChecks();
-    syncLiveSettingsUi();
-    syncLiveNav();
   })();
   </script>
 </body>
