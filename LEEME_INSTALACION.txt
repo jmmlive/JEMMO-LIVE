@@ -1,0 +1,9 @@
+JEMMO LIVE V0.6.6 · ACTUALIZACIÓN INCREMENTAL
+
+1. Esta actualización se instala SOBRE la V0.6.5.
+2. No borres los demás archivos de la aplicación.
+3. Sustituye live.html y copia los archivos incluidos.
+4. Publica por HTTPS y limpia la caché del navegador antes de probar.
+5. Comprueba en móvil: cámara frontal, trasera, sin espejo, calidad, tareas, cuatro sillas, regalos y carrusel de batalla.
+
+IMPORTANTE: no es el proyecto completo. Es el paquete de actualización del módulo LIVE porque solo se recibieron los archivos incrementales de la V0.6.5.

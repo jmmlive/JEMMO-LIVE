@@ -1,5 +1,5 @@
-JEMMO LIVE V0.6.5 PRUEBAS
-Base instalada requerida: V0.6.4 LIVE RESTAURADO
+JEMMO LIVE V0.6.6 PRUEBAS
+Base instalada requerida: V0.6.5 PRUEBAS
 Tipo: actualización incremental sobre la versión actual
-Módulos modificados: LIVE y navegación inferior compartida
+Módulo modificado: LIVE
 Tareas de prueba: 1 minuto por tarea, 2 minutos total
