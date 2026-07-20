@@ -1,0 +1,26 @@
+JEMMO LIVE V1 · SALAS PRUEBA 01
+
+BASE NECESARIA
+JEMMO LIVE V0.6.14 PRUEBAS INSTALABLE completa.
+
+ARCHIVOS QUE SE AÑADEN O SUSTITUYEN
+1. Sustituir salas.html.
+2. Añadir salas-v1.css.
+3. Añadir salas-v1.js.
+4. Sustituir sw.js para actualizar la caché.
+5. Sustituir VERSION.txt.
+
+NO BORRAR
+Acceso, Inicio, LIVE, Mensajes, Yo, app.css, app.js, Firebase, iconos, jemmo-logo-header.webp ni jemmo-fish-nav.webp.
+
+PRUEBA MÓVIL
+1. Publicar los archivos por HTTPS.
+2. Cerrar JEMMO LIVE y limpiar la caché si todavía aparece la pantalla antigua.
+3. Entrar en Salas.
+4. Probar Audio Room y Sala con cámara.
+5. Autorizar micrófono/cámara.
+6. Elegir portada, escribir título y descripción, guardar y comprobar que persisten.
+7. Confirmar que la luz se vuelve verde y permite iniciar.
+
+NOTA
+Este ZIP es una actualización incremental porque los archivos aportados en el chat no incluyen la carpeta completa de V0.6.14.

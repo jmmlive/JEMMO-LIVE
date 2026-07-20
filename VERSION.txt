@@ -1,3 +1,5 @@
-JEMMO LIVE V0.6.14 PRUEBAS INSTALABLE
-Base: V0.6.13 instalable completa
+JEMMO LIVE V1 · SALAS PRUEBA 01
+Base requerida: JEMMO LIVE V0.6.14 PRUEBAS INSTALABLE
 Fecha: 2026-07-20
+Tipo: actualización incremental del módulo SALAS
+No modifica Acceso, Inicio, LIVE, Mensajes ni Yo.

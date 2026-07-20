@@ -1,7 +1,8 @@
-const CACHE = 'jemmo-live-v0.6.14-20260720';
+const CACHE = 'jemmo-live-v1-salas-prueba-01-20260720';
 const APP_SHELL = [
   './','./index.html','./acceso.html','./inicio.html','./live.html','./salas.html','./mensajes.html','./yo.html',
   './app.css','./inicio.css','./jemmo.css','./app.js','./jemmo-session.js','./pwa-register.js',
+  './salas-v1.css','./salas-v1.js',
   './manifest.webmanifest','./jemmo-logo-header.webp','./jemmo-fish-nav.webp',
   './icons/icon-192.png','./icons/icon-512.png','./icons/icon-maskable-512.png','./offline.html'
 ];
@@ -18,12 +19,17 @@ self.addEventListener('fetch', event => {
   if (url.origin !== self.location.origin) return;
   if (request.mode === 'navigate') {
     event.respondWith(fetch(request).then(response => {
-      const copy = response.clone(); caches.open(CACHE).then(cache => cache.put(request, copy)); return response;
+      const copy = response.clone();
+      caches.open(CACHE).then(cache => cache.put(request, copy));
+      return response;
     }).catch(async () => (await caches.match(request)) || (await caches.match('./offline.html'))));
     return;
   }
   event.respondWith(caches.match(request).then(cached => cached || fetch(request).then(response => {
-    if (response.ok) { const copy=response.clone(); caches.open(CACHE).then(cache => cache.put(request,copy)); }
+    if (response.ok) {
+      const copy = response.clone();
+      caches.open(CACHE).then(cache => cache.put(request, copy));
+    }
     return response;
   })));
 });
