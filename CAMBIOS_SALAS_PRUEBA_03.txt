@@ -1,0 +1,24 @@
+JEMMO LIVE V1 · SALAS PRUEBA 03
+Base: JEMMO LIVE V0.6.14 + SALAS PRUEBA 02
+Fecha: 20/07/2026
+
+ARCHIVO A REEMPLAZAR
+- salas.html
+
+CORRECCIONES
+- Distribución adaptativa de 4, 8, 12, 15 y 25 plazas.
+- Las sillas y el chat tienen zonas separadas: el chat nunca tapa las sillas.
+- Audio Room mantiene sillas redondas; cámara usa sillas rectangulares redondeadas.
+- Se elimina el título/descripcion central que robaba espacio dentro de la sala.
+- Al entrar en la sala se oculta la navegación general inferior.
+- Barra inferior nueva: Ajustes a la izquierda, escritura alargada en el centro y Regalos totalmente a la derecha.
+- Se elimina el trébol independiente; Afortunados queda dentro de Regalos.
+- Ajustes incorpora “Posible menor”.
+- La sala de 25 VIP queda abierta durante las pruebas.
+- Foto/portada circular y configuración guardadas localmente.
+- Mantiene el selector Audio Room / Sala con cámara marcado en amarillo.
+
+INSTALACIÓN
+1. Conserva una copia de SALAS PRUEBA 02.
+2. Sustituye únicamente salas.html por el incluido en este ZIP.
+3. Sube el archivo y limpia/actualiza la caché de la PWA si todavía aparece la versión anterior.
