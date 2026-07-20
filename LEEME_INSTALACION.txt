@@ -1,16 +1,15 @@
-JEMMO LIVE V0.6.14
+JEMMO LIVE V1 · SALAS PRUEBA 02
 
-1. Publica todos los archivos de esta carpeta en el mismo alojamiento HTTPS de JEMMO LIVE.
-2. No abras el ZIP como si fuera un APK.
-3. En Android, abre el enlace público directamente en Google Chrome.
-4. Pulsa el botón “CÓMO INSTALAR JEMMO LIVE” o el menú ⋮.
-5. Elige “Instalar aplicación” o “Añadir a pantalla de inicio”.
-6. Si ya estaba instalada, cierra la app, abre Chrome, recarga la web y vuelve a abrir el icono para recibir la actualización.
+1. Conserva guardado JEMMO_LIVE_V1_SALAS_PRUEBA_01.zip como respaldo.
+2. Abre este ZIP.
+3. Sustituye únicamente salas.html por el archivo incluido.
+4. No borres ni reemplaces Acceso, Inicio, LIVE, Mensajes, Perfil ni los recursos existentes.
+5. Publica la aplicación y limpia la caché/actualiza la PWA antes de probar.
 
-Pruebas obligatorias:
-- Sesión activa: abre directamente Inicio.
-- Cerrar sesión: vuelve a Acceso y permanece cerrada.
-- En LIVE, X y Atrás piden confirmación.
-- Cámara apagada pausa la tarea.
-- Micrófono apagado pausa tras 3 minutos.
-- El panel Seguridad permite probar los avisos locales.
+PRUEBAS EN MÓVIL
+- En Audio Room, toca la foto y después el botón Editar: ambos deben abrir la galería.
+- El pez activo de Salas debe verse circular, no cuadrado.
+- Durante preparación debe verse la navegación inferior.
+- Al entrar en la sala, la navegación debe desaparecer.
+- Abajo deben quedar únicamente chat, Afortunados, Regalos y Ajustes.
+- Comprueba la sala de 4, Audio Room 25 VIP, sala privada con contraseña y reporte Posible menor.

@@ -9,255 +9,306 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>JEMMO LIVE · SALAS V1</title>
-  <link rel="stylesheet" href="salas-v1.css">
-  <style>html.jemmo-auth-pending body{visibility:hidden}</style>
+  <title>JEMMO LIVE · Salas · V1 Prueba 02</title>
+  <style>
+    :root{
+      color-scheme:dark;
+      --bg:#050007;--panel:#120318;--panel2:#1b0624;--line:#8d2aab70;
+      --purple:#bf3dff;--pink:#ff3b8d;--gold:#ffd24c;--cyan:#42dfea;
+      --green:#44e39a;--orange:#ff9d43;--red:#ff516e;--muted:#b9a9c0;
+      --keyboard:0px;
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:#fff}
+    body{min-height:100svh;overflow-x:hidden;background:radial-gradient(circle at 50% -12%,#3a084c 0,transparent 38%),linear-gradient(180deg,#0a000e,#030004 70%)}
+    button,input,textarea,select{font:inherit}
+    button{cursor:pointer}
+    [hidden]{display:none!important}
+    img{max-width:100%}
+    html.jemmo-auth-pending body{visibility:hidden}
+
+    .jr-shell{width:min(100%,720px);min-height:100svh;margin:auto;padding:calc(10px + env(safe-area-inset-top)) 12px calc(108px + env(safe-area-inset-bottom))}
+    .jr-header{display:grid;grid-template-columns:48px minmax(0,1fr) 48px;gap:9px;align-items:center}
+    .jr-round{width:48px;height:48px;border:1px solid #9634b27d;border-radius:16px;background:#14031b;color:#fff;font-size:23px;display:grid;place-items:center}
+    .jr-brand{text-align:center;min-width:0}.jr-brand img{width:min(100%,420px);height:56px;display:block;margin:auto;object-fit:cover;border-radius:12px;background:#16021e}.jr-brand small{display:block;margin-top:3px;color:#bba8c1;font-size:8px;font-weight:950;letter-spacing:.18em}
+    .jr-heading{margin:16px 2px 12px}.jr-heading h1{margin:0;font-size:clamp(31px,8vw,43px);font-weight:550;letter-spacing:-.04em}.jr-heading p{margin:5px 0 0;color:#c4b5ca;font-size:12px}
+
+    .jr-card{border:1px solid var(--line);border-radius:24px;background:linear-gradient(145deg,#190520,#0b010e);box-shadow:0 14px 35px #0008,0 0 24px #7d00aa1f}
+    .jr-mode-card{padding:13px}.jr-mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.jr-mode{min-height:91px;padding:12px;border:1px solid #76308a72;border-radius:18px;background:#0d0211;color:#fff;text-align:left}.jr-mode span{display:block;font-size:24px}.jr-mode b{display:block;margin-top:4px;font-size:14px}.jr-mode small{display:block;margin-top:3px;color:#a996b0;font-size:9px;line-height:1.3}.jr-mode.active{border-color:var(--gold);box-shadow:0 0 18px #ffd24c2d;background:linear-gradient(145deg,#291509,#130611)}
+
+    .jr-capacity{padding:13px;margin-top:12px}.jr-card-title{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}.jr-card-title b{font-size:14px}.jr-card-title small{color:#9e8ca6;font-size:9px}.jr-capacity-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.jr-capacity button{min-height:51px;border:1px solid #7d338f70;border-radius:15px;background:#100316;color:#d9cadf;font-weight:950}.jr-capacity button.active{border-color:var(--green);background:#0b281f;color:#9cf3cc;box-shadow:0 0 14px #44e39a31}.jr-capacity button[hidden]{display:none!important}
+
+    .jr-editor{padding:13px;margin-top:12px}.jr-cover-row{display:grid;grid-template-columns:92px minmax(0,1fr);gap:12px;align-items:center}.jr-cover-wrap{position:relative;width:92px;height:92px}.jr-cover{width:92px;height:92px;border:2px solid var(--green);border-radius:50%;object-fit:cover;background:radial-gradient(circle,#3f1453,#0d0311 72%);box-shadow:0 0 18px #44e39a40;display:block}.jr-cover-placeholder{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:10px;border-radius:50%;color:#c7b8cd;font-size:9px;pointer-events:none}.jr-cover-edit{position:absolute;right:-2px;bottom:-2px;width:35px;height:35px;border:2px solid #060007;border-radius:50%;background:var(--green);color:#071c15;font-size:15px;font-weight:950;display:grid;place-items:center;z-index:4}.jr-cover-text b{display:block;font-size:15px}.jr-cover-text p{margin:5px 0 0;color:#ad9db4;font-size:10px;line-height:1.4}.jr-cover-text button{min-height:38px;margin-top:8px;padding:0 14px;border:1px solid #9c40b17a;border-radius:12px;background:#18051f;color:#fff;font-size:10px;font-weight:900}
+    .jr-field{margin-top:10px;padding:12px;border:1px solid #74308368;border-radius:16px;background:#0c0210}.jr-field label{display:flex;justify-content:space-between;gap:8px;margin-bottom:7px;font-size:11px;font-weight:950}.jr-required{color:var(--red)}.jr-field input,.jr-field textarea,.jr-field select{width:100%;border:0;outline:0;resize:vertical;background:transparent;color:#fff;font-size:15px}.jr-field textarea{min-height:70px}.jr-two{display:grid;grid-template-columns:1fr 1fr;gap:9px}.jr-password-note{margin-top:6px;color:#c8b4ce;font-size:9px}
+
+    .jr-media{padding:13px;margin-top:12px}.jr-audio-test{display:grid;grid-template-columns:55px minmax(0,1fr) auto;gap:9px;align-items:center}.jr-mic-button{width:55px;height:55px;border:1px solid #53e6a787;border-radius:18px;background:#0c251d;color:#79efbd;font-size:23px}.jr-meter{height:12px;overflow:hidden;border:1px solid #7d338f66;border-radius:999px;background:#080109}.jr-meter i{display:block;width:0;height:100%;background:linear-gradient(90deg,var(--green),var(--gold),var(--pink));transition:width .1s}.jr-meter-label{font-size:9px;color:#a793ae}.jr-audio-state{font-size:9px;color:#bcaec2;text-align:right}
+    .jr-camera-preview{position:relative;overflow:hidden;min-height:250px;border:1px solid #8d35aa7c;border-radius:20px;background:#000}.jr-camera-preview video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(1)!important;filter:var(--camera-filter,none)}.jr-camera-empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#b9a8c0;font-size:11px}.jr-camera-toolbar{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:8px}.jr-camera-toolbar button{min-height:43px;border:1px solid #79328d6f;border-radius:13px;background:#130419;color:#fff;font-size:10px;font-weight:900}.jr-camera-toolbar button.active{border-color:var(--green);color:#84efbd}.jr-beauty{display:flex;align-items:center;gap:9px;margin-top:9px;padding:8px 10px;border:1px solid #74308368;border-radius:14px;background:#0d0211}.jr-beauty input{width:100%}.jr-beauty span{font-size:9px;color:#bcaac2;white-space:nowrap}
+
+    .jr-validation{padding:13px;margin-top:12px}.jr-checks{display:grid;gap:7px}.jr-check{display:grid;grid-template-columns:10px minmax(0,1fr) auto;gap:8px;align-items:center;color:#b4a5ba;font-size:10px}.jr-dot{width:9px;height:9px;border-radius:50%;background:var(--red);box-shadow:0 0 8px #ff516e88}.jr-check.orange .jr-dot{background:var(--orange);box-shadow:0 0 8px #ff9d4388}.jr-check.ok{color:#c9f8e0}.jr-check.ok .jr-dot{background:var(--green);box-shadow:0 0 8px var(--green)}.jr-check em{font-style:normal;font-size:8px}.jr-launch{width:100%;min-height:61px;margin-top:12px;border:0;border-radius:19px;background:linear-gradient(90deg,#ffd24c,#ff679e,#bd3aff);color:#230421;font-size:17px;font-weight:950;box-shadow:0 12px 30px #0008}.jr-launch:disabled{opacity:.42;filter:grayscale(.45)}.jr-validation-msg{min-height:19px;margin-top:7px;color:#ffc0cf;font-size:10px;text-align:center}
+
+    /* Navegación visible solo durante preparación. El pez activo queda circular. */
+    .jr-nav{position:fixed;z-index:90;left:0;right:0;bottom:0;min-height:90px;display:grid;grid-template-columns:repeat(5,1fr);padding:8px 5px max(10px,env(safe-area-inset-bottom));border-top:1px solid #74258585;background:#070109fa;box-shadow:0 -12px 32px #000b}
+    .jr-nav a{position:relative;display:grid;justify-items:center;align-content:center;gap:4px;color:#705979;text-decoration:none;font-size:10px;font-weight:900}.jr-nav .nav-icon{width:44px;height:42px;display:grid;place-items:center;color:var(--tab-color)}.jr-nav svg{width:29px;height:29px;stroke:currentColor;fill:none;stroke-width:2}.jr-nav .active-fish{width:49px!important;height:49px!important;aspect-ratio:1/1!important;border-radius:50%!important;clip-path:circle(50%)!important;object-fit:cover!important;object-position:center!important;overflow:hidden!important;display:block!important;filter:drop-shadow(0 0 9px var(--tab-color));transform:translateY(-4px) scale(1.08);background:#16021e}.jr-nav a.is-current{color:var(--tab-color)}.jr-nav a.is-current::after{content:"";width:36px;height:5px;border-radius:99px;background:currentColor;box-shadow:0 0 12px currentColor}.jr-badge{position:absolute;top:0;right:24%;min-width:19px;height:19px;display:grid;place-items:center;border-radius:99px;background:#c4275b;color:#fff;font-size:8px;z-index:3}
+    body.jr-room-active .jr-nav{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important;transform:translateY(140%)!important}
+
+    /* Sala activa: sin barra inferior duplicada. */
+    .jr-room{position:fixed;inset:0;z-index:1000;overflow:hidden;background:radial-gradient(circle at 50% 8%,#4a0d5d 0,#15031c 32%,#050007 75%)}
+    .jr-room-bg{position:absolute;inset:0;background:radial-gradient(circle at 20% 30%,#8e2ebb22,transparent 25%),radial-gradient(circle at 85% 65%,#ffd24c12,transparent 28%);pointer-events:none}
+    .jr-room-ui{position:absolute;inset:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;z-index:4}
+    .jr-room-top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;padding:calc(10px + env(safe-area-inset-top)) 10px 8px;background:linear-gradient(180deg,#000b,transparent)}
+    .jr-room-profile{display:flex;align-items:center;gap:8px;min-width:0;padding:5px 9px 5px 5px;border:1px solid #ffffff2c;border-radius:999px;background:#100413df}.jr-room-profile img{width:38px;height:38px;border:1px solid var(--gold);border-radius:50%;object-fit:cover;background:#27052f}.jr-room-profile b{display:block;max-width:47vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}.jr-room-profile small{display:block;margin-top:2px;color:#c4b5c9;font-size:8px}.jr-live-tools{display:flex;align-items:center;gap:6px}.jr-private{min-height:35px;padding:0 9px;border:1px solid #ffd24c74;border-radius:12px;background:#241708d9;color:#ffe486;font-size:9px;font-weight:950}.jr-finish{width:40px;height:40px;border:1px solid #ff607b;border-radius:13px;background:#c51c48;color:#fff;font-size:22px}
+
+    .jr-stage{position:relative;overflow:hidden;padding:6px 9px 122px}.jr-room-title{text-align:center}.jr-room-title h2{margin:3px 0 2px;font-size:18px}.jr-room-title p{margin:0;color:#bcaac2;font-size:9px}.jr-seat-grid{height:100%;display:grid;align-content:center;justify-content:center;gap:clamp(9px,2vw,15px);margin:auto}.jr-seat{position:relative;display:grid;place-items:center;align-content:center;gap:4px;border:1px solid #bf54df8b;background:radial-gradient(circle at 35% 25%,#612079,#1a0622 66%);color:#fff;box-shadow:0 9px 20px #0008,0 0 16px #a72bc532}.jr-seat.audio{border-radius:50%}.jr-seat.camera{border-radius:20px}.jr-seat.host{border-color:var(--gold);box-shadow:0 0 22px #ffd24c45}.jr-seat img,.jr-seat-placeholder{width:42%;aspect-ratio:1;border-radius:50%;object-fit:cover;background:#27052f}.jr-seat-placeholder{display:grid;place-items:center;border:1px solid #9d42ba55;color:#d98cff;font-size:clamp(17px,5vw,30px);font-weight:300}.jr-seat b{font-size:clamp(8px,2vw,11px)}.jr-seat small{color:#c7b6cc;font-size:clamp(6px,1.7vw,8px)}.jr-seat .jr-seat-no{position:absolute;right:5px;bottom:4px;min-width:19px;height:17px;display:grid;place-items:center;border:1px solid #9d42ba;border-radius:99px;background:#200628;font-size:7px}.jr-seat .jr-mic-state{position:absolute;left:5px;bottom:4px;font-size:9px}.jr-seat.request{border-color:var(--orange);box-shadow:0 0 17px #ff9d4366}.jr-seat.request::after{content:"";position:absolute;right:4px;top:4px;width:9px;height:9px;border-radius:50%;background:var(--orange);box-shadow:0 0 8px var(--orange)}
+    .jr-seat-grid.n4{grid-template-columns:repeat(2,minmax(126px,36vw));grid-auto-rows:minmax(126px,36vw);max-width:420px}.jr-seat-grid.n8{grid-template-columns:repeat(4,minmax(67px,19vw));grid-auto-rows:minmax(67px,19vw);max-width:470px}.jr-seat-grid.n12{grid-template-columns:repeat(4,minmax(62px,18vw));grid-auto-rows:minmax(62px,18vw);max-width:465px}.jr-seat-grid.n15{grid-template-columns:repeat(5,minmax(52px,15.5vw));grid-auto-rows:minmax(52px,15.5vw);max-width:470px}.jr-seat-grid.n25{grid-template-columns:repeat(5,minmax(45px,13.2vw));grid-auto-rows:minmax(45px,13.2vw);gap:7px;max-width:450px}
+    .jr-seat-grid.n4 .jr-seat img,.jr-seat-grid.n4 .jr-seat-placeholder{width:48%}.jr-seat-grid.n4 .jr-seat b{font-size:12px}.jr-seat-grid.n4 .jr-seat small{font-size:8px}
+
+    .jr-chat-zone{position:absolute;z-index:12;left:9px;right:9px;bottom:calc(9px + env(safe-area-inset-bottom) + var(--keyboard));pointer-events:auto;transition:bottom .15s}.jr-chat-layer{width:min(78%,390px);max-height:205px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;gap:5px;margin-bottom:8px}.jr-chat-line{width:max-content;max-width:100%;padding:6px 9px;border-radius:12px;background:#09020dcc;color:#fff;font-size:10px;text-shadow:0 1px 2px #000;animation:jrMsg .18s ease}.jr-chat-line.system{color:#ffe68b;border:1px solid #ffd24c36}.jr-chatbar{display:grid;grid-template-columns:1fr 45px 45px 45px;gap:6px;align-items:center}.jr-chatbar form{min-height:46px;display:flex;align-items:center;gap:5px;padding:0 6px 0 12px;border:1px solid #ffffff35;border-radius:16px;background:#0c0310e8;backdrop-filter:blur(7px)}.jr-chatbar input{width:100%;border:0;outline:0;background:transparent;color:#fff;font-size:12px}.jr-chatbar form button,.jr-action{width:39px;height:39px;border:1px solid #ffffff2f;border-radius:13px;background:#15051be5;color:#fff;font-size:18px}.jr-action{width:45px;height:45px}.jr-action.gift{border-color:#ffd24c7d;color:#ffd24c}.jr-action.settings{font-size:16px}@keyframes jrMsg{from{opacity:0;transform:translateY(5px)}}
+
+    .jr-backdrop{position:absolute;inset:0;z-index:30;background:#0009;backdrop-filter:blur(2px)}.jr-sheet{position:absolute;z-index:31;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));max-height:min(72vh,560px);overflow:auto;padding:15px;border:1px solid #ad3bd68c;border-radius:22px;background:linear-gradient(180deg,#1a0622fa,#09010cfa);box-shadow:0 -14px 45px #000c}.jr-sheet-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.jr-sheet-head h3{margin:0;font-size:18px}.jr-sheet-head p{margin:4px 0 0;color:#af9bb6;font-size:10px}.jr-sheet-close{width:35px;height:35px;border:1px solid #9340a9;border-radius:11px;background:#140419;color:#fff;font-size:21px}.jr-sheet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}.jr-sheet-grid button{min-height:68px;padding:7px 4px;border:1px solid #8c389f77;border-radius:14px;background:#15041b;color:#fff;font-size:18px}.jr-sheet-grid button small{display:block;margin-top:4px;color:#c8b9cc;font-size:8px}.jr-sheet-grid .danger{border-color:#ff516e80;background:#3a0b18}.jr-gifts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:13px}.jr-gifts button{min-height:82px;padding:7px 3px;border:1px solid #87369b77;border-radius:14px;background:#120419;color:#fff}.jr-gifts span{display:block;font-size:28px}.jr-gifts b{display:block;font-size:9px}.jr-gifts small{display:block;margin-top:3px;color:#ffd76b;font-size:8px}.jr-balance{margin-top:10px;padding:9px;border:1px solid #d1aa4677;border-radius:13px;background:#180f08;color:#ffd86a;text-align:center;font-size:11px;font-weight:950}.jr-lucky{display:grid;gap:9px;margin-top:13px}.jr-lucky-card{padding:13px;border:1px solid #8f379f78;border-radius:16px;background:#120419}.jr-lucky-card b{display:block}.jr-lucky-card p{margin:5px 0 0;color:#bba9c1;font-size:10px;line-height:1.4}.jr-lucky button{min-height:48px;border:1px solid #ffd24c75;border-radius:14px;background:#281906;color:#ffe47b;font-weight:950}
+    .jr-toast{position:fixed;z-index:3000;left:50%;bottom:calc(100px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(18px);width:min(88%,410px);padding:11px 13px;border:1px solid #b43bd577;border-radius:14px;background:#100316f3;text-align:center;font-size:11px;opacity:0;pointer-events:none;transition:.2s}.jr-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+    @media(max-width:430px){.jr-shell{padding-left:9px;padding-right:9px}.jr-capacity-grid{gap:5px}.jr-capacity button{min-height:47px;font-size:11px}.jr-cover-row{grid-template-columns:84px minmax(0,1fr)}.jr-cover-wrap,.jr-cover{width:84px;height:84px}.jr-two{grid-template-columns:1fr}.jr-camera-preview{min-height:220px}.jr-seat-grid.n4{grid-template-columns:repeat(2,minmax(120px,39vw));grid-auto-rows:minmax(120px,39vw)}.jr-seat-grid.n8{grid-template-columns:repeat(4,minmax(63px,20vw));grid-auto-rows:minmax(63px,20vw)}.jr-seat-grid.n12{grid-template-columns:repeat(4,minmax(58px,19vw));grid-auto-rows:minmax(58px,19vw)}.jr-seat-grid.n15{grid-template-columns:repeat(5,minmax(49px,16vw));grid-auto-rows:minmax(49px,16vw)}.jr-seat-grid.n25{grid-template-columns:repeat(5,minmax(43px,14vw));grid-auto-rows:minmax(43px,14vw)}}
+  </style>
   <script>
     document.documentElement.classList.add('jemmo-auth-pending');
-    setTimeout(() => {
-      if (!document.documentElement.classList.contains('jemmo-auth-pending')) return;
-      if (localStorage.getItem('jemmo_active_uid')) document.documentElement.classList.remove('jemmo-auth-pending');
+    setTimeout(()=>{
+      if(!document.documentElement.classList.contains('jemmo-auth-pending')) return;
+      if(localStorage.getItem('jemmo_active_uid')) document.documentElement.classList.remove('jemmo-auth-pending');
       else location.replace('acceso.html?sesion=timeout');
-    }, 5500);
+    },5500);
   </script>
 </head>
 <body>
-  <main class="jr-app" id="roomsApp">
-    <header class="jr-topbar">
-      <button class="jr-round-button" id="menuOpen" type="button" aria-label="Abrir menú">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-      </button>
-      <a class="jr-brand" href="inicio.html" aria-label="JEMMO LIVE Inicio">
-        <img src="jemmo-logo-header.webp" alt="JEMMO LIVE" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
-        <span hidden>JEMMO <b>LIVE</b></span>
-      </a>
-      <span class="jr-version">V1</span>
+  <main class="jr-shell" id="prepScreen">
+    <header class="jr-header">
+      <button class="jr-round" type="button" onclick="location.href='inicio.html'" aria-label="Volver a Inicio">←</button>
+      <div class="jr-brand"><img src="jemmo-logo-header.webp" alt="JEMMO LIVE"><small>SALAS · PREPARACIÓN</small></div>
+      <button class="jr-round" id="helpButton" type="button" aria-label="Ayuda">?</button>
     </header>
 
-    <section class="jr-home" id="roomsHome">
-      <div class="jr-heading">
-        <span class="jr-kicker">CREAR UNA SALA</span>
-        <h1>Elige cómo quieres conectar</h1>
-        <p>Primero preparas sonido, cámara y datos. La sala solo se abre cuando todo está en verde.</p>
+    <section class="jr-heading"><h1>Prepara tu sala</h1><p>Audio Room o sala con cámara, con el mismo manejo visual del LIVE.</p></section>
+
+    <section class="jr-card jr-mode-card">
+      <div class="jr-mode-grid">
+        <button class="jr-mode active" type="button" data-mode="audio"><span>🎙</span><b>Audio Room</b><small>Solo voz, sillas redondas y modo ligero.</small></button>
+        <button class="jr-mode" type="button" data-mode="camera"><span>▣</span><b>Sala con cámara</b><small>Vídeo en mosaico y controles de anfitrión.</small></button>
       </div>
-
-      <div class="jr-type-grid" aria-label="Tipos de sala">
-        <button class="jr-type-card audio" type="button" data-room-type="audio">
-          <span class="jr-type-icon">
-            <svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg>
-          </span>
-          <span class="jr-type-copy"><b>Audio Room</b><small>Avatares redondos y conversación por voz</small></span>
-          <span class="jr-type-meta">4 · 8 · 12 · 15 · <em>25 VIP</em></span>
-          <i>›</i>
-        </button>
-
-        <button class="jr-type-card camera" type="button" data-room-type="camera">
-          <span class="jr-type-icon">
-            <svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="m16 10 5-3v10l-5-3z"/></svg>
-          </span>
-          <span class="jr-type-copy"><b>Sala con cámara</b><small>Vídeo y audio con preparación completa</small></span>
-          <span class="jr-type-meta">4 · 8 · 12 · 15</span>
-          <i>›</i>
-        </button>
-      </div>
-
-      <section class="jr-rules-card">
-        <div><span>✓</span><p><b>Preparación obligatoria</b><small>Micrófono, conexión, portada, título y descripción.</small></p></div>
-        <div><span>5</span><p><b>Tarea de cámara</b><small>Disponible desde nivel 5 y solo para el anfitrión.</small></p></div>
-        <div><span>⌂</span><p><b>Tarea de silla</b><small>Solo se contabiliza en la sala oficial de la Casa.</small></p></div>
-      </section>
     </section>
 
-    <section class="jr-prep" id="prepScreen" hidden>
-      <header class="jr-section-head">
-        <button class="jr-back" id="backToTypes" type="button" aria-label="Volver">‹</button>
-        <div><span id="prepEyebrow">PREPARAR SALA</span><h1 id="prepTitle">Audio Room</h1></div>
-        <span class="jr-status-pill orange" id="globalStatus"><i></i><b>Preparando</b></span>
-      </header>
+    <section class="jr-card jr-capacity">
+      <div class="jr-card-title"><b>Capacidad de la sala</b><small id="capacityHint">Audio: 4, 8, 12, 15 o 25 VIP</small></div>
+      <div class="jr-capacity-grid">
+        <button class="active" type="button" data-capacity="4">4</button><button type="button" data-capacity="8">8</button><button type="button" data-capacity="12">12</button><button type="button" data-capacity="15">15</button><button type="button" data-capacity="25">25 VIP</button>
+      </div>
+    </section>
 
-      <section class="jr-card jr-capacity-card">
-        <div class="jr-card-title"><div><b>Capacidad</b><small>Elige cuántas plazas tendrá la sala</small></div><span id="capacitySummary">4 plazas</span></div>
-        <div class="jr-capacity-options" id="capacityOptions"></div>
-        <p class="jr-vip-note" id="vipNote" hidden>La sala de 25 plazas requiere VIP activo.</p>
-      </section>
-
-      <section class="jr-card jr-editor" id="editorCard">
-        <button class="jr-editor-toggle" id="editorToggle" type="button" aria-expanded="true">
-          <span><b>Datos de la sala</b><small id="editorStatus">Configura portada, título y descripción</small></span>
-          <i id="editorArrow">⌃</i>
-        </button>
-
-        <div class="jr-editor-saved" id="editorSaved" hidden>
-          <img id="savedCover" src="jemmo-logo-header.webp" alt="Portada guardada">
-          <span><b id="savedTitle">Mi sala</b><small id="savedDescription">Datos guardados</small></span>
-          <button id="editSaved" type="button">Editar</button>
+    <section class="jr-card jr-editor">
+      <div class="jr-card-title"><b>Datos de la sala</b><small>Se guardan por usuario</small></div>
+      <div class="jr-cover-row">
+        <div class="jr-cover-wrap" id="coverClickArea" role="button" tabindex="0" aria-label="Editar foto de portada">
+          <img class="jr-cover" id="coverPreview" alt="Portada de la sala">
+          <div class="jr-cover-placeholder" id="coverPlaceholder">Toca para poner foto</div>
+          <button class="jr-cover-edit" id="coverEditButton" type="button" aria-label="Editar foto">✎</button>
         </div>
+        <div class="jr-cover-text"><b>Portada de la sala</b><p>Tocar la foto o el botón Editar abre siempre el selector de imagen, tanto en Audio Room como en cámara.</p><button id="coverTextEdit" type="button">EDITAR FOTO</button></div>
+        <input id="coverInput" type="file" accept="image/*" hidden>
+      </div>
+      <div class="jr-field"><label>Título <span class="jr-required">Obligatorio</span></label><input id="roomTitle" maxlength="60" placeholder="Ej.: Noche de charla JEMMO"></div>
+      <div class="jr-field"><label>Descripción <span class="jr-required">Obligatoria</span></label><textarea id="roomDescription" maxlength="180" placeholder="Explica de qué trata la sala"></textarea></div>
+      <div class="jr-two">
+        <div class="jr-field"><label>Acceso</label><select id="roomPrivacy"><option value="public">Pública</option><option value="password">Privada con contraseña</option></select></div>
+        <div class="jr-field" id="passwordField" hidden><label>Contraseña <span class="jr-required">Mínimo 4</span></label><input id="roomPassword" maxlength="20" inputmode="text" autocomplete="off" placeholder="Crea una clave"><div class="jr-password-note">La persona invitada deberá escribirla para entrar.</div></div>
+      </div>
+    </section>
 
-        <div class="jr-editor-body" id="editorBody">
-          <label class="jr-field">
-            <span>Título <em>Obligatorio</em></span>
-            <input id="roomTitle" maxlength="60" placeholder="Escribe un título claro" autocomplete="off">
-            <small>Mínimo 5 caracteres.</small>
-          </label>
+    <section class="jr-card jr-media">
+      <div class="jr-card-title"><b id="mediaTitle">Prueba del micrófono</b><small id="mediaHint">Habla para comprobar el nivel</small></div>
+      <div id="audioControls">
+        <div class="jr-audio-test"><button class="jr-mic-button" id="micTestButton" type="button">🎙</button><div><div class="jr-meter"><i id="micMeterFill"></i></div><div class="jr-meter-label">Nivel de entrada</div></div><div class="jr-audio-state" id="micState">Sin probar</div></div>
+      </div>
+      <div id="cameraControls" hidden>
+        <div class="jr-camera-preview"><video id="cameraPreview" autoplay muted playsinline></video><div class="jr-camera-empty" id="cameraEmpty">Activa la cámara para revisar la sala.</div></div>
+        <div class="jr-camera-toolbar"><button id="cameraStart" type="button">ACTIVAR</button><button id="cameraSwitch" type="button">CAMBIAR</button><button class="active" data-filter="none" type="button">NATURAL</button><button data-filter="brightness(1.08) saturate(1.08)" type="button">LUZ</button></div>
+        <div class="jr-beauty"><span>Belleza suave</span><input id="beautyRange" type="range" min="0" max="10" value="0"><span id="beautyValue">0</span></div>
+      </div>
+    </section>
 
-          <label class="jr-field">
-            <span>Descripción <em>Obligatoria</em></span>
-            <textarea id="roomDescription" maxlength="180" placeholder="Explica brevemente de qué tratará la sala"></textarea>
-            <small>Mínimo 10 caracteres.</small>
-          </label>
-
-          <div class="jr-field">
-            <span>Portada <em>Obligatoria</em></span>
-            <label class="jr-cover-picker" for="coverInput">
-              <img id="coverPreview" src="jemmo-logo-header.webp" alt="Vista de la portada">
-              <span><b>Elegir portada</b><small>Se guardará para próximas salas</small></span>
-              <input id="coverInput" type="file" accept="image/*">
-            </label>
-          </div>
-
-          <div class="jr-two-columns">
-            <label class="jr-field">
-              <span>Visibilidad</span>
-              <select id="privacy">
-                <option value="public">Pública</option>
-                <option value="followers">Solo seguidores</option>
-                <option value="private">Privada con contraseña</option>
-              </select>
-            </label>
-            <label class="jr-field">
-              <span>Acceso a sillas</span>
-              <select id="seatAccess">
-                <option value="approval">Con aprobación</option>
-                <option value="open">Libre</option>
-                <option value="closed">Cerradas</option>
-              </select>
-            </label>
-          </div>
-          <button class="jr-save" id="saveRoomProfile" type="button">GUARDAR DATOS DE LA SALA</button>
-        </div>
-      </section>
-
-      <section class="jr-card jr-media-card" id="mediaCard">
-        <div class="jr-card-title"><div><b id="mediaTitle">Prueba de audio</b><small id="mediaSubtitle">Comprueba que se te escucha correctamente</small></div><span class="jr-mini-state" id="mediaState">Pendiente</span></div>
-
-        <div class="jr-camera-preview" id="cameraPreviewWrap" hidden>
-          <video id="cameraPreview" autoplay muted playsinline disablepictureinpicture></video>
-          <div class="jr-camera-empty" id="cameraEmpty"><span>◉</span><b>Cámara sin activar</b><small>Actívala para ajustar encuadre y filtros</small></div>
-          <div class="jr-camera-actions">
-            <button id="startCamera" type="button">Activar cámara</button>
-            <button id="switchCamera" type="button">Voltear</button>
-          </div>
-        </div>
-
-        <div class="jr-filter-row" id="filterRow" hidden>
-          <button class="active" data-filter="natural" type="button">Natural</button>
-          <button data-filter="warm" type="button">Cálido</button>
-          <button data-filter="bright" type="button">Luz</button>
-          <button data-filter="soft" type="button">Suave</button>
-        </div>
-
-        <label class="jr-beauty" id="beautyControl" hidden><span>Belleza</span><input id="beautyLevel" type="range" min="0" max="100" value="20"><output id="beautyOutput">20%</output></label>
-
-        <div class="jr-audio-test">
-          <button class="jr-mic-button" id="testMicrophone" type="button">
-            <svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3M8 21h8"/></svg>
-            <span><b>Probar micrófono</b><small id="micText">Todavía no comprobado</small></span>
-          </button>
-          <div class="jr-meter" aria-label="Nivel del micrófono"><i id="audioMeter"></i></div>
-        </div>
-
-        <div class="jr-switch-grid">
-          <label><span><b>Reducir ruido</b><small>Mejora voces con mala conexión</small></span><input id="noiseReduction" type="checkbox" checked><i></i></label>
-          <label><span><b>Cancelar eco</b><small>Evita retorno del altavoz</small></span><input id="echoCancellation" type="checkbox" checked><i></i></label>
-        </div>
-      </section>
-
-      <section class="jr-card jr-check-card">
-        <div class="jr-check-list">
-          <div id="checkType"><i></i><span><b>Tipo y capacidad</b><small>Elige una modalidad válida</small></span></div>
-          <div id="checkProfile"><i></i><span><b>Datos de la sala</b><small>Portada, título y descripción</small></span></div>
-          <div id="checkMic"><i></i><span><b>Micrófono</b><small>Permiso y prueba de sonido</small></span></div>
-          <div id="checkCamera"><i></i><span><b>Cámara</b><small id="cameraCheckText">No necesaria en Audio Room</small></span></div>
-          <div id="checkConnection"><i></i><span><b>Conexión</b><small id="connectionText">Comprobando</small></span></div>
-        </div>
-        <div class="jr-readiness orange" id="readinessBox"><i></i><span><b id="readinessTitle">Preparación incompleta</b><small id="readinessText">Completa los pasos pendientes para iniciar.</small></span></div>
-      </section>
-
-      <button class="jr-launch" id="launchRoom" type="button" disabled>INICIAR SALA</button>
+    <section class="jr-card jr-validation">
+      <div class="jr-card-title"><b>Revisión antes de entrar</b><small>Rojo · naranja · verde</small></div>
+      <div class="jr-checks">
+        <div class="jr-check" id="checkCover"><i class="jr-dot"></i><span>Portada</span><em>Falta</em></div>
+        <div class="jr-check" id="checkText"><i class="jr-dot"></i><span>Título y descripción</span><em>Faltan</em></div>
+        <div class="jr-check" id="checkMedia"><i class="jr-dot"></i><span id="checkMediaText">Micrófono</span><em>Sin probar</em></div>
+        <div class="jr-check" id="checkPrivacy"><i class="jr-dot"></i><span>Acceso y contraseña</span><em>Revisar</em></div>
+      </div>
+      <button class="jr-launch" id="launchButton" type="button" disabled>ENTRAR EN LA SALA</button>
+      <div class="jr-validation-msg" id="validationMessage">Completa los datos obligatorios.</div>
     </section>
   </main>
 
-  <section class="jr-room" id="activeRoom" hidden>
-    <header class="jr-room-head">
-      <div class="jr-room-identity">
-        <img id="activeCover" src="jemmo-logo-header.webp" alt="Portada de la sala">
-        <span><small id="activeType">AUDIO ROOM</small><b id="activeTitle">Mi sala</b><em id="activeCapacity">4 plazas</em></span>
-      </div>
-      <div class="jr-room-live"><span><i></i> EN SALA</span><button id="endRoom" type="button" aria-label="Finalizar sala">×</button></div>
-    </header>
+  <nav class="jr-nav" id="prepNav" aria-label="Navegación principal">
+    <a href="inicio.html" style="--tab-color:#ffcf4c"><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg></span><b>Inicio</b></a>
+    <a href="live.html" style="--tab-color:#ff3b8d"><span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="14" height="14" rx="3"/><path d="m17 10 4-2v8l-4-2z"/></svg></span><b>Live</b></a>
+    <a class="is-current" href="salas.html" style="--tab-color:#8f7bff"><span class="nav-icon"><img class="active-fish" src="jemmo-fish-nav.webp" alt="Salas"></span><b>Salas</b></a>
+    <a href="mensajes.html" style="--tab-color:#45b9ff"><span class="jr-badge">8</span><span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3 1.5-5A7 7 0 0 1 3 13V8a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5z"/></svg></span><b>Mensajes</b></a>
+    <a href="yo.html" style="--tab-color:#ffc84c"><span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/></svg></span><b>Yo</b></a>
+  </nav>
 
-    <section class="jr-task-banner" id="taskBanner">
-      <i></i><span><b id="taskTitle">Tareas de esta sala</b><small id="taskText">La tarea de silla solo se hace en la Sala de Casa.</small></span><time id="taskTimer" hidden>00:00</time>
-    </section>
-
-    <section class="jr-seat-stage" id="seatStage" data-count="4" data-mode="audio"></section>
-
-    <section class="jr-chat" id="roomChat">
-      <div class="jr-chat-messages" id="chatMessages">
-        <p><b>JEMMO</b><span>La sala está preparada. Respeta las normas y disfruta.</span></p>
-      </div>
-      <form id="chatForm"><input id="chatInput" maxlength="160" placeholder="Escribe un mensaje…" autocomplete="off"><button type="submit" aria-label="Enviar">➤</button></form>
-    </section>
-
-    <div class="jr-host-tools" id="hostTools">
-      <button id="giftButton" type="button"><span>🎁</span><b>Regalos</b></button>
-      <button id="micToggle" type="button"><span>🎙</span><b>Micro</b></button>
-      <button id="inviteButton" type="button"><span>＋</span><b>Invitar</b></button>
-      <button id="chatToggle" type="button"><span>◌</span><b>Chat</b></button>
-      <button id="settingsButton" type="button"><span>⚙</span><b>Ajustes</b></button>
+  <section class="jr-room" id="roomScreen" hidden>
+    <div class="jr-room-bg"></div>
+    <div class="jr-room-ui">
+      <header class="jr-room-top">
+        <div class="jr-room-profile"><img id="roomHostCover" alt="Portada"><div><b id="roomHostTitle">Sala JEMMO</b><small id="roomHostMeta">Audio Room · 4 plazas</small></div></div>
+        <div class="jr-live-tools"><button class="jr-private" id="privateBadge" type="button" hidden>🔒 PRIVADA</button><button class="jr-finish" id="finishButton" type="button" aria-label="Finalizar sala">×</button></div>
+      </header>
+      <main class="jr-stage">
+        <div class="jr-room-title"><h2 id="activeRoomTitle">Sala JEMMO</h2><p id="activeRoomDescription">Bienvenidos a la sala.</p></div>
+        <div class="jr-seat-grid n4" id="seatGrid" aria-label="Sillas de la sala"></div>
+      </main>
+      <div></div>
     </div>
 
-    <aside class="jr-settings" id="settingsPanel" hidden>
-      <header><b>Ajustes de la sala</b><button id="closeSettings" type="button">×</button></header>
-      <label><span><b>Sillas abiertas</b><small>Permitir solicitudes para subir</small></span><input id="roomSeatsOpen" type="checkbox" checked><i></i></label>
-      <label><span><b>Comentarios</b><small>Mostrar mensajes en la sala</small></span><input id="roomComments" type="checkbox" checked><i></i></label>
-      <button id="copyRoomLink" type="button">COPIAR ENLACE DE INVITACIÓN</button>
-    </aside>
-  </section>
+    <div class="jr-chat-zone">
+      <div class="jr-chat-layer" id="chatLayer"><div class="jr-chat-line system">Sistema: La sala ha comenzado.</div></div>
+      <div class="jr-chatbar">
+        <form id="chatForm"><input id="chatInput" placeholder="Escribe un mensaje…" autocomplete="off"><button type="submit">➤</button></form>
+        <button class="jr-action" id="luckyButton" type="button" aria-label="Afortunados">🍀</button>
+        <button class="jr-action gift" id="giftsButton" type="button" aria-label="Regalos">🎁</button>
+        <button class="jr-action settings" id="settingsButton" type="button" aria-label="Ajustes">⚙</button>
+      </div>
+    </div>
 
-  <div class="jr-backdrop" id="menuBackdrop" hidden></div>
-  <aside class="jr-menu" id="sideMenu" aria-hidden="true">
-    <header><div><small>MENÚ DE USUARIO</small><b>JEMMO LIVE</b></div><button id="menuClose" type="button">×</button></header>
-    <nav>
-      <a href="yo.html"><span>👤</span><b>Mi perfil</b><i>›</i></a>
-      <button type="button" data-demo="Monedero"><span>🪙</span><b>Monedero</b><i>›</i></button>
-      <button type="button" data-demo="Configuración"><span>⚙️</span><b>Configuración</b><i>›</i></button>
-      <button type="button" data-demo="Ayuda y soporte"><span>?</span><b>Ayuda y soporte</b><i>›</i></button>
-      <button class="danger" id="logoutButton" type="button"><span>↪</span><b>Cerrar sesión</b><i>›</i></button>
-    </nav>
-    <small class="jr-menu-version">JEMMO LIVE V1 · Módulo Salas</small>
-  </aside>
+    <div class="jr-backdrop" id="roomBackdrop" hidden></div>
+    <section class="jr-sheet" id="settingsSheet" hidden>
+      <div class="jr-sheet-head"><div><h3>Ajustes de la sala</h3><p>Los mismos controles compactos del LIVE</p></div><button class="jr-sheet-close" data-close-sheet type="button">×</button></div>
+      <div class="jr-sheet-grid">
+        <button id="shareRoom" type="button">↗<small>Compartir</small></button><button id="toggleMic" type="button">🎙<small>Micrófono</small></button><button id="closeSeats" type="button">⊘<small>Cerrar sillas</small></button><button id="inviteUser" type="button">＋<small>Invitar</small></button><button id="roomRules" type="button">⚑<small>Normas</small></button><button class="danger" id="reportMinor" type="button">⚠<small>Posible menor</small></button>
+      </div>
+    </section>
+    <section class="jr-sheet" id="giftsSheet" hidden>
+      <div class="jr-sheet-head"><div><h3>Regalos JEMMO</h3><p>Prueba local de interfaz</p></div><button class="jr-sheet-close" data-close-sheet type="button">×</button></div>
+      <div class="jr-gifts"><button data-gift="Rosa" data-emoji="🌹" data-cost="10"><span>🌹</span><b>Rosa</b><small>10</small></button><button data-gift="Pez" data-emoji="🐟" data-cost="25"><span>🐟</span><b>Pez JEMMO</b><small>25</small></button><button data-gift="Corona" data-emoji="👑" data-cost="80"><span>👑</span><b>Corona</b><small>80</small></button><button data-gift="Cohete" data-emoji="🚀" data-cost="150"><span>🚀</span><b>Cohete</b><small>150</small></button></div>
+      <div class="jr-balance">Saldo de prueba: <span id="giftBalance">1.000</span> JEMMOS</div>
+    </section>
+    <section class="jr-sheet" id="luckySheet" hidden>
+      <div class="jr-sheet-head"><div><h3>Caja de Afortunados</h3><p>Función local sin dinero real</p></div><button class="jr-sheet-close" data-close-sheet type="button">×</button></div>
+      <div class="jr-lucky"><div class="jr-lucky-card"><b>🎁 Caja rápida</b><p>Abre una animación de prueba para comprobar el espacio y el manejo dentro de la sala.</p></div><button id="openLucky" type="button">ABRIR CAJA DE PRUEBA</button></div>
+    </section>
+  </section>
 
   <div class="jr-toast" id="toast" role="status"></div>
 
-  <nav class="jr-bottom-nav bottom-nav" data-current="salas" aria-label="Navegación principal">
-    <a data-tab="inicio" href="inicio.html" style="--tab:#2fe2ee">
-      <span class="jr-nav-icon"><svg viewBox="0 0 24 24"><path d="M3 11 12 3l9 8v10h-6v-6H9v6H3z"/></svg></span><b>Inicio</b>
-    </a>
-    <a data-tab="live" href="live.html" style="--tab:#ff3986">
-      <span class="jr-nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="3"/><path d="m16 10 5-3v10l-5-3z"/></svg></span><b>Live</b>
-    </a>
-    <a class="active" data-tab="salas" href="salas.html" style="--tab:#a75cff" aria-current="page">
-      <img class="active-fish" src="jemmo-fish-nav.webp" alt="Pez JEMMO"><b>Salas</b>
-    </a>
-    <a data-tab="mensajes" href="mensajes.html" style="--tab:#4e8cff">
-      <span class="jr-badge">8</span><span class="jr-nav-icon"><svg viewBox="0 0 24 24"><path d="M21 12a8.5 8.5 0 0 1-9 8 10 10 0 0 1-4-.8L3 21l1.7-4A8.3 8.3 0 0 1 3 12a9 9 0 0 1 18 0Z"/></svg></span><b>Mensajes</b>
-    </a>
-    <a data-tab="yo" href="yo.html" style="--tab:#ffd04f">
-      <span class="jr-nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4"/><path d="M4 22c1-6 4-9 8-9s7 3 8 9"/></svg></span><b>Yo</b>
-    </a>
-  </nav>
+  <script>
+    (()=>{
+      'use strict';
+      const $=id=>document.getElementById(id);
+      const CFG_KEY='jemmo_v1_salas_config';
+      let mode='audio', capacity=4, coverData='', micReady=false, cameraReady=false, stream=null, analyser=null, audioContext=null, meterFrame=0, facing='user', filter='none', balance=1000, seatsClosed=false, micMuted=false;
+      let toastTimer;
+      const showToast=msg=>{const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),2300)};
+      const safeParse=value=>{try{return JSON.parse(value)||{}}catch{return {}}};
+      const getConfig=()=>safeParse(localStorage.getItem(CFG_KEY));
+      const saveConfig=()=>{
+        const data={mode,capacity,cover:coverData,title:$('roomTitle').value.trim(),description:$('roomDescription').value.trim(),privacy:$('roomPrivacy').value,password:$('roomPassword').value,filter,beauty:Number($('beautyRange').value)};
+        try{localStorage.setItem(CFG_KEY,JSON.stringify(data))}catch(e){showToast('La foto es demasiado grande para guardarla. Prueba otra más ligera.')}return data;
+      };
+      const restoreConfig=()=>{
+        const d=getConfig();
+        if(d.mode==='camera'||d.mode==='audio') mode=d.mode;
+        if([4,8,12,15,25].includes(Number(d.capacity))) capacity=Number(d.capacity);
+        coverData=d.cover||'';$('roomTitle').value=d.title||'';$('roomDescription').value=d.description||'';$('roomPrivacy').value=d.privacy==='password'?'password':'public';$('roomPassword').value=d.password||'';filter=d.filter||'none';$('beautyRange').value=String(Number(d.beauty)||0);$('beautyValue').textContent=$('beautyRange').value;
+        updateCover();applyMode();applyCapacity();updatePrivacy();validate();
+      };
+      const updateCover=()=>{
+        const img=$('coverPreview'),ph=$('coverPlaceholder');
+        if(coverData){img.src=coverData;ph.hidden=true}else{img.removeAttribute('src');ph.hidden=false}
+      };
+      const openCoverPicker=()=>$('coverInput').click();
+      ['coverClickArea','coverEditButton','coverTextEdit'].forEach(id=>$(id).addEventListener('click',e=>{e.preventDefault();e.stopPropagation();openCoverPicker()}));
+      $('coverClickArea').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openCoverPicker()}});
+      $('coverInput').addEventListener('change',e=>{
+        const file=e.target.files&&e.target.files[0];if(!file)return;
+        if(!file.type.startsWith('image/'))return showToast('Selecciona una imagen válida.');
+        if(file.size>8*1024*1024)return showToast('La imagen no puede superar 8 MB.');
+        const reader=new FileReader();reader.onload=ev=>{coverData=String(ev.target.result||'');updateCover();saveConfig();validate();showToast('Portada actualizada')};reader.readAsDataURL(file);e.target.value='';
+      });
 
-  <script src="salas-v1.js"></script>
+      document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>{mode=btn.dataset.mode;applyMode();saveConfig();validate()}));
+      document.querySelectorAll('[data-capacity]').forEach(btn=>btn.addEventListener('click',()=>{capacity=Number(btn.dataset.capacity);applyCapacity();saveConfig();validate()}));
+      function applyMode(){
+        document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+        $('audioControls').hidden=mode!=='audio';$('cameraControls').hidden=mode!=='camera';$('mediaTitle').textContent=mode==='audio'?'Prueba del micrófono':'Vista previa de cámara';$('mediaHint').textContent=mode==='audio'?'Habla para comprobar el nivel':'Frontal, trasera, filtros y belleza';$('checkMediaText').textContent=mode==='audio'?'Micrófono':'Cámara y micrófono';$('capacityHint').textContent=mode==='audio'?'Audio: 4, 8, 12, 15 o 25 VIP':'Cámara: 4, 8, 12 o 15';
+        const b25=document.querySelector('[data-capacity="25"]');b25.hidden=mode==='camera';if(mode==='camera'&&capacity===25){capacity=15;applyCapacity()}
+      }
+      function applyCapacity(){document.querySelectorAll('[data-capacity]').forEach(b=>b.classList.toggle('active',Number(b.dataset.capacity)===capacity))}
+
+      $('roomPrivacy').addEventListener('change',()=>{updatePrivacy();saveConfig();validate()});
+      function updatePrivacy(){$('passwordField').hidden=$('roomPrivacy').value!=='password'}
+      ['roomTitle','roomDescription','roomPassword'].forEach(id=>$(id).addEventListener('input',()=>{saveConfig();validate()}));
+
+      async function stopMedia(){cancelAnimationFrame(meterFrame);meterFrame=0;if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}if(audioContext){await audioContext.close().catch(()=>{});audioContext=null}analyser=null;$('micMeterFill').style.width='0%'}
+      async function startAudioTest(){
+        try{await stopMedia();stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true},video:false});audioContext=new (window.AudioContext||window.webkitAudioContext)();const source=audioContext.createMediaStreamSource(stream);analyser=audioContext.createAnalyser();analyser.fftSize=256;source.connect(analyser);micReady=true;$('micState').textContent='Micrófono listo';meterLoop();validate();showToast('Micrófono activado')}
+        catch(e){micReady=false;$('micState').textContent='Permiso pendiente';validate();showToast('No se pudo activar el micrófono')}
+      }
+      function meterLoop(){if(!analyser)return;const data=new Uint8Array(analyser.frequencyBinCount);analyser.getByteFrequencyData(data);const avg=data.reduce((a,b)=>a+b,0)/data.length;const pct=Math.max(4,Math.min(100,avg*1.6));$('micMeterFill').style.width=pct+'%';meterFrame=requestAnimationFrame(meterLoop)}
+      $('micTestButton').addEventListener('click',startAudioTest);
+
+      async function startCamera(){
+        try{await stopMedia();stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:facing},width:{ideal:1280},height:{ideal:720}},audio:{echoCancellation:true,noiseSuppression:true}});$('cameraPreview').srcObject=stream;await $('cameraPreview').play().catch(()=>{});$('cameraEmpty').hidden=true;cameraReady=true;micReady=true;applyCameraFilter();validate();showToast('Cámara y micrófono listos')}
+        catch(e){cameraReady=false;micReady=false;$('cameraEmpty').hidden=false;validate();showToast('No se pudo activar la cámara')}
+      }
+      $('cameraStart').addEventListener('click',startCamera);
+      $('cameraSwitch').addEventListener('click',async()=>{facing=facing==='user'?'environment':'user';await startCamera()});
+      document.querySelectorAll('[data-filter]').forEach(btn=>btn.addEventListener('click',()=>{filter=btn.dataset.filter;document.querySelectorAll('[data-filter]').forEach(b=>b.classList.toggle('active',b===btn));applyCameraFilter();saveConfig()}));
+      $('beautyRange').addEventListener('input',()=>{$('beautyValue').textContent=$('beautyRange').value;applyCameraFilter();saveConfig()});
+      function applyCameraFilter(){const beauty=Number($('beautyRange').value);const extra=beauty?` brightness(${1+beauty*.012}) saturate(${1+beauty*.018}) contrast(${1-beauty*.006})`:'';$('cameraPreview').style.filter=(filter==='none'?'':filter)+' '+extra}
+
+      const setCheck=(id,state,txt)=>{const el=$(id);el.classList.remove('ok','orange');if(state===true)el.classList.add('ok');else if(state==='orange')el.classList.add('orange');el.querySelector('em').textContent=txt};
+      function validate(){
+        const coverOk=!!coverData,titleLen=$('roomTitle').value.trim().length,descLen=$('roomDescription').value.trim().length,textOk=titleLen>=4&&descLen>=8,mediaOk=mode==='audio'?micReady:(cameraReady&&micReady),privacyOk=$('roomPrivacy').value!=='password'||$('roomPassword').value.trim().length>=4;
+        setCheck('checkCover',coverOk,coverOk?'Lista':'Falta');setCheck('checkText',textOk,textOk?'Correctos':(titleLen||descLen?'Revisar':'Faltan'));setCheck('checkMedia',mediaOk,mediaOk?'Listo':(mode==='audio'?'Sin probar':'Sin activar'));setCheck('checkPrivacy',privacyOk,privacyOk?($('roomPrivacy').value==='password'?'Clave lista':'Pública'):'Clave corta');
+        if(!textOk&&(titleLen||descLen))$('checkText').classList.add('orange');
+        const ready=coverOk&&textOk&&mediaOk&&privacyOk;$('launchButton').disabled=!ready;$('validationMessage').textContent=ready?'Todo está listo para entrar.':!coverOk?'Añade la portada de la sala.':!textOk?'Completa título y descripción.':!mediaOk?(mode==='audio'?'Prueba el micrófono.':'Activa cámara y micrófono.'):'La contraseña debe tener al menos 4 caracteres.';return ready;
+      }
+
+      $('launchButton').addEventListener('click',async()=>{if(!validate())return;saveConfig();await enterRoom()});
+      async function enterRoom(){
+        document.body.classList.add('jr-room-active');$('prepScreen').hidden=true;$('roomScreen').hidden=false;$('prepNav').hidden=true;const title=$('roomTitle').value.trim(),description=$('roomDescription').value.trim();$('roomHostTitle').textContent=title;$('activeRoomTitle').textContent=title;$('activeRoomDescription').textContent=description;$('roomHostMeta').textContent=`${mode==='audio'?'Audio Room':'Sala con cámara'} · ${capacity}${capacity===25?' VIP':''} plazas`;$('roomHostCover').src=coverData;$('privateBadge').hidden=$('roomPrivacy').value!=='password';renderSeats();showToast('Sala iniciada');
+      }
+      function renderSeats(){
+        const grid=$('seatGrid');grid.className=`jr-seat-grid n${capacity}`;grid.innerHTML='';
+        for(let i=1;i<=capacity;i++){
+          const seat=document.createElement('button');seat.type='button';seat.className=`jr-seat ${mode} ${i===1?'host':''} ${i===2?'request':''}`;seat.dataset.seat=String(i);
+          const img=i===1?`<img src="${coverData}" alt="Anfitrión">`:`<span class="jr-seat-placeholder" aria-hidden="true">+</span>`;seat.innerHTML=`${img}<b>${i===1?'Anfitrión':'Silla libre'}</b><small>${i===1?'En sala':'Toca para subir'}</small><span class="jr-mic-state">${i===1?'🎙':'+'}</span><span class="jr-seat-no">${i}</span>`;seat.addEventListener('click',()=>seatAction(seat,i));grid.append(seat);
+        }
+      }
+      function seatAction(seat,i){if(i===1)return showToast('Esta es la silla del anfitrión');if(seatsClosed)return showToast('Las sillas están cerradas');if(seat.classList.contains('occupied')){seat.classList.remove('occupied');seat.querySelector('b').textContent='Silla libre';seat.querySelector('small').textContent='Toca para subir';showToast(`Silla ${i} liberada`)}else{seat.classList.add('occupied');seat.classList.remove('request');seat.querySelector('b').textContent='Invitado';seat.querySelector('small').textContent='Micrófono activo';showToast(`Invitado subido a la silla ${i}`)}}
+
+      const sheets=['settingsSheet','giftsSheet','luckySheet'];
+      function openSheet(id){sheets.forEach(x=>$(x).hidden=x!==id);$('roomBackdrop').hidden=false}
+      function closeSheets(){sheets.forEach(x=>$(x).hidden=true);$('roomBackdrop').hidden=true}
+      $('settingsButton').addEventListener('click',()=>openSheet('settingsSheet'));$('giftsButton').addEventListener('click',()=>openSheet('giftsSheet'));$('luckyButton').addEventListener('click',()=>openSheet('luckySheet'));$('roomBackdrop').addEventListener('click',closeSheets);document.querySelectorAll('[data-close-sheet]').forEach(b=>b.addEventListener('click',closeSheets));
+      $('chatForm').addEventListener('submit',e=>{e.preventDefault();const input=$('chatInput'),text=input.value.trim();if(!text)return;addChat('Tú: '+text);input.value=''});
+      function addChat(text,system=false){const line=document.createElement('div');line.className='jr-chat-line'+(system?' system':'');line.textContent=text;$('chatLayer').append(line);while($('chatLayer').children.length>7)$('chatLayer').firstElementChild.remove()}
+
+      document.querySelectorAll('[data-gift]').forEach(btn=>btn.addEventListener('click',()=>{const cost=Number(btn.dataset.cost);if(balance<cost)return showToast('Saldo insuficiente en la prueba');balance-=cost;$('giftBalance').textContent=balance.toLocaleString('es-ES');addChat(`Tú enviaste ${btn.dataset.emoji} ${btn.dataset.gift}`);showToast(`${btn.dataset.gift} enviado`)}));
+      $('openLucky').addEventListener('click',()=>{addChat('🍀 Se abrió una caja de Afortunados de prueba',true);closeSheets();showToast('Caja de prueba abierta')});
+      $('shareRoom').addEventListener('click',async()=>{const data={title:'JEMMO LIVE',text:`Entra en mi sala: ${$('activeRoomTitle').textContent}`};try{if(navigator.share)await navigator.share(data);else await navigator.clipboard.writeText(data.text);showToast('Invitación preparada')}catch{}});
+      $('toggleMic').addEventListener('click',e=>{micMuted=!micMuted;e.currentTarget.innerHTML=`${micMuted?'🔇':'🎙'}<small>${micMuted?'Activar':'Micrófono'}</small>`;if(stream)stream.getAudioTracks().forEach(t=>t.enabled=!micMuted);showToast(micMuted?'Micrófono silenciado':'Micrófono activado')});
+      $('closeSeats').addEventListener('click',e=>{seatsClosed=!seatsClosed;e.currentTarget.innerHTML=`${seatsClosed?'✓':'⊘'}<small>${seatsClosed?'Abrir sillas':'Cerrar sillas'}</small>`;showToast(seatsClosed?'Sillas cerradas':'Sillas abiertas')});
+      $('inviteUser').addEventListener('click',()=>showToast('Invitación de prueba preparada'));$('roomRules').addEventListener('click',()=>showToast('Normas de sala: respeto, seguridad y contenido apropiado'));$('reportMinor').addEventListener('click',()=>{addChat('⚠ Reporte de posible menor enviado a moderación.',true);closeSheets();showToast('Reporte enviado para revisión')});
+      $('privateBadge').addEventListener('click',()=>showToast('Sala privada con contraseña activa'));
+      $('finishButton').addEventListener('click',async()=>{if(!confirm('¿Finalizar la sala y volver a la preparación?'))return;await leaveRoom()});
+      async function leaveRoom(){closeSheets();document.body.classList.remove('jr-room-active');$('roomScreen').hidden=true;$('prepScreen').hidden=false;$('prepNav').hidden=false;await stopMedia();micReady=false;cameraReady=false;$('micState').textContent='Sin probar';$('cameraEmpty').hidden=false;validate();showToast('Sala finalizada')}
+      $('helpButton').addEventListener('click',()=>showToast('Prepara los datos, prueba audio o cámara y entra. El menú desaparece dentro de la sala.'));
+
+      if(window.visualViewport){const setKeyboard=()=>{const h=Math.max(0,innerHeight-window.visualViewport.height-window.visualViewport.offsetTop);document.documentElement.style.setProperty('--keyboard',h+'px')};window.visualViewport.addEventListener('resize',setKeyboard);window.visualViewport.addEventListener('scroll',setKeyboard)}
+      window.addEventListener('beforeunload',()=>{if(stream)stream.getTracks().forEach(t=>t.stop())});
+      if(localStorage.getItem('jemmo_active_uid')) document.documentElement.classList.remove('jemmo-auth-pending');
+      restoreConfig();
+    })();
+  </script>
 </body>
 </html>
