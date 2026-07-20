@@ -2,9 +2,9 @@
   "id": "./",
   "name": "JEMMO LIVE",
   "short_name": "JEMMO LIVE",
-  "description": "Plataforma social de transmisiones LIVE, salas y Casas JEMMO.",
+  "description": "JEMMO LIVE: transmisiones en directo, tareas, salas y comunidad.",
   "lang": "es",
-  "start_url": "./index.html",
+  "start_url": "./index.html?source=pwa-v0614",
   "scope": "./",
   "display": "standalone",
   "display_override": [

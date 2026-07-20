@@ -1,5 +1,3 @@
-JEMMO LIVE V0.6.13 INSTALABLE · PRUEBA TÉCNICA
-Fecha: 20/07/2026
-Base inmediata: V0.6.12 suministrada por Jesús
-LIVE conservado: V0.6.12
-Cambio: arranque por sesión, cierre real e instalación PWA.
+JEMMO LIVE V0.6.14 PRUEBAS INSTALABLE
+Base: V0.6.13 instalable completa
+Fecha: 2026-07-20

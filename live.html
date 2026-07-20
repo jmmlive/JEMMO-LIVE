@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" class="jemmo-auth-pending">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#09000f"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/icon-192.png"><style>html.jemmo-auth-pending body{visibility:hidden}</style><script>document.documentElement.classList.add("jemmo-auth-pending");setTimeout(()=>document.documentElement.classList.remove("jemmo-auth-pending"),7000)</script>
-  <title>JEMMO LIVE · Preparar LIVE · V0.6.13 INSTALABLE</title>
+  <meta name="theme-color" content="#09000f"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/icon-192.png"><style>html.jemmo-auth-pending body{visibility:hidden}</style><script>document.documentElement.classList.add("jemmo-auth-pending");setTimeout(()=>{if(!document.documentElement.classList.contains("jemmo-auth-pending"))return;if(localStorage.getItem("jemmo_active_uid"))document.documentElement.classList.remove("jemmo-auth-pending");else location.replace("acceso.html?sesion=timeout")},5500)</script>
+  <title>JEMMO LIVE · Preparar LIVE · V0.6.14 INSTALABLE</title>
   <style>
     :root{
       color-scheme:dark;
@@ -1064,7 +1064,15 @@
       .jl-function-grid{grid-template-columns:repeat(2,1fr)}
     }
 
-  </style>
+  
+    .jl-task-card.paused{border-color:#ffb62e;background:#241304;color:#ffe0a1}.jl-task-card.paused .jl-task-dot{background:#ffb62e;box-shadow:0 0 12px #ffb62e}
+    .jl-sheet-grid button.is-off{border-color:#ff6f84;background:#2a0710;color:#ffb2bd}.jl-sheet-grid button.is-on{border-color:#69e6a4;background:#082116;color:#b8ffd7}
+    .jl-policy-dialog{position:fixed;inset:0;z-index:10040;display:grid;place-items:center;padding:18px;background:#050008dc}.jl-policy-dialog[hidden]{display:none!important}
+    .jl-policy-card{width:min(100%,390px);padding:22px 18px;border:1px solid #d13cff;border-radius:22px;background:linear-gradient(180deg,#21062c,#08000d);box-shadow:0 20px 70px #000;text-align:center}
+    .jl-policy-icon{font-size:42px}.jl-policy-card h3{margin:8px 0;color:#ffd24c}.jl-policy-card p{color:#e6d9ea;line-height:1.45}.jl-policy-actions{display:grid;gap:9px;margin-top:16px}.jl-policy-actions button{min-height:48px;border:0;border-radius:14px;font-weight:950}.jl-policy-primary{background:linear-gradient(90deg,#ffd24c,#d92cff);color:#17031d}.jl-policy-secondary{background:#281130;color:#fff;border:1px solid #9d4eb1!important}
+    .jl-safety-note{padding:10px;border:1px solid #6b3a79;border-radius:12px;background:#120718;color:#cbb9d1;font-size:11px;line-height:1.45}.jl-safety-actions{display:grid;gap:9px;margin-top:10px}.jl-safety-actions button{min-height:48px;border:1px solid #7d3a91;border-radius:12px;background:#18051f;color:#fff;font-weight:900}.jl-safety-actions .danger{border-color:#ff5d76;background:#2b0710}.jl-safety-status{margin-top:10px;padding:9px;border-radius:10px;background:#0f0712;color:#ffdca0;font-size:11px}
+    .jl-live-lock{margin-top:8px;padding:10px;border:1px solid #ff5d76;border-radius:12px;background:#2a0710;color:#ffd4db;font-size:12px;font-weight:800}.jl-live-lock[hidden]{display:none!important}
+</style>
 </head>
 <body>
   <main class="jl-shell" id="prepScreen">
@@ -1157,7 +1165,7 @@
     </div>
 
     <button class="jl-launch" id="launchLive" type="button" disabled>INICIAR TRANSMISIÓN LIVE</button>
-    <div class="jl-validation" id="validationMessage"></div>
+    <div class="jl-validation" id="validationMessage"></div><div class="jl-live-lock" id="liveLockStatus" hidden></div>
   </main>
 
   <section class="jl-broadcast" id="broadcastScreen" hidden>
@@ -1234,6 +1242,17 @@
         </div>
       </section>
 
+      <section class="jl-sheet" id="safetySheet" hidden>
+        <div class="jl-sheet-head"><div><h3>Seguridad del LIVE</h3><p>Protección de tarea, cámara y revisión</p></div><button class="jl-sheet-close" data-close-sheet>×</button></div>
+        <div class="jl-safety-note">Esta versión integra las reglas y los avisos. La detección automática real de menores, armas o riesgos requiere conectar un servicio de moderación con IA y un backend. Los botones siguientes permiten comprobar el flujo local.</div>
+        <div class="jl-safety-actions">
+          <button id="testMinorDetection" type="button">🧒 PROBAR AVISO DE POSIBLE MENOR</button>
+          <button class="danger" id="testDangerDetection" type="button">⚠ PROBAR RIESGO GRAVE</button>
+          <button id="confirmActivity" type="button">✓ CONFIRMAR QUE SIGO AQUÍ</button>
+        </div>
+        <div class="jl-safety-status" id="safetyStatus">Sin avisos en este LIVE.</div>
+      </section>
+
       <section class="jl-sheet" id="stickersSheet" hidden>
         <div class="jl-sheet-head"><div><h3>Stickers JEMMO</h3><p>Toca uno para enviarlo al chat</p></div><button class="jl-sheet-close" data-close-sheet>×</button></div>
         <div class="jl-stickers">
@@ -1301,6 +1320,19 @@
     </div>
   </section>
 
+  <div class="jl-policy-dialog" id="endLiveDialog" hidden>
+    <div class="jl-policy-card" role="dialog" aria-modal="true" aria-labelledby="endLiveTitle">
+      <div class="jl-policy-icon">🔴</div><h3 id="endLiveTitle">¿Deseas finalizar el directo?</h3><p id="endLiveText">La tarea quedará pausada y podrás continuarla dentro de las próximas 24 horas.</p>
+      <div class="jl-policy-actions"><button class="jl-policy-primary" id="confirmEndLive" type="button">SÍ, FINALIZAR</button><button class="jl-policy-secondary" id="cancelEndLive" type="button">NO, CONTINUAR LIVE</button></div>
+    </div>
+  </div>
+  <div class="jl-policy-dialog" id="policyDialog" hidden>
+    <div class="jl-policy-card" role="alertdialog" aria-modal="true" aria-labelledby="policyTitle">
+      <div class="jl-policy-icon" id="policyIcon">⚠</div><h3 id="policyTitle">Aviso de seguridad</h3><p id="policyText"></p>
+      <div class="jl-policy-actions"><button class="jl-policy-primary" id="policyPrimary" type="button">ENTENDIDO</button><button class="jl-policy-secondary" id="policySecondary" type="button" hidden>CANCELAR</button></div>
+    </div>
+  </div>
+
   <div class="jl-menu-backdrop" id="menuBackdrop" hidden></div>
   <aside class="jl-menu" id="sideMenu" aria-hidden="true">
     <div class="jl-menu-head"><div><small>MENÚ DE USUARIO</small><h2>JEMMO LIVE</h2></div><button class="jl-menu-close" id="menuClose">×</button></div>
@@ -1311,7 +1343,7 @@
       <button type="button"><span>?</span><span><b>Ayuda y soporte</b><small>Seguridad y asistencia</small></span><i>›</i></button>
       <a href="acceso.html" data-jemmo-logout><span>↪</span><span><b>Cerrar sesión</b></span><i>›</i></a>
     </nav>
-    <div class="jl-version">V0.6.13 INSTALABLE · conserva LIVE V0.6.12</div>
+    <div class="jl-version">V0.6.14 INSTALABLE · conserva LIVE V0.6.12</div>
   </aside>
 
   <div class="jl-toast" id="toast"></div>
@@ -1362,8 +1394,24 @@
       scoreB:9800,
       activeSeat:null,
       pendingGift:null,
-      cameraEnabled:true
+      cameraEnabled:true,
+      pauseReasons:new Set(),
+      taskExpiresAt:0,
+      micMutedAt:null,
+      lastActivityAt:Date.now(),
+      inactivityStage:0,
+      minorWarnings:0,
+      liveLocked:false,
+      liveHistoryGuard:false,
+      pendingExitUrl:null
     };
+    const TASK_KEY = `jemmo_live_task_v0614:${localStorage.getItem("jemmo_active_uid")||"local"}`;
+    const TASK_WINDOW_MS = 24*60*60*1000;
+    const MIC_GRACE_MS = 3*60*1000;
+    const INACTIVITY_SOFT_MS = 2*60*1000;
+    const INACTIVITY_PAUSE_MS = 5*60*1000;
+    const INACTIVITY_STRONG_MS = 10*60*1000;
+    const INACTIVITY_END_MS = 15*60*1000;
 
     const videos = {
       main:$("mainVideo"),
@@ -1483,6 +1531,7 @@
       if(state.live){
         state.liveSeconds++;
         $("liveTimer").textContent=`${formatTime(state.liveSeconds)} · 1 espectador`;
+        tickLivePolicies();
         updateTask();
       }else{
         state.prepSeconds++;
@@ -1490,13 +1539,70 @@
       }
     },1000);
 
+    function readTaskProgress(){
+      try{
+        const saved=JSON.parse(localStorage.getItem(TASK_KEY)||"null");
+        if(!saved||!saved.expiresAt||saved.expiresAt<=Date.now()){
+          localStorage.removeItem(TASK_KEY);
+          return null;
+        }
+        return saved;
+      }catch{return null}
+    }
+    function saveTaskProgress(){
+      if(!state.taskExpiresAt) return;
+      try{localStorage.setItem(TASK_KEY,JSON.stringify({taskIndex:state.taskIndex,taskElapsed:state.taskElapsed,expiresAt:state.taskExpiresAt,updatedAt:Date.now()}))}catch{}
+    }
+    function loadOrCreateTask(){
+      const saved=readTaskProgress();
+      if(saved){
+        state.taskIndex=Math.max(0,Math.min(2,Number(saved.taskIndex)||0));
+        state.taskElapsed=Math.max(0,Number(saved.taskElapsed)||0);
+        state.taskExpiresAt=saved.expiresAt;
+        showToast("Tarea recuperada. Continúas donde la dejaste.",3400);
+      }else{
+        state.taskIndex=0;
+        state.taskElapsed=0;
+        state.taskExpiresAt=Date.now()+TASK_WINDOW_MS;
+        saveTaskProgress();
+      }
+      renderTaskStatus();
+    }
+    function taskPauseLabel(){
+      const map={camera:"cámara pausada",microphone:"micrófono silenciado",inactivity:"inactividad",network:"sin conexión",background:"app en segundo plano",safety:"seguridad"};
+      return [...state.pauseReasons].map(reason=>map[reason]||reason).join(" · ");
+    }
+    function renderTaskStatus(){
+      const card=$("taskCard");
+      if(state.taskIndex>=2){card.hidden=true;return}
+      card.hidden=false;
+      const paused=state.pauseReasons.size>0;
+      card.classList.toggle("paused",paused);
+      card.classList.remove("complete");
+      $("taskText").textContent=paused?`Tarea ${state.taskIndex+1} pausada · ${taskPauseLabel()}`:`Tarea ${state.taskIndex+1} en curso`;
+      $("taskTime").textContent=formatTime(state.taskElapsed);
+    }
+    function pauseTask(reason,message){
+      const before=state.pauseReasons.size;
+      state.pauseReasons.add(reason);
+      renderTaskStatus();
+      saveTaskProgress();
+      if(message&&state.pauseReasons.size!==before) showEventTicker(message,"⏸");
+    }
+    function resumeTask(reason,message){
+      const changed=state.pauseReasons.delete(reason);
+      renderTaskStatus();
+      saveTaskProgress();
+      if(changed&&message&&state.pauseReasons.size===0) showEventTicker(message,"▶");
+    }
     function updateTask(){
       const total=60;
+      if(state.taskIndex>=2||state.pauseReasons.size) return;
       state.taskElapsed++;
-      if(state.taskIndex>=2) return;
       const remaining=Math.max(0,total-state.taskElapsed);
       $("taskTime").textContent=formatTime(state.taskElapsed);
       $("taskText").textContent=`Tarea ${state.taskIndex+1} en curso`;
+      saveTaskProgress();
       if(remaining===0){
         $("taskCard").classList.add("complete");
         $("taskText").textContent=`Tarea ${state.taskIndex+1} completada`;
@@ -1504,13 +1610,37 @@
         setTimeout(()=>{
           state.taskIndex++;
           state.taskElapsed=0;
-          if(state.taskIndex>=2){
-            $("taskCard").hidden=true;
-          }else{
-            $("taskCard").classList.remove("complete");
-            $("taskCard").hidden=false;
-          }
+          saveTaskProgress();
+          renderTaskStatus();
         },2600);
+      }
+    }
+    function noteActivity(){
+      if(!state.live) return;
+      state.lastActivityAt=Date.now();
+      if(state.inactivityStage){
+        state.inactivityStage=0;
+        resumeTask("inactivity","Actividad confirmada. La tarea continúa.");
+      }
+    }
+    function tickLivePolicies(){
+      const now=Date.now();
+      if(!state.mic&&state.micMutedAt&&now-state.micMutedAt>=MIC_GRACE_MS) pauseTask("microphone","Tarea pausada: micrófono silenciado más de 3 minutos.");
+      const idle=now-state.lastActivityAt;
+      if(idle>=INACTIVITY_END_MS){
+        endBroadcast({reason:"inactivity",message:"LIVE cerrado por 15 minutos de inactividad. La tarea queda guardada."});
+        return;
+      }
+      if(idle>=INACTIVITY_STRONG_MS&&state.inactivityStage<3){
+        state.inactivityStage=3;
+        pauseTask("inactivity","Aviso importante: confirma que sigues en el LIVE.");
+        showPolicyDialog({icon:"⚠",title:"¿Sigues en el LIVE?",text:"Llevas 10 minutos sin actividad. Si no confirmas antes de 15 minutos, el directo se cerrará automáticamente. No se aplica sanción.",primary:"SIGO AQUÍ",onPrimary:()=>{noteActivity();hidePolicyDialog()}});
+      }else if(idle>=INACTIVITY_PAUSE_MS&&state.inactivityStage<2){
+        state.inactivityStage=2;
+        pauseTask("inactivity","Tarea pausada por 5 minutos de inactividad.");
+      }else if(idle>=INACTIVITY_SOFT_MS&&state.inactivityStage<1){
+        state.inactivityStage=1;
+        showToast("Llevas 2 minutos sin actividad. Toca la pantalla para confirmar que sigues aquí.",4200);
       }
     }
 
@@ -1728,13 +1858,13 @@
       setCheck("checkTitle",title);
       setCheck("checkDescription",description);
       const ready=camera&&cover&&title&&description;
-      $("launchLive").disabled=!ready;
+      $("launchLive").disabled=!ready||state.liveLocked;
       const missing=[];
       if(!camera) missing.push("cámara");
       if(!cover) missing.push("portada");
       if(!title) missing.push("título");
       if(!description) missing.push("descripción");
-      $("validationMessage").textContent=missing.length?`Falta: ${missing.join(", ")}.`:"Todo preparado para transmitir.";
+      $("validationMessage").textContent=state.liveLocked?"La función LIVE está pendiente de revisión humana.":missing.length?`Falta: ${missing.join(", ")}.`:"Todo preparado para transmitir.";
     }
 
     function updateConnection(){
@@ -1768,12 +1898,21 @@
     $("launchLive").addEventListener("click",async()=>{
       updateChecks();
       if($("launchLive").disabled) return;
+      if(state.liveLocked){
+        showToast("La función LIVE está pendiente de revisión de moderación.",3800);
+        return;
+      }
       state.live=true;
       state.liveSeconds=0;
-      state.taskIndex=0;
-      state.taskElapsed=0;
-      $("taskCard").hidden=false;
-      $("taskCard").classList.remove("complete");
+      state.pauseReasons.clear();
+      state.micMutedAt=state.mic?null:Date.now();
+      state.lastActivityAt=Date.now();
+      state.inactivityStage=0;
+      state.minorWarnings=0;
+      loadOrCreateTask();
+      if(!navigator.onLine) pauseTask("network","Tarea pausada por falta de conexión.");
+      history.pushState({jemmoLiveGuard:true},"");
+      state.liveHistoryGuard=true;
       $("prepScreen").hidden=true;
       $("broadcastScreen").hidden=false;
       document.body.classList.add("live-running");
@@ -1786,8 +1925,19 @@
       playFishSplash();
     });
 
-    function endBroadcast(){
+    function hideEndDialog(){
+      $("endLiveDialog").hidden=true;
+      state.pendingExitUrl=null;
+    }
+    function requestEndBroadcast(exitUrl=null){
+      if(!state.live) return;
+      state.pendingExitUrl=exitUrl;
+      $("endLiveDialog").hidden=false;
+    }
+    function endBroadcast({reason="manual",message=""}={}){
+      if(!state.live) return;
       state.live=false;
+      saveTaskProgress();
       $("broadcastScreen").hidden=true;
       $("prepScreen").hidden=false;
       document.body.classList.remove("live-running");
@@ -1795,14 +1945,22 @@
       nav.hidden=false;
       nav.classList.remove("live-mode");
       nav.setAttribute("aria-hidden","false");
-      closeSheets();
+      hideSheetsOnly();
+      hideEndDialog();
+      hidePolicyDialog();
       attach(videos.main,state.mainStream).catch(()=>{});
       if(state.pipStream) attach(videos.pip,state.pipStream).catch(()=>{});
       window.scrollTo({top:0,behavior:"smooth"});
-      showToast("Transmisión finalizada. La cámara queda preparada.");
+      state.liveHistoryGuard=false;
+      const text=message||(reason==="manual"?"Transmisión finalizada. La tarea queda guardada durante 24 horas.":"Transmisión finalizada. La tarea queda guardada.");
+      showToast(text,4200);
     }
-    $("endLive").addEventListener("click",()=>{
-      if(confirm("¿Finalizar esta transmisión LIVE?")) endBroadcast();
+    $("endLive").addEventListener("click",()=>requestEndBroadcast());
+    $("cancelEndLive").addEventListener("click",hideEndDialog);
+    $("confirmEndLive").addEventListener("click",()=>{
+      const target=state.pendingExitUrl;
+      endBroadcast({reason:"manual"});
+      if(target) setTimeout(()=>location.assign(target),120);
     });
 
     function addChat(text){
@@ -1837,9 +1995,10 @@
 
     document.querySelectorAll(".jl-sheet button").forEach(button=>button.type="button");
 
-    const sheets=["settingsSheet","stickersSheet","giftsSheet","functionsSheet","moduleSheet","rechargeSheet","seatSheet","battleSheet"];
+    const sheets=["settingsSheet","safetySheet","stickersSheet","giftsSheet","functionsSheet","moduleSheet","rechargeSheet","seatSheet","battleSheet"];
     let activeSheet=null;
     let closingFromHistory=false;
+    let consumeNextPop=false;
 
     function openSheet(id){
       sheets.forEach(name=>$(name).hidden=name!==id);
@@ -1861,14 +2020,19 @@
     function closeSheets(){
       const shouldReturn=Boolean(activeSheet && history.state?.jemmoSheet && !closingFromHistory);
       hideSheetsOnly();
-      if(shouldReturn) history.back();
+      if(shouldReturn){consumeNextPop=true;history.back()}
     }
     window.addEventListener("popstate",()=>{
+      if(consumeNextPop){consumeNextPop=false;return}
       closingFromHistory=true;
-      hideSheetsOnly();
-      if($("battleCard").classList.contains("expanded")){
+      if(activeSheet){
+        hideSheetsOnly();
+      }else if($("battleCard").classList.contains("expanded")){
         $("battleCard").classList.remove("expanded");
         $("battleCard").setAttribute("aria-expanded","false");
+      }else if(state.live){
+        requestEndBroadcast();
+        history.pushState({jemmoLiveGuard:true},"");
       }
       closingFromHistory=false;
     });
@@ -1898,6 +2062,7 @@
       if(expanded && !history.state?.jemmoBattle){
         history.pushState({jemmoBattle:true},"");
       }else if(!expanded && history.state?.jemmoBattle){
+        consumeNextPop=true;
         history.back();
       }
     });
@@ -2048,22 +2213,100 @@
       closeSheets();
     });
 
+    let policyPrimaryAction=null;
+    let policySecondaryAction=null;
+    function showPolicyDialog({icon="⚠",title="Aviso",text="",primary="ENTENDIDO",secondary="",onPrimary=null,onSecondary=null}={}){
+      $("policyIcon").textContent=icon;
+      $("policyTitle").textContent=title;
+      $("policyText").textContent=text;
+      $("policyPrimary").textContent=primary;
+      $("policySecondary").textContent=secondary||"CANCELAR";
+      $("policySecondary").hidden=!secondary;
+      policyPrimaryAction=onPrimary;
+      policySecondaryAction=onSecondary;
+      $("policyDialog").hidden=false;
+    }
+    function hidePolicyDialog(){
+      $("policyDialog").hidden=true;
+      policyPrimaryAction=null;
+      policySecondaryAction=null;
+    }
+    $("policyPrimary").addEventListener("click",()=>{const action=policyPrimaryAction;if(action) action();else hidePolicyDialog()});
+    $("policySecondary").addEventListener("click",()=>{const action=policySecondaryAction;if(action) action();else hidePolicyDialog()});
+
+    function updateSafetyStatus(){
+      const status=$("safetyStatus");
+      if(!status) return;
+      status.textContent=state.liveLocked?"LIVE pendiente de revisión humana.":state.minorWarnings?`Avisos de posible menor en este LIVE: ${state.minorWarnings} de 3.`:"Sin avisos en este LIVE.";
+    }
+    function lockLiveForReview(reason){
+      state.liveLocked=true;
+      $("liveLockStatus").hidden=false;
+      $("liveLockStatus").textContent=`LIVE pendiente de revisión: ${reason}. La tarea se conserva durante 24 horas.`;
+      $("launchLive").disabled=true;
+      updateSafetyStatus();
+    }
+    function reportSafety(type){
+      if(!state.live) return;
+      if(type==="minor"){
+        state.minorWarnings++;
+        setLiveCamera(false,{safety:true});
+        updateSafetyStatus();
+        if(state.minorWarnings>=3){
+          lockLiveForReview("tres avisos de posible menor");
+          endBroadcast({reason:"moderation",message:"LIVE cerrado y enviado a revisión tras tres avisos de seguridad."});
+          showPolicyDialog({icon:"🛡",title:"LIVE pendiente de revisión",text:"Se alcanzó el tercer aviso de posible menor. La transmisión se cerró y la tarea quedó pausada. Un moderador deberá revisar el caso antes de reactivar LIVE.",primary:"ENTENDIDO"});
+          return;
+        }
+        showPolicyDialog({icon:"🧒",title:"Posible menor detectado",text:`La cámara y la tarea se pausaron por seguridad. Retira al menor del plano. Aviso ${state.minorWarnings} de 3; no se aplica sanción automática.`,primary:"ENTORNO CORREGIDO · REACTIVAR",onPrimary:()=>{hidePolicyDialog();setLiveCamera(true,{safety:true});resumeTask("safety","Entorno corregido. La tarea continúa.");noteActivity()}});
+        return;
+      }
+      lockLiveForReview("posible contenido peligroso o riesgo grave");
+      setLiveCamera(false,{safety:true});
+      endBroadcast({reason:"moderation",message:"LIVE cerrado por seguridad y enviado a revisión."});
+      showPolicyDialog({icon:"⚠",title:"LIVE cerrado por seguridad",text:"Se registró un posible riesgo grave. La transmisión se cerró, la tarea quedó pausada y el caso requiere revisión humana. No se aplica una sanción automática sin revisión.",primary:"ENTENDIDO"});
+    }
+    $("testMinorDetection").addEventListener("click",()=>reportSafety("minor"));
+    $("testDangerDetection").addEventListener("click",()=>reportSafety("danger"));
+    $("confirmActivity").addEventListener("click",()=>{noteActivity();showToast("Actividad confirmada.");closeSheets()});
+    window.JemmoSafety={report:reportSafety,confirmActivity:noteActivity};
+
     $("shareLive").addEventListener("click",async()=>{
       try{
         if(navigator.share) await navigator.share({title:"JEMMO LIVE",text:"Estoy en directo en JEMMO LIVE"});
         else showToast("Enlace del LIVE preparado para compartir.");
       }catch{}
     });
-    $("liveMic").addEventListener("click",()=>{
-      state.mic=!state.mic;
-      state.audioStream?.getAudioTracks().forEach(track=>track.enabled=state.mic);
-      showToast(state.mic?"Micrófono activado.":"Micrófono silenciado.");
-    });
-    $("liveCamera").addEventListener("click",()=>{
-      state.cameraEnabled=!state.cameraEnabled;
-      [state.mainStream,state.pipStream].filter(Boolean).forEach(stream=>stream.getVideoTracks().forEach(track=>track.enabled=state.cameraEnabled));
-      showToast(state.cameraEnabled?"Cámara reactivada.":"Cámara pausada.");
-    });
+    function setMicrophone(enabled){
+      state.mic=enabled;
+      state.audioStream?.getAudioTracks().forEach(track=>track.enabled=enabled);
+      $("liveMic").classList.toggle("is-off",!enabled);
+      $("liveMic").classList.toggle("is-on",enabled);
+      if(enabled){
+        state.micMutedAt=null;
+        resumeTask("microphone","Micrófono activado. La tarea continúa.");
+        showToast("Micrófono activado.");
+      }else{
+        state.micMutedAt=Date.now();
+        showToast("Micrófono silenciado. Si supera 3 minutos, la tarea se pausará.",3600);
+      }
+    }
+    function setLiveCamera(enabled,{safety=false}={}){
+      state.cameraEnabled=enabled;
+      [state.mainStream,state.pipStream].filter(Boolean).forEach(stream=>stream.getVideoTracks().forEach(track=>track.enabled=enabled));
+      $("liveCamera").classList.toggle("is-off",!enabled);
+      $("liveCamera").classList.toggle("is-on",enabled);
+      if(enabled){
+        resumeTask("camera");
+        if(!safety) resumeTask("safety","Cámara reactivada. La tarea continúa.");
+        showToast("Cámara reactivada.");
+      }else{
+        pauseTask(safety?"safety":"camera",safety?"Cámara y tarea pausadas por seguridad.":"Cámara pausada. La tarea se ha pausado.");
+        showToast(safety?"Cámara pausada por seguridad.":"Cámara pausada. La tarea no seguirá contando.",3400);
+      }
+    }
+    $("liveMic").addEventListener("click",()=>setMicrophone(!state.mic));
+    $("liveCamera").addEventListener("click",()=>setLiveCamera(!state.cameraEnabled));
     $("liveSwitch").addEventListener("click",async()=>{
       closeSheets();
       if(state.mode==="both") return showToast("En modo Ambas ya están activas las dos cámaras.");
@@ -2076,7 +2319,7 @@
       $("chatLayer").hidden=!state.comments;
       showToast(state.comments?"Comentarios visibles.":"Comentarios ocultos.");
     });
-    $("roomControls").addEventListener("click",()=>showToast("Controles de moderación preparados."));
+    $("roomControls").addEventListener("click",()=>openSheet("safetySheet"));
 
     const menu=$("sideMenu"),menuBackdrop=$("menuBackdrop");
     function openMenu(){menu.classList.add("open");menu.setAttribute("aria-hidden","false");menuBackdrop.hidden=false}
@@ -2086,6 +2329,31 @@
     menuBackdrop.addEventListener("click",closeMenu);
     $("helpButton").addEventListener("click",()=>showToast("Activa cámara, revisa los datos guardados y pulsa iniciar LIVE.",3400));
     document.querySelectorAll(".jl-menu-list button").forEach(button=>button.addEventListener("click",()=>showToast("Esta función se completa en su módulo correspondiente.")));
+
+    document.addEventListener("click",event=>{
+      const link=event.target.closest("a[href]");
+      if(!state.live||!link) return;
+      const url=new URL(link.href,location.href);
+      if(url.origin!==location.origin) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      requestEndBroadcast(url.href);
+    },true);
+    ["pointerdown","touchstart","keydown"].forEach(type=>document.addEventListener(type,event=>{
+      if(state.live&&event.target.closest("#broadcastScreen")) noteActivity();
+    },{passive:true,capture:true}));
+    addEventListener("beforeunload",event=>{
+      if(!state.live) return;
+      event.preventDefault();
+      event.returnValue="";
+    });
+    document.addEventListener("visibilitychange",()=>{
+      if(!state.live) return;
+      if(document.hidden) pauseTask("background","Tarea pausada mientras la app está en segundo plano.");
+      else {resumeTask("background","Has vuelto al LIVE.");noteActivity()}
+    });
+    addEventListener("offline",()=>{if(state.live) pauseTask("network","Tarea pausada por falta de conexión.")});
+    addEventListener("online",()=>{if(state.live) resumeTask("network","Conexión recuperada. La tarea continúa.")});
 
     /* Garantía adicional: la barra nunca aparece dentro de la transmisión. */
     const observer=new MutationObserver(()=>{
@@ -2097,6 +2365,7 @@
     observer.observe($("broadcastScreen"),{attributes:true,attributeFilter:["hidden","class","style"]});
 
     addEventListener("pagehide",()=>{
+      saveTaskProgress();
       stopStream(state.mainStream);
       stopStream(state.pipStream);
       stopStream(state.audioStream);

@@ -11,10 +11,13 @@ const firebaseConfig = {
 };
 const app = getApps()[0] || initializeApp(firebaseConfig);
 const auth = getAuth(app);
+let resolved = false;
 
-function reveal() {
+function reveal(mode = 'verified') {
+  resolved = true;
   document.documentElement.classList.remove('jemmo-auth-pending');
   document.documentElement.classList.add('jemmo-auth-ready');
+  document.documentElement.dataset.sessionMode = mode;
 }
 
 async function closeSession(trigger) {
@@ -43,8 +46,17 @@ onAuthStateChanged(auth, user => {
     return;
   }
   localStorage.setItem('jemmo_active_uid', user.uid);
-  reveal();
+  reveal('verified');
   window.dispatchEvent(new CustomEvent('jemmo-auth-ready', { detail: { uid: user.uid } }));
+}, error => {
+  console.error('JEMMO auth state:', error);
+  const localUid = localStorage.getItem('jemmo_active_uid');
+  if (localUid) {
+    reveal('offline-local');
+    window.dispatchEvent(new CustomEvent('jemmo-auth-ready', { detail: { uid: localUid, offline: true } }));
+  } else {
+    location.replace('acceso.html?sesion=error');
+  }
 });
 
 document.addEventListener('click', event => {
@@ -55,5 +67,11 @@ document.addEventListener('click', event => {
   closeSession(trigger);
 }, true);
 
-window.setTimeout(reveal, 7000);
+window.setTimeout(() => {
+  if (resolved) return;
+  const localUid = localStorage.getItem('jemmo_active_uid');
+  if (localUid) reveal('local-timeout');
+  else location.replace('acceso.html?sesion=timeout');
+}, 5000);
+
 window.JemmoSession = { auth, closeSession };

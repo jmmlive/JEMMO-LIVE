@@ -1,29 +1,14 @@
-# JEMMO LIVE v0.6.4
+# JEMMO LIVE v0.6.2
 
-Base estable: **v0.6.3**.
+Base estable: v0.6 PROFESIONAL.
 
-Actualización incremental centrada únicamente en el módulo **LIVE**.
+Objetivo único: corregir el logo superior y activar el envío del chat sin modificar el resto del Inicio aprobado.
 
-## Cambios incluidos
-
-- Se sustituye el LIVE vacío de v0.6.3 por el asistente de preparación.
-- Cámara frontal y trasera.
-- Intento de ambas cámaras con aviso claro cuando el móvil no lo permite.
-- Cámara sin modo espejo.
-- Portada, título y descripción obligatorios.
-- Indicadores rojo/verde antes de iniciar.
-- Pantalla de emisión con micrófono, cambio de cámara, chat, compartir y finalizar.
-- Menú lateral y botón de tres rayas reducidos.
-- Vídeo aislado dentro de su contenedor para impedir franjas y capas mezcladas.
-- Sonido acuático grave «gru, gru, gru».
+## Cambios
+- El logo vuelve a ocupar el encabezado en formato ancho, sin quedar pequeño dentro de un cuadrado.
+- El chat de la batalla permite enviar con el botón o con la tecla Intro.
+- Los mensajes se muestran al instante, con hora, y se conservan localmente en el dispositivo.
+- No se han modificado el monedero, la barra inferior, el pez activo, las tarjetas ni la navegación.
 
 ## Alcance técnico
-
-Esta entrega restaura y prueba la interfaz y la cámara local del LIVE. La emisión multiusuario real requiere el servicio de streaming y el backend correspondiente; no se presenta esta parte como producción terminada.
-
-## Seguridad de versión
-
-- No modifica Acceso.
-- No modifica el Inicio aprobado.
-- No modifica Casas, Salas, Mensajes ni Perfil.
-- La v0.6.3 permanece como respaldo independiente.
+El chat de esta versión es funcional en el dispositivo. Todavía no es un chat multiusuario conectado a base de datos o tiempo real; esa conexión pertenece a una fase posterior.

@@ -1,4 +1,4 @@
-const CACHE = 'jemmo-live-v0.6.13-20260720';
+const CACHE = 'jemmo-live-v0.6.14-20260720';
 const APP_SHELL = [
   './','./index.html','./acceso.html','./inicio.html','./live.html','./salas.html','./mensajes.html','./yo.html',
   './app.css','./inicio.css','./jemmo.css','./app.js','./jemmo-session.js','./pwa-register.js',

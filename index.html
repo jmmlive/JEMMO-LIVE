@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>JEMMO LIVE</title>
+  <title>JEMMO LIVE</title><script>if(localStorage.getItem("jemmo_active_uid")){setTimeout(()=>location.replace("inicio.html?sesion=local"),80)}else{setTimeout(()=>{if(location.pathname.endsWith("index.html")||location.pathname.endsWith("/"))location.replace("acceso.html?sesion=timeout")},6000)}</script>
   <style>
     *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#050007;color:#fff;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
     body{min-height:100svh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 0,#3c0752,transparent 45%),#050007}
@@ -42,20 +42,46 @@
     const loader = document.getElementById('loader');
     async function route() {
       retry.hidden = true; loader.hidden = false; status.textContent = 'Comprobando tu sesión…';
+      let routed = false;
+      const finish = target => {
+        if (routed) return;
+        routed = true;
+        location.replace(target);
+      };
+      const fallback = window.setTimeout(() => {
+        const localSession = localStorage.getItem('jemmo_active_uid');
+        finish(localSession ? 'inicio.html?sesion=local' : 'acceso.html');
+      }, 4500);
       try {
         const app = getApps()[0] || initializeApp(firebaseConfig);
         const auth = getAuth(app);
         await setPersistence(auth, browserLocalPersistence);
         onAuthStateChanged(auth, user => {
+          clearTimeout(fallback);
           if (user) localStorage.setItem('jemmo_active_uid', user.uid);
           else localStorage.removeItem('jemmo_active_uid');
-          location.replace(user ? 'inicio.html' : 'acceso.html');
-        }, error => { throw error; });
+          finish(user ? 'inicio.html' : 'acceso.html');
+        }, error => {
+          console.error(error);
+          clearTimeout(fallback);
+          const localSession = localStorage.getItem('jemmo_active_uid');
+          if (localSession) finish('inicio.html?sesion=local');
+          else {
+            loader.hidden = true;
+            status.textContent = navigator.onLine ? 'No se pudo comprobar la sesión. Pulsa Reintentar.' : 'Sin conexión. Conéctate a internet y pulsa Reintentar.';
+            retry.hidden = false;
+          }
+        });
       } catch (error) {
         console.error(error);
-        loader.hidden = true;
-        status.textContent = navigator.onLine ? 'No se pudo comprobar la sesión. Pulsa Reintentar.' : 'Sin conexión. Conéctate a internet y pulsa Reintentar.';
-        retry.hidden = false;
+        clearTimeout(fallback);
+        const localSession = localStorage.getItem('jemmo_active_uid');
+        if (localSession) finish('inicio.html?sesion=local');
+        else {
+          loader.hidden = true;
+          status.textContent = navigator.onLine ? 'No se pudo comprobar la sesión. Pulsa Reintentar.' : 'Sin conexión. Conéctate a internet y pulsa Reintentar.';
+          retry.hidden = false;
+        }
       }
     }
     retry.addEventListener('click', route);
