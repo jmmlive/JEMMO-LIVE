@@ -1,6 +1,6 @@
-JEMMO LIVE V1 · SALAS PRUEBA 02
-Base requerida: JEMMO LIVE V0.6.14 + V1 SALAS PRUEBA 01
-Fecha: 20/07/2026
-Tipo: actualización incremental exclusiva del módulo Salas
-Archivo sustituido: salas.html
-No modifica: Acceso, Inicio, LIVE, Mensajes ni Perfil
+JEMMO LIVE V1 · PERFIL PRUEBA 01
+Base requerida: JEMMO LIVE V1 · MENSAJES PRUEBA 01 / SALAS PRUEBA 05
+Fecha: 21/07/2026
+Tipo: actualización incremental exclusiva del módulo Perfil (Yo)
+Archivo sustituido: yo.html
+No modifica: Acceso, Inicio, LIVE, Salas ni Mensajes

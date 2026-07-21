@@ -1,0 +1,23 @@
+JEMMO LIVE V1 · PERFIL PRUEBA 01
+
+INSTALACIÓN
+1. Extrae este ZIP.
+2. Sustituye únicamente el archivo yo.html de tu proyecto por el nuevo yo.html.
+3. No borres ni sustituyas ningún otro módulo.
+4. Abre JEMMO LIVE y entra en el botón Yo.
+
+INCLUYE
+- Perfil premium negro, malva y dorado.
+- Foto circular editable desde el móvil.
+- Nombre, biografía, país e ID persistentes por usuario.
+- Seguidores, siguiendo, amigos y me gusta.
+- Monedero y ganancias.
+- Mi Casa.
+- Publicaciones, álbum, favoritos y visitantes.
+- Centro de tareas, creador y VIP.
+- Medallas e insignias.
+- Configuración, seguridad, ayuda, normas y cierre de sesión.
+- Conserva la navegación hacia Inicio, LIVE, Salas y Mensajes.
+
+NOTA
+Las funciones que todavía dependen de servidor o Firebase muestran un aviso de fase posterior. La edición del perfil, la foto y el guardado local sí funcionan en esta prueba.
