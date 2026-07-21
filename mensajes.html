@@ -1,31 +1,297 @@
-<!doctype html><html lang="es" class="jemmo-auth-pending"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#09000f"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/icon-192.png"><title>JEMMO LIVE · MENSAJES</title><link rel="stylesheet" href="inicio.css"><link rel="stylesheet" href="app.css"><style>.stub{min-height:calc(100svh - 90px);padding:12px}.stub-card{margin-top:18px;padding:24px 16px;border:1px solid #44b6ff;border-radius:22px;background:radial-gradient(circle at top,#260735,#09000f 68%);text-align:center;box-shadow:0 0 28px #7900aa33}.stub-card .big{font-size:62px;filter:drop-shadow(0 0 14px #44b6ff)}.stub-card h1{margin:8px 0;color:#44b6ff}.stub-card p{color:#bfb1c5}.mini-header{display:flex;align-items:center;justify-content:space-between}.mini-header button{width:44px;height:44px;border:1px solid #6d198d;border-radius:50%;background:#170321;color:#fff;font-size:22px}.mini-logo{font-weight:950;color:#ffd04f}</style><style>html.jemmo-auth-pending body{visibility:hidden}</style><script>document.documentElement.classList.add("jemmo-auth-pending");setTimeout(()=>{if(!document.documentElement.classList.contains("jemmo-auth-pending"))return;if(localStorage.getItem("jemmo_active_uid"))document.documentElement.classList.remove("jemmo-auth-pending");else location.replace("acceso.html?sesion=timeout")},5500)</script></head><body><main class="stub"><header class="mini-header"><button id="menuOpen">☰</button><div class="mini-logo">JEMMO LIVE</div><button>⌕</button></header><section class="stub-card"><div class="big">🐟</div><h1>MENSAJES</h1><p>Centro de chats, soporte, avisos y comunicaciones de JEMMO LIVE.</p></section></main>
-  <div class="menu-backdrop" id="menuBackdrop" hidden></div>
-  <aside class="side-menu" id="sideMenu" aria-hidden="true">
-    <div class="menu-top">
-      <div><small>MENÚ DE USUARIO</small><h2>JEMMO LIVE</h2></div>
-      <button class="menu-close" id="menuClose" aria-label="Cerrar menú">×</button>
-    </div>
-    <label class="function-search"><span>⌕</span><input id="functionSearch" placeholder="Buscar una función..." autocomplete="off"></label>
-    <div class="search-hint">Escribe, por ejemplo: retirar, idioma, live o perfil.</div>
-    <nav class="menu-list" id="menuList">
-      <button data-search="mi perfil editar perfil foto nombre biografia avatar apariencia" data-route="yo.html"><span>👤</span><b>Mi perfil</b><i>›</i></button>
-      <button data-search="monedero saldo monedas recargar retirar historial pagos intercambios" data-demo="Monedero"><span>🪙</span><b>Monedero</b><small>Saldo, recargas y retiros</small><i>›</i></button>
-      <button data-search="configuracion idioma permisos camara microfono preferencias aplicacion seguridad privacidad" data-demo="Configuración"><span>⚙️</span><b>Configuración</b><small>Idioma y ajustes de la aplicación</small><i>›</i></button>
-      <button data-search="ayuda soporte seguridad privacidad bloquear usuario problemas contacto" data-demo="Ayuda y soporte"><span>❓</span><b>Ayuda y soporte</b><small>Soporte, seguridad y privacidad</small><i>›</i></button>
-      <button class="logout-item" data-search="cerrar sesion salir desconectar cuenta" id="logoutButton"><span>↪</span><b>Cerrar sesión</b><i>›</i></button>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#09000f">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>JEMMO LIVE · MENSAJES</title>
+  <style>
+    :root{
+      --bg:#070009;--panel:#16031e;--panel2:#21042b;--purple:#a928ff;--purple2:#6f178f;
+      --gold:#ffd34e;--blue:#4c8dff;--cyan:#31d9ef;--pink:#ff3d8a;--green:#23df7c;
+      --text:#fff;--muted:#c7b7cd;--line:#5d2374;--safe-top:env(safe-area-inset-top,0px);
+      --safe-bottom:env(safe-area-inset-bottom,0px);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color-scheme:dark;
+    }
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text)}
+    body{overflow:hidden;background:radial-gradient(circle at 50% 0,#52066a 0,#190222 34%,#070009 72%)}
+    button,input{font:inherit}.hidden{display:none!important}.btn{border:0;color:#fff;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+    .app{width:min(100%,520px);height:100svh;margin:0 auto;position:relative;overflow:hidden;background:
+      linear-gradient(#08000ac9,#08000af0),url('jemmo-fish-nav.webp') center 42%/260px auto no-repeat,
+      radial-gradient(circle at 50% 4%,#51066b 0,#1b0324 34%,#08000b 75%)}
+
+    /* LISTA PRINCIPAL */
+    .inbox{height:100%;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;overflow:hidden}
+    .topbar{padding:calc(12px + var(--safe-top)) 14px 8px;display:flex;align-items:center;gap:10px;background:#0b000ed9;border-bottom:1px solid #55206c;backdrop-filter:blur(14px)}
+    .brand{min-width:0;flex:1}.brand small{display:block;color:var(--gold);font-size:10px;font-weight:950;letter-spacing:.12em}.brand h1{margin:0;font-size:24px;line-height:1.1}.brand p{margin:3px 0 0;color:var(--muted);font-size:11px}
+    .icon-btn{width:44px;height:44px;border-radius:15px;border:1px solid #682786;background:#17031f;display:grid;place-items:center;font-size:21px;box-shadow:0 8px 20px #0005}
+    .icon-btn:active{transform:scale(.96)}
+    .searchbar{margin:0 14px 8px;height:48px;display:grid;grid-template-columns:42px minmax(0,1fr) 42px;align-items:center;border:1px solid #6b2a85;border-radius:16px;background:#100116;overflow:hidden;box-shadow:0 8px 24px #0005}
+    .searchbar span{display:grid;place-items:center;color:#d8c6df}.searchbar input{min-width:0;height:100%;border:0;background:transparent;color:#fff;outline:none;font-size:14px}.searchbar button{height:100%;font-size:20px;color:#cdbbd2}
+
+    .online-block{padding:7px 14px 10px;background:linear-gradient(180deg,#15031ecc,#0c0110cc);border-bottom:1px solid #4b175d}
+    .section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:8px}.section-head strong{font-size:13px}.section-head span{color:var(--muted);font-size:10px}
+    .online-list{display:flex;gap:12px;overflow-x:auto;padding:1px 1px 4px;scrollbar-width:none}.online-list::-webkit-scrollbar{display:none}
+    .online-person{width:58px;flex:0 0 58px;text-align:center;color:#fff;padding:0}.avatar-wrap{position:relative;width:54px;height:54px;margin:auto}.avatar{width:54px;height:54px;border-radius:50%;display:grid;place-items:center;border:2px solid #8631a6;background:linear-gradient(145deg,var(--a1,#6b1e8c),var(--a2,#1c0527));font-size:18px;font-weight:1000;box-shadow:0 0 15px #a32bff33;overflow:hidden}.online-dot{position:absolute;right:1px;bottom:2px;width:14px;height:14px;border-radius:50%;background:var(--green);border:3px solid #110217;box-shadow:0 0 10px #23df7c}.online-person b{display:block;margin-top:5px;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+    .list-area{min-height:0;overflow-y:auto;padding:10px 12px 105px;scrollbar-width:none;position:relative}.list-area::-webkit-scrollbar{display:none}
+    .list-area::before{content:"";position:fixed;pointer-events:none;left:50%;top:300px;transform:translateX(-50%) rotate(-9deg);width:235px;height:170px;background:url('jemmo-fish-nav.webp') center/contain no-repeat;opacity:.045;filter:saturate(1.4)}
+    .list-title{display:flex;align-items:center;justify-content:space-between;margin:4px 4px 7px}.list-title h2{margin:0;font-size:13px;color:#eadff0}.list-title button{color:var(--gold);font-size:11px;font-weight:900}
+    .chat-list{display:grid;gap:8px}.chat-row{position:relative;min-height:78px;padding:9px 8px;display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:10px;align-items:center;border:1px solid #54206a;border-radius:20px;background:linear-gradient(115deg,#190320ee,#0e0113e8);box-shadow:0 9px 22px #0005;text-align:left;color:#fff;overflow:hidden}
+    .chat-row.pinned{border-color:#9e7625;background:linear-gradient(115deg,#251508ed,#19031fed)}.chat-row.pinned::before{content:"★";position:absolute;right:7px;bottom:4px;color:#ffd34e22;font-size:38px;transform:rotate(-12deg)}
+    .row-avatar{width:56px;height:56px;border-radius:18px;display:grid;place-items:center;background:linear-gradient(145deg,var(--a1,#6b1e8c),var(--a2,#1c0527));border:1.5px solid var(--accent,#8e31b5);font-size:20px;font-weight:1000;box-shadow:0 0 13px color-mix(in srgb,var(--accent,#8e31b5) 40%,transparent);position:relative;overflow:hidden}.row-avatar.round{border-radius:50%}.row-avatar .status{position:absolute;right:1px;bottom:1px;width:13px;height:13px;border-radius:50%;background:var(--green);border:3px solid #15031b}
+    .row-copy{min-width:0}.row-name{display:flex;align-items:center;gap:6px;min-width:0}.row-name strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:14px}.tag{padding:3px 6px;border-radius:99px;background:#6c1a8d;color:#efd8ff;font-size:8px;font-weight:950}.tag.support{background:#7b5c16;color:#ffe89c}.row-copy p{margin:5px 0 0;color:#cbbbd0;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.row-side{align-self:stretch;min-width:47px;display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:6px;z-index:2}.row-side time{font-size:9px;color:#a996af}.unread{min-width:23px;height:23px;padding:0 7px;border-radius:99px;background:linear-gradient(135deg,#c12cff,#5d8dff);display:grid;place-items:center;font-size:10px;font-weight:1000;box-shadow:0 0 12px #982fff77}.row-more{width:34px;height:32px;border-radius:11px;background:#21042a;border:1px solid #5b266d;font-size:20px;line-height:1}
+    .empty{padding:28px 18px;text-align:center;border:1px dashed #5c2470;border-radius:22px;color:#bdaec3;background:#100115aa}.empty b{display:block;color:#fff;margin-bottom:5px}
+
+    /* NAVEGACIÓN */
+    .bottom-nav{position:absolute;z-index:40;left:0;right:0;bottom:0;height:84px;padding:6px 8px calc(7px + var(--safe-bottom));display:grid;grid-template-columns:repeat(5,1fr);background:linear-gradient(180deg,#100016ef,#070009fd);border-top:1px solid #4e1761;box-shadow:0 -14px 30px #000a}
+    .bottom-nav a{position:relative;color:#9e91a5;text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:3px;font-size:10px;font-weight:850;-webkit-tap-highlight-color:transparent}.nav-fish{width:37px;height:31px;object-fit:contain;filter:grayscale(1) brightness(.55);opacity:.78;transition:.2s}.bottom-nav a.active{color:#5f98ff}.bottom-nav a.active .nav-fish{position:absolute;top:-25px;width:62px;height:62px;filter:none;opacity:1;border-radius:50%;border:2px solid #4c8dff;background:#22042c;box-shadow:0 0 24px #4c8dff;animation:fishRoll 2.8s ease-in-out infinite}.bottom-nav a.active b{margin-top:20px}.nav-badge{position:absolute;top:1px;right:17px;z-index:3;min-width:19px;height:19px;padding:0 5px;border-radius:99px;background:#ff3d76;color:#fff;display:grid;place-items:center;font-size:9px;border:2px solid #110016}
+    @keyframes fishRoll{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-4px) rotate(5deg)}}
+
+    /* VISTA DE CHAT */
+    .chat-view{position:absolute;z-index:55;inset:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:
+      linear-gradient(#0a000ddd,#09000ff0),url('jemmo-fish-nav.webp') center/250px auto no-repeat,
+      radial-gradient(circle at 50% 0,#4d0663,#16021e 40%,#08000b 78%)}
+    .chat-head{padding:calc(10px + var(--safe-top)) 11px 9px;display:grid;grid-template-columns:44px 48px minmax(0,1fr) 44px;gap:8px;align-items:center;background:#0c0010e8;border-bottom:1px solid #5a2170;backdrop-filter:blur(13px)}
+    .back-btn,.chat-options{width:44px;height:44px;border-radius:14px;border:1px solid #64247e;background:#17031f;font-size:24px}.chat-mini-avatar{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,var(--a1,#6b1e8c),var(--a2,#1c0527));border:2px solid var(--accent,#8e31b5);font-weight:1000}.chat-person{min-width:0}.chat-person strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chat-person small{display:block;margin-top:2px;color:var(--muted);font-size:10px}.chat-person small.online{color:var(--green)}
+    .messages{min-height:0;overflow-y:auto;padding:16px 13px 24px;display:flex;flex-direction:column;gap:9px;scrollbar-width:none}.messages::-webkit-scrollbar{display:none}.day{text-align:center;color:#ad9db3;font-size:9px;margin:4px 0 2px}.bubble{width:max-content;max-width:82%;padding:10px 12px;border-radius:16px;background:#21042b;border:1px solid #633078;font-size:13px;line-height:1.35;box-shadow:0 7px 17px #0004}.bubble.mine{align-self:flex-end;background:linear-gradient(135deg,#7021a2,#405fbd);border-color:#8b65ec;border-bottom-right-radius:5px}.bubble.theirs{align-self:flex-start;border-bottom-left-radius:5px}.bubble.system{align-self:center;max-width:92%;text-align:center;background:#261707;border-color:#8e702b;color:#ffe8a4;font-size:11px}.bubble time{display:block;margin-top:4px;text-align:right;color:#dacde0aa;font-size:8px}
+    .composer{padding:8px 10px calc(9px + var(--safe-bottom));display:grid;grid-template-columns:46px minmax(0,1fr) 52px;gap:7px;align-items:end;background:#0b000fe8;border-top:1px solid #4f1d61;box-shadow:0 -12px 30px #0008}.attach{height:48px;border-radius:15px;border:1px solid #65307a;background:#17031f;font-size:24px}.compose-box{min-height:48px;display:flex;align-items:center;border:1px solid #643079;border-radius:17px;background:#100116;padding:0 12px}.compose-box input{width:100%;min-width:0;height:45px;border:0;background:transparent;color:#fff;outline:none}.send{height:48px;border-radius:16px;background:linear-gradient(135deg,#8b24be,#4d7ee2);font-size:24px;font-weight:1000;box-shadow:0 0 16px #7b41db55}
+
+    /* HOJAS */
+    .backdrop{position:absolute;z-index:70;inset:0;background:#0200038e;backdrop-filter:blur(3px)}
+    .sheet{position:absolute;z-index:75;left:0;right:0;bottom:0;max-height:80svh;overflow:auto;padding:15px 14px calc(17px + var(--safe-bottom));border:1px solid #773091;border-radius:25px 25px 0 0;background:linear-gradient(180deg,#270532,#0a000d);box-shadow:0 -20px 60px #000}
+    .sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.sheet-head strong{font-size:19px}.sheet-close{width:40px;height:40px;border-radius:13px;background:#3a0d45;font-size:24px}
+    .sheet-action{width:100%;min-height:54px;margin-top:8px;padding:10px 12px;border-radius:16px;background:#16021d;border:1px solid #5e2274;color:#fff;display:flex;align-items:center;gap:10px;text-align:left}.sheet-action span{font-size:22px}.sheet-action b{flex:1}.sheet-action small{display:block;color:#c8b8cd;font-weight:500;margin-top:2px}.sheet-action.danger{border-color:#913346}
+    .form-field{display:grid;gap:6px;margin-top:10px}.form-field span{color:#d9c8df;font-size:11px;font-weight:850}.form-field input{width:100%;height:48px;border:1px solid #633078;border-radius:15px;background:#0e0113;color:#fff;padding:0 12px;outline:none}.form-field input:focus{border-color:var(--gold);box-shadow:0 0 0 3px #ffd34e20}
+    .type-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.type-btn{min-height:62px;border-radius:16px;background:#190320;border:1px solid #62257a;color:#fff;font-weight:900}.type-btn.active{background:linear-gradient(135deg,#ffd34e,#ff9b42);color:#28051c;border-color:#fff0a0}
+    .member-list{display:grid;gap:7px;margin-top:10px}.member{min-height:52px;padding:7px 10px;border-radius:15px;background:#15021c;border:1px solid #57216c;display:flex;align-items:center;gap:9px}.member i{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#642180;font-style:normal;font-weight:900}.member b{flex:1}.member input{width:21px;height:21px;accent-color:#a928ff}
+    .create-submit{width:100%;height:54px;margin-top:13px;border-radius:17px;background:linear-gradient(90deg,#ffd34e,#ff973f,#a82cff);color:#24041b;font-weight:1000}
+    .toggle-row{min-height:56px;margin-top:8px;padding:9px 11px;border:1px solid #5b2670;border-radius:16px;background:#15021c;display:flex;align-items:center;gap:10px}.toggle-row div{flex:1}.toggle-row b{font-size:13px}.toggle-row small{display:block;color:#bfaec5;font-size:10px;margin-top:3px}.switch{width:53px;height:30px;border-radius:99px;background:#2b0a35;border:1px solid #6b2386;padding:3px}.switch i{display:block;width:22px;height:22px;border-radius:50%;background:#9c89a2;transition:.2s}.switch.on{background:#7920a1}.switch.on i{transform:translateX(23px);background:var(--green)}
+    .toast{position:absolute;z-index:110;left:50%;bottom:96px;transform:translate(-50%,16px);width:min(calc(100% - 28px),420px);padding:12px 14px;border-radius:14px;background:#25052d;border:1px solid #bd3cff;text-align:center;font-size:12px;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+
+    @media(max-width:370px){.topbar{padding-left:10px;padding-right:10px}.online-block{padding-left:10px;padding-right:10px}.list-area{padding-left:8px;padding-right:8px}.chat-row{grid-template-columns:52px minmax(0,1fr) auto}.row-avatar{width:50px;height:50px}.bottom-nav{padding-left:4px;padding-right:4px}}
+    @media(max-height:690px){.online-block{padding-top:4px;padding-bottom:6px}.avatar-wrap,.avatar{width:47px;height:47px}.online-person{width:51px;flex-basis:51px}.topbar{padding-top:calc(7px + var(--safe-top));padding-bottom:6px}.icon-btn{width:40px;height:40px}.bottom-nav{height:78px}.list-area{padding-bottom:96px}}
+  </style>
+</head>
+<body>
+<div class="app" id="app">
+  <section class="inbox" id="inboxView">
+    <header class="topbar">
+      <div class="brand"><small>JEMMO LIVE</small><h1>Mensajes</h1><p>Personas, soporte y comunidades</p></div>
+      <button class="btn icon-btn" id="searchToggle" type="button" aria-label="Buscar">⌕</button>
+      <button class="btn icon-btn" id="createGroupButton" type="button" aria-label="Crear grupo">＋</button>
+      <button class="btn icon-btn" id="settingsButton" type="button" aria-label="Configuración">⚙</button>
+    </header>
+
+    <label class="searchbar hidden" id="searchBar"><span>⌕</span><input id="searchInput" placeholder="Buscar persona, grupo o mensaje…" autocomplete="off"><button class="btn" id="clearSearch" type="button" aria-label="Limpiar">×</button></label>
+
+    <section class="online-block">
+      <div class="section-head"><strong>Siguiendo · en línea</strong><span>El punto verde significa conectado</span></div>
+      <div class="online-list" id="onlineList"></div>
+    </section>
+
+    <main class="list-area" id="listArea">
+      <div class="list-title"><h2>ANCLADOS ARRIBA</h2><button class="btn" id="managePinned" type="button">Administrar</button></div>
+      <div class="chat-list" id="pinnedList"></div>
+      <div class="list-title" style="margin-top:14px"><h2>TODOS LOS MENSAJES</h2><button class="btn" id="markAllRead" type="button">Marcar leídos</button></div>
+      <div class="chat-list" id="allChatsList"></div>
+    </main>
+
+    <nav class="bottom-nav" aria-label="Navegación principal">
+      <a href="inicio.html"><img class="nav-fish" src="jemmo-fish-nav.webp" alt=""><b>Inicio</b></a>
+      <a href="live.html"><img class="nav-fish" src="jemmo-fish-nav.webp" alt=""><b>Live</b></a>
+      <a href="salas.html"><img class="nav-fish" src="jemmo-fish-nav.webp" alt=""><b>Salas</b></a>
+      <a class="active" href="mensajes.html" aria-current="page"><span class="nav-badge" id="navUnread">8</span><img class="nav-fish" src="jemmo-fish-nav.webp" alt=""><b>Mensajes</b></a>
+      <a href="yo.html"><img class="nav-fish" src="jemmo-fish-nav.webp" alt=""><b>Yo</b></a>
     </nav>
-    <div class="quick-results" id="quickResults" hidden>
-      <p>Resultados rápidos</p>
-      <button data-demo="Recargar monedas">🪙 Recargar monedas <i>›</i></button>
-      <button data-demo="Retirar ganancias">💸 Retirar ganancias <i>›</i></button>
-      <button data-demo="Historial del monedero">📜 Historial del monedero <i>›</i></button>
-      <button data-route="live.html">🔴 Iniciar LIVE <i>›</i></button>
-      <button data-route="salas.html">🎙️ Salas de audio <i>›</i></button>
-      <button data-route="mensajes.html">💬 Mensajes <i>›</i></button>
-      <button data-demo="Idioma">🌍 Idioma <i>›</i></button>
-      <button data-demo="Seguridad y privacidad">🔒 Seguridad y privacidad <i>›</i></button>
-    </div>
-    <p class="role-note">Este es el menú de usuario. Más adelante cambiará según el rol: emisor, agente o colaborador.</p>
-  </aside>
-  <div class="demo-toast" id="demoToast" role="status"></div>
-<nav class="bottom-nav" data-current="mensajes"><a data-tab="inicio" href="inicio.html"><span class="nav-icon">⌂</span><b>Inicio</b></a><a data-tab="live" href="live.html"><span class="nav-icon">▣</span><b>Live</b></a><a data-tab="salas" href="salas.html"><span class="nav-icon">🎙</span><b>Salas</b></a><a data-tab="mensajes" href="mensajes.html"><span class="badge">8</span><span class="nav-icon">◌</span><b>Mensajes</b></a><a data-tab="yo" href="yo.html"><span class="nav-icon">♙</span><b>Yo</b></a></nav><script src="app.js"></script></body></html>
+  </section>
+
+  <section class="chat-view hidden" id="chatView" aria-label="Conversación">
+    <header class="chat-head">
+      <button class="btn back-btn" id="chatBack" type="button" aria-label="Volver">‹</button>
+      <div class="chat-mini-avatar" id="chatAvatar">J</div>
+      <div class="chat-person"><strong id="chatName">Conversación</strong><small id="chatStatus">JEMMO LIVE</small></div>
+      <button class="btn chat-options" id="chatOptions" type="button" aria-label="Opciones">⋮</button>
+    </header>
+    <main class="messages" id="messagesArea"></main>
+    <form class="composer" id="messageForm">
+      <button class="btn attach" id="attachButton" type="button" aria-label="Adjuntar">＋</button>
+      <label class="compose-box"><input id="messageInput" maxlength="500" autocomplete="off" placeholder="Escribe un mensaje…"></label>
+      <button class="btn send" type="submit" aria-label="Enviar">➤</button>
+    </form>
+  </section>
+
+  <div class="backdrop hidden" id="backdrop"></div>
+
+  <section class="sheet hidden" id="conversationSheet" aria-label="Opciones de conversación">
+    <header class="sheet-head"><strong id="conversationSheetTitle">Opciones</strong><button class="btn sheet-close" data-close type="button">×</button></header>
+    <button class="btn sheet-action" id="pinAction" type="button"><span>★</span><b>Anclar arriba<small>Mantener esta conversación al principio</small></b><i>›</i></button>
+    <button class="btn sheet-action" id="readAction" type="button"><span>✓</span><b>Marcar como leído<small>Quitar el contador pendiente</small></b><i>›</i></button>
+    <button class="btn sheet-action" id="muteAction" type="button"><span>🔕</span><b>Silenciar avisos<small>Conservar mensajes sin sonido</small></b><i>›</i></button>
+  </section>
+
+  <section class="sheet hidden" id="createGroupSheet" aria-label="Crear grupo">
+    <header class="sheet-head"><strong>Crear comunidad</strong><button class="btn sheet-close" data-close type="button">×</button></header>
+    <div class="type-grid"><button class="btn type-btn active" data-type="fans" type="button">★ Club de fans</button><button class="btn type-btn" data-type="friends" type="button">Grupo de amigos</button></div>
+    <label class="form-field"><span>NOMBRE DEL GRUPO</span><input id="groupName" maxlength="45" placeholder="Ejemplo: Comunidad de Jesús"></label>
+    <div class="form-field"><span>PERSONAS INICIALES</span></div>
+    <div class="member-list" id="memberList"></div>
+    <button class="btn create-submit" id="createGroupSubmit" type="button">CREAR Y ABRIR GRUPO</button>
+  </section>
+
+  <section class="sheet hidden" id="settingsSheet" aria-label="Configuración de mensajes">
+    <header class="sheet-head"><strong>Configuración de mensajes</strong><button class="btn sheet-close" data-close type="button">×</button></header>
+    <div class="toggle-row"><div><b>Mostrar que estoy en línea</b><small>Las personas que sigues podrán ver tu punto verde.</small></div><button class="btn switch on" data-setting="online" type="button"><i></i></button></div>
+    <div class="toggle-row"><div><b>Confirmación de lectura</b><small>Mostrar cuándo has leído un mensaje.</small></div><button class="btn switch on" data-setting="receipts" type="button"><i></i></button></div>
+    <div class="toggle-row"><div><b>Avisos de grupos</b><small>Recibir avisos de grupos y clubes de fans.</small></div><button class="btn switch on" data-setting="groups" type="button"><i></i></button></div>
+    <div class="toggle-row"><div><b>Solo personas seguidas</b><small>Enviar solicitudes aparte cuando no sigues a alguien.</small></div><button class="btn switch" data-setting="followedOnly" type="button"><i></i></button></div>
+  </section>
+
+  <div class="toast" id="toast" role="status"></div>
+</div>
+
+<script>
+(()=>{
+  'use strict';
+  const $=id=>document.getElementById(id);
+  const STORAGE='jemmo_v1_mensajes_prueba_01';
+  const SETTINGS='jemmo_v1_mensajes_settings_01';
+  const people=[
+    {id:'ruth',name:'Ruth',initial:'R',online:true,a1:'#a92d79',a2:'#3b0c48'},
+    {id:'yandira',name:'Yandira',initial:'Y',online:true,a1:'#6d2fb4',a2:'#171654'},
+    {id:'luna',name:'Luna',initial:'L',online:true,a1:'#167ea2',a2:'#172a5a'},
+    {id:'alex',name:'Alex',initial:'A',online:false,a1:'#9b5d20',a2:'#4b1830'},
+    {id:'mia',name:'Mía',initial:'M',online:true,a1:'#b13372',a2:'#4d123c'},
+    {id:'king',name:'King',initial:'K',online:false,a1:'#23655c',a2:'#17303a'}
+  ];
+  const initialChats=[
+    {id:'support',name:'Soporte JEMMO',kind:'support',initial:'J',preview:'Estamos aquí para ayudarte con tu cuenta.',time:'Ahora',unread:1,pinned:true,online:false,accent:'#ffd34e',a1:'#7e5f18',a2:'#2b1608'},
+    {id:'fans',name:'Club de fans de Jesús',kind:'group',initial:'★',preview:'Ruth: Bienvenidos a la comunidad.',time:'08:24',unread:3,pinned:true,online:false,accent:'#c243ff',a1:'#7e229e',a2:'#26092d'},
+    {id:'ruth',name:'Ruth',kind:'person',initial:'R',preview:'Perfecto, después lo revisamos.',time:'07:58',unread:2,pinned:true,online:true,accent:'#ff4e9a',a1:'#a92d79',a2:'#3b0c48'},
+    {id:'system',name:'Avisos JEMMO',kind:'system',initial:'!',preview:'Tu sala recibió una nueva interacción.',time:'Ayer',unread:1,pinned:false,online:false,accent:'#4c8dff',a1:'#1c5eaf',a2:'#142552'},
+    {id:'yandira',name:'Yandira',kind:'person',initial:'Y',preview:'Te envié los detalles del grupo.',time:'Ayer',unread:1,pinned:false,online:true,accent:'#9e62ff',a1:'#6d2fb4',a2:'#171654'},
+    {id:'house',name:'Casa Tenerife',kind:'group',initial:'JT',preview:'Nueva tarea colectiva disponible.',time:'Lun',unread:0,pinned:false,online:false,accent:'#ffd34e',a1:'#78561a',a2:'#21123a'},
+    {id:'luna',name:'Luna',kind:'person',initial:'L',preview:'Nos vemos luego en la sala.',time:'Dom',unread:0,pinned:false,online:true,accent:'#31d9ef',a1:'#167ea2',a2:'#172a5a'}
+  ];
+  const defaultMessages={
+    support:[{from:'system',text:'Bienvenido a Soporte JEMMO. Cuéntanos qué necesitas y conservaremos esta conversación.',time:'07:20'}],
+    fans:[{from:'system',text:'★ Club de fans creado. Los administradores pueden organizar la comunidad.',time:'07:30'},{from:'them',text:'Bienvenidos a todos. Este será nuestro espacio de comunidad.',time:'07:32'}],
+    ruth:[{from:'them',text:'Hola, ya estoy conectada.',time:'07:51'},{from:'mine',text:'Perfecto, después revisamos la sala.',time:'07:54'},{from:'them',text:'Perfecto, después lo revisamos.',time:'07:58'}],
+    system:[{from:'system',text:'Tu sala recibió una nueva interacción. Los avisos oficiales aparecerán siempre en esta conversación.',time:'Ayer'}],
+    yandira:[{from:'them',text:'Te envié los detalles del grupo.',time:'Ayer'}],
+    house:[{from:'system',text:'Nueva tarea colectiva disponible para Casa Tenerife.',time:'Lun'}],
+    luna:[{from:'them',text:'Nos vemos luego en la sala.',time:'Dom'}]
+  };
+  let state=loadState();
+  let currentChat=null;
+  let selectedMenuChat=null;
+  let groupType='fans';
+  let toastTimer=0;
+  let suppressNextPop=false;
+
+  function loadState(){
+    try{
+      const saved=JSON.parse(localStorage.getItem(STORAGE)||'null');
+      if(saved&&Array.isArray(saved.chats))return saved;
+    }catch{}
+    return {chats:JSON.parse(JSON.stringify(initialChats)),messages:JSON.parse(JSON.stringify(defaultMessages)),muted:[]};
+  }
+  function saveState(){try{localStorage.setItem(STORAGE,JSON.stringify(state))}catch(e){console.warn(e)}}
+  function toast(text){const el=$('toast');el.textContent=text;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2100)}
+  function esc(value){return String(value).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+  function kindLabel(chat){if(chat.kind==='support')return '<span class="tag support">SOPORTE</span>';if(chat.kind==='group')return '<span class="tag">GRUPO</span>';if(chat.kind==='system')return '<span class="tag">AVISO</span>';return ''}
+  function unreadTotal(){return state.chats.reduce((sum,c)=>sum+(Number(c.unread)||0),0)}
+  function updateUnread(){const n=unreadTotal(),badge=$('navUnread');badge.textContent=n>99?'99+':String(n);badge.classList.toggle('hidden',n===0)}
+
+  function renderOnline(){
+    const list=$('onlineList');list.innerHTML='';
+    people.filter(p=>p.online).forEach(p=>{
+      const button=document.createElement('button');button.className='btn online-person';button.type='button';
+      button.innerHTML=`<span class="avatar-wrap"><span class="avatar" style="--a1:${p.a1};--a2:${p.a2}">${esc(p.initial)}</span><i class="online-dot"></i></span><b>${esc(p.name)}</b>`;
+      button.addEventListener('click',()=>openOrCreatePerson(p));list.append(button);
+    });
+  }
+  function rowHtml(chat){
+    return `<span class="row-avatar ${chat.kind==='person'?'round':''}" style="--a1:${chat.a1};--a2:${chat.a2};--accent:${chat.accent}">${esc(chat.initial)}${chat.online?'<i class="status"></i>':''}</span>
+      <span class="row-copy"><span class="row-name"><strong>${esc(chat.name)}</strong>${kindLabel(chat)}</span><p>${esc(chat.preview||'Toca para abrir la conversación.')}</p></span>
+      <span class="row-side"><time>${esc(chat.time||'')}</time>${chat.unread?`<i class="unread">${chat.unread>99?'99+':chat.unread}</i>`:''}<button class="btn row-more" type="button" aria-label="Opciones">⋮</button></span>`;
+  }
+  function createRow(chat){
+    const row=document.createElement('button');row.type='button';row.className=`btn chat-row ${chat.pinned?'pinned':''}`;row.dataset.id=chat.id;row.innerHTML=rowHtml(chat);
+    row.addEventListener('click',event=>{if(event.target.closest('.row-more')){event.stopPropagation();openConversationOptions(chat.id);return}openChat(chat.id)});return row;
+  }
+  function renderLists(filter=''){
+    const term=filter.trim().toLocaleLowerCase('es');
+    const matches=c=>!term||`${c.name} ${c.preview} ${c.kind}`.toLocaleLowerCase('es').includes(term);
+    const pinned=state.chats.filter(c=>c.pinned&&matches(c));
+    const all=state.chats.filter(c=>!c.pinned&&matches(c));
+    const p=$('pinnedList'),a=$('allChatsList');p.innerHTML='';a.innerHTML='';
+    pinned.forEach(c=>p.append(createRow(c)));all.forEach(c=>a.append(createRow(c)));
+    if(!pinned.length)p.innerHTML='<div class="empty"><b>No hay chats anclados</b>Usa los tres puntos de una conversación para colocarla arriba.</div>';
+    if(!all.length)a.innerHTML='<div class="empty"><b>No se encontraron conversaciones</b>Prueba con otro nombre o crea un grupo.</div>';
+    updateUnread();
+  }
+  function getChat(id){return state.chats.find(c=>c.id===id)}
+  function openOrCreatePerson(person){
+    let chat=getChat(person.id);
+    if(!chat){chat={id:person.id,name:person.name,kind:'person',initial:person.initial,preview:'Nueva conversación',time:'Ahora',unread:0,pinned:false,online:person.online,accent:'#31d9ef',a1:person.a1,a2:person.a2};state.chats.unshift(chat);state.messages[chat.id]=[];saveState()}
+    openChat(chat.id);
+  }
+  function openChat(id,push=true){
+    const chat=getChat(id);if(!chat)return;currentChat=id;chat.unread=0;saveState();
+    $('chatAvatar').textContent=chat.initial;$('chatAvatar').style.setProperty('--a1',chat.a1);$('chatAvatar').style.setProperty('--a2',chat.a2);$('chatAvatar').style.setProperty('--accent',chat.accent);
+    $('chatName').textContent=chat.name;$('chatStatus').textContent=chat.online?'● En línea':chat.kind==='group'?'Grupo de JEMMO LIVE':chat.kind==='support'?'Soporte oficial':'JEMMO LIVE';$('chatStatus').classList.toggle('online',!!chat.online);
+    renderMessages();$('inboxView').classList.add('hidden');$('chatView').classList.remove('hidden');
+    if(push)history.pushState({jemmoChat:id},'',`#chat-${encodeURIComponent(id)}`);setTimeout(()=>$('messageInput').focus(),120);
+  }
+  function closeChat(useHistory=true){
+    if($('chatView').classList.contains('hidden'))return;currentChat=null;$('chatView').classList.add('hidden');$('inboxView').classList.remove('hidden');renderLists($('searchInput').value);if(useHistory&&location.hash.startsWith('#chat-'))history.back();
+  }
+  function renderMessages(){
+    const area=$('messagesArea');area.innerHTML='<div class="day">CONVERSACIÓN SEGURA · PRUEBA LOCAL</div>';
+    const items=state.messages[currentChat]||[];
+    if(!items.length)area.innerHTML+='<div class="bubble system">Todavía no hay mensajes. Escribe el primero.</div>';
+    items.forEach(item=>{const bubble=document.createElement('div');bubble.className=`bubble ${item.from==='mine'?'mine':item.from==='them'?'theirs':'system'}`;bubble.innerHTML=`${esc(item.text)}<time>${esc(item.time||'')}</time>`;area.append(bubble)});area.scrollTop=area.scrollHeight;
+  }
+  function now(){return new Intl.DateTimeFormat('es-ES',{hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date())}
+
+  function openConversationOptions(id){selectedMenuChat=id;const chat=getChat(id);if(!chat)return;$('conversationSheetTitle').textContent=chat.name;$('pinAction').querySelector('b').firstChild.textContent=chat.pinned?'Desanclar':'Anclar arriba';openSheet('conversationSheet')}
+  function openSheet(id){$('backdrop').classList.remove('hidden');$(id).classList.remove('hidden');history.pushState({jemmoSheet:id},'',location.hash||'#mensajes')}
+  function closeSheets(useHistory=true){$('backdrop').classList.add('hidden');document.querySelectorAll('.sheet').forEach(s=>s.classList.add('hidden'));if(useHistory&&history.state?.jemmoSheet){suppressNextPop=true;history.back()}}
+  function fillMembers(){const box=$('memberList');box.innerHTML='';people.slice(0,5).forEach((p,index)=>{const label=document.createElement('label');label.className='member';label.innerHTML=`<i>${esc(p.initial)}</i><b>${esc(p.name)}</b><input type="checkbox" value="${p.id}" ${index<2?'checked':''}>`;box.append(label)})}
+  function uniqueId(prefix){return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,6)}`}
+  function loadSettings(){let data={online:true,receipts:true,groups:true,followedOnly:false};try{data={...data,...JSON.parse(localStorage.getItem(SETTINGS)||'{}')}}catch{}document.querySelectorAll('[data-setting]').forEach(btn=>btn.classList.toggle('on',!!data[btn.dataset.setting]));return data}
+  function saveSettings(){const data={};document.querySelectorAll('[data-setting]').forEach(btn=>data[btn.dataset.setting]=btn.classList.contains('on'));localStorage.setItem(SETTINGS,JSON.stringify(data))}
+
+  renderOnline();fillMembers();loadSettings();renderLists();
+
+  $('searchToggle').addEventListener('click',()=>{$('searchBar').classList.toggle('hidden');if(!$('searchBar').classList.contains('hidden'))$('searchInput').focus()});
+  $('searchInput').addEventListener('input',event=>renderLists(event.target.value));
+  $('clearSearch').addEventListener('click',()=>{$('searchInput').value='';renderLists();$('searchInput').focus()});
+  $('createGroupButton').addEventListener('click',()=>openSheet('createGroupSheet'));
+  $('settingsButton').addEventListener('click',()=>openSheet('settingsSheet'));
+  $('managePinned').addEventListener('click',()=>toast('Abre los tres puntos de cada conversación para anclarla o desanclarla.'));
+  $('markAllRead').addEventListener('click',()=>{state.chats.forEach(c=>c.unread=0);saveState();renderLists($('searchInput').value);toast('Todos los mensajes quedaron marcados como leídos.')});
+  $('chatBack').addEventListener('click',()=>closeChat());
+  $('chatOptions').addEventListener('click',()=>currentChat&&openConversationOptions(currentChat));
+  $('attachButton').addEventListener('click',()=>toast('Fotos, audio y archivos se conectarán al almacenamiento real en la fase de servidor.'));
+  $('messageForm').addEventListener('submit',event=>{event.preventDefault();const input=$('messageInput'),text=input.value.trim();if(!text||!currentChat)return;const time=now();state.messages[currentChat]||=[];state.messages[currentChat].push({from:'mine',text,time});const chat=getChat(currentChat);chat.preview=`Tú: ${text}`;chat.time=time;input.value='';saveState();renderMessages();input.focus()});
+  $('pinAction').addEventListener('click',()=>{const chat=getChat(selectedMenuChat);if(!chat)return;chat.pinned=!chat.pinned;saveState();renderLists($('searchInput').value);closeSheets();toast(chat.pinned?'Conversación anclada arriba.':'Conversación desanclada.')});
+  $('readAction').addEventListener('click',()=>{const chat=getChat(selectedMenuChat);if(chat){chat.unread=0;saveState();renderLists($('searchInput').value)}closeSheets();toast('Conversación marcada como leída.')});
+  $('muteAction').addEventListener('click',()=>{const id=selectedMenuChat,index=state.muted.indexOf(id);if(index>=0)state.muted.splice(index,1);else state.muted.push(id);saveState();closeSheets();toast(index>=0?'Avisos activados.':'Conversación silenciada.')});
+  document.querySelectorAll('[data-type]').forEach(btn=>btn.addEventListener('click',()=>{groupType=btn.dataset.type;document.querySelectorAll('[data-type]').forEach(b=>b.classList.toggle('active',b===btn))}));
+  $('createGroupSubmit').addEventListener('click',()=>{const name=$('groupName').value.trim();if(name.length<3){toast('Escribe un nombre de al menos 3 caracteres.');$('groupName').focus();return}const selected=[...$('memberList').querySelectorAll('input:checked')].map(i=>i.value);const id=uniqueId('group');const chat={id,name,kind:'group',initial:groupType==='fans'?'★':'G',preview:`Grupo creado con ${selected.length} persona${selected.length===1?'':'s'}.`,time:'Ahora',unread:0,pinned:false,online:false,accent:groupType==='fans'?'#ffd34e':'#4c8dff',a1:groupType==='fans'?'#805e15':'#245eb4',a2:'#26092d'};state.chats.unshift(chat);state.messages[id]=[{from:'system',text:groupType==='fans'?`★ Se creó ${name} como club de fans.`:`Se creó ${name} como grupo de amigos.`,time:now()}];saveState();$('groupName').value='';closeSheets(false);$('backdrop').classList.add('hidden');$('createGroupSheet').classList.add('hidden');renderLists();openChat(id);toast('Grupo creado correctamente.')});
+  document.querySelectorAll('[data-setting]').forEach(btn=>btn.addEventListener('click',()=>{btn.classList.toggle('on');saveSettings()}));
+  $('backdrop').addEventListener('click',()=>closeSheets());document.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',()=>closeSheets()));
+
+  addEventListener('popstate',()=>{
+    if(suppressNextPop){suppressNextPop=false;return}
+    if(document.querySelector('.sheet:not(.hidden)')){closeSheets(false);return}
+    if(!$('chatView').classList.contains('hidden')){closeChat(false);return}
+  });
+  if(location.hash.startsWith('#chat-')){const id=decodeURIComponent(location.hash.slice(6));if(getChat(id))openChat(id,false)}
+})();
+</script>
+</body>
+</html>
