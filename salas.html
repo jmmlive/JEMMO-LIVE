@@ -9,7 +9,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>JEMMO LIVE · SALAS PRUEBA 04</title>
+  <title>JEMMO LIVE · SALAS PRUEBA 05</title>
   <style>
     :root{
       --bg:#070009;--panel:#15031e;--panel2:#22042d;--purple:#a928ff;--purple2:#6e168f;
@@ -69,27 +69,29 @@
     .jr-close{width:48px;height:48px;border-radius:18px;background:#8e1630;border:1px solid #ff6c8c;color:#fff;font-size:31px;line-height:1}
 
     .jr-stage{position:relative;min-height:0;overflow:hidden}
-    .jr-seats-wrap{height:100%;min-height:0;padding:10px 14px clamp(118px,18svh,154px);display:flex;align-items:center;justify-content:center;overflow:hidden}
-    .jr-seats{width:100%;height:100%;display:grid;align-content:center;justify-content:center;gap:var(--seat-gap,10px);grid-template-columns:repeat(var(--cols),minmax(0,var(--seat-w)));grid-auto-rows:var(--seat-h)}
+    .jr-stage::before{content:"";position:absolute;z-index:0;inset:0;background:url('jemmo-fish-nav.webp') center 42%/min(72vw,350px) auto no-repeat;opacity:.11;filter:saturate(1.15) drop-shadow(0 0 25px #b62cff66);pointer-events:none}
+    .jr-seats-wrap{position:relative;z-index:1;height:100%;min-height:0;padding:8px 10px clamp(112px,17svh,148px);display:flex;align-items:stretch;justify-content:stretch;overflow:hidden}
+    .jr-seats{width:100%;height:100%;display:grid;align-content:stretch;justify-content:stretch;gap:var(--seat-gap,8px);grid-template-columns:repeat(var(--cols),minmax(0,1fr));grid-template-rows:repeat(var(--rows),minmax(0,1fr))}
     .jr-seat{isolation:isolate;position:relative;width:100%;height:100%;min-width:0;padding:4px 3px;border:1.5px solid #8f27b9;background:radial-gradient(circle at 50% 25%,#5a1b71,#24032e 66%);box-shadow:inset 0 0 18px #b83cff22,0 0 12px #9227ba22;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
-    .jr-seat::before{content:"";position:absolute;z-index:-1;inset:10%;background:url('jemmo-fish-nav.webp') center/72% auto no-repeat;opacity:.16;filter:saturate(1.15) drop-shadow(0 0 8px #d14cff55);transform:rotate(-8deg)}
+    .jr-seat::before{content:"";position:absolute;z-index:-1;inset:7%;background:url('jemmo-fish-nav.webp') center/70% auto no-repeat;opacity:.34;filter:saturate(1.2) drop-shadow(0 0 9px #d14cff77);transform:rotate(-8deg)}
     .jr-seat>*{position:relative;z-index:1}
     .jr-seat-video{position:absolute;z-index:0;inset:0;width:100%;height:100%;object-fit:cover;background:#08000b}
     .jr-seat.camera .jr-seat-video+.jr-seat-overlay{position:absolute;z-index:1;inset:auto 4px 4px;display:flex;justify-content:space-between;align-items:end;gap:4px}
     .jr-camera-error{position:absolute;z-index:2;inset:8px;display:grid;place-items:center;text-align:center;padding:8px;border-radius:14px;background:#16051dcc;color:#ffe1ea;font-size:10px;font-weight:900}
-    .jr-seat.audio{border-radius:50%}.jr-seat.camera{border-radius:21%}
+    .jr-seat.audio{width:100%;height:auto;max-height:100%;aspect-ratio:1;align-self:center;justify-self:center;border-radius:50%}.jr-seat.camera{width:100%;height:100%;border-radius:21%}
     .jr-seat.host{border-color:var(--gold);box-shadow:inset 0 0 20px #ffd34e1d,0 0 16px #ffd34e66}.jr-seat.hot{border-color:#ff9b45;box-shadow:0 0 18px #ff9b4566}
     .jr-seat-avatar{width:var(--avatar);height:var(--avatar);border-radius:50%;display:grid;place-items:center;background:#300039;color:#d36bff;font-size:calc(var(--avatar)*.45);font-weight:900;overflow:hidden;flex:0 0 auto}.jr-seat-avatar img{width:100%;height:100%;object-fit:cover}
     .jr-seat b{max-width:90%;font-size:var(--seat-font);line-height:1.05;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.jr-seat small{max-width:93%;font-size:var(--seat-small);line-height:1.05;color:#cfbed4;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .jr-number{position:absolute;right:2px;bottom:2px;min-width:24px;height:24px;padding:0 5px;border-radius:99px;background:#22042c;border:1px solid #b13cdf;display:grid;place-items:center;font-size:10px;font-weight:950}.jr-mic{position:absolute;left:3px;bottom:3px;font-size:13px}.jr-status-dot{position:absolute;right:6px;top:5px;width:12px;height:12px;border-radius:50%;background:var(--orange);box-shadow:0 0 11px var(--orange)}
-    .jr-room[data-count="4"]{--cols:2;--seat-w:min(36vw,158px);--seat-h:min(36vw,158px);--seat-gap:12px;--avatar:54px;--seat-font:15px;--seat-small:11px}
-    .jr-room[data-count="8"]{--cols:4;--seat-w:min(21vw,102px);--seat-h:min(24vw,112px);--seat-gap:9px;--avatar:38px;--seat-font:11px;--seat-small:8px}
-    .jr-room[data-count="12"]{--cols:4;--seat-w:min(21vw,102px);--seat-h:min(21vw,100px);--seat-gap:8px;--avatar:34px;--seat-font:10px;--seat-small:8px}
-    .jr-room[data-count="15"]{--cols:12;--seat-w:auto;--seat-h:auto;--seat-gap:7px;--avatar:34px;--seat-font:10px;--seat-small:8px}
-    .jr-room[data-count="15"] .jr-seats{grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:repeat(4,minmax(66px,1fr));align-content:stretch}
+    .jr-gift-total{position:absolute!important;z-index:5!important;right:4px;top:4px;min-width:31px;height:25px;padding:0 7px;border-radius:99px;background:linear-gradient(135deg,#ffd34e,#ff8c38);border:1px solid #fff1a0;color:#2a0b05;display:grid;place-items:center;font-size:10px;font-weight:1000;box-shadow:0 0 15px #ffb23f88}
+    .jr-room[data-count="4"]{--cols:2;--rows:2;--seat-gap:12px;--avatar:58px;--seat-font:15px;--seat-small:11px}
+    .jr-room[data-count="8"]{--cols:4;--rows:2;--seat-gap:9px;--avatar:40px;--seat-font:11px;--seat-small:8px}
+    .jr-room[data-count="12"]{--cols:4;--rows:3;--seat-gap:8px;--avatar:36px;--seat-font:10px;--seat-small:8px}
+    .jr-room[data-count="15"]{--cols:12;--rows:4;--seat-gap:7px;--avatar:34px;--seat-font:10px;--seat-small:8px}
+    .jr-room[data-count="15"] .jr-seats{grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:repeat(4,minmax(0,1fr))}
     .jr-room[data-count="15"] .jr-seat{grid-column:span 3}
     .jr-room[data-count="15"] .jr-seat:nth-child(-n+3){grid-column:span 4}
-    .jr-room[data-count="25"]{--cols:5;--seat-w:min(16.8vw,81px);--seat-h:min(16.7vw,80px);--seat-gap:5px;--avatar:24px;--seat-font:8px;--seat-small:6.5px}
+    .jr-room[data-count="25"]{--cols:5;--rows:5;--seat-gap:5px;--avatar:25px;--seat-font:8px;--seat-small:6.5px}
     .jr-room[data-count="25"] .jr-number{min-width:20px;height:20px;font-size:8px}.jr-room[data-count="25"] .jr-mic{font-size:9px}.jr-room[data-count="25"] .jr-status-dot{width:9px;height:9px}
 
     .jr-chat{position:absolute;z-index:4;left:0;right:0;bottom:0;height:clamp(118px,18svh,154px);padding:18px 16px 8px;overflow:auto;pointer-events:auto;mask-image:linear-gradient(to bottom,transparent,#000 18%,#000)}
@@ -101,7 +103,9 @@
 
     /* PANELES */
     .jr-backdrop{position:fixed;z-index:90;inset:0;background:#020003c9;backdrop-filter:blur(5px)}
-    .jr-sheet{position:fixed;z-index:91;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,520px);max-height:78svh;overflow:auto;padding:16px 16px calc(18px + var(--safe-bottom));border:1px solid #773091;border-radius:25px 25px 0 0;background:linear-gradient(180deg,#25052f,#09000d);box-shadow:0 -20px 60px #000}
+    .jr-backdrop.gift-mode{background:linear-gradient(180deg,transparent 0,transparent 48%,#02000330 100%);backdrop-filter:none}
+    .jr-sheet{position:fixed;z-index:91;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,520px);max-height:78svh;overflow:auto;padding:16px 16px calc(18px + var(--safe-bottom));border:1px solid #773091;border-radius:25px 25px 0 0;background:linear-gradient(180deg,#25052ff5,#09000dfa);box-shadow:0 -20px 60px #000}
+    #giftsSheet{max-height:56svh;box-shadow:0 -12px 34px #000b}
     .jr-sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}.jr-sheet-head strong{font-size:20px}.jr-sheet-close{width:40px;height:40px;border-radius:13px;background:#3a0d45;border:0;color:#fff;font-size:24px}
     .jr-setting{width:100%;min-height:54px;margin-top:8px;padding:10px 12px;border-radius:16px;background:#16021d;border:1px solid #5e2274;color:#fff;display:flex;align-items:center;gap:10px;text-align:left}.jr-setting span{font-size:22px}.jr-setting b{flex:1}.jr-setting small{display:block;color:#c8b8cd;font-weight:500;margin-top:2px}.jr-setting.danger{border-color:#9b3046}
     .jr-wallet-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;padding:11px 12px;border:1px solid #73531f;border-radius:16px;background:linear-gradient(90deg,#241306,#1a0822)}
@@ -109,12 +113,13 @@
     .jr-recipient-title{display:flex;align-items:center;justify-content:space-between;margin:8px 0;font-size:12px;color:#d8c8dd}.jr-recipient-title b{color:#fff}
     .jr-recipients{display:flex;gap:8px;overflow-x:auto;padding:2px 1px 12px;scrollbar-width:none}.jr-recipients::-webkit-scrollbar{display:none}
     .jr-recipient{flex:0 0 68px;min-height:76px;padding:7px 5px;border-radius:16px;background:#17031f;border:1px solid #603075;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center}.jr-recipient img,.jr-recipient span{width:38px;height:38px;border-radius:50%;object-fit:cover;display:grid;place-items:center;background:#31043d}.jr-recipient b{max-width:60px;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.jr-recipient.active{border-color:var(--gold);background:#332009;box-shadow:0 0 14px #ffd34e44}.jr-recipient.all span{font-size:12px;font-weight:1000;background:#8d25b4}
-    .jr-gifts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.jr-gift{min-height:82px;border-radius:17px;background:#180320;border:1px solid #67307a;color:#fff;display:grid;place-items:center;padding:8px;text-align:center}.jr-gift span{font-size:28px}.jr-gift b{font-size:11px}.jr-gift.lucky{grid-column:1/-1;min-height:64px;border-color:#ac842a;background:linear-gradient(90deg,#291506,#24102c);display:flex;gap:10px;justify-content:center}.jr-gift.lucky span{font-size:24px}
+    .jr-quantity-title{display:flex;align-items:center;justify-content:space-between;margin:2px 0 8px;font-size:12px;color:#d8c8dd}.jr-quantity-title b{color:#fff}.jr-quantities{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:10px}.jr-quantity{min-height:42px;border-radius:13px;background:#180320;border:1px solid #67307a;color:#fff;font-weight:1000}.jr-quantity.active{background:linear-gradient(135deg,#ffd34e,#ff953d);border-color:#fff2a6;color:#271006;box-shadow:0 0 13px #ffd34e55}.jr-gift-summary{margin-bottom:10px;padding:9px 11px;border-radius:13px;background:#0e0114;border:1px solid #5e2674;color:#e7d9eb;font-size:11px;text-align:center}
+    .jr-gifts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.jr-gift{min-height:88px;border-radius:17px;background:#180320;border:1px solid #67307a;color:#fff;display:grid;place-items:center;padding:8px;text-align:center}.jr-gift span{font-size:28px}.jr-gift b{font-size:11px}.jr-gift small{color:#d1bed7;font-size:9px}.jr-gift.lucky{grid-column:1/-1;min-height:64px;border-color:#ac842a;background:linear-gradient(90deg,#291506,#24102c);display:flex;gap:10px;justify-content:center}.jr-gift.lucky span{font-size:24px}
     .jr-toast{position:fixed;z-index:120;left:50%;bottom:90px;transform:translate(-50%,20px);width:min(calc(100% - 32px),430px);padding:12px 14px;border-radius:14px;background:#25052d;border:1px solid #c23cff;color:#fff;text-align:center;font-size:13px;opacity:0;pointer-events:none;transition:.2s}.jr-toast.show{opacity:1;transform:translate(-50%,0)}
 
     @media(max-width:370px){
       .jr-prepare{padding-left:11px;padding-right:11px}.jr-capacity{gap:5px}.jr-cap{font-size:12px}
-      .jr-room[data-count="4"]{--seat-w:min(35vw,136px);--seat-h:min(35vw,136px)}
+      .jr-room[data-count="4"]{--seat-gap:9px}
       .jr-seats-wrap{padding-left:9px;padding-right:9px}.jr-controls{grid-template-columns:50px minmax(0,1fr) 54px;padding-left:8px;padding-right:8px;gap:6px}
     }
     @media(max-height:690px){
@@ -223,16 +228,24 @@
 <section class="jr-sheet jr-hidden" id="giftsSheet" aria-label="Regalos">
   <header class="jr-sheet-head"><strong>Regalos</strong><button class="jr-sheet-close" data-close type="button">×</button></header>
   <div class="jr-wallet-row">
-    <div><b>Saldo: 0 monedas</b><small>Recarga sin salir de la sala</small></div>
+    <div><b id="balanceLabel">Saldo de prueba: 100.000 monedas</b><small>Recarga sin salir de la sala</small></div>
     <button class="jr-btn jr-recharge" id="rechargeButton" type="button">RECARGAR</button>
   </div>
   <div class="jr-recipient-title"><b>Enviar a</b><span id="recipientSummary">Todas las personas</span></div>
   <div class="jr-recipients" id="giftRecipients"></div>
+  <div class="jr-quantity-title"><b>Cantidad por persona</b><span id="quantitySummary">×1</span></div>
+  <div class="jr-quantities" id="giftQuantities">
+    <button class="jr-btn jr-quantity active" data-quantity="1" type="button">×1</button>
+    <button class="jr-btn jr-quantity" data-quantity="10" type="button">×10</button>
+    <button class="jr-btn jr-quantity" data-quantity="20" type="button">×20</button>
+    <button class="jr-btn jr-quantity" data-quantity="100" type="button">×100</button>
+  </div>
+  <div class="jr-gift-summary" id="giftSummary">Selecciona destinatarios y cantidad.</div>
   <div class="jr-gifts-grid">
-    <button class="jr-gift" data-gift="🌹 Rosa" type="button"><span>🌹</span><b>Rosa</b></button>
-    <button class="jr-gift" data-gift="🚀 Cohete" type="button"><span>🚀</span><b>Cohete</b></button>
-    <button class="jr-gift" data-gift="👑 Corona" type="button"><span>👑</span><b>Corona</b></button>
-    <button class="jr-gift lucky" id="luckyGift" type="button"><span>🍀</span><b>Afortunados<br><small>El trébol está dentro de Regalos</small></b></button>
+    <button class="jr-gift" data-gift="🌹 Rosa" data-price="1" type="button"><span>🌹</span><b>Rosa</b><small>1 moneda</small></button>
+    <button class="jr-gift" data-gift="🚀 Cohete" data-price="100" type="button"><span>🚀</span><b>Cohete</b><small>100 monedas</small></button>
+    <button class="jr-gift" data-gift="👑 Corona" data-price="500" type="button"><span>👑</span><b>Corona</b><small>500 monedas</small></button>
+    <button class="jr-gift lucky" id="luckyGift" data-gift="🍀 Afortunados" data-price="50" type="button"><span>🍀</span><b>Afortunados<br><small>50 monedas · dentro de Regalos</small></b></button>
   </div>
 </section>
 <div class="jr-toast" id="toast" role="status"></div>
@@ -241,8 +254,8 @@
 (()=>{
   'use strict';
   const $=id=>document.getElementById(id);
-  const storageKey='jemmo_v1_salas_prueba_04';
-  const previousStorageKey='jemmo_v1_salas_prueba_03';
+  const storageKey='jemmo_v1_salas_prueba_05';
+  const previousStorageKey='jemmo_v1_salas_prueba_04';
   const state={
     mode:'audio',
     count:4,
@@ -250,7 +263,10 @@
     cover:null,
     stream:null,
     selectedRecipients:new Set(['all']),
-    occupants:new Map()
+    occupants:new Map(),
+    giftQuantity:1,
+    giftBalance:100000,
+    giftTotals:new Map()
   };
   let toastTimer=0;
   let roomOpen=false;
@@ -347,21 +363,36 @@
 
   function defaultOccupants(){
     state.occupants.clear();
-    state.occupants.set(1,{name:'Anfitrión',role:'En sala',photo:state.cover||'jemmo-fish-nav.webp',host:true});
+    state.giftTotals.clear();
+    const demo=[
+      {name:'Anfitrión',role:'En sala',photo:state.cover||'jemmo-fish-nav.webp',host:true},
+      {name:'Ruth',role:'Administradora',photo:'jemmo-fish-nav.webp',host:false},
+      {name:'Invitada 3',role:'En silla',photo:'jemmo-fish-nav.webp',host:false},
+      {name:'Invitado 4',role:'En silla',photo:'jemmo-fish-nav.webp',host:false},
+      {name:'Invitada 5',role:'En silla',photo:'jemmo-fish-nav.webp',host:false}
+    ];
+    demo.slice(0,Math.min(state.count,5)).forEach((person,index)=>state.occupants.set(index+1,person));
+    state.selectedRecipients.clear();
+    state.selectedRecipients.add('all');
   }
 
   function occupantFor(index){return state.occupants.get(index)||null}
+
+  function giftBadge(index){
+    const total=state.giftTotals.get(index)||0;
+    return total?`<span class="jr-gift-total">🎁 ${total}</span>`:'';
+  }
 
   function seatMarkup(index,person){
     if(state.mode==='camera'&&index===1){
       return `<video class="jr-seat-video" id="hostCameraVideo" autoplay muted playsinline></video>
         <div class="jr-seat-overlay"><b>${person.name}</b><small>${person.role}</small></div>
-        <span class="jr-mic">🎥</span><span class="jr-number">${index}</span>`;
+        <span class="jr-mic">🎥</span><span class="jr-number">${index}</span>${giftBadge(index)}`;
     }
     if(person){
       return `<span class="jr-seat-avatar"><img src="${person.photo}" alt=""></span>
         <b>${person.name}</b><small>${person.role}</small>
-        <span class="jr-mic">${person.host?'🎙':'🔊'}</span><span class="jr-number">${index}</span>`;
+        <span class="jr-mic">${person.host?'🎙':'🔊'}</span><span class="jr-number">${index}</span>${giftBadge(index)}`;
     }
     return `<span class="jr-seat-avatar">+</span><b>Silla libre</b><small>Toca para subir</small><span class="jr-mic">＋</span><span class="jr-number">${index}</span>`;
   }
@@ -479,12 +510,14 @@
   }
 
   function openSheet(id){
+    $('backdrop').classList.toggle('gift-mode',id==='giftsSheet');
     $('backdrop').classList.remove('jr-hidden');
     $(id).classList.remove('jr-hidden');
-    if(id==='giftsSheet')renderGiftRecipients();
+    if(id==='giftsSheet'){renderGiftRecipients();updateGiftPanel()}
   }
 
   function closeSheets(){
+    $('backdrop').classList.remove('gift-mode');
     $('backdrop').classList.add('jr-hidden');
     $('settingsSheet').classList.add('jr-hidden');
     $('giftsSheet').classList.add('jr-hidden');
@@ -499,10 +532,32 @@
     $('chatMessages').scrollTop=$('chatMessages').scrollHeight;
   }
 
+  function selectedRecipientIndexes(){
+    const occupied=[...state.occupants.keys()];
+    if(state.selectedRecipients.has('all'))return occupied;
+    return [...state.selectedRecipients].map(Number).filter(index=>state.occupants.has(index));
+  }
+
   function recipientLabel(){
-    if(state.selectedRecipients.has('all'))return'Todas las personas';
-    const names=[...state.selectedRecipients].map(Number).map(index=>occupantFor(index)?.name).filter(Boolean);
+    const indexes=selectedRecipientIndexes();
+    if(state.selectedRecipients.has('all'))return`Todas (${indexes.length})`;
+    const names=indexes.map(index=>occupantFor(index)?.name).filter(Boolean);
     return names.length?names.join(', '):'Selecciona una persona';
+  }
+
+  function formatCoins(value){return Number(value).toLocaleString('es-ES')}
+
+  function updateBalance(){
+    $('balanceLabel').textContent=`Saldo de prueba: ${formatCoins(state.giftBalance)} monedas`;
+  }
+
+  function updateGiftPanel(){
+    const recipients=selectedRecipientIndexes().length;
+    const totalGifts=recipients*state.giftQuantity;
+    $('quantitySummary').textContent=`×${state.giftQuantity}`;
+    $('giftSummary').textContent=recipients?`${recipients} persona${recipients===1?'':'s'} × ${state.giftQuantity} = ${totalGifts} regalo${totalGifts===1?'':'s'} en total.`:'Selecciona al menos una persona.';
+    document.querySelectorAll('.jr-quantity').forEach(btn=>btn.classList.toggle('active',Number(btn.dataset.quantity)===state.giftQuantity));
+    updateBalance();
   }
 
   function renderGiftRecipients(){
@@ -535,16 +590,39 @@
       container.append(btn);
     });
     $('recipientSummary').textContent=recipientLabel();
+    updateGiftPanel();
   }
 
-  function sendGift(gift){
+  function updateGiftBadges(){
+    document.querySelectorAll('.jr-seat').forEach(seat=>{
+      const index=Number(seat.dataset.seat);
+      const current=seat.querySelector('.jr-gift-total');
+      const total=state.giftTotals.get(index)||0;
+      if(total){
+        if(current)current.textContent=`🎁 ${total}`;
+        else{const badge=document.createElement('span');badge.className='jr-gift-total';badge.textContent=`🎁 ${total}`;seat.append(badge)}
+      }else if(current)current.remove();
+    });
+  }
+
+  function sendGift(gift,unitPrice){
+    const indexes=selectedRecipientIndexes();
+    if(!indexes.length){toast('Selecciona a quién enviar el regalo.');return}
+    const recipients=indexes.length;
+    const totalGifts=recipients*state.giftQuantity;
+    const totalCoins=totalGifts*unitPrice;
+    if(totalCoins>state.giftBalance){toast(`Saldo insuficiente: necesitas ${formatCoins(totalCoins)} monedas.`);return}
     const target=recipientLabel();
-    if(target==='Selecciona una persona'){
-      toast('Selecciona a quién enviar el regalo.');
-      return;
-    }
-    addChat(`Tú enviaste ${gift} a ${target}.`,'gift');
-    toast(`${gift} enviado a ${target}.`);
+    const question=`¿Seguro que quieres enviar ${state.giftQuantity} ${gift} a cada una de ${recipients} persona${recipients===1?'':'s'}?
+
+Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} monedas.`;
+    if(!confirm(question))return;
+    state.giftBalance-=totalCoins;
+    indexes.forEach(index=>state.giftTotals.set(index,(state.giftTotals.get(index)||0)+state.giftQuantity));
+    updateGiftBadges();
+    updateBalance();
+    addChat(`Tú enviaste ${state.giftQuantity} ${gift} a ${target}. Total: ${totalGifts} regalos.`,'gift');
+    toast(`${totalGifts} regalos enviados correctamente.`);
     closeSheets();
   }
 
@@ -618,17 +696,19 @@
     setTimeout(()=>$('chatInput').scrollIntoView({block:'nearest',behavior:'smooth'}),120);
   });
 
-  document.querySelectorAll('[data-gift]').forEach(btn=>btn.addEventListener('click',()=>sendGift(btn.dataset.gift)));
+  document.querySelectorAll('.jr-quantity').forEach(btn=>btn.addEventListener('click',()=>{
+    state.giftQuantity=Number(btn.dataset.quantity);
+    updateGiftPanel();
+  }));
 
-  $('luckyGift').addEventListener('click',()=>{
-    const target=recipientLabel();
-    addChat(`🍀 Caja de Afortunados abierta para ${target}.`,'gift');
-    toast(`Afortunados enviado a ${target}.`);
-    closeSheets();
-  });
+  document.querySelectorAll('[data-gift]:not(#luckyGift)').forEach(btn=>btn.addEventListener('click',()=>sendGift(btn.dataset.gift,Number(btn.dataset.price)||0)));
+
+  $('luckyGift').addEventListener('click',()=>sendGift($('luckyGift').dataset.gift,Number($('luckyGift').dataset.price)||0));
 
   $('rechargeButton').addEventListener('click',()=>{
-    toast('Recarga abierta sin cerrar la sala.');
+    state.giftBalance+=10000;
+    updateBalance();
+    toast('Recarga de prueba: +10.000 monedas. La sala sigue visible.');
   });
 
   document.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>{
