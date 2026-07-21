@@ -9,7 +9,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>JEMMO LIVE · SALAS</title>
+  <title>JEMMO LIVE · SALAS PRUEBA 04</title>
   <style>
     :root{
       --bg:#070009;--panel:#15031e;--panel2:#22042d;--purple:#a928ff;--purple2:#6e168f;
@@ -48,7 +48,11 @@
     .jr-fields{display:grid;gap:10px}.jr-field{display:grid;gap:6px}.jr-field span{font-size:12px;color:#e0d2e4;font-weight:800}
     .jr-field input,.jr-field textarea,.jr-field select{width:100%;border:1px solid #63307a;border-radius:14px;background:#0e0113;color:#fff;padding:12px 13px;outline:none}.jr-field textarea{min-height:70px;resize:none}.jr-field input:focus,.jr-field textarea:focus,.jr-field select:focus{border-color:var(--gold);box-shadow:0 0 0 3px #ffd34e22}
     .jr-private{display:flex;align-items:center;justify-content:space-between;gap:12px}.jr-switch{width:54px;height:30px;border-radius:99px;background:#2a0a34;border:1px solid #6b2386;padding:3px}.jr-switch i{display:block;width:22px;height:22px;border-radius:50%;background:#9b86a2;transition:.2s}.jr-switch.on{background:#8a23b5}.jr-switch.on i{transform:translateX(24px);background:var(--gold)}
-    .jr-start{width:100%;min-height:56px;margin-top:15px;border-radius:18px;background:linear-gradient(90deg,var(--gold),var(--orange),#d22cff);color:#210318;font-weight:1000;letter-spacing:.02em;box-shadow:0 12px 30px #9c26d044}
+    .jr-validity{margin-top:14px;padding:12px 13px;border:1px solid #5e2674;border-radius:18px;background:#0d0113cc;display:grid;gap:7px}
+    .jr-validity strong{font-size:13px}.jr-validity-row{display:flex;align-items:center;gap:8px;color:#cbbbd0;font-size:12px}.jr-validity-row i{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:#42132a;color:#ff9aae;font-style:normal;font-size:11px;font-weight:1000}.jr-validity-row.ok{color:#dfffe8}.jr-validity-row.ok i{background:#137238;color:#fff}
+    .jr-start{width:100%;min-height:56px;margin-top:15px;border-radius:18px;background:#2a2030;color:#8e8294;font-weight:1000;letter-spacing:.02em;box-shadow:none;transition:.2s}
+    .jr-start.ready{background:linear-gradient(90deg,#18b95a,#37dc78);color:#051a0c;box-shadow:0 12px 30px #19be5a44}
+    .jr-start:disabled{cursor:not-allowed}
     .jr-note{margin:9px 0 0;color:#c7b4cc;font-size:11px;text-align:center}
 
     .jr-nav{position:fixed;z-index:30;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,520px);height:82px;padding:7px 10px calc(7px + var(--safe-bottom));display:grid;grid-template-columns:repeat(5,1fr);background:linear-gradient(180deg,#100016ef,#08000bfd);border-top:1px solid #4f1762;box-shadow:0 -14px 30px #0009}
@@ -64,10 +68,15 @@
     .jr-live-chip{padding:8px 10px;border-radius:99px;background:#8e1749;color:#ffb3ce;font-size:11px;font-weight:950;white-space:nowrap}
     .jr-close{width:48px;height:48px;border-radius:18px;background:#8e1630;border:1px solid #ff6c8c;color:#fff;font-size:31px;line-height:1}
 
-    .jr-stage{min-height:0;display:grid;grid-template-rows:minmax(0,1fr) auto;overflow:hidden}
-    .jr-seats-wrap{min-height:0;padding:10px 14px 6px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .jr-stage{position:relative;min-height:0;overflow:hidden}
+    .jr-seats-wrap{height:100%;min-height:0;padding:10px 14px clamp(118px,18svh,154px);display:flex;align-items:center;justify-content:center;overflow:hidden}
     .jr-seats{width:100%;height:100%;display:grid;align-content:center;justify-content:center;gap:var(--seat-gap,10px);grid-template-columns:repeat(var(--cols),minmax(0,var(--seat-w)));grid-auto-rows:var(--seat-h)}
-    .jr-seat{position:relative;width:100%;height:100%;min-width:0;padding:4px 3px;border:1.5px solid #8f27b9;background:radial-gradient(circle at 50% 25%,#5a1b71,#24032e 66%);box-shadow:inset 0 0 18px #b83cff22,0 0 12px #9227ba22;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:visible}
+    .jr-seat{isolation:isolate;position:relative;width:100%;height:100%;min-width:0;padding:4px 3px;border:1.5px solid #8f27b9;background:radial-gradient(circle at 50% 25%,#5a1b71,#24032e 66%);box-shadow:inset 0 0 18px #b83cff22,0 0 12px #9227ba22;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+    .jr-seat::before{content:"";position:absolute;z-index:-1;inset:10%;background:url('jemmo-fish-nav.webp') center/72% auto no-repeat;opacity:.16;filter:saturate(1.15) drop-shadow(0 0 8px #d14cff55);transform:rotate(-8deg)}
+    .jr-seat>*{position:relative;z-index:1}
+    .jr-seat-video{position:absolute;z-index:0;inset:0;width:100%;height:100%;object-fit:cover;background:#08000b}
+    .jr-seat.camera .jr-seat-video+.jr-seat-overlay{position:absolute;z-index:1;inset:auto 4px 4px;display:flex;justify-content:space-between;align-items:end;gap:4px}
+    .jr-camera-error{position:absolute;z-index:2;inset:8px;display:grid;place-items:center;text-align:center;padding:8px;border-radius:14px;background:#16051dcc;color:#ffe1ea;font-size:10px;font-weight:900}
     .jr-seat.audio{border-radius:50%}.jr-seat.camera{border-radius:21%}
     .jr-seat.host{border-color:var(--gold);box-shadow:inset 0 0 20px #ffd34e1d,0 0 16px #ffd34e66}.jr-seat.hot{border-color:#ff9b45;box-shadow:0 0 18px #ff9b4566}
     .jr-seat-avatar{width:var(--avatar);height:var(--avatar);border-radius:50%;display:grid;place-items:center;background:#300039;color:#d36bff;font-size:calc(var(--avatar)*.45);font-weight:900;overflow:hidden;flex:0 0 auto}.jr-seat-avatar img{width:100%;height:100%;object-fit:cover}
@@ -76,12 +85,15 @@
     .jr-room[data-count="4"]{--cols:2;--seat-w:min(36vw,158px);--seat-h:min(36vw,158px);--seat-gap:12px;--avatar:54px;--seat-font:15px;--seat-small:11px}
     .jr-room[data-count="8"]{--cols:4;--seat-w:min(21vw,102px);--seat-h:min(24vw,112px);--seat-gap:9px;--avatar:38px;--seat-font:11px;--seat-small:8px}
     .jr-room[data-count="12"]{--cols:4;--seat-w:min(21vw,102px);--seat-h:min(21vw,100px);--seat-gap:8px;--avatar:34px;--seat-font:10px;--seat-small:8px}
-    .jr-room[data-count="15"]{--cols:5;--seat-w:min(17.2vw,83px);--seat-h:min(20vw,96px);--seat-gap:7px;--avatar:30px;--seat-font:9px;--seat-small:7px}
+    .jr-room[data-count="15"]{--cols:12;--seat-w:auto;--seat-h:auto;--seat-gap:7px;--avatar:34px;--seat-font:10px;--seat-small:8px}
+    .jr-room[data-count="15"] .jr-seats{grid-template-columns:repeat(12,minmax(0,1fr));grid-template-rows:repeat(4,minmax(66px,1fr));align-content:stretch}
+    .jr-room[data-count="15"] .jr-seat{grid-column:span 3}
+    .jr-room[data-count="15"] .jr-seat:nth-child(-n+3){grid-column:span 4}
     .jr-room[data-count="25"]{--cols:5;--seat-w:min(16.8vw,81px);--seat-h:min(16.7vw,80px);--seat-gap:5px;--avatar:24px;--seat-font:8px;--seat-small:6.5px}
     .jr-room[data-count="25"] .jr-number{min-width:20px;height:20px;font-size:8px}.jr-room[data-count="25"] .jr-mic{font-size:9px}.jr-room[data-count="25"] .jr-status-dot{width:9px;height:9px}
 
-    .jr-chat{position:relative;z-index:4;height:clamp(98px,16svh,142px);padding:4px 16px 7px;overflow:auto;mask-image:linear-gradient(to bottom,transparent,#000 22%,#000)}
-    .jr-chat-line{width:max-content;max-width:92%;margin-top:6px;padding:8px 11px;border-radius:13px;background:#0d0114dc;color:#fff;font-size:12px;line-height:1.25;box-shadow:0 5px 14px #0004}.jr-chat-line.system{border:1px solid #7a5b20;color:#ffe49b}.jr-chat-line.gift{border:1px solid #806323;color:#ffe9a6}
+    .jr-chat{position:absolute;z-index:4;left:0;right:0;bottom:0;height:clamp(118px,18svh,154px);padding:18px 16px 8px;overflow:auto;pointer-events:auto;mask-image:linear-gradient(to bottom,transparent,#000 18%,#000)}
+    .jr-chat-line{width:max-content;max-width:92%;margin-top:5px;padding:7px 10px;border-radius:13px;background:#0d0114d9;color:#fff;font-size:13px;line-height:1.22;box-shadow:0 5px 14px #0004}.jr-chat-line.system{border:1px solid #7a5b20;color:#ffe49b}.jr-chat-line.gift{border:1px solid #806323;color:#ffe9a6}
 
     .jr-controls{position:relative;z-index:8;padding:8px 12px calc(10px + var(--safe-bottom));display:grid;grid-template-columns:54px minmax(0,1fr) 58px;gap:8px;align-items:center;background:linear-gradient(180deg,#0a000ddd,#09000ffc 35%);border-top:1px solid #4a155b;box-shadow:0 -12px 28px #0008}
     .jr-control-btn{height:54px;border-radius:17px;background:#17031f;border:1px solid #643078;display:grid;place-items:center;font-size:23px}.jr-control-btn.settings{grid-column:1}.jr-control-btn.gifts{grid-column:3;border-color:#a97d27;box-shadow:0 0 13px #ffd34e22}
@@ -92,6 +104,11 @@
     .jr-sheet{position:fixed;z-index:91;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,520px);max-height:78svh;overflow:auto;padding:16px 16px calc(18px + var(--safe-bottom));border:1px solid #773091;border-radius:25px 25px 0 0;background:linear-gradient(180deg,#25052f,#09000d);box-shadow:0 -20px 60px #000}
     .jr-sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}.jr-sheet-head strong{font-size:20px}.jr-sheet-close{width:40px;height:40px;border-radius:13px;background:#3a0d45;border:0;color:#fff;font-size:24px}
     .jr-setting{width:100%;min-height:54px;margin-top:8px;padding:10px 12px;border-radius:16px;background:#16021d;border:1px solid #5e2274;color:#fff;display:flex;align-items:center;gap:10px;text-align:left}.jr-setting span{font-size:22px}.jr-setting b{flex:1}.jr-setting small{display:block;color:#c8b8cd;font-weight:500;margin-top:2px}.jr-setting.danger{border-color:#9b3046}
+    .jr-wallet-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;padding:11px 12px;border:1px solid #73531f;border-radius:16px;background:linear-gradient(90deg,#241306,#1a0822)}
+    .jr-wallet-row b{display:block}.jr-wallet-row small{color:#d9c69c}.jr-recharge{min-height:40px;padding:0 15px;border-radius:13px;background:linear-gradient(135deg,#ffd34e,#ff9a3d);color:#251006;font-weight:1000}
+    .jr-recipient-title{display:flex;align-items:center;justify-content:space-between;margin:8px 0;font-size:12px;color:#d8c8dd}.jr-recipient-title b{color:#fff}
+    .jr-recipients{display:flex;gap:8px;overflow-x:auto;padding:2px 1px 12px;scrollbar-width:none}.jr-recipients::-webkit-scrollbar{display:none}
+    .jr-recipient{flex:0 0 68px;min-height:76px;padding:7px 5px;border-radius:16px;background:#17031f;border:1px solid #603075;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center}.jr-recipient img,.jr-recipient span{width:38px;height:38px;border-radius:50%;object-fit:cover;display:grid;place-items:center;background:#31043d}.jr-recipient b{max-width:60px;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.jr-recipient.active{border-color:var(--gold);background:#332009;box-shadow:0 0 14px #ffd34e44}.jr-recipient.all span{font-size:12px;font-weight:1000;background:#8d25b4}
     .jr-gifts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.jr-gift{min-height:82px;border-radius:17px;background:#180320;border:1px solid #67307a;color:#fff;display:grid;place-items:center;padding:8px;text-align:center}.jr-gift span{font-size:28px}.jr-gift b{font-size:11px}.jr-gift.lucky{grid-column:1/-1;min-height:64px;border-color:#ac842a;background:linear-gradient(90deg,#291506,#24102c);display:flex;gap:10px;justify-content:center}.jr-gift.lucky span{font-size:24px}
     .jr-toast{position:fixed;z-index:120;left:50%;bottom:90px;transform:translate(-50%,20px);width:min(calc(100% - 32px),430px);padding:12px 14px;border-radius:14px;background:#25052d;border:1px solid #c23cff;color:#fff;text-align:center;font-size:13px;opacity:0;pointer-events:none;transition:.2s}.jr-toast.show{opacity:1;transform:translate(-50%,0)}
 
@@ -101,7 +118,7 @@
       .jr-seats-wrap{padding-left:9px;padding-right:9px}.jr-controls{grid-template-columns:50px minmax(0,1fr) 54px;padding-left:8px;padding-right:8px;gap:6px}
     }
     @media(max-height:690px){
-      .jr-room-head{padding-top:calc(7px + var(--safe-top));padding-bottom:6px}.jr-room-avatar{width:48px;height:48px}.jr-close{width:43px;height:43px}.jr-chat{height:86px}.jr-controls{padding-top:6px;padding-bottom:calc(7px + var(--safe-bottom))}.jr-control-btn,.jr-compose{height:50px}
+      .jr-room-head{padding-top:calc(7px + var(--safe-top));padding-bottom:6px}.jr-room-avatar{width:48px;height:48px}.jr-close{width:43px;height:43px}.jr-chat{height:112px}.jr-seats-wrap{padding-bottom:112px}.jr-controls{padding-top:6px;padding-bottom:calc(7px + var(--safe-bottom))}.jr-control-btn,.jr-compose{height:50px}
       .jr-room[data-count="4"]{--seat-w:min(31vw,132px);--seat-h:min(31vw,132px)}
     }
   </style>
@@ -143,14 +160,21 @@
     </section>
 
     <section class="jr-section jr-fields">
-      <label class="jr-field"><span>Título obligatorio</span><input id="roomTitle" maxlength="60" value="Sala de Jesús" placeholder="Escribe el título"></label>
-      <label class="jr-field"><span>Descripción obligatoria</span><textarea id="roomDescription" maxlength="180" placeholder="Explica de qué trata la sala">Conversación y comunidad JEMMO LIVE.</textarea></label>
+      <label class="jr-field"><span>Título obligatorio</span><input id="roomTitle" maxlength="60" placeholder="Escribe el título de tu sala"></label>
+      <label class="jr-field"><span>Descripción obligatoria</span><textarea id="roomDescription" maxlength="180" placeholder="Explica de qué trata la sala"></textarea></label>
       <label class="jr-field"><span>Idioma principal</span><select id="roomLanguage"><option>Español</option><option>Inglés</option><option>Portugués</option><option>Francés</option><option>Árabe</option></select></label>
       <div class="jr-private"><div><b>Sala privada</b><div style="color:var(--muted);font-size:11px">Solicita contraseña para entrar</div></div><button class="jr-btn jr-switch" id="privateSwitch" type="button" aria-pressed="false"><i></i></button></div>
       <label class="jr-field jr-hidden" id="passwordField"><span>Contraseña</span><input id="roomPassword" maxlength="20" placeholder="Crea una contraseña"></label>
     </section>
 
-    <button class="jr-btn jr-start" id="startRoom" type="button">ENTRAR EN LA SALA DE PRUEBA</button>
+    <div class="jr-validity" id="validityBox">
+      <strong>Requisitos para transmitir</strong>
+      <div class="jr-validity-row" id="validCover"><i>×</i><span>Foto de portada</span></div>
+      <div class="jr-validity-row" id="validTitle"><i>×</i><span>Título de la sala</span></div>
+      <div class="jr-validity-row" id="validDescription"><i>×</i><span>Descripción</span></div>
+      <div class="jr-validity-row jr-hidden" id="validPassword"><i>×</i><span>Contraseña privada</span></div>
+    </div>
+    <button class="jr-btn jr-start" id="startRoom" type="button" disabled>COMPLETA LOS DATOS PARA TRANSMITIR</button>
     <p class="jr-note">La plaza VIP 25 queda habilitada durante las pruebas.</p>
   </section>
 
@@ -179,7 +203,7 @@
 
     <footer class="jr-controls">
       <button class="jr-btn jr-control-btn settings" id="settingsButton" type="button" aria-label="Ajustes">⚙️</button>
-      <form class="jr-compose" id="chatForm"><input id="chatInput" maxlength="160" autocomplete="off" placeholder="Escribe un mensaje…" aria-label="Mensaje"><button class="jr-send" type="submit" aria-label="Enviar">➤</button></form>
+      <form class="jr-compose" id="chatForm"><input id="chatInput" maxlength="160" autocomplete="off" placeholder="Escribe un mensaje…" aria-label="Mensaje"><button class="jr-send" id="chatSend" type="submit" aria-label="Enviar">➤</button></form>
       <button class="jr-btn jr-control-btn gifts" id="giftsButton" type="button" aria-label="Regalos">🎁</button>
     </footer>
   </section>
@@ -198,6 +222,12 @@
 
 <section class="jr-sheet jr-hidden" id="giftsSheet" aria-label="Regalos">
   <header class="jr-sheet-head"><strong>Regalos</strong><button class="jr-sheet-close" data-close type="button">×</button></header>
+  <div class="jr-wallet-row">
+    <div><b>Saldo: 0 monedas</b><small>Recarga sin salir de la sala</small></div>
+    <button class="jr-btn jr-recharge" id="rechargeButton" type="button">RECARGAR</button>
+  </div>
+  <div class="jr-recipient-title"><b>Enviar a</b><span id="recipientSummary">Todas las personas</span></div>
+  <div class="jr-recipients" id="giftRecipients"></div>
   <div class="jr-gifts-grid">
     <button class="jr-gift" data-gift="🌹 Rosa" type="button"><span>🌹</span><b>Rosa</b></button>
     <button class="jr-gift" data-gift="🚀 Cohete" type="button"><span>🚀</span><b>Cohete</b></button>
@@ -211,53 +241,421 @@
 (()=>{
   'use strict';
   const $=id=>document.getElementById(id);
-  const state={mode:'audio',count:4,private:false,cover:null};
-  const storageKey='jemmo_v1_salas_prueba_03';
+  const storageKey='jemmo_v1_salas_prueba_04';
+  const previousStorageKey='jemmo_v1_salas_prueba_03';
+  const state={
+    mode:'audio',
+    count:4,
+    private:false,
+    cover:null,
+    stream:null,
+    selectedRecipients:new Set(['all']),
+    occupants:new Map()
+  };
   let toastTimer=0;
-  function toast(message){const el=$('toast');el.textContent=message;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2300)}
-  function save(){try{localStorage.setItem(storageKey,JSON.stringify({mode:state.mode,count:state.count,private:state.private,cover:state.cover,title:$('roomTitle').value,description:$('roomDescription').value,language:$('roomLanguage').value,password:$('roomPassword').value}))}catch(e){console.warn('No se pudo guardar la configuración local.',e)}}
-  function restore(){try{const data=JSON.parse(localStorage.getItem(storageKey)||'null');if(!data)return;state.mode=data.mode==='camera'?'camera':'audio';state.count=[4,8,12,15,25].includes(Number(data.count))?Number(data.count):4;if(state.mode==='camera'&&state.count===25)state.count=15;state.private=!!data.private;state.cover=data.cover||null;$('roomTitle').value=data.title||'Sala de Jesús';$('roomDescription').value=data.description||'Conversación y comunidad JEMMO LIVE.';$('roomLanguage').value=data.language||'Español';$('roomPassword').value=data.password||'';if(state.cover){$('coverPreview').src=state.cover;$('roomAvatar').src=state.cover}}catch(e){console.warn(e)}}
+  let roomOpen=false;
+
+  function toast(message){
+    const el=$('toast');
+    el.textContent=message;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>el.classList.remove('show'),2500);
+  }
+
+  function configPayload(){
+    return {
+      mode:state.mode,
+      count:state.count,
+      private:state.private,
+      cover:state.cover,
+      title:$('roomTitle').value,
+      description:$('roomDescription').value,
+      language:$('roomLanguage').value,
+      password:$('roomPassword').value
+    };
+  }
+
+  function save(){
+    try{localStorage.setItem(storageKey,JSON.stringify(configPayload()))}
+    catch(e){console.warn('No se pudo guardar la configuración local.',e)}
+  }
+
+  function restore(){
+    try{
+      const raw=localStorage.getItem(storageKey)||localStorage.getItem(previousStorageKey);
+      const data=JSON.parse(raw||'null');
+      if(!data)return;
+      state.mode=data.mode==='camera'?'camera':'audio';
+      state.count=[4,8,12,15,25].includes(Number(data.count))?Number(data.count):4;
+      if(state.mode==='camera'&&state.count===25)state.count=15;
+      state.private=!!data.private;
+      state.cover=data.cover||null;
+      $('roomTitle').value=data.title||'';
+      $('roomDescription').value=data.description||'';
+      $('roomLanguage').value=data.language||'Español';
+      $('roomPassword').value=data.password||'';
+      if(state.cover){
+        $('coverPreview').src=state.cover;
+        $('roomAvatar').src=state.cover;
+      }
+    }catch(e){console.warn('No se pudo recuperar la configuración.',e)}
+  }
+
+  function setValidity(id,ok){
+    const row=$(id);
+    row.classList.toggle('ok',ok);
+    row.querySelector('i').textContent=ok?'✓':'×';
+  }
+
+  function validation(){
+    const coverOk=!!state.cover;
+    const titleOk=$('roomTitle').value.trim().length>=3;
+    const descriptionOk=$('roomDescription').value.trim().length>=5;
+    const passwordOk=!state.private||$('roomPassword').value.trim().length>=4;
+    setValidity('validCover',coverOk);
+    setValidity('validTitle',titleOk);
+    setValidity('validDescription',descriptionOk);
+    $('validPassword').classList.toggle('jr-hidden',!state.private);
+    setValidity('validPassword',passwordOk);
+    const ready=coverOk&&titleOk&&descriptionOk&&passwordOk;
+    $('startRoom').disabled=!ready;
+    $('startRoom').classList.toggle('ready',ready);
+    $('startRoom').textContent=ready?'YA PUEDES TRANSMITIR':'COMPLETA LOS DATOS PARA TRANSMITIR';
+    return ready;
+  }
+
   function renderPreparation(){
     document.querySelectorAll('.jr-mode').forEach(btn=>btn.classList.toggle('active',btn.dataset.mode===state.mode));
-    document.querySelectorAll('.jr-cap').forEach(btn=>{const n=Number(btn.dataset.count);btn.hidden=state.mode==='camera'&&n===25;btn.classList.toggle('active',n===state.count)});
-    $('privateSwitch').classList.toggle('on',state.private);$('privateSwitch').setAttribute('aria-pressed',String(state.private));$('passwordField').classList.toggle('jr-hidden',!state.private);
+    document.querySelectorAll('.jr-cap').forEach(btn=>{
+      const n=Number(btn.dataset.count);
+      btn.hidden=state.mode==='camera'&&n===25;
+      btn.classList.toggle('active',n===state.count);
+    });
+    $('privateSwitch').classList.toggle('on',state.private);
+    $('privateSwitch').setAttribute('aria-pressed',String(state.private));
+    $('passwordField').classList.toggle('jr-hidden',!state.private);
+    validation();
   }
-  function layoutFor(count){return count===4?2:count===8||count===12?4:5}
+
+  function layoutFor(count){
+    if(count===4)return 2;
+    if(count===8||count===12)return 4;
+    if(count===15)return 12;
+    return 5;
+  }
+
+  function defaultOccupants(){
+    state.occupants.clear();
+    state.occupants.set(1,{name:'Anfitrión',role:'En sala',photo:state.cover||'jemmo-fish-nav.webp',host:true});
+  }
+
+  function occupantFor(index){return state.occupants.get(index)||null}
+
+  function seatMarkup(index,person){
+    if(state.mode==='camera'&&index===1){
+      return `<video class="jr-seat-video" id="hostCameraVideo" autoplay muted playsinline></video>
+        <div class="jr-seat-overlay"><b>${person.name}</b><small>${person.role}</small></div>
+        <span class="jr-mic">🎥</span><span class="jr-number">${index}</span>`;
+    }
+    if(person){
+      return `<span class="jr-seat-avatar"><img src="${person.photo}" alt=""></span>
+        <b>${person.name}</b><small>${person.role}</small>
+        <span class="jr-mic">${person.host?'🎙':'🔊'}</span><span class="jr-number">${index}</span>`;
+    }
+    return `<span class="jr-seat-avatar">+</span><b>Silla libre</b><small>Toca para subir</small><span class="jr-mic">＋</span><span class="jr-number">${index}</span>`;
+  }
+
   function renderSeats(){
-    const grid=$('seatsGrid');grid.innerHTML='';$('roomView').dataset.count=String(state.count);$('roomView').dataset.mode=state.mode;grid.style.setProperty('--cols',layoutFor(state.count));
+    const grid=$('seatsGrid');
+    grid.innerHTML='';
+    $('roomView').dataset.count=String(state.count);
+    $('roomView').dataset.mode=state.mode;
+    grid.style.setProperty('--cols',layoutFor(state.count));
     for(let i=1;i<=state.count;i++){
-      const seat=document.createElement('button');seat.type='button';seat.className=`jr-btn jr-seat ${state.mode} ${i===1?'host':''} ${i===2?'hot':''}`;seat.dataset.seat=String(i);
-      const avatar=i===1?`<span class="jr-seat-avatar"><img src="${state.cover||'jemmo-fish-nav.webp'}" alt=""></span>`:`<span class="jr-seat-avatar">+</span>`;
-      seat.innerHTML=`${avatar}<b>${i===1?'Anfitrión':'Silla libre'}</b><small>${i===1?'En sala':'Toca para subir'}</small><span class="jr-mic">${i===1?'🎙':'＋'}</span><span class="jr-number">${i}</span>${i===2?'<i class="jr-status-dot"></i>':''}`;
-      seat.addEventListener('click',()=>toast(i===1?'Esta es la silla del anfitrión.':`Solicitud para subir a la silla ${i}.`));grid.append(seat);
+      const person=occupantFor(i);
+      const seat=document.createElement('button');
+      seat.type='button';
+      seat.className=`jr-btn jr-seat ${state.mode} ${i===1?'host':''} ${person&&!person.host?'hot':''}`;
+      seat.dataset.seat=String(i);
+      seat.innerHTML=seatMarkup(i,person);
+      seat.addEventListener('click',()=>{
+        if(i===1){toast('Esta es la silla del anfitrión.');return}
+        if(state.occupants.has(i)){
+          state.occupants.delete(i);
+          toast(`La persona de la silla ${i} bajó en esta prueba.`);
+        }else{
+          state.occupants.set(i,{name:`Invitado ${i}`,role:'En silla',photo:'jemmo-fish-nav.webp',host:false});
+          toast(`Invitado ${i} subió a la silla.`);
+        }
+        renderSeats();
+        renderGiftRecipients();
+        if(state.mode==='camera')startCamera();
+      });
+      grid.append(seat);
     }
   }
-  function enterRoom(){
-    const title=$('roomTitle').value.trim(),description=$('roomDescription').value.trim();
-    if(!title){toast('Falta el título obligatorio.');$('roomTitle').focus();return}
-    if(description.length<5){toast('La descripción debe tener al menos 5 caracteres.');$('roomDescription').focus();return}
-    if(state.private&&!$('roomPassword').value.trim()){toast('Crea la contraseña de la sala privada.');$('roomPassword').focus();return}
-    save();$('roomModeLabel').textContent=state.mode==='audio'?'AUDIO ROOM':'SALA CON CÁMARA';$('roomTitleLabel').textContent=title;$('roomCapacityLabel').textContent=`${state.count}${state.count===25?' VIP':''} plazas`;
-    renderSeats();$('prepareView').classList.add('jr-hidden');$('prepareNav').classList.add('jr-hidden');$('roomView').classList.remove('jr-hidden');document.body.style.overflow='hidden';
-  }
-  function leaveRoom(){if(confirm('¿Quieres salir de esta sala?')){$('roomView').classList.add('jr-hidden');$('prepareView').classList.remove('jr-hidden');$('prepareNav').classList.remove('jr-hidden');document.body.style.overflow='';closeSheets()}}
-  function openSheet(id){$('backdrop').classList.remove('jr-hidden');$(id).classList.remove('jr-hidden')}
-  function closeSheets(){$('backdrop').classList.add('jr-hidden');$('settingsSheet').classList.add('jr-hidden');$('giftsSheet').classList.add('jr-hidden')}
-  function addChat(text,kind='') {const line=document.createElement('div');line.className=`jr-chat-line ${kind}`;line.textContent=text;$('chatMessages').append(line);$('chatMessages').scrollTop=$('chatMessages').scrollHeight}
 
-  restore();renderPreparation();
-  document.querySelectorAll('.jr-mode').forEach(btn=>btn.addEventListener('click',()=>{state.mode=btn.dataset.mode;if(state.mode==='camera'&&state.count===25)state.count=15;renderPreparation();save()}));
-  document.querySelectorAll('.jr-cap').forEach(btn=>btn.addEventListener('click',()=>{state.count=Number(btn.dataset.count);renderPreparation();save()}));
-  $('privateSwitch').addEventListener('click',()=>{state.private=!state.private;renderPreparation();save()});
+  function cameraError(message){
+    const seat=document.querySelector('.jr-seat[data-seat="1"]');
+    if(!seat)return;
+    let box=seat.querySelector('.jr-camera-error');
+    if(!box){
+      box=document.createElement('div');
+      box.className='jr-camera-error';
+      seat.append(box);
+    }
+    box.textContent=message;
+  }
+
+  async function startCamera(){
+    stopCamera();
+    if(state.mode!=='camera'||!roomOpen)return;
+    if(!navigator.mediaDevices?.getUserMedia){
+      cameraError('Este móvil o navegador no permite activar la cámara.');
+      toast('Cámara no compatible en este dispositivo.');
+      return;
+    }
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({
+        video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},
+        audio:true
+      });
+      state.stream=stream;
+      const video=$('hostCameraVideo');
+      if(video){
+        video.srcObject=stream;
+        await video.play().catch(()=>{});
+      }
+    }catch(error){
+      console.warn('Error de cámara:',error);
+      const denied=error?.name==='NotAllowedError'||error?.name==='SecurityError';
+      const unavailable=error?.name==='NotFoundError'||error?.name==='OverconstrainedError';
+      cameraError(denied?'Permiso de cámara rechazado. Actívalo en los ajustes del móvil.':unavailable?'No se encontró una cámara compatible.':'No se pudo iniciar la cámara. Revisa la conexión o vuelve a intentarlo.');
+      toast(denied?'Debes permitir cámara y micrófono.':'No se pudo activar la cámara.');
+    }
+  }
+
+  function stopCamera(){
+    if(state.stream){
+      state.stream.getTracks().forEach(track=>track.stop());
+      state.stream=null;
+    }
+    const video=$('hostCameraVideo');
+    if(video)video.srcObject=null;
+  }
+
+  function enterRoom(){
+    if(!validation()){
+      toast('Completa portada, título y descripción.');
+      return;
+    }
+    const title=$('roomTitle').value.trim();
+    save();
+    $('roomModeLabel').textContent=state.mode==='audio'?'AUDIO ROOM':'SALA CON CÁMARA';
+    $('roomTitleLabel').textContent=title;
+    $('roomCapacityLabel').textContent=`${state.count}${state.count===25?' VIP':''} plazas`;
+    defaultOccupants();
+    renderSeats();
+    renderGiftRecipients();
+    $('prepareView').classList.add('jr-hidden');
+    $('prepareNav').classList.add('jr-hidden');
+    $('roomView').classList.remove('jr-hidden');
+    document.body.style.overflow='hidden';
+    roomOpen=true;
+    history.pushState({jemmoRoom:true},'');
+    if(state.mode==='camera')startCamera();
+  }
+
+  function leaveRoom(confirmExit=true){
+    if(confirmExit&&!confirm('¿Quieres salir de esta sala?'))return;
+    stopCamera();
+    roomOpen=false;
+    $('roomView').classList.add('jr-hidden');
+    $('prepareView').classList.remove('jr-hidden');
+    $('prepareNav').classList.remove('jr-hidden');
+    document.body.style.overflow='';
+    closeSheets();
+  }
+
+  function openSheet(id){
+    $('backdrop').classList.remove('jr-hidden');
+    $(id).classList.remove('jr-hidden');
+    if(id==='giftsSheet')renderGiftRecipients();
+  }
+
+  function closeSheets(){
+    $('backdrop').classList.add('jr-hidden');
+    $('settingsSheet').classList.add('jr-hidden');
+    $('giftsSheet').classList.add('jr-hidden');
+  }
+
+  function addChat(text,kind=''){
+    const line=document.createElement('div');
+    line.className=`jr-chat-line ${kind}`;
+    line.textContent=text;
+    $('chatMessages').append(line);
+    while($('chatMessages').children.length>12)$('chatMessages').removeChild($('chatMessages').children[1]);
+    $('chatMessages').scrollTop=$('chatMessages').scrollHeight;
+  }
+
+  function recipientLabel(){
+    if(state.selectedRecipients.has('all'))return'Todas las personas';
+    const names=[...state.selectedRecipients].map(Number).map(index=>occupantFor(index)?.name).filter(Boolean);
+    return names.length?names.join(', '):'Selecciona una persona';
+  }
+
+  function renderGiftRecipients(){
+    const container=$('giftRecipients');
+    container.innerHTML='';
+    const occupied=[...state.occupants.entries()];
+    const all=document.createElement('button');
+    all.type='button';
+    all.className=`jr-btn jr-recipient all ${state.selectedRecipients.has('all')?'active':''}`;
+    all.innerHTML='<span>ALL</span><b>Todas</b>';
+    all.addEventListener('click',()=>{
+      state.selectedRecipients.clear();
+      state.selectedRecipients.add('all');
+      renderGiftRecipients();
+    });
+    container.append(all);
+
+    occupied.forEach(([index,person])=>{
+      const btn=document.createElement('button');
+      btn.type='button';
+      btn.className=`jr-btn jr-recipient ${state.selectedRecipients.has(index)?'active':''}`;
+      btn.innerHTML=`<img src="${person.photo}" alt=""><b>${person.name}</b>`;
+      btn.addEventListener('click',()=>{
+        state.selectedRecipients.delete('all');
+        if(state.selectedRecipients.has(index))state.selectedRecipients.delete(index);
+        else state.selectedRecipients.add(index);
+        if(state.selectedRecipients.size===0)state.selectedRecipients.add('all');
+        renderGiftRecipients();
+      });
+      container.append(btn);
+    });
+    $('recipientSummary').textContent=recipientLabel();
+  }
+
+  function sendGift(gift){
+    const target=recipientLabel();
+    if(target==='Selecciona una persona'){
+      toast('Selecciona a quién enviar el regalo.');
+      return;
+    }
+    addChat(`Tú enviaste ${gift} a ${target}.`,'gift');
+    toast(`${gift} enviado a ${target}.`);
+    closeSheets();
+  }
+
+  restore();
+  renderPreparation();
+
+  document.querySelectorAll('.jr-mode').forEach(btn=>btn.addEventListener('click',()=>{
+    state.mode=btn.dataset.mode;
+    if(state.mode==='camera'&&state.count===25)state.count=15;
+    renderPreparation();
+    save();
+  }));
+
+  document.querySelectorAll('.jr-cap').forEach(btn=>btn.addEventListener('click',()=>{
+    state.count=Number(btn.dataset.count);
+    renderPreparation();
+    save();
+  }));
+
+  $('privateSwitch').addEventListener('click',()=>{
+    state.private=!state.private;
+    renderPreparation();
+    save();
+  });
+
   $('coverButton').addEventListener('click',()=>$('coverInput').click());
-  $('coverInput').addEventListener('change',event=>{const file=event.target.files?.[0];if(!file)return;if(!file.type.startsWith('image/')){toast('El archivo debe ser una imagen.');return}const reader=new FileReader();reader.onload=()=>{state.cover=String(reader.result);$('coverPreview').src=state.cover;$('roomAvatar').src=state.cover;save()};reader.readAsDataURL(file)});
-  ['roomTitle','roomDescription','roomLanguage','roomPassword'].forEach(id=>$(id).addEventListener('change',save));
-  $('startRoom').addEventListener('click',enterRoom);$('leaveRoom').addEventListener('click',leaveRoom);$('helpButton').addEventListener('click',()=>toast('Elige Audio Room o cámara, selecciona plazas y entra a probar.'));
-  $('settingsButton').addEventListener('click',()=>openSheet('settingsSheet'));$('giftsButton').addEventListener('click',()=>openSheet('giftsSheet'));$('backdrop').addEventListener('click',closeSheets);document.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',closeSheets));
-  $('chatForm').addEventListener('submit',event=>{event.preventDefault();const input=$('chatInput'),text=input.value.trim();if(!text)return;addChat(`Tú: ${text}`);input.value=''});
-  document.querySelectorAll('[data-gift]').forEach(btn=>btn.addEventListener('click',()=>{addChat(`Tú enviaste: ${btn.dataset.gift}`,'gift');toast(`${btn.dataset.gift} enviado en la prueba.`);closeSheets()}));
-  $('luckyGift').addEventListener('click',()=>{addChat('🍀 Se abrió una caja de Afortunados de prueba.','gift');toast('Caja de Afortunados abierta dentro de Regalos.');closeSheets()});
-  document.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>{const action=btn.dataset.action;if(action==='minor'){toast('Posible menor: protección activada y caso preparado para revisión.')}else if(action==='close'){closeSheets();leaveRoom()}else{toast(`${btn.querySelector('b').childNodes[0].textContent.trim()} · función de prueba.`)}}));
+
+  $('coverInput').addEventListener('change',event=>{
+    const file=event.target.files?.[0];
+    if(!file)return;
+    if(!file.type.startsWith('image/')){toast('El archivo debe ser una imagen.');return}
+    if(file.size>4*1024*1024){toast('La imagen es demasiado grande. Máximo 4 MB.');return}
+    const reader=new FileReader();
+    reader.onload=()=>{
+      state.cover=String(reader.result);
+      $('coverPreview').src=state.cover;
+      $('roomAvatar').src=state.cover;
+      save();
+      validation();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  ['roomTitle','roomDescription','roomLanguage','roomPassword'].forEach(id=>{
+    $(id).addEventListener('input',()=>{save();validation()});
+    $(id).addEventListener('change',()=>{save();validation()});
+  });
+
+  $('startRoom').addEventListener('click',enterRoom);
+  $('leaveRoom').addEventListener('click',()=>leaveRoom(true));
+  $('helpButton').addEventListener('click',()=>toast('Añade portada, título y descripción. El botón verde se activa al completar todo.'));
+  $('settingsButton').addEventListener('click',()=>openSheet('settingsSheet'));
+  $('giftsButton').addEventListener('click',()=>openSheet('giftsSheet'));
+  $('backdrop').addEventListener('click',closeSheets);
+  document.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',closeSheets));
+
+  $('chatSend').addEventListener('pointerdown',event=>event.preventDefault());
+  $('chatForm').addEventListener('submit',event=>{
+    event.preventDefault();
+    const input=$('chatInput');
+    const text=input.value.trim();
+    if(!text)return;
+    addChat(`Tú: ${text}`);
+    input.value='';
+    requestAnimationFrame(()=>{
+      try{input.focus({preventScroll:true})}catch(e){input.focus()}
+    });
+  });
+
+  $('chatInput').addEventListener('focus',()=>{
+    setTimeout(()=>$('chatInput').scrollIntoView({block:'nearest',behavior:'smooth'}),120);
+  });
+
+  document.querySelectorAll('[data-gift]').forEach(btn=>btn.addEventListener('click',()=>sendGift(btn.dataset.gift)));
+
+  $('luckyGift').addEventListener('click',()=>{
+    const target=recipientLabel();
+    addChat(`🍀 Caja de Afortunados abierta para ${target}.`,'gift');
+    toast(`Afortunados enviado a ${target}.`);
+    closeSheets();
+  });
+
+  $('rechargeButton').addEventListener('click',()=>{
+    toast('Recarga abierta sin cerrar la sala.');
+  });
+
+  document.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>{
+    const action=btn.dataset.action;
+    if(action==='minor'){
+      toast('Posible menor: protección activada y caso preparado para revisión.');
+    }else if(action==='close'){
+      closeSheets();
+      leaveRoom(true);
+    }else{
+      toast(`${btn.querySelector('b').childNodes[0].textContent.trim()} · función de prueba.`);
+    }
+  }));
+
+  window.addEventListener('popstate',()=>{
+    if(roomOpen)leaveRoom(false);
+  });
+
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden&&state.stream){
+      addChat('JEMMO: La cámara quedó en pausa mientras la aplicación está en segundo plano.','system');
+    }else if(!document.hidden&&roomOpen&&state.mode==='camera'&&!state.stream){
+      startCamera();
+    }
+  });
+
+  window.addEventListener('beforeunload',stopCamera);
 })();
 </script>
 </body>
