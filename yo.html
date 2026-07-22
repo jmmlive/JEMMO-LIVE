@@ -157,6 +157,59 @@
       .profile-banner{height:96px;margin-top:11px}.profile-banner::after{background-position:73% 52%;background-size:154px auto}
     }
 
+
+    /* =========================================================
+       JEMMO LIVE V1 · PERFIL PRUEBA 05 · BANNER PREMIUM
+       Fondo extendido, pez protagonista y laterales integrados
+       ========================================================= */
+    .profile-banner{
+      height:112px;
+      margin-top:13px;
+      isolation:isolate;
+      border:1px solid #7b2e91;
+      border-radius:19px;
+      background:
+        linear-gradient(90deg,#14021dcc 0%,#20032cb8 28%,#30043ea0 55%,#16021fd1 100%),
+        url('jemmo-fish-nav.webp') center 47%/cover no-repeat;
+      box-shadow:
+        inset 0 0 0 1px #ffffff0a,
+        inset 0 -28px 34px #06000882,
+        0 10px 24px #0007,
+        0 0 22px #bd32ff1d;
+      overflow:hidden;
+    }
+    .profile-banner::before{
+      content:""!important;
+      position:absolute;
+      z-index:1;
+      inset:0;
+      background:
+        radial-gradient(circle at 10% 25%,#f05cff8c 0 2px,transparent 3px),
+        radial-gradient(circle at 18% 70%,#ffd34e66 0 2px,transparent 3px),
+        radial-gradient(circle at 31% 35%,#bd4cff70 0 1.5px,transparent 2.5px),
+        radial-gradient(circle at 87% 20%,#ffffff5c 0 1.5px,transparent 2.5px),
+        linear-gradient(115deg,#ffffff12 0%,transparent 24%,transparent 68%,#c341ff18 100%);
+      backdrop-filter:blur(5px) saturate(1.2);
+      -webkit-backdrop-filter:blur(5px) saturate(1.2);
+      opacity:.92;
+      pointer-events:none;
+    }
+    .profile-banner::after{
+      content:"";
+      position:absolute;
+      z-index:2;
+      inset:0;
+      background:url('jemmo-fish-nav.webp') 68% 51%/190px auto no-repeat;
+      filter:drop-shadow(0 0 13px #d24cff88) drop-shadow(0 8px 14px #000a);
+      opacity:1;
+      transform:translateZ(0);
+      pointer-events:none;
+    }
+    @media(max-width:380px){
+      .profile-banner{height:102px;margin-top:11px}
+      .profile-banner::after{background-position:70% 51%;background-size:168px auto}
+    }
+
   </style>
   <script>
     document.documentElement.classList.add('jemmo-auth-pending');
@@ -255,7 +308,7 @@
       </div>
     </section>
 
-    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 04</p>
+    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 05</p>
   </main>
 
   <div class="menu-backdrop" id="menuBackdrop" hidden></div>
