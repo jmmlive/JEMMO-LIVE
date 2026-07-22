@@ -454,6 +454,32 @@
     .destello-comments-sheet{max-height:78svh}.destello-comments-list{display:grid;gap:8px;min-height:80px;margin-top:12px}.destello-comment{padding:10px;border:1px solid #482057;border-radius:13px;background:#0e0113}.destello-comment b{display:block;font-size:9px}.destello-comment p{margin:4px 0 0;color:#d8ccdC;font-size:9px;line-height:1.4;overflow-wrap:anywhere}.destello-comment small{display:block;margin-top:5px;color:#88798f;font-size:7px}.destello-comments-empty{padding:22px;border:1px dashed #50305a;border-radius:15px;color:#8f8095;text-align:center;font-size:9px}.destello-comment-form{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-top:11px}.destello-comment-form input{min-width:0;min-height:43px;padding:0 11px;border:1px solid #5d2a6e;border-radius:13px;background:#09000d;color:#fff;outline:0}.destello-comment-form input:focus{border-color:#c43bff}.destello-comment-form button{min-width:74px;border:0;border-radius:13px;background:linear-gradient(135deg,#ffd34e,#d43cff);color:#1b031f;font-size:8px;font-weight:1000}
     @media(max-width:380px){.destello-create-top{padding:0 9px!important}.destello-tab{font-size:8px}.destello-media{min-height:168px}.destello-text-only{min-height:145px;padding:19px}.destello-text-only p{font-size:15px}.destello-sheet{padding-left:11px;padding-right:11px}.destello-action{font-size:7.5px}}
 
+
+
+    /* =========================================================
+       JEMMO LIVE V1 · DESTELLOS PRUEBA 03
+       Foto/vídeo separados + caja de regalos + conversión a JEMS
+       ========================================================= */
+    .destello-compose-actions{grid-template-columns:1fr 1fr;align-items:stretch}
+    .destello-file-label{gap:5px;text-align:center}
+    .destello-file-label.video{border-color:#8a5d20;background:linear-gradient(145deg,#382406,#1b0f03);color:#ffe39a}
+    .destello-media-type{grid-column:1/-1;min-width:0;min-height:34px;border-color:#4f245f;background:#0b010f}
+    .destello-gift-sheet{max-height:86svh}
+    .destello-gift-balance{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0 10px;padding:11px 12px;border:1px solid #76581d;border-radius:14px;background:linear-gradient(145deg,#352206,#160c02);color:#d8c49a;font-size:9px}
+    .destello-gift-balance b{color:#ffd34e;font-size:16px}
+    .destello-gift-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+    .destello-gift-option{min-height:92px;padding:9px 5px;border:1px solid #572769;border-radius:16px;background:linear-gradient(155deg,#190321,#0b010f);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#fff;text-align:center}
+    .destello-gift-option .gift-icon{font-size:29px;line-height:1;filter:drop-shadow(0 0 9px #c43bff55)}
+    .destello-gift-option b{font-size:9px}.destello-gift-option small{color:#ffd873;font-size:8px;font-weight:1000}
+    .destello-gift-option.active{border-color:#ffd34e;background:radial-gradient(circle at 50% 15%,#ffd34e2c,transparent 45%),linear-gradient(155deg,#3b2607,#160d03);box-shadow:0 0 0 2px #ffd34e20,0 0 18px #ffd34e24}
+    .destello-gift-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;padding:10px 12px;border:1px solid #522461;border-radius:14px;background:#0c0110;color:#b9a9bf;font-size:9px}
+    .destello-gift-summary strong{color:#fff}.destello-gift-summary b{color:#ff89c8;font-size:13px}
+    .destello-gift-send{width:100%;min-height:48px;margin-top:10px;border:0;border-radius:14px;background:linear-gradient(90deg,#ffd34e,#d43cff);color:#1b031f;font-weight:1000}
+    .destello-gift-recharge{width:100%;min-height:43px;margin-top:8px;border:1px solid #89651e;border-radius:13px;background:#2c1c05;color:#ffe18c;font-size:9px;font-weight:1000}
+    .destello-gift-status{min-height:18px;margin:8px 2px 0;color:#ff9eae;font-size:8.5px;line-height:1.4;text-align:center}
+    .destello-gift-note{margin:5px 2px 0;color:#95879b;font-size:8px;line-height:1.4;text-align:center}
+    @media(max-width:380px){.destello-gift-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.destello-gift-option{min-height:82px}}
+
 </style>
   <script>
     document.documentElement.classList.add('jemmo-auth-pending');
@@ -563,7 +589,7 @@
       </div>
     </section>
 
-    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 15 + DESTELLOS PRUEBA 02</p>
+    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 15 + DESTELLOS PRUEBA 03</p>
   </main>
 
   <div class="menu-backdrop" id="menuBackdrop" hidden></div>
@@ -649,7 +675,8 @@
       <button class="destello-remove-media" id="removeDestelloMedia" type="button" aria-label="Quitar archivo" hidden>×</button>
     </div>
     <div class="destello-compose-actions">
-      <label class="destello-file-label">📷 ELEGIR FOTO O VÍDEO<input id="destelloMediaInput" type="file" accept="image/*,video/*"></label>
+      <label class="destello-file-label">📷 ELEGIR FOTO<input id="destelloPhotoInput" type="file" accept="image/*"></label>
+      <label class="destello-file-label video">▶ ELEGIR VÍDEO<input id="destelloVideoInput" type="file" accept="video/*"></label>
       <div class="destello-media-type" id="destelloMediaType">SIN ARCHIVO</div>
     </div>
     <label class="destello-field"><span>Texto del Destello</span><textarea id="destelloCaption" maxlength="180" placeholder="¿Qué quieres compartir?"></textarea><span class="destello-field-meta"><small>Máximo 180 caracteres</small><strong id="destelloCaptionCount">0/180</strong></span></label>
@@ -661,6 +688,19 @@
     <div class="destello-sheet-head"><div><small>CONVERSACIÓN</small><strong id="destelloCommentsTitle">Comentarios</strong></div><button class="destello-close" id="closeDestelloComments" type="button" aria-label="Cerrar">×</button></div>
     <div class="destello-comments-list" id="destelloCommentsList"></div>
     <div class="destello-comment-form"><input id="destelloCommentInput" maxlength="120" placeholder="Escribe un comentario…"><button id="sendDestelloComment" type="button">ENVIAR</button></div>
+  </section>
+
+  <div class="destello-backdrop" id="destelloGiftBackdrop" hidden></div>
+  <section class="destello-sheet destello-gift-sheet" id="destelloGiftSheet" hidden role="dialog" aria-modal="true" aria-labelledby="destelloGiftTitle">
+    <div class="destello-sheet-head"><div><small>REGALOS PARA DESTELLOS</small><strong id="destelloGiftTitle">Elige un regalo</strong></div><button class="destello-close" id="closeDestelloGift" type="button" aria-label="Cerrar">×</button></div>
+    <p class="destello-compose-copy">Cada regalo se paga con JEMMOS. El creador recibe su valor como JEMS de ganancias.</p>
+    <div class="destello-gift-balance"><span>Saldo disponible</span><span><b id="destelloGiftBalance">0</b> JEMMOS</span></div>
+    <div class="destello-gift-grid" id="destelloGiftGrid" aria-label="Regalos disponibles"></div>
+    <div class="destello-gift-summary"><span>Seleccionado: <strong id="destelloGiftSelectedName">—</strong></span><span><b id="destelloGiftSelectedValue">0</b> JEMS</span></div>
+    <button class="destello-gift-send" id="sendDestelloGift" type="button">ENVIAR REGALO</button>
+    <button class="destello-gift-recharge" id="rechargeDestelloGift" type="button" hidden>RECARGAR JEMMOS</button>
+    <p class="destello-gift-status" id="destelloGiftStatus" role="status"></p>
+    <p class="destello-gift-note">En esta prueba, 1 JEMMO enviado mediante un regalo acredita 1 JEM al creador.</p>
   </section>
 
   <div class="toast" id="yoToast" role="status" aria-live="polite"></div>
@@ -696,9 +736,11 @@
       let pendingDestelloFile=null;
       let pendingDestelloPreviewUrl='';
       let activeDestelloCommentId='';
+      let activeDestelloGiftId='';
+      let selectedDestelloGiftKey='destello';
       const viewedDestellos=new Set();
       const destelloMediaUrls=new Set();
-      const readDestellos=()=>{try{const value=JSON.parse(localStorage.getItem(destellosKey)||'[]');return Array.isArray(value)?value:[]}catch{return[]}};
+      const readDestellos=()=>{try{const value=JSON.parse(localStorage.getItem(destellosKey)||'[]');if(!Array.isArray(value))return[];return value.map(item=>({...item,jems:Math.max(0,Number(item?.jems??item?.jemmos)||0)}))}catch{return[]}};
       let destellos=readDestellos();
 
       const toast=(message,duration=2400)=>{
@@ -757,6 +799,20 @@
           return {jemmos:Math.max(0,Math.floor(Number(value.jemmos??value.coins)||0))};
         }catch{return {jemmos:0}}
       };
+
+      const giftCatalog=[
+        {key:'rosa',icon:'🌹',name:'Rosa JEMMO',value:5},
+        {key:'destello',icon:'✨',name:'Destello',value:10},
+        {key:'chicharro',icon:'🐟',name:'Chicharro',value:25},
+        {key:'corona',icon:'👑',name:'Corona',value:50},
+        {key:'cohete',icon:'🚀',name:'Cohete LIVE',value:100},
+        {key:'castillo',icon:'🏰',name:'Castillo JEMMO',value:250}
+      ];
+      const readWalletState=()=>{try{const value=JSON.parse(localStorage.getItem(walletStorageKey)||'{}');return value&&typeof value==='object'?value:{}}catch{return{}}};
+      const walletJemmos=wallet=>Math.max(0,Math.floor(Number(wallet?.jemmos??wallet?.coins)||0));
+      const walletJems=wallet=>Math.max(0,Math.floor(Number(wallet?.jems??wallet?.earnings)||0));
+      const writeWalletState=wallet=>{localStorage.setItem(walletStorageKey,JSON.stringify(wallet));window.dispatchEvent(new CustomEvent('jemmo-wallet-change',{detail:{source:'destello-gift'}}))};
+      const selectedGift=()=>giftCatalog.find(gift=>gift.key===selectedDestelloGiftKey)||giftCatalog[0];
 
 
       const openMediaDB=()=>new Promise((resolve,reject)=>{
@@ -860,33 +916,58 @@
             const visual=makeElement('div','destello-media'),kind=makeElement('span','destello-kind',destelloKindLabel(post.type)),loading=makeElement('span','destello-media-loading','Cargando Destello…');visual.append(kind,loading);const source=await resolveDestelloMedia(post);loading.remove();if(source){if(post.type==='video'){const video=makeElement('video');video.src=source;video.controls=true;video.preload='metadata';video.playsInline=true;video.addEventListener('play',()=>markDestelloViewed(post.id,viewsValue));visual.append(video)}else{const image=makeElement('img');image.src=source;image.alt=post.caption||'Foto de Destello';image.loading='lazy';image.addEventListener('click',()=>markDestelloViewed(post.id,viewsValue));visual.append(image)}}else visual.append(makeElement('span','destello-media-loading','No se pudo cargar el archivo.'));card.append(visual)
           }
           if(post.caption&&post.type!=='text'){const caption=makeElement('div','destello-caption');caption.append(makeElement('p','',post.caption));card.append(caption)}
-          const metrics=makeElement('div','destello-metrics'),viewsMetric=makeElement('span'),viewsValue=makeElement('b','',format(post.views));viewsMetric.append('👁 ',viewsValue,' visualizaciones');const giftMetric=makeElement('span','',`🎁 ${format(post.gifts)} regalos`),jemmosMetric=makeElement('span','jemmos',`🪙 ${format(post.jemmos)} JEMMOS`);metrics.append(viewsMetric,giftMetric,jemmosMetric);card.append(metrics);
+          const metrics=makeElement('div','destello-metrics'),viewsMetric=makeElement('span'),viewsValue=makeElement('b','',format(post.views));viewsMetric.append('👁 ',viewsValue,' visualizaciones');const giftMetric=makeElement('span','',`🎁 ${format(post.gifts)} regalos`),jemsMetric=makeElement('span','jemmos',`🩷 ${format(post.jems??post.jemmos)} JEMS`);metrics.append(viewsMetric,giftMetric,jemsMetric);card.append(metrics);
           const actions=makeElement('div','destello-actions');const like=makeElement('button',`destello-action${post.liked?' liked':''}`);like.type='button';like.append(makeElement('strong','',post.liked?'♥':'♡'),document.createTextNode(` ${format(post.likes)} Me gusta`));like.addEventListener('click',async()=>{const liked=!post.liked;updateDestello(post.id,{liked,likes:Math.max(0,(Number(post.likes)||0)+(liked?1:-1))});await renderDestellos()});
           const comments=makeElement('button','destello-action');comments.type='button';comments.append(makeElement('strong','','💬'),document.createTextNode(` ${Array.isArray(post.comments)?post.comments.length:0} Comentarios`));comments.addEventListener('click',()=>openDestelloComments(post.id));
-          const gifts=makeElement('button','destello-action');gifts.type='button';gifts.append(makeElement('strong','','🎁'),document.createTextNode(' Regalar'));gifts.addEventListener('click',async()=>{if(!confirm('Añadir un regalo de prueba de 10 JEMMOS a este Destello?'))return;updateDestello(post.id,{gifts:Math.max(0,Number(post.gifts)||0)+1,jemmos:Math.max(0,Number(post.jemmos)||0)+10});await renderDestellos();toast('Regalo añadido al Destello.')});actions.append(like,comments,gifts);card.append(actions);feed.append(card)
+          const gifts=makeElement('button','destello-action');gifts.type='button';gifts.append(makeElement('strong','','🎁'),document.createTextNode(' Regalar'));gifts.addEventListener('click',()=>openDestelloGift(post.id));actions.append(like,comments,gifts);card.append(actions);feed.append(card)
         }
       };
 
-      const resetDestelloComposer=()=>{pendingDestelloFile=null;if(pendingDestelloPreviewUrl){URL.revokeObjectURL(pendingDestelloPreviewUrl);pendingDestelloPreviewUrl=''}$('destelloMediaInput').value='';$('destelloCaption').value='';$('destelloCaptionCount').textContent='0/180';$('destelloMediaType').textContent='SIN ARCHIVO';const preview=$('destelloMediaPreview');preview.classList.remove('has-media');preview.querySelectorAll('img,video').forEach(element=>element.remove());$('removeDestelloMedia').hidden=true};
+      const resetDestelloComposer=()=>{pendingDestelloFile=null;if(pendingDestelloPreviewUrl){URL.revokeObjectURL(pendingDestelloPreviewUrl);pendingDestelloPreviewUrl=''}if($('destelloPhotoInput'))$('destelloPhotoInput').value='';if($('destelloVideoInput'))$('destelloVideoInput').value='';$('destelloCaption').value='';$('destelloCaptionCount').textContent='0/180';$('destelloMediaType').textContent='SIN ARCHIVO';const preview=$('destelloMediaPreview');preview.classList.remove('has-media');preview.querySelectorAll('img,video').forEach(element=>element.remove());$('removeDestelloMedia').hidden=true};
       function openDestelloComposer(){resetDestelloComposer();$('destelloBackdrop').hidden=false;$('destelloComposer').hidden=false;document.body.style.overflow='hidden'}
       const closeDestelloComposer=()=>{resetDestelloComposer();$('destelloBackdrop').hidden=true;$('destelloComposer').hidden=true;document.body.style.overflow=''};
       const renderDestelloComments=()=>{const list=$('destelloCommentsList');list.replaceChildren();const post=getDestello(activeDestelloCommentId),comments=Array.isArray(post?.comments)?post.comments:[];if(!comments.length){list.append(makeElement('div','destello-comments-empty','Todavía no hay comentarios. Sé el primero en escribir.'));return}comments.forEach(comment=>{const item=makeElement('div','destello-comment');item.append(makeElement('b','',comment.author||profile.name||'Usuario JEMMO'),makeElement('p','',comment.text||''),makeElement('small','',formatDestelloDate(comment.createdAt)));list.append(item)})};
       function openDestelloComments(id){activeDestelloCommentId=String(id);const post=getDestello(id);if(!post)return;markDestelloViewed(post.id);renderDestelloComments();$('destelloCommentsBackdrop').hidden=false;$('destelloCommentsSheet').hidden=false;document.body.style.overflow='hidden';setTimeout(()=>$('destelloCommentInput').focus(),120)}
       const closeDestelloComments=()=>{activeDestelloCommentId='';$('destelloCommentInput').value='';$('destelloCommentsBackdrop').hidden=true;$('destelloCommentsSheet').hidden=true;document.body.style.overflow='';renderDestellos()};
 
+      const renderDestelloGiftPicker=()=>{
+        const grid=$('destelloGiftGrid');if(!grid)return;grid.replaceChildren();
+        giftCatalog.forEach(gift=>{const option=makeElement('button',`destello-gift-option${gift.key===selectedDestelloGiftKey?' active':''}`);option.type='button';option.dataset.giftKey=gift.key;option.setAttribute('aria-pressed',String(gift.key===selectedDestelloGiftKey));option.append(makeElement('span','gift-icon',gift.icon),makeElement('b','',gift.name),makeElement('small','',`${format(gift.value)} JEMMOS`));option.addEventListener('click',()=>{selectedDestelloGiftKey=gift.key;renderDestelloGiftPicker()});grid.append(option)});
+        const gift=selectedGift(),wallet=readWalletState();$('destelloGiftBalance').textContent=format(walletJemmos(wallet));$('destelloGiftSelectedName').textContent=`${gift.icon} ${gift.name}`;$('destelloGiftSelectedValue').textContent=format(gift.value);$('destelloGiftStatus').textContent='';$('rechargeDestelloGift').hidden=true;
+      };
+      function openDestelloGift(id){activeDestelloGiftId=String(id);selectedDestelloGiftKey='destello';renderDestelloGiftPicker();$('destelloGiftBackdrop').hidden=false;$('destelloGiftSheet').hidden=false;document.body.style.overflow='hidden'}
+      const closeDestelloGift=()=>{activeDestelloGiftId='';$('destelloGiftBackdrop').hidden=true;$('destelloGiftSheet').hidden=true;$('destelloGiftStatus').textContent='';$('rechargeDestelloGift').hidden=true;document.body.style.overflow=''};
+      const sendSelectedDestelloGift=async()=>{
+        const post=getDestello(activeDestelloGiftId),gift=selectedGift();if(!post||!gift)return;
+        const wallet=readWalletState(),currentJemmos=walletJemmos(wallet);
+        if(currentJemmos<gift.value){$('destelloGiftStatus').textContent=`Saldo insuficiente. Te faltan ${format(gift.value-currentJemmos)} JEMMOS.`;$('rechargeDestelloGift').hidden=false;return}
+        const remaining=currentJemmos-gift.value,newJems=walletJems(wallet)+gift.value;
+        wallet.jemmos=remaining;if(Object.hasOwn(wallet,'coins'))wallet.coins=remaining;wallet.jems=newJems;wallet.earnings=newJems;wallet.updatedAt=Date.now();writeWalletState(wallet);
+        const giftHistory=Array.isArray(post.giftHistory)?[...post.giftHistory]:[];giftHistory.unshift({id:`g_${Date.now()}`,key:gift.key,name:gift.name,icon:gift.icon,value:gift.value,createdAt:Date.now()});
+        updateDestello(post.id,{gifts:Math.max(0,Number(post.gifts)||0)+1,jems:Math.max(0,Number(post.jems??post.jemmos)||0)+gift.value,giftHistory:giftHistory.slice(0,30)});
+        closeDestelloGift();render();await renderDestellos();toast(`${gift.icon} ${gift.name} enviado. El creador recibió ${format(gift.value)} JEMS.`);
+      };
+
       $('openDestelloComposer')?.addEventListener('click',openDestelloComposer);
       $('closeDestelloComposer')?.addEventListener('click',closeDestelloComposer);
       $('destelloBackdrop')?.addEventListener('click',closeDestelloComposer);
       document.querySelectorAll('[data-destello-tab]').forEach(button=>button.addEventListener('click',async()=>{activeDestelloTab=button.dataset.destelloTab||'all';await renderDestellos()}));
       $('destelloCaption')?.addEventListener('input',event=>$('destelloCaptionCount').textContent=`${event.target.value.length}/180`);
-      $('destelloMediaInput')?.addEventListener('change',event=>{const file=event.target.files?.[0];if(!file)return;const isImage=file.type.startsWith('image/'),isVideo=file.type.startsWith('video/');if(!isImage&&!isVideo){toast('Selecciona una foto o un vídeo válido.');event.target.value='';return}if(isVideo&&file.size>25*1024*1024){toast('El vídeo supera el límite de 25 MB.');event.target.value='';return}pendingDestelloFile=file;if(pendingDestelloPreviewUrl)URL.revokeObjectURL(pendingDestelloPreviewUrl);pendingDestelloPreviewUrl=URL.createObjectURL(file);const preview=$('destelloMediaPreview');preview.querySelectorAll('img,video').forEach(element=>element.remove());const media=isImage?document.createElement('img'):document.createElement('video');media.src=pendingDestelloPreviewUrl;if(isVideo){media.controls=true;media.playsInline=true;media.preload='metadata'}media.alt=isImage?'Vista previa del Destello':'';preview.append(media);preview.classList.add('has-media');$('removeDestelloMedia').hidden=false;$('destelloMediaType').textContent=isImage?'FOTO':'VÍDEO'});
-      $('removeDestelloMedia')?.addEventListener('click',()=>{pendingDestelloFile=null;if(pendingDestelloPreviewUrl){URL.revokeObjectURL(pendingDestelloPreviewUrl);pendingDestelloPreviewUrl=''}$('destelloMediaInput').value='';$('destelloMediaType').textContent='SIN ARCHIVO';const preview=$('destelloMediaPreview');preview.querySelectorAll('img,video').forEach(element=>element.remove());preview.classList.remove('has-media');$('removeDestelloMedia').hidden=true});
-      $('publishDestello')?.addEventListener('click',async()=>{const button=$('publishDestello'),caption=$('destelloCaption').value.trim();if(!caption&&!pendingDestelloFile){toast('Añade un texto, una foto o un vídeo.');return}button.disabled=true;button.textContent='PUBLICANDO…';try{const id=`d_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,type=pendingDestelloFile?(pendingDestelloFile.type.startsWith('image/')?'photo':'video'):'text',mediaKey=pendingDestelloFile?`${uid}:destello:${id}`:'';if(pendingDestelloFile){const mediaValue=type==='photo'?await prepareDestelloImage(pendingDestelloFile):pendingDestelloFile;await mediaWrite(mediaKey,mediaValue)}destellos.unshift({id,type,caption,mediaKey,createdAt:Date.now(),likes:0,liked:false,comments:[],gifts:0,jemmos:0,views:0});saveDestellos();activeDestelloTab='all';closeDestelloComposer();await renderDestellos();toast('Destello publicado y guardado.')}catch(error){console.error('JEMMO destello publish',error);toast('No se pudo guardar el Destello. Prueba con otro archivo.')}finally{button.disabled=false;button.textContent='PUBLICAR DESTELLO'}});
+      const detectDestelloFileType=file=>{const mime=String(file?.type||'').toLowerCase(),name=String(file?.name||'').toLowerCase();if(mime.startsWith('image/')||/\.(jpe?g|png|webp|gif|heic|heif)$/i.test(name))return'photo';if(mime.startsWith('video/')||/\.(mp4|mov|m4v|webm|3gp|mkv|avi)$/i.test(name))return'video';return''};
+      const selectDestelloMedia=event=>{const file=event.target.files?.[0];if(!file)return;const type=detectDestelloFileType(file),isImage=type==='photo',isVideo=type==='video';if(!type){toast('Selecciona una foto o un vídeo válido.');event.target.value='';return}if(isVideo&&file.size>80*1024*1024){toast('El vídeo supera el límite de 80 MB. Elige uno más corto.');event.target.value='';return}pendingDestelloFile=file;if(pendingDestelloPreviewUrl)URL.revokeObjectURL(pendingDestelloPreviewUrl);pendingDestelloPreviewUrl=URL.createObjectURL(file);const preview=$('destelloMediaPreview');preview.querySelectorAll('img,video').forEach(element=>element.remove());const media=isImage?document.createElement('img'):document.createElement('video');media.src=pendingDestelloPreviewUrl;if(isVideo){media.controls=true;media.playsInline=true;media.preload='metadata';media.muted=true}media.alt=isImage?'Vista previa del Destello':'';preview.append(media);preview.classList.add('has-media');$('removeDestelloMedia').hidden=false;const size=(file.size/1024/1024).toFixed(file.size>=10*1024*1024?0:1);$('destelloMediaType').textContent=`${isImage?'FOTO':'VÍDEO'} · ${size} MB`};
+      $('destelloPhotoInput')?.addEventListener('change',selectDestelloMedia);
+      $('destelloVideoInput')?.addEventListener('change',selectDestelloMedia);
+      $('removeDestelloMedia')?.addEventListener('click',()=>{pendingDestelloFile=null;if(pendingDestelloPreviewUrl){URL.revokeObjectURL(pendingDestelloPreviewUrl);pendingDestelloPreviewUrl=''}if($('destelloPhotoInput'))$('destelloPhotoInput').value='';if($('destelloVideoInput'))$('destelloVideoInput').value='';$('destelloMediaType').textContent='SIN ARCHIVO';const preview=$('destelloMediaPreview');preview.querySelectorAll('img,video').forEach(element=>element.remove());preview.classList.remove('has-media');$('removeDestelloMedia').hidden=true});
+      $('publishDestello')?.addEventListener('click',async()=>{const button=$('publishDestello'),caption=$('destelloCaption').value.trim();if(!caption&&!pendingDestelloFile){toast('Añade un texto, una foto o un vídeo.');return}button.disabled=true;button.textContent='PUBLICANDO…';try{const id=`d_${Date.now()}_${Math.random().toString(36).slice(2,7)}`,type=pendingDestelloFile?(detectDestelloFileType(pendingDestelloFile)||'video'):'text',mediaKey=pendingDestelloFile?`${uid}:destello:${id}`:'';if(pendingDestelloFile){const mediaValue=type==='photo'?await prepareDestelloImage(pendingDestelloFile):new Blob([pendingDestelloFile],{type:pendingDestelloFile.type||'video/mp4'});await mediaWrite(mediaKey,mediaValue)}destellos.unshift({id,type,caption,mediaKey,createdAt:Date.now(),likes:0,liked:false,comments:[],gifts:0,jems:0,views:0});saveDestellos();activeDestelloTab='all';closeDestelloComposer();await renderDestellos();toast(type==='video'?'Vídeo publicado y guardado.':'Destello publicado y guardado.')}catch(error){console.error('JEMMO destello publish',error);toast('No se pudo guardar el Destello. Revisa el espacio del móvil o prueba con otro archivo.')}finally{button.disabled=false;button.textContent='PUBLICAR DESTELLO'}});
       $('closeDestelloComments')?.addEventListener('click',closeDestelloComments);
       $('destelloCommentsBackdrop')?.addEventListener('click',closeDestelloComments);
       const sendDestelloComment=async()=>{const input=$('destelloCommentInput'),text=input.value.trim(),post=getDestello(activeDestelloCommentId);if(!text||!post)return;const comments=Array.isArray(post.comments)?[...post.comments]:[];comments.push({id:`c_${Date.now()}`,author:profile.name||'Usuario JEMMO',text:text.slice(0,120),createdAt:Date.now()});updateDestello(post.id,{comments});input.value='';renderDestelloComments();await renderDestellos();toast('Comentario añadido.')};
       $('sendDestelloComment')?.addEventListener('click',sendDestelloComment);
       $('destelloCommentInput')?.addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendDestelloComment()}});
+      $('closeDestelloGift')?.addEventListener('click',closeDestelloGift);
+      $('destelloGiftBackdrop')?.addEventListener('click',closeDestelloGift);
+      $('sendDestelloGift')?.addEventListener('click',sendSelectedDestelloGift);
+      $('rechargeDestelloGift')?.addEventListener('click',()=>{closeDestelloGift();if(window.JemmoWallet?.open)window.JemmoWallet.open('recharge');else toast('Abre el Monedero para recargar JEMMOS.')});
 
       $('editProfile')?.addEventListener('click',openEdit);$('editClose')?.addEventListener('click',closeEdit);$('editBackdrop')?.addEventListener('click',closeEdit);
       $('editBio')?.addEventListener('input',event=>{if(countWords(event.target.value)>15)event.target.value=limitWords(event.target.value,15);updateBioWordCount()});
