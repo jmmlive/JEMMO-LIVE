@@ -392,7 +392,7 @@
 
 
     /* =========================================================
-       JEMMO LIVE V1 · PERFIL PRUEBA 14 · MONEDERO GLOBAL 03
+       JEMMO LIVE V1 · PERFIL PRUEBA 15 · MENSAJES Y ESTADO
        Economía local de pruebas separada por usuario
        ========================================================= */
     .wallet-backdrop{position:fixed;inset:0;z-index:150;background:#040006d9;backdrop-filter:blur(6px)}
@@ -412,7 +412,30 @@
     .wallet-rate{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;border:1px solid #51305d;border-radius:13px;background:#0b010f;color:#a898ae;font-size:8px}.wallet-rate b{color:#ffe17b}
     @media(max-width:380px){.wallet-sheet{padding-left:11px;padding-right:11px}.wallet-head{margin-left:-11px;margin-right:-11px;padding-left:11px;padding-right:11px}.wallet-balances{gap:7px}.wallet-balance{padding:10px}.wallet-actions-grid{gap:6px}.wallet-shortcut{font-size:8px}.wallet-form-grid{grid-template-columns:1fr}}
 
-  </style>
+  
+
+    /* =========================================================
+       JEMMO LIVE V1 · PERFIL PRUEBA 15 · MENSAJES Y ESTADO
+       Mensajes personales, copia de ID y presencia junto al nivel
+       ========================================================= */
+    .yo-messages svg{width:21px;height:21px;fill:currentColor;display:block}
+    .id-line{display:flex;align-items:center;gap:3px;min-width:0;overflow:visible;text-overflow:clip}
+    .id-prefix{flex:0 0 auto}.id-line #profileId{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .copy-id-button{width:24px;height:24px;flex:0 0 24px!important;margin-left:2px!important;padding:0!important;border:1px solid #622775!important;border-radius:8px!important;background:#1a0322!important;color:#f2d8ff!important;display:grid!important;place-items:center!important;box-shadow:0 0 11px #c13bff22}
+    .copy-id-button svg{width:13px;height:13px;display:block;fill:currentColor}
+    .copy-id-button:active{transform:scale(.92)}
+    .profile-side{justify-content:flex-start}
+    .profile-presence{width:52px;min-height:27px;padding:4px 3px;border:1px solid #4a2850;border-radius:9px;background:#130318;color:#cdbfd2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:5.8px;line-height:1;font-weight:1000;letter-spacing:.02em;white-space:nowrap;box-shadow:0 0 10px #0005}
+    .profile-presence .presence-dot{width:7px;height:7px;border-radius:50%;background:#ef4d62;box-shadow:0 0 8px #ef4d62}
+    .profile-presence.offline{border-color:#6c2934;color:#f0b7bf}.profile-presence.offline .presence-dot{background:#ef4d62;box-shadow:0 0 8px #ef4d62}
+    .profile-presence.online{border-color:#246747;color:#bcf2d3}.profile-presence.online .presence-dot{background:#38df86;box-shadow:0 0 9px #38df86}
+    .profile-presence.live{border-color:#2776bf;color:#c7e7ff;background:#071d34}.profile-presence.live .presence-dot{background:#2e9cff;box-shadow:0 0 10px #2e9cff}
+    .profile-presence.audio{border-color:#9b6920;color:#ffe3a3;background:#291806}.profile-presence.audio .presence-dot{background:#f4a62a;box-shadow:0 0 10px #f4a62a}
+    .profile-presence:not(:disabled){cursor:pointer}.profile-presence:not(:disabled):active{transform:scale(.94)}
+    .profile-action.messages{border-color:#71318a;background:linear-gradient(160deg,#280731,#100116);color:#f5eaff}
+    .profile-action.messages svg{width:16px;height:16px;fill:currentColor;display:block}
+    @media(max-width:380px){.profile-presence{width:46px;min-height:25px;font-size:5.2px}.copy-id-button{width:22px;height:22px;flex-basis:22px!important}}
+</style>
   <script>
     document.documentElement.classList.add('jemmo-auth-pending');
     setTimeout(()=>{
@@ -427,7 +450,9 @@
     <header class="yo-topbar">
       <button class="yo-round" id="menuOpen" type="button" aria-label="Abrir menú">☰</button>
       <div class="yo-logo" aria-label="JEMMO LIVE"><span class="jemmo">JEMMO</span><span class="live">LIVE</span></div>
-      <button class="yo-round" id="shareProfile" type="button" aria-label="Compartir perfil">↗</button>
+      <button class="yo-round yo-messages" id="inboxMessages" type="button" aria-label="Abrir mensajes personales" title="Mensajes personales">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.4 4h13.2A3.4 3.4 0 0 1 22 7.4v7.2a3.4 3.4 0 0 1-3.4 3.4H10l-4.9 3.2c-.7.4-1.6-.1-1.6-.9V18A3.4 3.4 0 0 1 2 14.6V7.4A3.4 3.4 0 0 1 5.4 4Zm0 2A1.4 1.4 0 0 0 4 7.4v7.2A1.4 1.4 0 0 0 5.4 16h.1v2.5L9.4 16h9.2a1.4 1.4 0 0 0 1.4-1.4V7.4A1.4 1.4 0 0 0 18.6 6H5.4Z"/></svg>
+      </button>
     </header>
 
     <section class="profile-card" aria-label="Mi perfil">
@@ -440,12 +465,15 @@
           <div class="identity">
             <div class="identity-title"><h1 id="profileName">Usuario JEMMO</h1><span class="verified" id="verifiedBadge" title="Cuenta verificada" hidden>✓</span></div>
             <p class="username"><b id="profileUsername">@usuariojemmo</b></p>
-            <p class="id-line">ID: <span id="profileId">JEMMO-000001</span><button id="copyId" type="button">Copiar</button></p>
+            <p class="id-line"><span class="id-prefix">ID:</span> <span id="profileId">JEMMO-000001</span><button class="copy-id-button" id="copyId" type="button" aria-label="Copiar ID" title="Copiar ID"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7.2A3.2 3.2 0 0 1 11.2 4h7.6A3.2 3.2 0 0 1 22 7.2v7.6a3.2 3.2 0 0 1-3.2 3.2H17v.8a3.2 3.2 0 0 1-3.2 3.2H6.2A3.2 3.2 0 0 1 3 18.8v-7.6A3.2 3.2 0 0 1 6.2 8H8v-.8Zm3.2-1.1c-.6 0-1.1.5-1.1 1.1v7.6c0 .6.5 1.1 1.1 1.1h7.6c.6 0 1.1-.5 1.1-1.1V7.2c0-.6-.5-1.1-1.1-1.1h-7.6ZM6.2 10.1c-.6 0-1.1.5-1.1 1.1v7.6c0 .6.5 1.1 1.1 1.1h7.6c.6 0 1.1-.5 1.1-1.1V18h-3.7A3.2 3.2 0 0 1 8 14.8v-4.7H6.2Z"/></svg></button></p>
             <p class="place" id="profilePlace">📍 España</p>
             <div class="profile-extra" id="profileExtra" hidden></div>
           </div>
           <div class="profile-side">
             <div class="profile-level"><strong id="levelNumber">1</strong><span>NIVEL</span><small id="levelName">INICIAL</small></div>
+            <button class="profile-presence online" id="profilePresence" type="button" aria-label="Estado: en línea" disabled>
+              <span class="presence-dot" aria-hidden="true"></span><span id="presenceLabel">EN LÍNEA</span>
+            </button>
           </div>
         </div>
         <div class="profile-banner" id="coverButton" role="img" aria-label="Foto de portada"><img class="profile-cover-image" id="coverImage" alt="Foto de portada"></div>
@@ -460,7 +488,7 @@
 
         <div class="profile-actions">
           <button class="profile-action" id="editProfile" type="button">✎ Editar perfil</button>
-          <button class="profile-action" id="shareProfileInside" type="button">↗ Compartir</button>
+          <button class="profile-action messages" id="openMessages" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.4 4h13.2A3.4 3.4 0 0 1 22 7.4v7.2a3.4 3.4 0 0 1-3.4 3.4H10l-4.9 3.2c-.7.4-1.6-.1-1.6-.9V18A3.4 3.4 0 0 1 2 14.6V7.4A3.4 3.4 0 0 1 5.4 4Zm0 2A1.4 1.4 0 0 0 4 7.4v7.2A1.4 1.4 0 0 0 5.4 16h.1v2.5L9.4 16h9.2a1.4 1.4 0 0 0 1.4-1.4V7.4A1.4 1.4 0 0 0 18.6 6H5.4Z"/></svg><span>Mensajes</span></button>
           <button class="profile-action wallet" id="openWallet" type="button" data-open-wallet><span>🪙</span><span><strong>Monedero</strong><small><b id="coinBalance" data-jemmo-jemmos>0</b> JEMMOS</small></span></button>
         </div>
       </div>
@@ -512,7 +540,7 @@
       </div>
     </section>
 
-    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 14 · MONEDERO GLOBAL 03</p>
+    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 15 · MENSAJES Y ESTADO</p>
   </main>
 
   <div class="menu-backdrop" id="menuBackdrop" hidden></div>
@@ -654,6 +682,20 @@
       pendingCoverPosition={...coverPosition};
       const stats=readJSON(statsKey,{followers:0,following:0,friends:0,fans:0,likes:0,coins:0,liveCount:0,rooms:0,achievements:1,photos:0,fanClubLevel:1,weekLives:0,weekHours:0,weekFans:0});
       const walletStorageKey=`jemmo_wallet_v1_${uid}`;
+      const presenceStorageKey=`jemmo_presence_v1_${uid}`;
+      const presenceStates={
+        offline:{label:'FUERA',aria:'desconectado',route:''},
+        online:{label:'EN LÍNEA',aria:'en línea',route:''},
+        live:{label:'VER LIVE',aria:'en LIVE',route:'live.html'},
+        audio:{label:'AUDIO',aria:'en Audio Room',route:'salas.html'}
+      };
+      const readPresence=()=>{
+        try{
+          const saved=JSON.parse(localStorage.getItem(presenceStorageKey)||'{}');
+          const status=Object.hasOwn(presenceStates,saved.status)?saved.status:'online';
+          return {status,route:String(saved.route||presenceStates[status].route||'')};
+        }catch{return {status:'online',route:''}}
+      };
       const getWalletSnapshot=()=>{
         try{
           const value=JSON.parse(localStorage.getItem(walletStorageKey)||'{}');
@@ -715,6 +757,8 @@
         });
         extras.append(socialWrap);extras.hidden=false;
         $('profileId').textContent=profile.id||makeId();$('levelNumber').textContent=level;$('levelName').textContent=levelName(level);$('verifiedBadge').hidden=!profile.verified;
+        const presence=readPresence(),presenceConfig=presenceStates[presence.status],presenceButton=$('profilePresence');
+        presenceButton.className=`profile-presence ${presence.status}`;$('presenceLabel').textContent=presenceConfig.label;presenceButton.setAttribute('aria-label',`Estado: ${presenceConfig.aria}`);presenceButton.disabled=!presence.route;presenceButton.dataset.route=presence.route;
         $('followersCount').textContent=format(stats.followers);$('followingCount').textContent=format(stats.following);$('fansCount').textContent=format(fans);$('friendsCount').textContent=format(stats.friends);
         $('coinBalance').textContent=format(getWalletSnapshot().jemmos);$('liveCount').textContent=format(stats.liveCount);$('roomsCount').textContent=format(stats.rooms);$('photoCount').textContent=format(stats.photos);
         const achievements=Math.max(1,Number(stats.achievements||1));$('achievementCount').textContent=achievements;$('achievementProgress').style.setProperty('--p',`${Math.min(100,achievements/36*100)}%`);$('fanClubLevel').textContent=Math.max(1,Number(stats.fanClubLevel||1));
@@ -747,8 +791,10 @@
       $('saveProfile')?.addEventListener('click',async()=>{const button=$('saveProfile'),name=$('editName').value.trim(),username=safeUsername($('editUsername').value),bio=limitWords($('editBio').value.trim(),15),country=$('editCountry').value.trim(),city=$('editCity').value.trim(),age=$('editAge').value.trim(),phone=$('editPhone').value.trim(),instagram=cleanSocial($('editInstagram').value),tiktok=cleanSocial($('editTiktok').value),youtube=cleanSocial($('editYoutube').value),facebook=cleanSocial($('editFacebook').value);if(name.length<2){toast('Escribe un nombre válido.');return}if(age&&(Number(age)<13||Number(age)>120)){toast('Revisa la edad indicada.');return}if(countWords(bio)>15){toast('La frase puede tener un máximo de 15 palabras.');return}button.disabled=true;button.textContent='GUARDANDO…';try{await Promise.all([mediaWrite(avatarMediaKey,pendingAvatar),mediaWrite(coverMediaKey,pendingCover)]);avatarData=pendingAvatar;coverData=pendingCover;coverPosition=normalizeCoverPosition(pendingCoverPosition);profile={...profile,name,username,bio:bio||defaultProfile.bio,country:country||'Sin país',city,age,phone,instagram,tiktok,youtube,facebook,avatar:avatarData?'indexeddb':'',cover:coverData?'indexeddb':'',coverPosition,id:profile.id||makeId(),updatedAt:Date.now()};localStorage.removeItem(KEY);localStorage.setItem(KEY,JSON.stringify(profile));render();closeEdit();toast('Datos personales y fotos guardados correctamente.')}catch(error){console.error('JEMMO profile save',error);toast('No se pudo guardar. Vuelve a intentarlo.')}finally{button.disabled=false;button.textContent='GUARDAR CAMBIOS'}});
 
       $('copyId')?.addEventListener('click',async()=>{const text=$('profileId').textContent;try{await navigator.clipboard.writeText(text);toast('ID copiado.')}catch{toast(`Tu ID es ${text}`)}});
-      const share=async()=>{const text=`${profile.name} · @${safeUsername(profile.username||profile.name)} · ${profile.id} en JEMMO LIVE`;try{if(navigator.share)await navigator.share({title:'Mi perfil JEMMO LIVE',text});else{await navigator.clipboard.writeText(text);toast('Datos del perfil copiados.')}}catch{}};
-      $('shareProfile')?.addEventListener('click',share);$('shareProfileInside')?.addEventListener('click',share);
+      const openPersonalMessages=()=>{location.href='mensajes.html?seccion=personales'};
+      $('inboxMessages')?.addEventListener('click',openPersonalMessages);
+      $('openMessages')?.addEventListener('click',openPersonalMessages);
+      $('profilePresence')?.addEventListener('click',event=>{const route=event.currentTarget.dataset.route;if(route)location.href=route});
 
 
       const openGlobalWallet=event=>{
@@ -758,7 +804,7 @@
       };
       $('openWallet')?.addEventListener('click',openGlobalWallet,true);
       window.addEventListener('jemmo-wallet-change',render);
-      window.addEventListener('storage',event=>{if(event.key===walletStorageKey)render()});
+      window.addEventListener('storage',event=>{if(event.key===walletStorageKey||event.key===presenceStorageKey)render()});
 
       document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>toast(`${button.dataset.action}: preparado para conectarse en una fase posterior.`)));
       document.querySelectorAll('[data-route]').forEach(button=>button.addEventListener('click',()=>{location.href=button.dataset.route}));
