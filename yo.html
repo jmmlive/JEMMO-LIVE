@@ -355,7 +355,7 @@
 
 
     /* =========================================================
-       JEMMO LIVE V1 · PERFIL PRUEBA 11 · NIVEL RECOLOCADO
+       JEMMO LIVE V1 · PERFIL PRUEBA 12 · NIVEL RECOLOCADO
        Acceso de edición únicamente desde el botón inferior; nivel alineado arriba
        ========================================================= */
     .profile-top{grid-template-columns:88px minmax(0,1fr) 52px;align-items:start}
@@ -389,6 +389,28 @@
       .profile-side{min-width:46px;gap:0}
       .profile-level{width:44px;min-height:53px}.field-grid,.social-grid{grid-template-columns:1fr}
     }
+
+
+    /* =========================================================
+       JEMMO LIVE V1 · PERFIL PRUEBA 12 · MONEDERO FUNCIONAL
+       Economía local de pruebas separada por usuario
+       ========================================================= */
+    .wallet-backdrop{position:fixed;inset:0;z-index:150;background:#040006d9;backdrop-filter:blur(6px)}
+    .wallet-sheet{position:fixed;z-index:151;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,520px);height:min(94svh,820px);padding:14px 14px calc(18px + env(safe-area-inset-bottom,0px));border:1px solid #7a2c92;border-radius:26px 26px 0 0;background:radial-gradient(circle at 75% 0,#4e0862 0,#1b0325 28%,#09000d 72%);box-shadow:0 -24px 70px #000;overflow:auto;overscroll-behavior:contain}
+    .wallet-head{position:sticky;top:-14px;z-index:3;display:flex;align-items:center;gap:10px;margin:-14px -14px 12px;padding:calc(14px + env(safe-area-inset-top,0px)) 14px 12px;background:linear-gradient(180deg,#24052ff8,#17021ff2);border-bottom:1px solid #5d2170;backdrop-filter:blur(16px)}
+    .wallet-head-copy{min-width:0;flex:1}.wallet-head-copy small{display:block;color:var(--gold);font-size:8px;font-weight:1000;letter-spacing:.14em}.wallet-head-copy strong{display:block;margin-top:2px;font-size:21px}.wallet-head-copy span{display:block;margin-top:2px;color:#bdafc2;font-size:9px}
+    .wallet-close{width:39px;height:39px;flex:0 0 39px;border:1px solid #74328a;border-radius:13px;background:#25062e;color:#fff;font-size:24px}
+    .wallet-test-chip{display:inline-flex;align-items:center;gap:5px;margin-bottom:10px;padding:6px 9px;border:1px solid #9a7024;border-radius:999px;background:#2a1806;color:#ffe292;font-size:8px;font-weight:1000}
+    .wallet-balances{display:grid;grid-template-columns:1fr 1fr;gap:8px}.wallet-balance{min-height:88px;padding:12px;border:1px solid #653078;border-radius:18px;background:linear-gradient(150deg,#260731,#100116);box-shadow:inset 0 0 24px #bb35ff12}.wallet-balance.coins{border-color:#8d6b22;background:linear-gradient(150deg,#3c2808,#171006)}.wallet-balance.earnings{grid-column:1/-1;min-height:76px;background:linear-gradient(150deg,#103125,#08150f);border-color:#276b4d}.wallet-balance small{display:flex;align-items:center;gap:5px;color:#c9bacd;font-size:8px;font-weight:900;letter-spacing:.05em}.wallet-balance b{display:block;margin-top:7px;font-size:25px;line-height:1}.wallet-balance.coins b{color:#ffd34e}.wallet-balance.diamonds b{color:#df7bff}.wallet-balance.earnings b{color:#62e6a1}.wallet-balance em{display:block;margin-top:6px;color:#9f91a5;font-size:8px;font-style:normal}
+    .wallet-tabs{display:flex;gap:7px;margin:12px -2px 10px;padding:2px;overflow-x:auto;scrollbar-width:none}.wallet-tabs::-webkit-scrollbar{display:none}.wallet-tab{flex:0 0 auto;min-height:36px;padding:0 12px;border:1px solid #572769;border-radius:999px;background:#14031b;color:#bfaec6;font-size:8px;font-weight:1000}.wallet-tab.active{border-color:var(--gold);background:linear-gradient(135deg,#5c3d08,#2a1204);color:#ffe28b;box-shadow:0 0 15px #ffd34e2a}
+    .wallet-view{display:grid;gap:10px}.wallet-view[hidden]{display:none!important}.wallet-card{padding:13px;border:1px solid #542267;border-radius:18px;background:#110117d9}.wallet-card h3{margin:0;font-size:14px}.wallet-card>p{margin:5px 0 0;color:#ad9eb3;font-size:9px;line-height:1.4}
+    .wallet-actions-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.wallet-shortcut{min-height:68px;padding:8px 5px;border:1px solid #643078;border-radius:15px;background:#1b0524;color:#fff;font-size:9px;font-weight:950}.wallet-shortcut span{display:block;margin-bottom:4px;font-size:22px}.wallet-shortcut.gold{border-color:#8b6721;background:#2d1d06;color:#ffe18a}
+    .wallet-method-line{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding:10px;border:1px solid #492057;border-radius:14px;background:#0b010f}.wallet-method-line span{min-width:0}.wallet-method-line b{display:block;font-size:10px}.wallet-method-line small{display:block;margin-top:2px;color:#9f91a5;font-size:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.wallet-method-line button{min-height:32px;padding:0 10px;border:1px solid #6b2c80;border-radius:10px;background:#270730;color:#fff;font-size:8px;font-weight:950}
+    .wallet-packages{display:grid;grid-template-columns:1fr 1fr;gap:9px}.wallet-package{min-height:82px;padding:10px;border:1px solid #7b5b1e;border-radius:17px;background:radial-gradient(circle at 80% 10%,#ffcf4730,transparent 36%),linear-gradient(150deg,#3b2607,#170d03);color:#fff;text-align:left}.wallet-package strong{display:block;color:#ffd34e;font-size:18px}.wallet-package small{display:block;margin-top:5px;color:#d6c298;font-size:8px}.wallet-package span{display:inline-block;margin-top:8px;padding:4px 7px;border-radius:999px;background:#ffd34e;color:#2b1703;font-size:7px;font-weight:1000}
+    .wallet-field{display:grid;gap:6px}.wallet-field>span{color:#e6dbe9;font-size:9px;font-weight:900}.wallet-field input,.wallet-field select{width:100%;min-height:45px;border:1px solid #5c2a6d;border-radius:13px;background:#09000d;color:#fff;padding:0 12px;outline:none}.wallet-field input:focus,.wallet-field select:focus{border-color:var(--gold);box-shadow:0 0 0 3px #ffd34e1d}.wallet-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.wallet-preview{padding:11px;border:1px dashed #6c377d;border-radius:14px;background:#0b010f;color:#bfaec5;font-size:9px;line-height:1.45}.wallet-preview b{color:#ffe17c}.wallet-primary{width:100%;min-height:47px;border:0;border-radius:14px;background:linear-gradient(90deg,#ffd34e,#d63aff);color:#1c031f;font-weight:1000}.wallet-secondary{width:100%;min-height:42px;border:1px solid #673079;border-radius:13px;background:#210529;color:#fff;font-weight:900}.wallet-note{padding:10px;border:1px solid #6e5320;border-radius:13px;background:#251706;color:#dbc991;font-size:8px;line-height:1.45}
+    .wallet-history{display:grid;gap:8px}.wallet-empty{padding:24px 12px;border:1px dashed #50305a;border-radius:16px;color:#8f8095;text-align:center;font-size:9px}.wallet-movement{display:grid;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;gap:9px;padding:10px;border:1px solid #482057;border-radius:14px;background:#0d0112}.wallet-movement-icon{width:36px;height:36px;border-radius:12px;background:#2b0736;display:grid;place-items:center;font-size:18px}.wallet-movement-copy{min-width:0}.wallet-movement-copy b{display:block;font-size:9.5px}.wallet-movement-copy small{display:block;margin-top:3px;color:#94869a;font-size:7.5px;line-height:1.3}.wallet-movement-amount{text-align:right;font-size:9px;font-weight:1000;white-space:nowrap}.wallet-movement-amount.positive{color:#62e6a1}.wallet-movement-amount.negative{color:#ff8fa4}.wallet-movement-amount.neutral{color:#ffe17b}
+    .wallet-rate{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;border:1px solid #51305d;border-radius:13px;background:#0b010f;color:#a898ae;font-size:8px}.wallet-rate b{color:#ffe17b}
+    @media(max-width:380px){.wallet-sheet{padding-left:11px;padding-right:11px}.wallet-head{margin-left:-11px;margin-right:-11px;padding-left:11px;padding-right:11px}.wallet-balances{gap:7px}.wallet-balance{padding:10px}.wallet-actions-grid{gap:6px}.wallet-shortcut{font-size:8px}.wallet-form-grid{grid-template-columns:1fr}}
 
   </style>
   <script>
@@ -439,7 +461,7 @@
         <div class="profile-actions">
           <button class="profile-action" id="editProfile" type="button">✎ Editar perfil</button>
           <button class="profile-action" id="shareProfileInside" type="button">↗ Compartir</button>
-          <button class="profile-action wallet" type="button" data-action="Monedero"><span>🪙</span><span><strong>Monedero</strong><small><b id="coinBalance">0</b> monedas</small></span></button>
+          <button class="profile-action wallet" id="openWallet" type="button"><span>🪙</span><span><strong>Monedero</strong><small><b id="coinBalance">0</b> monedas</small></span></button>
         </div>
       </div>
     </section>
@@ -565,6 +587,80 @@
     <button class="save" id="saveProfile" type="button">GUARDAR CAMBIOS</button>
   </section>
 
+
+
+  <div class="wallet-backdrop" id="walletBackdrop" hidden></div>
+  <section class="wallet-sheet" id="walletSheet" hidden aria-modal="true" role="dialog" aria-labelledby="walletTitle">
+    <div class="wallet-head">
+      <div class="wallet-head-copy"><small>ECONOMÍA JEMMO</small><strong id="walletTitle">Mi monedero</strong><span>Monedas, diamantes, ganancias y movimientos</span></div>
+      <button class="wallet-close" id="walletClose" type="button" aria-label="Cerrar monedero">×</button>
+    </div>
+    <div class="wallet-test-chip">⚠ MODO DE PRUEBAS · SIN COBROS REALES</div>
+    <div class="wallet-balances">
+      <article class="wallet-balance coins"><small>🪙 MONEDAS JEMMO</small><b id="walletCoins">0</b><em>Para regalos y funciones premium</em></article>
+      <article class="wallet-balance diamonds"><small>💎 DIAMANTES</small><b id="walletDiamonds">0</b><em>Recompensas recibidas en JEMMO</em></article>
+      <article class="wallet-balance earnings"><small>💶 GANANCIAS DISPONIBLES</small><b id="walletEarnings">0,00 €</b><em>Saldo disponible para solicitar retirada</em></article>
+    </div>
+    <div class="wallet-tabs" role="tablist" aria-label="Secciones del monedero">
+      <button class="wallet-tab active" type="button" data-wallet-tab="summary">RESUMEN</button>
+      <button class="wallet-tab" type="button" data-wallet-tab="recharge">RECARGAR</button>
+      <button class="wallet-tab" type="button" data-wallet-tab="exchange">CAMBIAR</button>
+      <button class="wallet-tab" type="button" data-wallet-tab="withdraw">RETIRAR</button>
+      <button class="wallet-tab" type="button" data-wallet-tab="history">HISTORIAL</button>
+    </div>
+
+    <div class="wallet-view" data-wallet-view="summary">
+      <article class="wallet-card"><h3>Todo el manejo en un solo lugar</h3><p>Recarga monedas, cambia saldos, guarda un método de cobro y revisa cada movimiento.</p>
+        <div class="wallet-actions-grid">
+          <button class="wallet-shortcut gold" type="button" data-wallet-go="recharge"><span>🪙</span>Recargar</button>
+          <button class="wallet-shortcut" type="button" data-wallet-go="exchange"><span>⇄</span>Cambiar</button>
+          <button class="wallet-shortcut" type="button" data-wallet-go="withdraw"><span>↗</span>Retirar</button>
+        </div>
+      </article>
+      <article class="wallet-card"><h3>Método de cobro</h3><p>En pruebas solo se guarda un alias o referencia. No introduzcas datos bancarios reales.</p><div class="wallet-method-line"><span><b id="walletMethodName">Sin configurar</b><small id="walletMethodAlias">Añádelo desde Retirar</small></span><button type="button" data-wallet-go="withdraw">CONFIGURAR</button></div></article>
+      <article class="wallet-card"><h3>Últimos movimientos</h3><p>Los cambios quedan separados y guardados para esta cuenta.</p><div class="wallet-history" id="walletRecentHistory"></div></article>
+    </div>
+
+    <div class="wallet-view" data-wallet-view="recharge" hidden>
+      <article class="wallet-card"><h3>Recargar monedas de prueba</h3><p>Estas recargas sirven para comprobar regalos, niveles y movimientos sin realizar ningún pago.</p></article>
+      <div class="wallet-packages">
+        <button class="wallet-package" type="button" data-recharge-coins="1000"><strong>1.000</strong><small>Monedas JEMMO</small><span>AÑADIR PRUEBA</span></button>
+        <button class="wallet-package" type="button" data-recharge-coins="5000"><strong>5.000</strong><small>Monedas JEMMO</small><span>AÑADIR PRUEBA</span></button>
+        <button class="wallet-package" type="button" data-recharge-coins="10000"><strong>10.000</strong><small>Monedas JEMMO</small><span>AÑADIR PRUEBA</span></button>
+        <button class="wallet-package" type="button" data-recharge-coins="50000"><strong>50.000</strong><small>Monedas JEMMO</small><span>AÑADIR PRUEBA</span></button>
+      </div>
+      <p class="wallet-note">Cuando se conecten pagos reales, la recarga solo se acreditará después de la confirmación segura del proveedor de pago.</p>
+    </div>
+
+    <div class="wallet-view" data-wallet-view="exchange" hidden>
+      <article class="wallet-card"><h3>Cambiar saldos</h3><p>Las tasas actuales son exclusivamente de prueba y podrán ajustarse antes de publicar JEMMO LIVE.</p></article>
+      <div class="wallet-rate"><span>Monedas ↔ diamantes</span><b>10 monedas = 1 diamante</b></div>
+      <div class="wallet-rate"><span>Diamantes → ganancias</span><b>100 diamantes = 1,00 €</b></div>
+      <label class="wallet-field"><span>Tipo de cambio</span><select id="walletExchangeType"><option value="coins-diamonds">Monedas → Diamantes</option><option value="diamonds-coins">Diamantes → Monedas</option><option value="diamonds-earnings">Diamantes → Ganancias</option></select></label>
+      <label class="wallet-field"><span id="walletExchangeAmountLabel">Cantidad de monedas</span><input id="walletExchangeAmount" type="number" inputmode="numeric" min="1" step="1" placeholder="0"></label>
+      <div class="wallet-preview" id="walletExchangePreview">Escribe una cantidad para calcular el resultado.</div>
+      <button class="wallet-primary" id="walletExchangeConfirm" type="button">CONFIRMAR CAMBIO</button>
+    </div>
+
+    <div class="wallet-view" data-wallet-view="withdraw" hidden>
+      <article class="wallet-card"><h3>Solicitar retirada</h3><p>En esta fase se simula la solicitud. El saldo y el historial se actualizan de forma persistente por usuario.</p></article>
+      <div class="wallet-form-grid">
+        <label class="wallet-field"><span>Método de cobro</span><select id="walletMethodType"><option value="">Seleccionar</option><option value="PayPal">PayPal</option><option value="Transferencia">Transferencia</option><option value="USDT">USDT</option></select></label>
+        <label class="wallet-field"><span>Alias o referencia de prueba</span><input id="walletMethodInput" maxlength="60" placeholder="No uses datos reales"></label>
+      </div>
+      <button class="wallet-secondary" id="walletSaveMethod" type="button">GUARDAR MÉTODO</button>
+      <label class="wallet-field"><span>Cantidad a retirar (€)</span><input id="walletWithdrawAmount" type="number" inputmode="decimal" min="1" step="0.01" placeholder="0,00"></label>
+      <div class="wallet-preview">Disponible: <b id="walletWithdrawAvailable">0,00 €</b> · Mínimo de prueba: <b>1,00 €</b></div>
+      <button class="wallet-primary" id="walletWithdrawConfirm" type="button">SOLICITAR RETIRADA</button>
+      <p class="wallet-note">No se realizan transferencias reales desde esta prueba. En producción, las retiradas requerirán verificación, servidor seguro y revisión antifraude.</p>
+    </div>
+
+    <div class="wallet-view" data-wallet-view="history" hidden>
+      <article class="wallet-card"><h3>Historial completo</h3><p>Recargas, cambios, retiradas y ajustes registrados en esta cuenta.</p></article>
+      <div class="wallet-history" id="walletFullHistory"></div>
+    </div>
+  </section>
+
   <div class="toast" id="yoToast" role="status" aria-live="polite"></div>
 
   <nav class="bottom-nav" data-current="yo">
@@ -629,6 +725,11 @@
       coverPosition=normalizeCoverPosition(profile.coverPosition);
       pendingCoverPosition={...coverPosition};
       const stats=readJSON(statsKey,{followers:0,following:0,friends:0,fans:0,likes:0,coins:0,liveCount:0,rooms:0,achievements:1,photos:0,fanClubLevel:1,weekLives:0,weekHours:0,weekFans:0});
+      const WALLET_KEY=`jemmo_wallet_v1_${uid}`;
+      const walletDefaults={coins:Number(stats.coins)||0,diamonds:0,earnings:0,methodType:'',methodAlias:'',history:[],updatedAt:Date.now()};
+      let wallet=readJSON(WALLET_KEY,walletDefaults);
+      wallet.coins=Math.max(0,Number(wallet.coins)||0);wallet.diamonds=Math.max(0,Number(wallet.diamonds)||0);wallet.earnings=Math.max(0,Number(wallet.earnings)||0);wallet.history=Array.isArray(wallet.history)?wallet.history:[];
+
 
       const openMediaDB=()=>new Promise((resolve,reject)=>{
         if(!('indexedDB' in window)){reject(new Error('indexeddb-unavailable'));return}
@@ -684,7 +785,7 @@
         extras.append(socialWrap);extras.hidden=false;
         $('profileId').textContent=profile.id||makeId();$('levelNumber').textContent=level;$('levelName').textContent=levelName(level);$('verifiedBadge').hidden=!profile.verified;
         $('followersCount').textContent=format(stats.followers);$('followingCount').textContent=format(stats.following);$('fansCount').textContent=format(fans);$('friendsCount').textContent=format(stats.friends);
-        $('coinBalance').textContent=format(stats.coins);$('liveCount').textContent=format(stats.liveCount);$('roomsCount').textContent=format(stats.rooms);$('photoCount').textContent=format(stats.photos);
+        $('coinBalance').textContent=format(wallet.coins);$('liveCount').textContent=format(stats.liveCount);$('roomsCount').textContent=format(stats.rooms);$('photoCount').textContent=format(stats.photos);
         const achievements=Math.max(1,Number(stats.achievements||1));$('achievementCount').textContent=achievements;$('achievementProgress').style.setProperty('--p',`${Math.min(100,achievements/36*100)}%`);$('fanClubLevel').textContent=Math.max(1,Number(stats.fanClubLevel||1));
         $('profileProgress').textContent=`${completion}%`;$('activityRing').style.setProperty('--progress',`${completion}%`);$('progressMessage').textContent=completion>=100?'Perfil completo. Ya puedes centrarte en crecer.':'Completa tu perfil y empieza tu primer LIVE.';
         $('weekLives').textContent=format(stats.weekLives);$('weekHours').textContent=format(stats.weekHours);$('weekFans').textContent=`+${format(stats.weekFans)}`;
@@ -717,6 +818,37 @@
       $('copyId')?.addEventListener('click',async()=>{const text=$('profileId').textContent;try{await navigator.clipboard.writeText(text);toast('ID copiado.')}catch{toast(`Tu ID es ${text}`)}});
       const share=async()=>{const text=`${profile.name} · @${safeUsername(profile.username||profile.name)} · ${profile.id} en JEMMO LIVE`;try{if(navigator.share)await navigator.share({title:'Mi perfil JEMMO LIVE',text});else{await navigator.clipboard.writeText(text);toast('Datos del perfil copiados.')}}catch{}};
       $('shareProfile')?.addEventListener('click',share);$('shareProfileInside')?.addEventListener('click',share);
+
+
+      const walletMoney=value=>Number(value||0).toLocaleString('es-ES',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2});
+      const walletNumber=value=>Math.floor(Number(value)||0).toLocaleString('es-ES');
+      const walletIcon=type=>({recharge:'🪙',exchange:'⇄',withdraw:'↗',method:'⚙️',adjustment:'✦'}[type]||'•');
+      const walletSave=()=>{
+        wallet.coins=Math.max(0,Math.floor(Number(wallet.coins)||0));wallet.diamonds=Math.max(0,Math.floor(Number(wallet.diamonds)||0));wallet.earnings=Math.max(0,Math.round((Number(wallet.earnings)||0)*100)/100);wallet.history=(wallet.history||[]).slice(0,100);wallet.updatedAt=Date.now();
+        localStorage.setItem(WALLET_KEY,JSON.stringify(wallet));stats.coins=wallet.coins;localStorage.setItem(statsKey,JSON.stringify(stats));render();renderWallet();
+      };
+      const walletMovement=(type,title,detail,amount,tone='neutral')=>{wallet.history.unshift({id:`W-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,type,title,detail,amount,tone,createdAt:Date.now()});walletSave()};
+      const walletMovementNode=item=>{const row=document.createElement('article');row.className='wallet-movement';const date=new Date(Number(item.createdAt)||Date.now()).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}),icon=document.createElement('span'),copy=document.createElement('span'),title=document.createElement('b'),detail=document.createElement('small'),amount=document.createElement('span');icon.className='wallet-movement-icon';icon.textContent=walletIcon(item.type);copy.className='wallet-movement-copy';title.textContent=item.title||'Movimiento';detail.textContent=`${item.detail||''} · ${date}`;amount.className=`wallet-movement-amount ${item.tone||'neutral'}`;amount.textContent=item.amount||'';copy.append(title,detail);row.append(icon,copy,amount);return row};
+      const renderWalletHistory=(target,limit)=>{if(!target)return;target.replaceChildren();const list=(wallet.history||[]).slice(0,limit||100);if(!list.length){const empty=document.createElement('div');empty.className='wallet-empty';empty.textContent='Todavía no hay movimientos en este monedero.';target.append(empty);return}list.forEach(item=>target.append(walletMovementNode(item)))};
+      const renderWallet=()=>{
+        $('walletCoins').textContent=walletNumber(wallet.coins);$('walletDiamonds').textContent=walletNumber(wallet.diamonds);$('walletEarnings').textContent=walletMoney(wallet.earnings);$('walletWithdrawAvailable').textContent=walletMoney(wallet.earnings);
+        $('walletMethodName').textContent=wallet.methodType||'Sin configurar';$('walletMethodAlias').textContent=wallet.methodAlias||'Añádelo desde Retirar';$('walletMethodType').value=wallet.methodType||'';$('walletMethodInput').value=wallet.methodAlias||'';
+        renderWalletHistory($('walletRecentHistory'),3);renderWalletHistory($('walletFullHistory'),100);updateExchangePreview();
+      };
+      const showWalletTab=name=>{document.querySelectorAll('[data-wallet-tab]').forEach(button=>button.classList.toggle('active',button.dataset.walletTab===name));document.querySelectorAll('[data-wallet-view]').forEach(view=>view.hidden=view.dataset.walletView!==name);if(name==='history')renderWalletHistory($('walletFullHistory'),100);if(name==='withdraw')$('walletWithdrawAvailable').textContent=walletMoney(wallet.earnings)};
+      const openWallet=()=>{renderWallet();showWalletTab('summary');$('walletBackdrop').hidden=false;$('walletSheet').hidden=false;document.body.style.overflow='hidden'};
+      const closeWallet=()=>{$('walletBackdrop').hidden=true;$('walletSheet').hidden=true;document.body.style.overflow=''};
+      $('openWallet')?.addEventListener('click',openWallet);$('walletClose')?.addEventListener('click',closeWallet);$('walletBackdrop')?.addEventListener('click',closeWallet);
+      document.querySelectorAll('[data-wallet-tab]').forEach(button=>button.addEventListener('click',()=>showWalletTab(button.dataset.walletTab)));
+      document.querySelectorAll('[data-wallet-go]').forEach(button=>button.addEventListener('click',()=>showWalletTab(button.dataset.walletGo)));
+      document.querySelectorAll('[data-recharge-coins]').forEach(button=>button.addEventListener('click',()=>{const amount=Math.max(0,Number(button.dataset.rechargeCoins)||0);if(!amount)return;if(!confirm(`¿Añadir ${walletNumber(amount)} monedas de prueba a esta cuenta?`))return;wallet.coins+=amount;walletMovement('recharge','Recarga de prueba','Monedas JEMMO acreditadas para comprobar la aplicación',`+${walletNumber(amount)} monedas`,'positive');toast('Recarga de prueba añadida.')}));
+      const exchangeCalculation=()=>{const type=$('walletExchangeType').value,requested=Math.floor(Number($('walletExchangeAmount').value)||0);if(requested<=0)return{valid:false,message:'Escribe una cantidad para calcular el resultado.'};if(type==='coins-diamonds'){const output=Math.floor(requested/10),used=output*10;if(output<1)return{valid:false,message:'Se necesitan al menos 10 monedas.'};return{valid:wallet.coins>=used,input:used,output,type,message:`Recibirás <b>${walletNumber(output)} diamantes</b> usando ${walletNumber(used)} monedas.${wallet.coins<used?' Saldo insuficiente.':''}`}}if(type==='diamonds-coins'){return{valid:wallet.diamonds>=requested,input:requested,output:requested*10,type,message:`Recibirás <b>${walletNumber(requested*10)} monedas</b> usando ${walletNumber(requested)} diamantes.${wallet.diamonds<requested?' Saldo insuficiente.':''}`}}const euros=Math.floor(requested/100);if(euros<1)return{valid:false,message:'Se necesitan al menos 100 diamantes.'};const used=euros*100;return{valid:wallet.diamonds>=used,input:used,output:euros,type,message:`Añadirás <b>${walletMoney(euros)}</b> a ganancias usando ${walletNumber(used)} diamantes.${wallet.diamonds<used?' Saldo insuficiente.':''}`}};
+      function updateExchangePreview(){const type=$('walletExchangeType')?.value;if(!$('walletExchangePreview'))return;$('walletExchangeAmountLabel').textContent=type==='coins-diamonds'?'Cantidad de monedas':'Cantidad de diamantes';const result=exchangeCalculation();$('walletExchangePreview').innerHTML=result.message;$('walletExchangeConfirm').disabled=!result.valid}
+      $('walletExchangeType')?.addEventListener('change',updateExchangePreview);$('walletExchangeAmount')?.addEventListener('input',updateExchangePreview);
+      $('walletExchangeConfirm')?.addEventListener('click',()=>{const result=exchangeCalculation();if(!result.valid){toast('Revisa la cantidad o el saldo disponible.');return}if(result.type==='coins-diamonds'){wallet.coins-=result.input;wallet.diamonds+=result.output;walletMovement('exchange','Cambio a diamantes',`${walletNumber(result.input)} monedas → ${walletNumber(result.output)} diamantes`,`+${walletNumber(result.output)} diamantes`,'positive')}else if(result.type==='diamonds-coins'){wallet.diamonds-=result.input;wallet.coins+=result.output;walletMovement('exchange','Cambio a monedas',`${walletNumber(result.input)} diamantes → ${walletNumber(result.output)} monedas`,`+${walletNumber(result.output)} monedas`,'positive')}else{wallet.diamonds-=result.input;wallet.earnings+=result.output;walletMovement('exchange','Diamantes convertidos',`${walletNumber(result.input)} diamantes → ${walletMoney(result.output)}`,`+${walletMoney(result.output)}`,'positive')}$('walletExchangeAmount').value='';updateExchangePreview();toast('Cambio realizado en modo de pruebas.');});
+      $('walletSaveMethod')?.addEventListener('click',()=>{const type=$('walletMethodType').value,alias=$('walletMethodInput').value.trim();if(!type||alias.length<2){toast('Selecciona un método y escribe un alias de prueba.');return}wallet.methodType=type;wallet.methodAlias=alias.slice(0,60);walletMovement('method','Método de cobro actualizado',`${type} · ${wallet.methodAlias}`,'Guardado','neutral');toast('Método guardado para esta cuenta.');});
+      $('walletWithdrawConfirm')?.addEventListener('click',()=>{const amount=Math.round((Number($('walletWithdrawAmount').value)||0)*100)/100;if(!wallet.methodType||!wallet.methodAlias){toast('Primero guarda un método de cobro.');return}if(amount<1){toast('El mínimo de prueba es 1,00 €.');return}if(amount>wallet.earnings){toast('No tienes ganancias suficientes.');return}if(!confirm(`¿Solicitar una retirada de prueba de ${walletMoney(amount)}?`))return;wallet.earnings-=amount;walletMovement('withdraw','Retirada solicitada',`${wallet.methodType} · Estado: pendiente`, `-${walletMoney(amount)}`,'negative');$('walletWithdrawAmount').value='';toast('Solicitud de prueba registrada.');});
+      window.addEventListener('keydown',event=>{if(event.key==='Escape'&&!$('walletSheet').hidden)closeWallet()});
 
       document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>toast(`${button.dataset.action}: preparado para conectarse en una fase posterior.`)));
       document.querySelectorAll('[data-route]').forEach(button=>button.addEventListener('click',()=>{location.href=button.dataset.route}));
