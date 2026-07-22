@@ -212,7 +212,7 @@
 
 
     /* =========================================================
-       JEMMO LIVE V1 · PERFIL PRUEBA 06 · PORTADA EDITABLE
+       JEMMO LIVE V1 · PERFIL PRUEBA 07 · IMÁGENES EN INDEXEDDB
        Portada personal por usuario, sin pez fijo ni iconos permanentes
        ========================================================= */
     .profile-banner{
@@ -402,7 +402,7 @@
       </div>
     </section>
 
-    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 06</p>
+    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 07</p>
   </main>
 
   <div class="menu-backdrop" id="menuBackdrop" hidden></div>
@@ -474,6 +474,12 @@
       const uid=localStorage.getItem('jemmo_active_uid')||'local-user';
       const KEY=`jemmo_profile_v1_${uid}`;
       const statsKey=`jemmo_profile_stats_v1_${uid}`;
+      const MEDIA_DB='jemmo-profile-media-v1';
+      const MEDIA_STORE='media';
+      const avatarMediaKey=`${uid}:avatar`;
+      const coverMediaKey=`${uid}:cover`;
+      let avatarData='';
+      let coverData='';
       let pendingAvatar='';
       let pendingCover='';
 
@@ -487,6 +493,25 @@
       const readJSON=(key,fallback)=>{try{return {...fallback,...JSON.parse(localStorage.getItem(key)||'{}')}}catch{return {...fallback}}};
       let profile=readJSON(KEY,defaultProfile);
       const stats=readJSON(statsKey,{followers:0,following:0,friends:0,fans:0,likes:0,coins:0,liveCount:0,rooms:0,achievements:1,photos:0,fanClubLevel:1,weekLives:0,weekHours:0,weekFans:0});
+
+      const openMediaDB=()=>new Promise((resolve,reject)=>{
+        if(!('indexedDB' in window)){reject(new Error('indexeddb-unavailable'));return}
+        const request=indexedDB.open(MEDIA_DB,1);
+        request.onupgradeneeded=()=>{const db=request.result;if(!db.objectStoreNames.contains(MEDIA_STORE))db.createObjectStore(MEDIA_STORE)};
+        request.onsuccess=()=>resolve(request.result);
+        request.onerror=()=>reject(request.error||new Error('indexeddb-open-error'));
+      });
+      const mediaRead=async key=>{
+        const db=await openMediaDB();
+        try{return await new Promise((resolve,reject)=>{const tx=db.transaction(MEDIA_STORE,'readonly');const request=tx.objectStore(MEDIA_STORE).get(key);request.onsuccess=()=>resolve(request.result||'');request.onerror=()=>reject(request.error||new Error('indexeddb-read-error'))})}
+        finally{db.close()}
+      };
+      const mediaWrite=async(key,value)=>{
+        const db=await openMediaDB();
+        try{await new Promise((resolve,reject)=>{const tx=db.transaction(MEDIA_STORE,'readwrite');const store=tx.objectStore(MEDIA_STORE);value?store.put(value,key):store.delete(key);tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error||new Error('indexeddb-write-error'));tx.onabort=()=>reject(tx.error||new Error('indexeddb-abort'))})}
+        finally{db.close()}
+      };
+      const isImageData=value=>typeof value==='string'&&value.startsWith('data:image/');
 
       const setAvatar=data=>{
         const img=$('avatarImage'),button=$('avatarButton'),editImg=$('editAvatarImage'),editPreview=$('editAvatarPreview');
@@ -502,7 +527,7 @@
       const format=n=>Number(n||0).toLocaleString('es-ES',{notation:Number(n||0)>=10000?'compact':'standard',maximumFractionDigits:1});
       const profileCompletion=()=>{
         let score=20;if(profile.name&&profile.name!==defaultProfile.name)score+=15;if(profile.username&&profile.username!=='usuariojemmo')score+=10;
-        if(profile.bio&&profile.bio!==defaultProfile.bio)score+=15;if(profile.country)score+=10;if(profile.city)score+=5;if(profile.avatar)score+=15;if(profile.cover)score+=10;return Math.min(100,score);
+        if(profile.bio&&profile.bio!==defaultProfile.bio)score+=15;if(profile.country)score+=10;if(profile.city)score+=5;if(avatarData)score+=15;if(coverData)score+=10;return Math.min(100,score);
       };
       const render=()=>{
         const level=Math.max(1,Number(profile.level)||1);const fans=Number(stats.fans??stats.likes??0);const completion=profileCompletion();
@@ -515,19 +540,19 @@
         $('profileProgress').textContent=`${completion}%`;$('activityRing').style.setProperty('--progress',`${completion}%`);$('progressMessage').textContent=completion>=100?'Perfil completo. Ya puedes centrarte en crecer.':'Completa tu perfil y empieza tu primer LIVE.';
         $('weekLives').textContent=format(stats.weekLives);$('weekHours').textContent=format(stats.weekHours);$('weekFans').textContent=`+${format(stats.weekFans)}`;
         const house=localStorage.getItem('jemmo_house_name')||'';if(house){$('houseName').textContent=house;$('houseText').textContent='Tu comunidad oficial dentro de JEMMO LIVE.'}
-        setAvatar(profile.avatar||'');setCover(profile.cover||'');
+        setAvatar(avatarData);setCover(coverData);
       };
 
-      const openEdit=()=>{pendingAvatar=profile.avatar||'';pendingCover=profile.cover||'';$('editName').value=profile.name||'';$('editUsername').value=profile.username||safeUsername(profile.name);$('editBio').value=profile.bio||'';$('editCountry').value=profile.country||'';$('editCity').value=profile.city||'';setAvatar(pendingAvatar);setCover(pendingCover);$('editBackdrop').hidden=false;$('editSheet').hidden=false;document.body.style.overflow='hidden'};
-      const closeEdit=()=>{$('editBackdrop').hidden=true;$('editSheet').hidden=true;document.body.style.overflow='';setAvatar(profile.avatar||'');setCover(profile.cover||'')};
-      const compressImage=file=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=reject;reader.onload=()=>{const image=new Image();image.onerror=reject;image.onload=()=>{const side=Math.min(image.naturalWidth,image.naturalHeight),sx=(image.naturalWidth-side)/2,sy=(image.naturalHeight-side)/2,canvas=document.createElement('canvas');canvas.width=canvas.height=360;const context=canvas.getContext('2d',{alpha:false});context.drawImage(image,sx,sy,side,side,0,0,360,360);resolve(canvas.toDataURL('image/webp',.82))};image.src=reader.result};reader.readAsDataURL(file)});
-      const compressCover=file=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=reject;reader.onload=()=>{const image=new Image();image.onerror=reject;image.onload=()=>{const targetRatio=10/3,sourceRatio=image.naturalWidth/image.naturalHeight;let sx=0,sy=0,sw=image.naturalWidth,sh=image.naturalHeight;if(sourceRatio>targetRatio){sw=image.naturalHeight*targetRatio;sx=(image.naturalWidth-sw)/2}else{sh=image.naturalWidth/targetRatio;sy=(image.naturalHeight-sh)/2}const canvas=document.createElement('canvas');canvas.width=1000;canvas.height=300;const context=canvas.getContext('2d',{alpha:false});context.drawImage(image,sx,sy,sw,sh,0,0,canvas.width,canvas.height);resolve(canvas.toDataURL('image/webp',.76))};image.src=reader.result};reader.readAsDataURL(file)});
+      const openEdit=()=>{pendingAvatar=avatarData;pendingCover=coverData;$('editName').value=profile.name||'';$('editUsername').value=profile.username||safeUsername(profile.name);$('editBio').value=profile.bio||'';$('editCountry').value=profile.country||'';$('editCity').value=profile.city||'';setAvatar(pendingAvatar);setCover(pendingCover);$('editBackdrop').hidden=false;$('editSheet').hidden=false;document.body.style.overflow='hidden'};
+      const closeEdit=()=>{$('editBackdrop').hidden=true;$('editSheet').hidden=true;document.body.style.overflow='';setAvatar(avatarData);setCover(coverData)};
+      const compressImage=file=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=reject;reader.onload=()=>{const image=new Image();image.onerror=reject;image.onload=()=>{const side=Math.min(image.naturalWidth,image.naturalHeight),sx=(image.naturalWidth-side)/2,sy=(image.naturalHeight-side)/2,canvas=document.createElement('canvas');canvas.width=canvas.height=420;const context=canvas.getContext('2d',{alpha:false});context.drawImage(image,sx,sy,side,side,0,0,420,420);resolve(canvas.toDataURL('image/webp',.76))};image.src=reader.result};reader.readAsDataURL(file)});
+      const compressCover=file=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=reject;reader.onload=()=>{const image=new Image();image.onerror=reject;image.onload=()=>{const targetRatio=10/3,sourceRatio=image.naturalWidth/image.naturalHeight;let sx=0,sy=0,sw=image.naturalWidth,sh=image.naturalHeight;if(sourceRatio>targetRatio){sw=image.naturalHeight*targetRatio;sx=(image.naturalWidth-sw)/2}else{sh=image.naturalWidth/targetRatio;sy=(image.naturalHeight-sh)/2}const canvas=document.createElement('canvas');canvas.width=960;canvas.height=288;const context=canvas.getContext('2d',{alpha:false});context.drawImage(image,sx,sy,sw,sh,0,0,canvas.width,canvas.height);resolve(canvas.toDataURL('image/webp',.70))};image.src=reader.result};reader.readAsDataURL(file)});
 
       $('editProfile')?.addEventListener('click',openEdit);$('avatarButton')?.addEventListener('click',openEdit);$('coverButton')?.addEventListener('click',openEdit);$('editClose')?.addEventListener('click',closeEdit);$('editBackdrop')?.addEventListener('click',closeEdit);
       $('avatarInput')?.addEventListener('change',async event=>{const file=event.target.files?.[0];if(!file)return;if(!file.type.startsWith('image/')){toast('Selecciona una imagen válida.');return}try{pendingAvatar=await compressImage(file);setAvatar(pendingAvatar);toast('Foto preparada. Pulsa Guardar cambios.')}catch{toast('No se pudo preparar esa foto.')}});
       $('coverInput')?.addEventListener('change',async event=>{const file=event.target.files?.[0];if(!file)return;if(!file.type.startsWith('image/')){toast('Selecciona una imagen válida.');return}try{pendingCover=await compressCover(file);setCover(pendingCover);toast('Portada preparada. Pulsa Guardar cambios.')}catch{toast('No se pudo preparar esa portada.')}});
       $('removeCover')?.addEventListener('click',()=>{pendingCover='';setCover('');toast('La portada se quitará al guardar los cambios.')});
-      $('saveProfile')?.addEventListener('click',()=>{const name=$('editName').value.trim(),username=safeUsername($('editUsername').value),bio=$('editBio').value.trim(),country=$('editCountry').value.trim(),city=$('editCity').value.trim();if(name.length<2){toast('Escribe un nombre válido.');return}profile={...profile,name,username,bio:bio||defaultProfile.bio,country:country||'Sin país',city,avatar:pendingAvatar,cover:pendingCover,id:profile.id||makeId(),updatedAt:Date.now()};try{localStorage.setItem(KEY,JSON.stringify(profile));render();closeEdit();toast('Perfil y portada guardados correctamente.')}catch{toast('No hay espacio suficiente para guardar las imágenes.')}});
+      $('saveProfile')?.addEventListener('click',async()=>{const button=$('saveProfile'),name=$('editName').value.trim(),username=safeUsername($('editUsername').value),bio=$('editBio').value.trim(),country=$('editCountry').value.trim(),city=$('editCity').value.trim();if(name.length<2){toast('Escribe un nombre válido.');return}button.disabled=true;button.textContent='GUARDANDO…';try{await Promise.all([mediaWrite(avatarMediaKey,pendingAvatar),mediaWrite(coverMediaKey,pendingCover)]);avatarData=pendingAvatar;coverData=pendingCover;profile={...profile,name,username,bio:bio||defaultProfile.bio,country:country||'Sin país',city,avatar:avatarData?'indexeddb':'',cover:coverData?'indexeddb':'',id:profile.id||makeId(),updatedAt:Date.now()};localStorage.removeItem(KEY);localStorage.setItem(KEY,JSON.stringify(profile));render();closeEdit();toast('Perfil y portada guardados correctamente.')}catch(error){console.error('JEMMO profile save',error);toast('No se pudo guardar. Vuelve a intentarlo.')}finally{button.disabled=false;button.textContent='GUARDAR CAMBIOS'}});
 
       $('copyId')?.addEventListener('click',async()=>{const text=$('profileId').textContent;try{await navigator.clipboard.writeText(text);toast('ID copiado.')}catch{toast(`Tu ID es ${text}`)}});
       const share=async()=>{const text=`${profile.name} · @${safeUsername(profile.username||profile.name)} · ${profile.id} en JEMMO LIVE`;try{if(navigator.share)await navigator.share({title:'Mi perfil JEMMO LIVE',text});else{await navigator.clipboard.writeText(text);toast('Datos del perfil copiados.')}}catch{}};
@@ -545,7 +570,22 @@
       const logout=async()=>{try{const [{initializeApp,getApps},{getAuth,signOut}]=await Promise.all([import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js'),import('https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js')]);const config={apiKey:'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',authDomain:'jemmo-live.firebaseapp.com',projectId:'jemmo-live',storageBucket:'jemmo-live.firebasestorage.app',messagingSenderId:'355540892255',appId:'1:355540892255:web:d15a8dd03b2915e31939ea'};const app=getApps()[0]||initializeApp(config);await signOut(getAuth(app))}catch{}localStorage.removeItem('jemmo_active_uid');localStorage.removeItem('jemmo_session');sessionStorage.clear();location.replace('acceso.html')};
       $('logoutButton')?.addEventListener('click',()=>{if(confirm('¿Quieres cerrar tu sesión de JEMMO LIVE?'))logout()});
 
-      render();document.documentElement.classList.remove('jemmo-auth-pending');
+      const bootstrap=async()=>{
+        try{
+          const legacyAvatar=isImageData(profile.avatar)?profile.avatar:'';
+          const legacyCover=isImageData(profile.cover)?profile.cover:'';
+          avatarData=legacyAvatar||await mediaRead(avatarMediaKey).catch(()=> '');
+          coverData=legacyCover||await mediaRead(coverMediaKey).catch(()=> '');
+          if(legacyAvatar||legacyCover){
+            await Promise.all([legacyAvatar?mediaWrite(avatarMediaKey,legacyAvatar):Promise.resolve(),legacyCover?mediaWrite(coverMediaKey,legacyCover):Promise.resolve()]);
+            profile={...profile,avatar:avatarData?'indexeddb':'',cover:coverData?'indexeddb':''};
+            localStorage.removeItem(KEY);
+            localStorage.setItem(KEY,JSON.stringify(profile));
+          }
+        }catch(error){console.warn('JEMMO profile media load',error);avatarData=isImageData(profile.avatar)?profile.avatar:'';coverData=isImageData(profile.cover)?profile.cover:''}
+        render();document.documentElement.classList.remove('jemmo-auth-pending');
+      };
+      bootstrap();
     })();
   </script>
 </body>
