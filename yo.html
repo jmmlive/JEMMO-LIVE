@@ -355,18 +355,12 @@
 
 
     /* =========================================================
-       JEMMO LIVE V1 · PERFIL PRUEBA 10 · REDES SOCIALES COMPACTAS
-       Lápiz visible, nivel desplazado y datos personales completos
+       JEMMO LIVE V1 · PERFIL PRUEBA 11 · NIVEL RECOLOCADO
+       Acceso de edición únicamente desde el botón inferior; nivel alineado arriba
        ========================================================= */
     .profile-top{grid-template-columns:88px minmax(0,1fr) 52px;align-items:start}
     .profile-side{display:flex;flex-direction:column;align-items:center;gap:7px;min-width:52px;padding-top:0}
-    .profile-edit-shortcut{
-      width:31px;height:31px;padding:0;border:1px solid #8d36aa;border-radius:11px;
-      background:linear-gradient(145deg,#32103e,#130219);color:#fff;display:grid;place-items:center;
-      font-size:15px;line-height:1;box-shadow:0 0 14px #c43cff35;cursor:pointer
-    }
-    .profile-edit-shortcut:active{transform:scale(.94)}
-    .profile-level{margin-top:1px;width:48px;min-height:57px}
+    .profile-level{margin-top:0;width:48px;min-height:57px}
     .avatar-button,.profile-banner{cursor:default}
     .profile-extra{display:flex;align-items:center;gap:7px;margin-top:7px;min-height:30px;overflow:visible}
     .profile-extra[hidden]{display:none!important}
@@ -392,7 +386,7 @@
     .social-grid .field{margin-top:0}
     @media(max-width:380px){
       .profile-top{grid-template-columns:76px minmax(0,1fr) 46px}
-      .profile-side{min-width:46px;gap:5px}.profile-edit-shortcut{width:28px;height:28px;border-radius:10px;font-size:14px}
+      .profile-side{min-width:46px;gap:0}
       .profile-level{width:44px;min-height:53px}.field-grid,.social-grid{grid-template-columns:1fr}
     }
 
@@ -429,7 +423,6 @@
             <div class="profile-extra" id="profileExtra" hidden></div>
           </div>
           <div class="profile-side">
-            <button class="profile-edit-shortcut" id="editProfileShortcut" type="button" aria-label="Editar datos personales" title="Editar perfil">✎</button>
             <div class="profile-level"><strong id="levelNumber">1</strong><span>NIVEL</span><small id="levelName">INICIAL</small></div>
           </div>
         </div>
@@ -497,7 +490,7 @@
       </div>
     </section>
 
-    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 09</p>
+    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 11</p>
   </main>
 
   <div class="menu-backdrop" id="menuBackdrop" hidden></div>
@@ -705,7 +698,7 @@
       const compressImage=file=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=reject;reader.onload=()=>{const image=new Image();image.onerror=reject;image.onload=()=>{const side=Math.min(image.naturalWidth,image.naturalHeight),sx=(image.naturalWidth-side)/2,sy=(image.naturalHeight-side)/2,canvas=document.createElement('canvas');canvas.width=canvas.height=420;const context=canvas.getContext('2d',{alpha:false});context.drawImage(image,sx,sy,side,side,0,0,420,420);resolve(canvas.toDataURL('image/webp',.76))};image.src=reader.result};reader.readAsDataURL(file)});
       const compressCover=file=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=reject;reader.onload=()=>{const image=new Image();image.onerror=reject;image.onload=()=>{const maxWidth=1600,maxHeight=1200,scale=Math.min(1,maxWidth/image.naturalWidth,maxHeight/image.naturalHeight),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(image.naturalWidth*scale));canvas.height=Math.max(1,Math.round(image.naturalHeight*scale));const context=canvas.getContext('2d',{alpha:false});context.drawImage(image,0,0,canvas.width,canvas.height);resolve(canvas.toDataURL('image/webp',.72))};image.src=reader.result};reader.readAsDataURL(file)});
 
-      $('editProfile')?.addEventListener('click',openEdit);$('editProfileShortcut')?.addEventListener('click',openEdit);$('editClose')?.addEventListener('click',closeEdit);$('editBackdrop')?.addEventListener('click',closeEdit);
+      $('editProfile')?.addEventListener('click',openEdit);$('editClose')?.addEventListener('click',closeEdit);$('editBackdrop')?.addEventListener('click',closeEdit);
       $('editBio')?.addEventListener('input',event=>{if(countWords(event.target.value)>15)event.target.value=limitWords(event.target.value,15);updateBioWordCount()});
       $('avatarInput')?.addEventListener('change',async event=>{const file=event.target.files?.[0];if(!file)return;if(!file.type.startsWith('image/')){toast('Selecciona una imagen válida.');return}try{pendingAvatar=await compressImage(file);setAvatar(pendingAvatar);toast('Foto preparada. Pulsa Guardar cambios.')}catch{toast('No se pudo preparar esa foto.')}});
       $('coverInput')?.addEventListener('change',async event=>{const file=event.target.files?.[0];if(!file)return;if(!file.type.startsWith('image/')){toast('Selecciona una imagen válida.');return}try{pendingCover=await compressCover(file);pendingCoverPosition={x:50,y:50};setCover(pendingCover,pendingCoverPosition);toast('Portada preparada. Arrástrala para elegir el encuadre.')}catch{toast('No se pudo preparar esa portada.')}});
