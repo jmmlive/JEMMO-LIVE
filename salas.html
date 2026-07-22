@@ -144,7 +144,7 @@
     </header>
 
     <button class="jr-btn jr-global-wallet" id="globalWalletButton" type="button" data-open-wallet>
-      <span>🪙</span><span><b>Monedero global</b><small><strong id="globalWalletCoins">0</strong> monedas · mismo saldo en toda la app</small></span><i>›</i>
+      <span>🪙</span><span><b>Monedero global</b><small><strong id="globalWalletCoins">0</strong> JEMMOS · mismo saldo en toda la app</small></span><i>›</i>
     </button>
 
     <section class="jr-cover-row">
@@ -238,7 +238,7 @@
 <section class="jr-sheet jr-hidden" id="giftsSheet" aria-label="Regalos">
   <header class="jr-sheet-head"><strong>Regalos</strong><button class="jr-sheet-close" data-close type="button">×</button></header>
   <div class="jr-wallet-row">
-    <div><b id="balanceLabel">Saldo: 0 monedas</b><small>Monedero único de esta cuenta</small></div>
+    <div><b id="balanceLabel">Saldo: 0 JEMMOS</b><small>Monedero único de esta cuenta</small></div>
     <button class="jr-btn jr-recharge" id="rechargeButton" type="button" data-open-wallet>MONEDERO</button>
   </div>
   <div class="jr-recipient-title"><b>Enviar a</b><span id="recipientSummary">Todas las personas</span></div>
@@ -252,10 +252,10 @@
   </div>
   <div class="jr-gift-summary" id="giftSummary">Selecciona destinatarios y cantidad.</div>
   <div class="jr-gifts-grid">
-    <button class="jr-gift" data-gift="🌹 Rosa" data-price="1" type="button"><span>🌹</span><b>Rosa</b><small>1 moneda</small></button>
-    <button class="jr-gift" data-gift="🚀 Cohete" data-price="100" type="button"><span>🚀</span><b>Cohete</b><small>100 monedas</small></button>
-    <button class="jr-gift" data-gift="👑 Corona" data-price="500" type="button"><span>👑</span><b>Corona</b><small>500 monedas</small></button>
-    <button class="jr-gift lucky" id="luckyGift" data-gift="🍀 Afortunados" data-price="50" type="button"><span>🍀</span><b>Afortunados<br><small>50 monedas · dentro de Regalos</small></b></button>
+    <button class="jr-gift" data-gift="🌹 Rosa" data-price="1" type="button"><span>🌹</span><b>Rosa</b><small>1 JEMMO</small></button>
+    <button class="jr-gift" data-gift="🚀 Cohete" data-price="100" type="button"><span>🚀</span><b>Cohete</b><small>100 JEMMOS</small></button>
+    <button class="jr-gift" data-gift="👑 Corona" data-price="500" type="button"><span>👑</span><b>Corona</b><small>500 JEMMOS</small></button>
+    <button class="jr-gift lucky" id="luckyGift" data-gift="🍀 Afortunados" data-price="50" type="button"><span>🍀</span><b>Afortunados<br><small>50 JEMMOS · dentro de Regalos</small></b></button>
   </div>
 </section>
 <div class="jr-toast" id="toast" role="status"></div>
@@ -560,8 +560,8 @@
 
   function updateBalance(){
     const wallet=window.JemmoWallet?.get?.();
-    state.giftBalance=Math.max(0,Number(wallet?.coins)||0);
-    $('balanceLabel').textContent=`Saldo: ${formatCoins(state.giftBalance)} monedas`;
+    state.giftBalance=Math.max(0,Number(wallet?.jemmos??wallet?.coins)||0);
+    $('balanceLabel').textContent=`Saldo: ${formatCoins(state.giftBalance)} JEMMOS`;
     if($('globalWalletCoins'))$('globalWalletCoins').textContent=formatCoins(state.giftBalance);
   }
 
@@ -627,18 +627,18 @@
     const totalCoins=totalGifts*unitPrice;
     updateBalance();
     if(totalCoins>state.giftBalance){
-      toast(`Saldo insuficiente: necesitas ${formatCoins(totalCoins)} monedas.`);
+      toast(`Saldo insuficiente: necesitas ${formatCoins(totalCoins)} JEMMOS.`);
       window.JemmoWallet?.open?.('recharge');
       return;
     }
     const target=recipientLabel();
     const question=`¿Seguro que quieres enviar ${state.giftQuantity} ${gift} a cada una de ${recipients} persona${recipients===1?'':'s'}?
 
-Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} monedas.`;
+Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
     if(!confirm(question))return;
     const spent=window.JemmoWallet?.spendCoins?.(totalCoins,{title:'Regalo enviado en Sala',detail:`${gift} · ${target} · ×${state.giftQuantity}`,source:'salas-gift'});
     if(!spent?.ok){toast('Saldo insuficiente. Abriendo el Monedero.');window.JemmoWallet?.open?.('recharge');return}
-    state.giftBalance=spent.wallet.coins;
+    state.giftBalance=spent.wallet.jemmos;
     indexes.forEach(index=>state.giftTotals.set(index,(state.giftTotals.get(index)||0)+state.giftQuantity));
     updateGiftBadges();
     updateBalance();

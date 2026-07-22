@@ -1,12 +1,12 @@
 /* =========================================================
-   JEMMO LIVE · MONEDERO GLOBAL PRUEBA 01
+   JEMMO LIVE · MONEDERO GLOBAL PRUEBA 03
    Un solo saldo por usuario para Perfil, Inicio, LIVE y Salas
    ========================================================= */
 (() => {
   'use strict';
   if (window.JemmoWallet?.version) return;
 
-  const VERSION = '1.0.0-test';
+  const VERSION = '3.0.0-test';
   const byId = id => document.getElementById(id);
   const formatNumber = value => Math.max(0, Math.floor(Number(value) || 0)).toLocaleString('es-ES');
   const formatMoney = value => Math.max(0, Number(value) || 0).toLocaleString('es-ES', {
@@ -15,9 +15,10 @@
   const currentUid = () => localStorage.getItem('jemmo_active_uid') || 'local-user';
   const storageKey = () => `jemmo_wallet_v1_${currentUid()}`;
   const defaults = () => ({
-    coins: 0,
-    diamonds: 0,
-    earnings: 0,
+    schemaVersion: 3,
+    jemmos: 0,
+    jems: 0,
+    crystals: 0,
     methodType: '',
     methodAlias: '',
     history: [],
@@ -25,14 +26,36 @@
   });
 
   function normalize(input) {
-    const base = defaults();
     const value = input && typeof input === 'object' ? input : {};
+    const modern = Number(value.schemaVersion) >= 2 || ['jemmos','jems','crystals'].some(key => Object.prototype.hasOwnProperty.call(value, key));
+    let jemmos;
+    let jems;
+    let crystals;
+    if (modern) {
+      jemmos = Number(value.jemmos ?? value.coins) || 0;
+      jems = Number(value.jems ?? value.earnings) || 0;
+      crystals = Number(value.crystals ?? value.diamonds) || 0;
+    } else {
+      // Migración de PRUEBA 01: lo que se llamó “diamantes” era realmente CRISTALES.
+      jemmos = Number(value.coins) || 0;
+      crystals = Number(value.diamonds) || 0;
+      // El antiguo saldo en euros se conserva como JEMS (100 JEMS por cada euro de prueba).
+      jems = Math.round((Number(value.earnings) || 0) * 100);
+    }
+    jemmos = Math.max(0, Math.floor(jemmos));
+    jems = Math.max(0, Math.floor(jems));
+    crystals = Math.max(0, Math.floor(crystals));
     return {
-      ...base,
+      ...defaults(),
       ...value,
-      coins: Math.max(0, Math.floor(Number(value.coins) || 0)),
-      diamonds: Math.max(0, Math.floor(Number(value.diamonds) || 0)),
-      earnings: Math.max(0, Math.round((Number(value.earnings) || 0) * 100) / 100),
+      schemaVersion: 3,
+      jemmos,
+      jems,
+      crystals,
+      // Alias temporales para las pantallas antiguas mientras se actualizan.
+      coins: jemmos,
+      diamonds: crystals,
+      earnings: jems,
       methodType: String(value.methodType || ''),
       methodAlias: String(value.methodAlias || ''),
       history: Array.isArray(value.history) ? value.history.slice(0, 150) : [],
@@ -81,51 +104,68 @@
     amount = Math.max(0, Math.floor(Number(amount) || 0));
     if (!amount) return getWallet();
     const wallet = getWallet();
-    wallet.coins += amount;
+    wallet.jemmos += amount;
     wallet.history.unshift({
       id: `W-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       type: meta.type || 'recharge',
       title: meta.title || 'Recarga de prueba',
-      detail: meta.detail || 'Monedas JEMMO añadidas a esta cuenta',
-      amount: `+${formatNumber(amount)} monedas`,
+      detail: meta.detail || 'JEMMOS añadidos a esta cuenta',
+      amount: `+${formatNumber(amount)} JEMMOS`,
       tone: 'positive',
       createdAt: Date.now()
     });
-    return saveWallet(wallet, meta.source || 'add-coins');
+    return saveWallet(wallet, meta.source || 'add-jemmos');
   }
 
   function spendCoins(amount, meta = {}) {
     amount = Math.max(0, Math.floor(Number(amount) || 0));
     const wallet = getWallet();
-    if (!amount || wallet.coins < amount) return { ok: false, wallet, missing: Math.max(0, amount - wallet.coins) };
-    wallet.coins -= amount;
+    if (!amount || wallet.jemmos < amount) return { ok: false, wallet, missing: Math.max(0, amount - wallet.jemmos) };
+    wallet.jemmos -= amount;
     wallet.history.unshift({
       id: `W-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       type: meta.type || 'gift',
       title: meta.title || 'Regalo enviado',
       detail: meta.detail || 'Gasto realizado dentro de JEMMO LIVE',
-      amount: `-${formatNumber(amount)} monedas`,
+      amount: `-${formatNumber(amount)} JEMMOS`,
       tone: 'negative',
       createdAt: Date.now()
     });
-    return { ok: true, wallet: saveWallet(wallet, meta.source || 'spend-coins') };
+    return { ok: true, wallet: saveWallet(wallet, meta.source || 'spend-jemmos') };
   }
 
-  function addDiamonds(amount, meta = {}) {
+  function addJems(amount, meta = {}) {
     amount = Math.max(0, Math.floor(Number(amount) || 0));
     if (!amount) return getWallet();
     const wallet = getWallet();
-    wallet.diamonds += amount;
+    wallet.jems += amount;
     wallet.history.unshift({
       id: `W-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       type: meta.type || 'gift-received',
       title: meta.title || 'Regalo recibido',
-      detail: meta.detail || 'Diamantes acreditados en la cuenta',
-      amount: `+${formatNumber(amount)} diamantes`,
+      detail: meta.detail || 'JEMS acreditados por regalos o tareas',
+      amount: `+${formatNumber(amount)} JEMS`,
       tone: 'positive',
       createdAt: Date.now()
     });
-    return saveWallet(wallet, meta.source || 'add-diamonds');
+    return saveWallet(wallet, meta.source || 'add-jems');
+  }
+
+  function addCrystals(amount, meta = {}) {
+    amount = Math.max(0, Math.floor(Number(amount) || 0));
+    if (!amount) return getWallet();
+    const wallet = getWallet();
+    wallet.crystals += amount;
+    wallet.history.unshift({
+      id: `W-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      type: meta.type || 'crystals',
+      title: meta.title || 'Cristales añadidos',
+      detail: meta.detail || 'Saldo para juegos y minijuegos',
+      amount: `+${formatNumber(amount)} CRISTALES`,
+      tone: 'positive',
+      createdAt: Date.now()
+    });
+    return saveWallet(wallet, meta.source || 'add-crystals');
   }
 
   function toast(text) {
@@ -169,42 +209,42 @@
         <div class="jw-head"><div class="jw-head-copy"><small>ECONOMÍA JEMMO</small><strong id="jw-title">Mi monedero</strong><span>El mismo saldo en Perfil, Inicio, LIVE y Salas</span></div><button class="jw-close" id="jw-close" type="button" aria-label="Cerrar">×</button></div>
         <div class="jw-test">⚠ MODO DE PRUEBAS · SIN COBROS REALES</div>
         <div class="jw-balances">
-          <article class="jw-balance coins"><small>🪙 MONEDAS JEMMO</small><b id="jw-coins">0</b><em>Para regalos y funciones de la aplicación</em></article>
-          <article class="jw-balance diamonds"><small>💎 DIAMANTES</small><b id="jw-diamonds">0</b><em>Recompensas recibidas</em></article>
-          <article class="jw-balance earnings"><small>💶 GANANCIAS DISPONIBLES</small><b id="jw-earnings">0,00 €</b><em>Saldo de prueba para solicitar retirada</em></article>
+          <article class="jw-balance coins"><small>🪙 JEMMOS</small><b id="jw-jemmos">0</b><em>Moneda amarilla recargable para regalos e interacción</em></article>
+          <article class="jw-balance diamonds"><small>💗 JEMS</small><b id="jw-jems">0</b><em>Ganancias rosadas por regalos y tareas; son retirables</em></article>
+          <article class="jw-balance earnings"><small>💎 CRISTALES</small><b id="jw-crystals">0</b><em>Diamantes azules para juegos, ruletas y minijuegos</em></article>
         </div>
         <div class="jw-tabs" role="tablist"><button class="jw-tab active" data-jw-tab="summary">RESUMEN</button><button class="jw-tab" data-jw-tab="recharge">RECARGAR</button><button class="jw-tab" data-jw-tab="exchange">CAMBIAR</button><button class="jw-tab" data-jw-tab="withdraw">RETIRAR</button><button class="jw-tab" data-jw-tab="history">HISTORIAL</button></div>
         <div class="jw-view" data-jw-view="summary">
-          <article class="jw-card"><h3>Monedero único por usuario</h3><p>Lo que recargues o gastes aquí aparecerá igual al volver al Perfil, entrar en un LIVE o usar una Sala.</p><div class="jw-actions"><button class="jw-shortcut gold" data-jw-go="recharge"><span>🪙</span>Recargar</button><button class="jw-shortcut" data-jw-go="exchange"><span>⇄</span>Cambiar</button><button class="jw-shortcut" data-jw-go="withdraw"><span>↗</span>Retirar</button></div></article>
+          <article class="jw-card"><h3>Tres monedas, tres funciones</h3><p>JEMMOS para recargar y regalar; JEMS para recibir ganancias y retirar; CRISTALES para jugar.</p><div class="jw-actions"><button class="jw-shortcut gold" data-jw-go="recharge"><span>🪙</span>Recargar</button><button class="jw-shortcut" data-jw-go="exchange"><span>⇄</span>Cambiar</button><button class="jw-shortcut" data-jw-go="withdraw"><span>↗</span>Retirar JEMS</button></div></article>
           <article class="jw-card"><h3>Últimos movimientos</h3><p>Las recargas, regalos, cambios y retiradas quedan registradas por cuenta.</p><div class="jw-history" id="jw-recent"></div></article>
         </div>
         <div class="jw-view" data-jw-view="recharge" hidden>
-          <article class="jw-card"><h3>Recarga de prueba</h3><p>Añade saldo ficticio para comprobar regalos y movimientos con otras cuentas.</p></article>
-          <div class="jw-packages"><button class="jw-package" data-jw-recharge="1000"><strong>1.000</strong><small>Monedas JEMMO</small><span>AÑADIR</span></button><button class="jw-package" data-jw-recharge="5000"><strong>5.000</strong><small>Monedas JEMMO</small><span>AÑADIR</span></button><button class="jw-package" data-jw-recharge="10000"><strong>10.000</strong><small>Monedas JEMMO</small><span>AÑADIR</span></button><button class="jw-package" data-jw-recharge="50000"><strong>50.000</strong><small>Monedas JEMMO</small><span>AÑADIR</span></button></div>
-          <p class="jw-note">Esta fase no cobra dinero real. La recarga se guarda únicamente como saldo de prueba de esta cuenta.</p>
+          <article class="jw-card"><h3>Recargar JEMMOS de prueba</h3><p>Añade moneda amarilla ficticia para probar regalos e interacción.</p></article>
+          <div class="jw-packages"><button class="jw-package" data-jw-recharge="1000"><strong>1.000</strong><small>JEMMOS amarillos</small><span>AÑADIR</span></button><button class="jw-package" data-jw-recharge="5000"><strong>5.000</strong><small>JEMMOS amarillos</small><span>AÑADIR</span></button><button class="jw-package" data-jw-recharge="10000"><strong>10.000</strong><small>JEMMOS amarillos</small><span>AÑADIR</span></button><button class="jw-package" data-jw-recharge="50000"><strong>50.000</strong><small>JEMMOS amarillos</small><span>AÑADIR</span></button></div>
+          <p class="jw-note">La recarga es ficticia. Solo aumenta los JEMMOS de esta cuenta para realizar pruebas.</p>
         </div>
         <div class="jw-view" data-jw-view="exchange" hidden>
-          <article class="jw-card"><h3>Cambiar saldo</h3><p>Tasas provisionales para comprobar el flujo económico.</p></article>
-          <label class="jw-field"><span>Tipo de cambio</span><select id="jw-exchange-type"><option value="coins-diamonds">Monedas → Diamantes</option><option value="diamonds-coins">Diamantes → Monedas</option><option value="diamonds-earnings">Diamantes → Ganancias</option></select></label>
-          <label class="jw-field"><span id="jw-exchange-label">Cantidad de monedas</span><input id="jw-exchange-amount" type="number" min="1" inputmode="numeric" placeholder="Escribe la cantidad"></label>
+          <article class="jw-card"><h3>Intercambiar correctamente</h3><p>Los JEMMOS sí se cambian por CRISTALES para jugar. Los JEMS no se crean mediante cambios: se reciben por regalos y tareas.</p></article>
+          <label class="jw-field"><span>Tipo de cambio</span><select id="jw-exchange-type"><option value="jemmos-crystals">JEMMOS → CRISTALES</option><option value="crystals-jemmos">CRISTALES → JEMMOS</option><option value="jems-jemmos">JEMS → JEMMOS</option></select></label>
+          <label class="jw-field"><span id="jw-exchange-label">Cantidad de JEMMOS</span><input id="jw-exchange-amount" type="number" min="1" inputmode="numeric" placeholder="Escribe la cantidad"></label>
           <div class="jw-preview" id="jw-exchange-preview">Escribe una cantidad para calcular el resultado.</div>
           <button class="jw-primary" id="jw-exchange-confirm" type="button" disabled>CONFIRMAR CAMBIO</button>
-          <div class="jw-rate"><span>Monedas ↔ Diamantes</span><b>10 = 1</b></div><div class="jw-rate"><span>Diamantes → Ganancias</span><b>100 = 1 €</b></div>
+          <div class="jw-rate"><span>JEMMOS ↔ CRISTALES</span><b>10 = 1</b></div><div class="jw-rate"><span>JEMS → JEMMOS</span><b>1 = 10</b></div>
         </div>
         <div class="jw-view" data-jw-view="withdraw" hidden>
-          <article class="jw-card"><h3>Retirada de prueba</h3><p>Al confirmar, la cantidad se descuenta y queda registrada como retirada ficticia.</p><div class="jw-method"><span><b id="jw-method-name">Sin configurar</b><small id="jw-method-alias">Añade un método de prueba</small></span><button data-jw-focus-method type="button">EDITAR</button></div></article>
-          <div class="jw-form-grid"><label class="jw-field"><span>Método</span><select id="jw-method-type"><option value="">Seleccionar</option><option>Transferencia bancaria</option><option>PayPal</option><option>Otro método</option></select></label><label class="jw-field"><span>Alias o referencia</span><input id="jw-method-input" maxlength="60" placeholder="Dato de prueba"></label></div>
+          <article class="jw-card"><h3>Retirar JEMS de prueba</h3><p>La retirada descuenta directamente las monedas rosadas JEMS. Los CRISTALES no se retiran.</p><div class="jw-method"><span><b id="jw-method-name">Sin configurar</b><small id="jw-method-alias">Añade un método de prueba</small></span><button data-jw-focus-method type="button">EDITAR</button></div></article>
+          <div class="jw-form-grid"><label class="jw-field"><span>Método</span><select id="jw-method-type"><option value="">Seleccionar</option><option>Transferencia bancaria</option><option>PayPal</option><option>USDT</option><option>Otro método</option></select></label><label class="jw-field"><span>Alias o referencia</span><input id="jw-method-input" maxlength="60" placeholder="Dato de prueba"></label></div>
           <button class="jw-secondary" id="jw-save-method" type="button">GUARDAR MÉTODO</button>
-          <label class="jw-field"><span>Cantidad a retirar · disponible <b id="jw-withdraw-available">0,00 €</b></span><input id="jw-withdraw-amount" type="number" min="1" step="0.01" inputmode="decimal" placeholder="0,00"></label>
+          <label class="jw-field"><span>Cantidad de JEMS · disponible <b id="jw-withdraw-available">0</b></span><input id="jw-withdraw-amount" type="number" min="1" step="1" inputmode="numeric" placeholder="0"></label>
           <button class="jw-primary" id="jw-withdraw-confirm" type="button">SOLICITAR RETIRADA</button>
-          <p class="jw-note">La retirada no sale hacia ningún banco en esta fase. Sirve para comprobar que el saldo baja y el historial queda correcto.</p>
+          <p class="jw-note">La retirada es ficticia: los JEMS bajan y el movimiento queda guardado, pero no sale dinero real.</p>
         </div>
         <div class="jw-view" data-jw-view="history" hidden><article class="jw-card"><h3>Historial completo</h3><p>Todos los movimientos de esta cuenta.</p></article><div class="jw-history" id="jw-history"></div></div>
       </section>`;
   }
 
+
   function ensureUi() {
-    if (byId('walletSheet')) return false; // El Perfil ya contiene su monedero nativo.
     if (byId('jw-sheet')) return true;
     injectStyles();
     const wrap = document.createElement('div');
@@ -217,7 +257,7 @@
   }
 
   function iconFor(type) {
-    return ({ recharge: '🪙', gift: '🎁', exchange: '⇄', withdraw: '↗', method: '⚙️', adjustment: '✦', 'gift-received': '💎' }[type] || '•');
+    return ({ recharge: '🪙', gift: '🎁', exchange: '⇄', withdraw: '↗', method: '⚙️', adjustment: '✦', 'gift-received': '💗', crystals: '💎' }[type] || '•');
   }
 
   function movementNode(item) {
@@ -253,23 +293,21 @@
     const requested = Math.floor(Number(byId('jw-exchange-amount')?.value) || 0);
     const wallet = getWallet();
     if (requested <= 0) return { valid: false, message: 'Escribe una cantidad para calcular el resultado.' };
-    if (type === 'coins-diamonds') {
+    if (type === 'jemmos-crystals') {
       const output = Math.floor(requested / 10), used = output * 10;
-      if (output < 1) return { valid: false, message: 'Se necesitan al menos 10 monedas.' };
-      return { valid: wallet.coins >= used, input: used, output, type, message: `Recibirás <b>${formatNumber(output)} diamantes</b> usando ${formatNumber(used)} monedas.${wallet.coins < used ? ' Saldo insuficiente.' : ''}` };
+      if (output < 1) return { valid: false, message: 'Se necesitan al menos 10 JEMMOS.' };
+      return { valid: wallet.jemmos >= used, input: used, output, type, message: `Recibirás <b>${formatNumber(output)} CRISTALES</b> usando ${formatNumber(used)} JEMMOS.${wallet.jemmos < used ? ' Saldo insuficiente.' : ''}` };
     }
-    if (type === 'diamonds-coins') {
-      return { valid: wallet.diamonds >= requested, input: requested, output: requested * 10, type, message: `Recibirás <b>${formatNumber(requested * 10)} monedas</b> usando ${formatNumber(requested)} diamantes.${wallet.diamonds < requested ? ' Saldo insuficiente.' : ''}` };
+    if (type === 'crystals-jemmos') {
+      return { valid: wallet.crystals >= requested, input: requested, output: requested * 10, type, message: `Recibirás <b>${formatNumber(requested * 10)} JEMMOS</b> usando ${formatNumber(requested)} CRISTALES.${wallet.crystals < requested ? ' Saldo insuficiente.' : ''}` };
     }
-    const euros = Math.floor(requested / 100), used = euros * 100;
-    if (euros < 1) return { valid: false, message: 'Se necesitan al menos 100 diamantes.' };
-    return { valid: wallet.diamonds >= used, input: used, output: euros, type, message: `Añadirás <b>${formatMoney(euros)}</b> a ganancias usando ${formatNumber(used)} diamantes.${wallet.diamonds < used ? ' Saldo insuficiente.' : ''}` };
+    return { valid: wallet.jems >= requested, input: requested, output: requested * 10, type, message: `Recibirás <b>${formatNumber(requested * 10)} JEMMOS</b> usando ${formatNumber(requested)} JEMS.${wallet.jems < requested ? ' Saldo insuficiente.' : ''}` };
   }
 
   function updateExchangePreview() {
     const type = byId('jw-exchange-type')?.value;
     if (!byId('jw-exchange-preview')) return;
-    byId('jw-exchange-label').textContent = type === 'coins-diamonds' ? 'Cantidad de monedas' : 'Cantidad de diamantes';
+    byId('jw-exchange-label').textContent = type === 'jemmos-crystals' ? 'Cantidad de JEMMOS' : type === 'crystals-jemmos' ? 'Cantidad de CRISTALES' : 'Cantidad de JEMS';
     const result = exchangeCalculation();
     byId('jw-exchange-preview').innerHTML = result.message;
     byId('jw-exchange-confirm').disabled = !result.valid;
@@ -285,10 +323,10 @@
 
   function render() {
     const wallet = getWallet();
-    if (byId('jw-coins')) byId('jw-coins').textContent = formatNumber(wallet.coins);
-    if (byId('jw-diamonds')) byId('jw-diamonds').textContent = formatNumber(wallet.diamonds);
-    if (byId('jw-earnings')) byId('jw-earnings').textContent = formatMoney(wallet.earnings);
-    if (byId('jw-withdraw-available')) byId('jw-withdraw-available').textContent = formatMoney(wallet.earnings);
+    if (byId('jw-jemmos')) byId('jw-jemmos').textContent = formatNumber(wallet.jemmos);
+    if (byId('jw-jems')) byId('jw-jems').textContent = formatNumber(wallet.jems);
+    if (byId('jw-crystals')) byId('jw-crystals').textContent = formatNumber(wallet.crystals);
+    if (byId('jw-withdraw-available')) byId('jw-withdraw-available').textContent = formatNumber(wallet.jems);
     if (byId('jw-method-name')) byId('jw-method-name').textContent = wallet.methodType || 'Sin configurar';
     if (byId('jw-method-alias')) byId('jw-method-alias').textContent = wallet.methodAlias || 'Añade un método de prueba';
     if (byId('jw-method-type')) byId('jw-method-type').value = wallet.methodType || '';
@@ -300,11 +338,14 @@
   }
 
   function open(tab = 'summary') {
-    if (byId('walletSheet') && typeof byId('openWallet')?.click === 'function') {
-      byId('openWallet').click();
-      return;
-    }
     if (!ensureUi()) return;
+    const legacySheet = byId('walletSheet');
+    if (legacySheet) { legacySheet.setAttribute('aria-hidden','true'); legacySheet.hidden = true; legacySheet.classList.remove('open','active','show'); }
+    const legacyBackdrop = byId('walletBackdrop') || document.querySelector('.wallet-backdrop,.coin-backdrop,.sheet-backdrop');
+    if (legacyBackdrop) legacyBackdrop.hidden = true;
+    const sideMenu = byId('sideMenu');
+    if (sideMenu) { sideMenu.classList.remove('open'); sideMenu.setAttribute('aria-hidden','true'); }
+    if (byId('menuBackdrop')) byId('menuBackdrop').hidden = true;
     render();
     showTab(tab);
     byId('jw-backdrop').hidden = false;
@@ -327,8 +368,8 @@
     document.querySelectorAll('[data-jw-go]').forEach(button => button.addEventListener('click', () => showTab(button.dataset.jwGo)));
     document.querySelectorAll('[data-jw-recharge]').forEach(button => button.addEventListener('click', () => {
       const amount = Number(button.dataset.jwRecharge) || 0;
-      if (!amount || !confirm(`¿Añadir ${formatNumber(amount)} monedas de prueba a esta cuenta?`)) return;
-      addCoins(amount, { title: 'Recarga de prueba', detail: 'Saldo acreditado desde el Monedero global', source: 'wallet-panel' });
+      if (!amount || !confirm(`¿Añadir ${formatNumber(amount)} JEMMOS de prueba a esta cuenta?`)) return;
+      addCoins(amount, { title: 'Recarga de prueba', detail: 'JEMMOS acreditados desde el Monedero global', source: 'wallet-panel' });
       render();
       toast('Recarga de prueba añadida.');
     }));
@@ -338,15 +379,15 @@
       const result = exchangeCalculation();
       if (!result.valid) return toast('Revisa la cantidad o el saldo.');
       const wallet = getWallet();
-      if (result.type === 'coins-diamonds') {
-        wallet.coins -= result.input; wallet.diamonds += result.output;
-        wallet.history.unshift({ id: `W-${Date.now()}`, type: 'exchange', title: 'Cambio a diamantes', detail: `${formatNumber(result.input)} monedas → ${formatNumber(result.output)} diamantes`, amount: `+${formatNumber(result.output)} diamantes`, tone: 'positive', createdAt: Date.now() });
-      } else if (result.type === 'diamonds-coins') {
-        wallet.diamonds -= result.input; wallet.coins += result.output;
-        wallet.history.unshift({ id: `W-${Date.now()}`, type: 'exchange', title: 'Cambio a monedas', detail: `${formatNumber(result.input)} diamantes → ${formatNumber(result.output)} monedas`, amount: `+${formatNumber(result.output)} monedas`, tone: 'positive', createdAt: Date.now() });
+      if (result.type === 'jemmos-crystals') {
+        wallet.jemmos -= result.input; wallet.crystals += result.output;
+        wallet.history.unshift({ id: `W-${Date.now()}`, type: 'exchange', title: 'Cambio a CRISTALES', detail: `${formatNumber(result.input)} JEMMOS → ${formatNumber(result.output)} CRISTALES`, amount: `+${formatNumber(result.output)} CRISTALES`, tone: 'positive', createdAt: Date.now() });
+      } else if (result.type === 'crystals-jemmos') {
+        wallet.crystals -= result.input; wallet.jemmos += result.output;
+        wallet.history.unshift({ id: `W-${Date.now()}`, type: 'exchange', title: 'Cambio a JEMMOS', detail: `${formatNumber(result.input)} CRISTALES → ${formatNumber(result.output)} JEMMOS`, amount: `+${formatNumber(result.output)} JEMMOS`, tone: 'positive', createdAt: Date.now() });
       } else {
-        wallet.diamonds -= result.input; wallet.earnings += result.output;
-        wallet.history.unshift({ id: `W-${Date.now()}`, type: 'exchange', title: 'Diamantes convertidos', detail: `${formatNumber(result.input)} diamantes → ${formatMoney(result.output)}`, amount: `+${formatMoney(result.output)}`, tone: 'positive', createdAt: Date.now() });
+        wallet.jems -= result.input; wallet.jemmos += result.output;
+        wallet.history.unshift({ id: `W-${Date.now()}`, type: 'exchange', title: 'JEMS cambiados a JEMMOS', detail: `${formatNumber(result.input)} JEMS → ${formatNumber(result.output)} JEMMOS`, amount: `+${formatNumber(result.output)} JEMMOS`, tone: 'positive', createdAt: Date.now() });
       }
       saveWallet(wallet, 'exchange');
       byId('jw-exchange-amount').value = '';
@@ -365,14 +406,14 @@
       toast('Método guardado para esta cuenta.');
     });
     byId('jw-withdraw-confirm')?.addEventListener('click', () => {
-      const amount = Math.round((Number(byId('jw-withdraw-amount').value) || 0) * 100) / 100;
+      const amount = Math.max(0, Math.floor(Number(byId('jw-withdraw-amount').value) || 0));
       const wallet = getWallet();
       if (!wallet.methodType || !wallet.methodAlias) return toast('Primero guarda un método de cobro.');
-      if (amount < 1) return toast('El mínimo de prueba es 1,00 €.');
-      if (amount > wallet.earnings) return toast('No tienes ganancias suficientes.');
-      if (!confirm(`¿Solicitar una retirada de prueba de ${formatMoney(amount)}?`)) return;
-      wallet.earnings -= amount;
-      wallet.history.unshift({ id: `W-${Date.now()}`, type: 'withdraw', title: 'Retirada de prueba', detail: `${wallet.methodType} · saldo descontado`, amount: `-${formatMoney(amount)}`, tone: 'negative', createdAt: Date.now() });
+      if (amount < 1) return toast('Escribe la cantidad de JEMS que deseas retirar.');
+      if (amount > wallet.jems) return toast('No tienes JEMS suficientes.');
+      if (!confirm(`¿Retirar ficticiamente ${formatNumber(amount)} JEMS?`)) return;
+      wallet.jems -= amount;
+      wallet.history.unshift({ id: `W-${Date.now()}`, type: 'withdraw', title: 'Retirada de JEMS', detail: `${wallet.methodType} · retirada ficticia`, amount: `-${formatNumber(amount)} JEMS`, tone: 'negative', createdAt: Date.now() });
       saveWallet(wallet, 'withdraw');
       byId('jw-withdraw-amount').value = '';
       render();
@@ -385,40 +426,102 @@
     if (node && node.textContent !== value) node.textContent = value;
   }
 
+  function syncLegacyCurrencyCards(wallet) {
+    const values = {
+      monedas: { label: 'JEMMOS', value: formatNumber(wallet.jemmos) },
+      diamantes: { label: 'JEMS', value: formatNumber(wallet.jems) },
+      ganancias: { label: 'CRISTALES', value: formatNumber(wallet.crystals) }
+    };
+    document.querySelectorAll('small,span,b,strong').forEach(labelNode => {
+      if (labelNode.closest('#jw-sheet')) return;
+      const raw = (labelNode.textContent || '').replace(/\s+/g, ' ').trim().toLowerCase();
+      const key = Object.keys(values).find(name => raw === name || raw === `${name}:`);
+      if (!key) return;
+      const card = labelNode.closest('[class*="wallet"],[class*="coin"],[class*="balance"],button,article,li,section,div');
+      if (!card) return;
+      const numeric = [...card.querySelectorAll('strong,b,span')].find(node => {
+        if (node === labelNode || node.contains(labelNode) || labelNode.contains(node)) return false;
+        const text = (node.textContent || '').trim();
+        return /^[-+]?\d[\d.,\s]*(?:€)?$/.test(text);
+      });
+      setText(labelNode, values[key].label);
+      if (numeric) {
+        setText(numeric, values[key].value);
+        if (key === 'monedas') numeric.dataset.jemmoJemmos = '';
+        if (key === 'diamantes') numeric.dataset.jemmoJems = '';
+        if (key === 'ganancias') numeric.dataset.jemmoCrystals = '';
+      }
+    });
+  }
+
   function syncVisibleBalances(wallet = getWallet()) {
-    const coins = formatNumber(wallet.coins);
-    const diamonds = formatNumber(wallet.diamonds);
-    document.querySelectorAll('[data-wallet="jemmos"] strong,[data-jemmo-coins]').forEach(node => setText(node, coins));
-    document.querySelectorAll('[data-wallet="jems"] strong,[data-jemmo-diamonds]').forEach(node => setText(node, diamonds));
-    document.querySelectorAll('[data-wallet="cristales"] strong,[data-jemmo-earnings]').forEach(node => setText(node, formatMoney(wallet.earnings)));
-    document.querySelectorAll('[data-wallet="jemmos"] small').forEach(node => setText(node, 'MONEDAS'));
-    document.querySelectorAll('[data-wallet="jems"] small').forEach(node => setText(node, 'DIAMANTES'));
-    document.querySelectorAll('[data-wallet="cristales"] small').forEach(node => setText(node, 'GANANCIAS'));
+    const jemmos = formatNumber(wallet.jemmos);
+    const jems = formatNumber(wallet.jems);
+    const crystals = formatNumber(wallet.crystals);
+    document.querySelectorAll('[data-wallet="jemmos"] strong,[data-jemmo-coins],[data-jemmo-jemmos]').forEach(node => setText(node, jemmos));
+    document.querySelectorAll('[data-wallet="jems"] strong,[data-jemmo-diamonds],[data-jemmo-jems]').forEach(node => setText(node, jems));
+    document.querySelectorAll('[data-wallet="cristales"] strong,[data-jemmo-earnings],[data-jemmo-crystals]').forEach(node => setText(node, crystals));
+    document.querySelectorAll('[data-wallet="jemmos"] small').forEach(node => setText(node, 'JEMMOS'));
+    document.querySelectorAll('[data-wallet="jems"] small').forEach(node => setText(node, 'JEMS'));
+    document.querySelectorAll('[data-wallet="cristales"] small').forEach(node => setText(node, 'CRISTALES'));
+    syncLegacyCurrencyCards(wallet);
+
+    // Cabecera económica antigua de Inicio: conserva los iconos y corrige nombres/saldos.
+    document.querySelectorAll('[data-jemmo-coins]').forEach(node => {
+      const card = node.closest('article,button,div');
+      const label = card?.querySelector('small,span');
+      if (label && /monedas|jemmos/i.test(label.textContent || '')) setText(label, 'JEMMOS');
+    });
+    document.querySelectorAll('[data-jemmo-diamonds]').forEach(node => {
+      const card = node.closest('article,button,div');
+      const label = card?.querySelector('small,span');
+      if (label && /diamantes|jems/i.test(label.textContent || '')) setText(label, 'JEMS');
+    });
+    document.querySelectorAll('[data-jemmo-earnings]').forEach(node => {
+      const card = node.closest('article,button,div');
+      const label = card?.querySelector('small,span');
+      if (label && /ganancias|cristales/i.test(label.textContent || '')) setText(label, 'CRISTALES');
+    });
+
+    // Corrige también el panel antiguo “Centro de monedas” de Inicio.
+    const legacy = byId('walletSheet');
+    if (legacy) {
+      const gold = legacy.querySelector('.wallet-detail.gold strong');
+      const pink = legacy.querySelector('.wallet-detail.pink strong');
+      const blue = legacy.querySelector('.wallet-detail.blue strong');
+      setText(gold, `JEMMOS · ${jemmos}`);
+      setText(pink, `JEMS · ${jems}`);
+      setText(blue, `CRISTALES · ${crystals}`);
+      setText(legacy.querySelector('.wallet-detail.gold small'), 'Moneda amarilla recargable para regalos e interacción.');
+      setText(legacy.querySelector('.wallet-detail.pink small'), 'Ganancias rosadas por regalos y tareas. Se pueden retirar.');
+      setText(legacy.querySelector('.wallet-detail.blue small'), 'Moneda azul para juegos, ruletas y minijuegos.');
+    }
+
     const giftBalance = byId('giftBalance');
     if (giftBalance && document.body.dataset.jemmoWalletNativeGifts !== 'true') {
       const current = giftBalance.textContent || '';
-      const value = /saldo|jemmos/i.test(current) ? `Saldo: ${coins} JEMMOS` : coins;
+      const value = /saldo|jemmos/i.test(current) ? `Saldo: ${jemmos} JEMMOS` : jemmos;
       setText(giftBalance, value);
     }
   }
 
   function shouldOpenWallet(element) {
-    if (!element || element.closest('#walletSheet,#jw-sheet')) return false;
-    if (element.matches('[data-open-wallet],#walletPlus,[data-wallet]')) return true;
+    if (!element || element.closest('#jw-sheet')) return false;
+    if (element.matches('[data-open-wallet],#walletPlus,[data-wallet],[data-action="wallet"]')) return true;
     const label = element.textContent?.replace(/\s+/g, ' ').trim().toLowerCase() || '';
-    return label.includes('monedero') || label === 'recargar monedas' || label === 'recargar jemmos';
+    return label.includes('monedero') || label.includes('recargar') || label.includes('intercambiar') || label.includes('cambiar') || label.includes('retirar') || label.includes('historial');
   }
 
   function bindOpeners(root = document) {
-    if (byId('walletSheet')) return; // En Perfil manda el monedero ya construido.
-    root.querySelectorAll?.('button,a,[data-open-wallet],[data-wallet]').forEach(element => {
+    root.querySelectorAll?.('button,a,[data-open-wallet],[data-wallet],[data-action="wallet"]').forEach(element => {
       if (element.dataset.jwBound === '1' || !shouldOpenWallet(element)) return;
       element.dataset.jwBound = '1';
       element.addEventListener('click', event => {
         event.preventDefault();
         event.stopImmediatePropagation();
         const label = element.textContent?.toLowerCase() || '';
-        open(label.includes('recarg') ? 'recharge' : 'summary');
+        const tab = label.includes('recarg') ? 'recharge' : label.includes('intercamb') || label.includes('cambiar') ? 'exchange' : label.includes('retir') ? 'withdraw' : label.includes('historial') ? 'history' : 'summary';
+        open(tab);
       }, true);
     });
   }
@@ -524,7 +627,7 @@
         source: 'live-gift'
       });
       if (!result.ok) {
-        toast(`Saldo insuficiente. Faltan ${formatNumber(result.missing)} monedas.`);
+        toast(`Saldo insuficiente. Faltan ${formatNumber(result.missing)} JEMMOS.`);
         open('recharge');
         return;
       }
@@ -557,15 +660,10 @@
     save: saveWallet,
     addCoins,
     spendCoins,
-    addDiamonds,
-    addEarnings(amount, meta = {}) {
-      amount = Math.max(0, Math.round((Number(amount) || 0) * 100) / 100);
-      if (!amount) return getWallet();
-      const wallet = getWallet();
-      wallet.earnings += amount;
-      wallet.history.unshift({ id: `W-${Date.now()}`, type: meta.type || 'adjustment', title: meta.title || 'Ganancia añadida', detail: meta.detail || 'Ajuste de prueba', amount: `+${formatMoney(amount)}`, tone: 'positive', createdAt: Date.now() });
-      return saveWallet(wallet, meta.source || 'add-earnings');
-    },
+    addJems,
+    addDiamonds: addJems,
+    addCrystals,
+    addEarnings: addJems,
     record: movement,
     open,
     close,

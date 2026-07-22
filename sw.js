@@ -1,4 +1,4 @@
-const CACHE = 'jemmo-live-v1-wallet-global-01-20260722';
+const CACHE = 'jemmo-live-v1-wallet-global-03-20260722';
 const APP_SHELL = [
   './','./index.html','./acceso.html','./inicio.html','./live.html','./salas.html','./mensajes.html','./yo.html',
   './app.css','./inicio.css','./jemmo.css','./app.js','./jemmo-session.js','./pwa-register.js','./jemmo-wallet.js',
@@ -52,7 +52,7 @@ async function injectWalletScript(response, requestUrl) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-wallet', 'global-01');
+  headers.set('x-jemmo-wallet', 'global-03');
 
   return new Response(injected, {
     status: response.status,
