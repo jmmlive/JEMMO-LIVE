@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" class="jemmo-auth-pending">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -15,315 +15,828 @@
   <style>
     :root{
       color-scheme:dark;
-      --bg:#050007;--panel:#100116;--panel2:#180320;--purple:#c13cff;--purple2:#6d168d;
-      --gold:#ffd34e;--orange:#ff9a3d;--pink:#ff3a8b;--green:#35dd87;--red:#ff506f;
-      --text:#fff;--muted:#bbaec1;--line:#4e1c61;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
+      --bg:#050007;--panel:#100116;--panel2:#180320;--purple:#b82cff;--purple2:#6d168d;
+      --gold:#ffd34e;--orange:#ff9a3d;--pink:#ff3a8b;--green:#35dd87;--text:#fff;
+      --muted:#bbaec1;--line:#4e1c61;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
       font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
     }
     *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text)}
-    body{overflow-x:hidden;background:radial-gradient(circle at 50% -10%,#360646 0,#0b0010 42%,#050007 100%)}
-    button,input,textarea,select{font:inherit}button{color:inherit;-webkit-tap-highlight-color:transparent;cursor:pointer}[hidden]{display:none!important}
-    img,video{max-width:100%}
+    body{overflow-x:hidden;background:radial-gradient(circle at 50% -15%,#360646 0,#0b0010 42%,#050007 100%)}
+    button,input,textarea{font:inherit}button{color:inherit;-webkit-tap-highlight-color:transparent}[hidden]{display:none!important}
+    html.jemmo-auth-pending body{visibility:hidden}
 
-    .yo-app{width:min(100%,520px);min-height:100svh;margin:auto;padding:calc(8px + var(--safe-top)) 12px calc(90px + var(--safe-bottom));position:relative;overflow:hidden}
+    .yo-app{width:min(100%,520px);min-height:100svh;margin:auto;padding:calc(8px + var(--safe-top)) 12px calc(84px + var(--safe-bottom));position:relative;overflow:hidden}
     .yo-app::before{content:"";position:fixed;z-index:-1;inset:0;background:radial-gradient(circle at 82% 16%,#b82cff1f,transparent 24%),radial-gradient(circle at 8% 55%,#ffd34e0c,transparent 24%);pointer-events:none}
 
     .yo-topbar{height:54px;display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center;gap:8px;position:relative;z-index:8}
-    .yo-round{width:42px;height:42px;border:1px solid #62237a;border-radius:14px;background:#100116;display:grid;place-items:center;font-size:20px;box-shadow:0 0 18px #a82bda20}
-    .yo-round svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-    .yo-logo{display:flex;justify-content:center;align-items:center;gap:5px;white-space:nowrap}.yo-logo .jemmo{font-size:21px;font-weight:1000;background:linear-gradient(90deg,#fff 0,#ecdcf2 34%,#dd48ff 68%);-webkit-background-clip:text;background-clip:text;color:transparent}.yo-logo .live{font-size:18px;font-weight:1000;color:var(--gold);text-shadow:0 0 14px #ffd34e4d}
+    .yo-round{width:42px;height:42px;border:1px solid #542167;border-radius:14px;background:#100116;display:grid;place-items:center;font-size:20px;box-shadow:0 0 18px #a82bda20}
+    .yo-logo{display:flex;justify-content:center;align-items:center;min-width:0}.yo-logo img{width:min(100%,150px);height:44px;object-fit:contain}
 
-    .profile-card{position:relative;margin-top:9px;border:1px solid #63247a;border-radius:25px;background:linear-gradient(165deg,#16031d,#08000c 74%);box-shadow:0 18px 46px #0009,0 0 28px #a42ade1f;overflow:hidden}
-    .profile-body{padding:15px 14px 16px}
-    .profile-top{display:grid;grid-template-columns:88px minmax(0,1fr) 56px;gap:12px;align-items:center}
-    .avatar-button{position:relative;width:88px;height:88px;padding:0;border:3px solid #d945ff;border-radius:50%;background:radial-gradient(circle at 30% 20%,#7a218f,#22032c 70%);box-shadow:0 0 0 4px #08000c,0 0 22px #c136ff5e;overflow:hidden;display:grid;place-items:center}
+    .profile-card{position:relative;margin-top:8px;border:1px solid #63247a;border-radius:26px;background:linear-gradient(160deg,#16031d,#09000d 70%);box-shadow:0 18px 46px #0009,0 0 28px #a42ade1f;overflow:hidden}
+    .profile-banner{position:relative;height:145px;overflow:hidden;background:radial-gradient(circle at 72% 22%,#d341ff72,transparent 22%),linear-gradient(120deg,#21032d,#57086e 52%,#190322)}
+    .profile-banner::before{content:"LIVE YOUR WAY";position:absolute;left:18px;top:28px;width:130px;color:#fff;font-size:22px;line-height:.95;font-weight:1000;letter-spacing:-1px;text-shadow:0 0 18px #d93aff;transform:rotate(-5deg)}
+    .profile-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 42%,#08000c),url('jemmo-fish-nav.webp') 90% 46%/145px auto no-repeat;opacity:.94}
+    .profile-level{position:absolute;z-index:4;right:14px;top:106px;width:76px;min-height:92px;padding:11px 6px 8px;clip-path:polygon(25% 0,75% 0,100% 24%,100% 76%,75% 100%,25% 100%,0 76%,0 24%);background:linear-gradient(160deg,#5f117a,#16021d);border:1px solid #e548ff;filter:drop-shadow(0 0 12px #bb2dff8c);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+    .profile-level strong{font-size:24px;line-height:1}.profile-level span{font-size:9px;color:#ffe15e;font-weight:950;margin-top:4px}.profile-level small{font-size:8px;color:#d9c6df;margin-top:2px}
+
+    .profile-body{position:relative;padding:0 14px 16px;margin-top:-36px;z-index:3}
+    .profile-top{display:grid;grid-template-columns:102px minmax(0,1fr);gap:14px;align-items:end;padding-right:70px}
+    .avatar-button{position:relative;width:102px;height:102px;padding:0;border:3px solid #d945ff;border-radius:50%;background:radial-gradient(circle at 30% 20%,#7a218f,#22032c 70%);box-shadow:0 0 0 5px #08000c,0 0 26px #c136ff6b;overflow:hidden;display:grid;place-items:center}
     .avatar-button img{width:100%;height:100%;object-fit:cover;display:none}.avatar-button.has-image img{display:block}.avatar-button.has-image .avatar-fallback{display:none}
-    .avatar-fallback{position:absolute;inset:0;background:url('jemmo-fish-nav.webp') center/cover no-repeat,radial-gradient(circle,#521167,#16021d)}
-    .camera-badge{position:absolute;right:0;bottom:0;width:27px;height:27px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--orange));color:#250718;border:2px solid #15021c;display:grid;place-items:center;font-weight:1000;font-size:15px}
-    .identity{min-width:0}.identity-title{display:flex;align-items:center;gap:6px;min-width:0}.identity h1{margin:0;font-size:21px;line-height:1.08;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.verified{flex:0 0 18px;width:18px;height:18px;border-radius:50%;background:#ffc93c;color:#241004;display:grid;place-items:center;font-size:11px;font-weight:1000}
-    .username{margin:5px 0 0;color:#cbbbd0;font-size:10.5px}.username b{color:#e9dff0}.id-line{display:flex;align-items:center;gap:4px;margin:4px 0 0;color:#a997b0;font-size:8.8px;white-space:nowrap}.copy-id-button{width:21px;height:21px;padding:0;border:0;background:transparent;color:var(--gold);display:grid;place-items:center}.copy-id-button svg{width:15px;height:15px;fill:currentColor}.place{margin:6px 0 0;color:#d4c8d8;font-size:10px}
-    .profile-side{display:grid;justify-items:center;gap:5px}.profile-level{width:50px;min-height:60px;padding:7px 4px 6px;clip-path:polygon(25% 0,75% 0,100% 24%,100% 76%,75% 100%,25% 100%,0 76%,0 24%);background:linear-gradient(160deg,#5f117a,#16021d);border:1px solid #e548ff;filter:drop-shadow(0 0 8px #bb2dff60);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.profile-level strong{font-size:18px;line-height:1}.profile-level span{font-size:7px;color:#ffe15e;font-weight:950;margin-top:3px}.profile-level small{font-size:6px;color:#d9c6df;margin-top:2px}
-    .profile-presence{border:0;background:transparent;padding:0;color:#9bf0bd;font-size:7px;font-weight:900;display:flex;align-items:center;gap:3px}.presence-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 7px var(--green)}
-    .profile-banner{position:relative;width:100%;height:112px;margin-top:13px;border:1px solid #7b2e91;border-radius:19px;background:radial-gradient(circle at 78% 22%,#d341ff35,transparent 30%),radial-gradient(circle at 47% 125%,#6f188f70,transparent 49%),linear-gradient(112deg,#16021f,#2c053a 46%,#180220);box-shadow:inset 0 -28px 34px #06000882,0 10px 24px #0007;overflow:hidden}
-    .profile-cover-image{width:100%;height:100%;object-fit:cover;display:none}.profile-banner.has-image .profile-cover-image{display:block}.profile-banner:not(.has-image)::after{content:"";position:absolute;inset:0;background:url('jemmo-fish-nav.webp') 69% 51%/190px auto no-repeat;filter:drop-shadow(0 0 13px #d24cff88);opacity:.98}.profile-banner::before{content:"TOCA PARA CAMBIAR PORTADA";position:absolute;z-index:3;left:10px;bottom:8px;padding:5px 7px;border-radius:8px;background:#060008a8;color:#f1deff;font-size:7px;font-weight:900;letter-spacing:.3px}
-    .bio{margin:12px 0 0;color:#eae0ed;font-size:11.5px;line-height:1.43}
-    .profile-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:13px;padding-top:6px;border-top:1px solid #3f174e}.profile-stat{border:0;background:transparent;padding:7px 2px;text-align:center}.profile-stat b{display:block;font-size:18px}.profile-stat span{display:block;margin-top:2px;color:#aa9caf;font-size:8.5px;font-weight:800}
-    .profile-actions{display:grid;grid-template-columns:1fr 1fr 1.08fr;gap:7px;margin-top:10px}.profile-action{min-height:47px;border:1px solid #622679;border-radius:15px;background:linear-gradient(160deg,#21052b,#100116);font-size:9.5px;font-weight:950;display:flex;align-items:center;justify-content:center;gap:5px}.profile-action.wallet{border-color:#896b24;background:linear-gradient(160deg,#3a2709,#171006);color:#ffe18e}.profile-action.wallet span{font-size:16px}.profile-action.wallet strong{display:block}.profile-action.wallet small{display:block;color:#ffd34e;font-size:7px}
+    .avatar-fallback{width:100%;height:100%;display:grid;place-items:center;background:url('jemmo-fish-nav.webp') center/cover no-repeat}
+    .camera-badge{position:absolute;right:1px;bottom:1px;width:29px;height:29px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--orange));color:#250718;border:2px solid #15021c;display:grid;place-items:center;font-weight:1000}
+    .identity{min-width:0;padding-bottom:5px}.identity-title{display:flex;align-items:center;gap:7px;min-width:0}.identity h1{margin:0;font-size:24px;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.verified{width:18px;height:18px;border-radius:50%;background:#ffc93c;color:#241004;display:grid;place-items:center;font-size:11px;font-weight:1000}
+    .username{margin:5px 0 0;color:#cbbbd0;font-size:12px}.username b{color:#e9dff0}.id-line{margin:3px 0 0;color:#a997b0;font-size:10px}.id-line button{border:0;background:none;color:var(--gold);padding:0 0 0 5px;font-weight:900}
+    .place{margin:7px 0 0;color:#d4c8d8;font-size:11px}.bio{margin:9px 78px 0 0;color:#eae0ed;font-size:12px;line-height:1.42}
 
-    .section{margin-top:18px}.section-head{display:flex;align-items:end;justify-content:space-between;gap:10px;padding:0 3px 9px}.section-head h2{margin:0;font-size:18px;line-height:1.1}.section-head p{margin:4px 0 0;color:var(--muted);font-size:10px}.section-head button{border:0;background:none;color:var(--gold);font-size:10px;font-weight:950}
+    .profile-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:15px}.profile-stat{border:0;background:transparent;padding:7px 2px;text-align:center}.profile-stat b{display:block;font-size:18px}.profile-stat span{display:block;margin-top:2px;color:#aa9caf;font-size:9px;font-weight:800}
+
+    .profile-actions{display:grid;grid-template-columns:1fr 1fr 1.05fr;gap:7px;margin-top:11px}.profile-action{min-height:48px;border:1px solid #622679;border-radius:15px;background:linear-gradient(160deg,#21052b,#100116);font-size:10px;font-weight:950;display:flex;align-items:center;justify-content:center;gap:5px}.profile-action.wallet{border-color:#896b24;background:linear-gradient(160deg,#3a2709,#171006);color:#ffe18e}.profile-action.wallet strong{display:block}.profile-action.wallet small{display:block;color:#ffd34e;font-size:8px}
+
+    .section{margin-top:15px}.section-head{display:flex;align-items:end;justify-content:space-between;gap:10px;padding:0 3px 8px}.section-head h2{margin:0;font-size:18px}.section-head p{margin:3px 0 0;color:var(--muted);font-size:10px}.section-head button{border:0;background:none;color:var(--gold);font-size:10px;font-weight:950}
     .card{border:1px solid var(--line);border-radius:21px;background:linear-gradient(160deg,#14021a,#09000c);box-shadow:0 11px 27px #0005;overflow:hidden}
-    .quick-scroll{display:flex;gap:7px;padding:9px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}.quick-scroll::-webkit-scrollbar{display:none}.quick-tile{flex:0 0 104px;min-height:108px;padding:9px 7px;border:1px solid #4d205e;border-radius:16px;background:linear-gradient(160deg,#16031d,#0c010f);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;text-align:center;scroll-snap-align:start}.quick-tile .ico{width:42px;height:42px;border-radius:13px;background:#25052f;display:grid;place-items:center;color:#d34eff;font-size:22px;box-shadow:0 0 16px #b82cff1f}.quick-tile.gold .ico{color:var(--gold)}.quick-tile b{font-size:10.5px}.quick-tile small{color:#9f90a7;font-size:7.8px;line-height:1.2}.progress{width:76%;height:4px;border-radius:99px;background:#2e1636;overflow:hidden}.progress i{display:block;height:100%;width:var(--p,0%);background:linear-gradient(90deg,var(--gold),var(--purple))}
 
-    .activity-card{position:relative;display:grid;grid-template-columns:82px minmax(0,1fr);gap:13px;align-items:center;padding:14px;overflow:hidden}.activity-ring{z-index:2;width:78px;height:78px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--purple) var(--progress,35%),#24102c 0);position:relative;box-shadow:0 0 20px #b72cff28}.activity-ring::before{content:"";position:absolute;inset:7px;border-radius:50%;background:#0d0111}.activity-ring strong{position:relative;font-size:20px}.activity-copy{position:relative;z-index:2}.activity-copy b{display:block;font-size:14px}.activity-copy>small{display:block;margin-top:4px;color:var(--muted);font-size:9px;line-height:1.3}.activity-data{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:11px}.activity-data small{display:block;color:#98899f;font-size:6.8px;white-space:nowrap}.activity-data b{display:block;margin-top:2px;font-size:12px}.activity-fish{position:absolute;right:-8px;top:4px;width:90px;height:90px;background:url('jemmo-fish-nav.webp') center/contain no-repeat;opacity:.13;transform:rotate(-8deg)}
+    .quick-scroll{display:flex;gap:8px;padding:11px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}.quick-scroll::-webkit-scrollbar{display:none}
+    .quick-tile{flex:0 0 108px;min-height:116px;padding:11px 8px;border:1px solid #4d205e;border-radius:17px;background:linear-gradient(160deg,#16031d,#0c010f);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;scroll-snap-align:start}
+    .quick-tile .ico{width:45px;height:45px;border-radius:14px;background:#25052f;display:grid;place-items:center;color:#d34eff;font-size:24px;box-shadow:0 0 16px #b82cff1f}.quick-tile.gold .ico{color:var(--gold)}.quick-tile b{font-size:11px}.quick-tile small{color:#9f90a7;font-size:8px;line-height:1.2}.quick-tile .progress{width:76%;height:4px;border-radius:99px;background:#2e1636;overflow:hidden}.quick-tile .progress i{display:block;height:100%;width:var(--p,0%);background:linear-gradient(90deg,var(--gold),var(--purple))}
 
-    /* DESTELLOS */
-    .destellos-panel{padding:10px}.destellos-toolbar{display:flex;gap:7px;align-items:center}.destello-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;flex:1;padding:4px;border:1px solid #4d1d5e;border-radius:14px;background:#09000d}.destello-tab{min-height:35px;border:0;border-radius:10px;background:transparent;color:#9d8da3;font-size:9px;font-weight:950}.destello-tab.active{background:linear-gradient(120deg,#64207e,#351044);color:#fff;box-shadow:0 0 12px #c13cff2b}.create-destello{flex:0 0 43px;width:43px;height:43px;border:1px solid #9a7425;border-radius:14px;background:linear-gradient(145deg,#ffd34e,#b62cff);color:#1d0323;font-size:25px;font-weight:1000;box-shadow:0 0 17px #bd32ff35}
-    .destellos-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}.destello-card{position:relative;min-height:220px;border:1px solid #552166;border-radius:18px;background:linear-gradient(145deg,#21032b,#09000c);overflow:hidden;box-shadow:0 10px 22px #0007}.destello-media{position:relative;height:142px;background:radial-gradient(circle at 70% 25%,#c23cff4f,transparent 34%),linear-gradient(140deg,#260531,#100116);overflow:hidden}.destello-media img,.destello-media video{width:100%;height:100%;object-fit:cover;display:block}.destello-media.fallback::after{content:"";position:absolute;inset:0;background:url('jemmo-fish-nav.webp') center/118px auto no-repeat;filter:drop-shadow(0 0 13px #d24cff88);opacity:.8}.destello-type{position:absolute;z-index:2;left:7px;top:7px;padding:4px 6px;border-radius:8px;background:#060008b8;color:#fff;font-size:7px;font-weight:950}.destello-delete{position:absolute;z-index:3;right:6px;top:6px;width:27px;height:27px;border:1px solid #ffffff22;border-radius:9px;background:#060008b8;color:#fff;font-size:16px}.destello-content{padding:9px}.destello-text{margin:0;min-height:28px;color:#f2eaf4;font-size:9px;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.destello-time{display:block;margin-top:4px;color:#89798f;font-size:7px}.destello-actions{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;margin-top:8px}.destello-action{border:0;background:transparent;padding:3px 0;color:#afa2b4;font-size:7px;display:grid;justify-items:center;gap:2px}.destello-action i{font-style:normal;font-size:13px}.destello-action.liked{color:#ff5c92}.destello-empty{grid-column:1/-1;padding:28px 14px;text-align:center;color:#a99bad}.destello-empty .big{font-size:38px}.destello-empty b{display:block;margin-top:8px;color:#fff}.destello-empty small{display:block;margin-top:5px;font-size:9px;line-height:1.4}
+    .activity-card{display:grid;grid-template-columns:88px minmax(0,1fr) 60px;gap:12px;align-items:center;padding:14px}.activity-ring{width:80px;height:80px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--purple) var(--progress,35%),#24102c 0);position:relative;box-shadow:0 0 20px #b72cff28}.activity-ring::before{content:"";position:absolute;inset:7px;border-radius:50%;background:#0d0111}.activity-ring strong{position:relative;font-size:20px}.activity-copy b{display:block;font-size:14px}.activity-copy>small{display:block;margin-top:3px;color:var(--muted);font-size:9px}.activity-data{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:11px}.activity-data span{min-width:0}.activity-data small{display:block;color:#98899f;font-size:7px}.activity-data b{display:block;margin-top:2px;font-size:12px}.activity-fish{width:58px;height:58px;background:url('jemmo-fish-nav.webp') center/contain no-repeat;filter:drop-shadow(0 0 14px #b72cff)}
+
+    .moments{display:flex;gap:8px;padding:0 1px 3px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}.moments::-webkit-scrollbar{display:none}.moment{position:relative;flex:0 0 132px;min-height:142px;border:1px solid #482057;border-radius:16px;background:radial-gradient(circle at 75% 22%,#bb31ff55,transparent 28%),linear-gradient(145deg,#270532,#0c010f 68%);overflow:hidden;scroll-snap-align:start;text-align:left;padding:0}.moment::before{content:"";position:absolute;inset:0;background:url('jemmo-fish-nav.webp') 78% 24%/88px auto no-repeat;opacity:.55}.moment-copy{position:absolute;left:0;right:0;bottom:0;padding:26px 10px 10px;background:linear-gradient(transparent,#070009 40%)}.moment-copy b{display:block;font-size:11px}.moment-copy small{display:block;margin-top:3px;color:#a99bad;font-size:8px}.moment.add::before{content:"+";background:none;inset:22px auto auto 50%;transform:translateX(-50%);font-size:46px;color:#d44cff}.moment.add .moment-copy{text-align:center}
 
     .house-strip{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px}.house-icon{width:48px;height:48px;border-radius:15px;background:#25052f;display:grid;place-items:center;font-size:25px}.house-strip b{display:block;font-size:12px}.house-strip small{display:block;margin-top:3px;color:var(--muted);font-size:9px;line-height:1.3}.house-strip button{min-height:36px;padding:0 10px;border:1px solid #82631f;border-radius:12px;background:#2d1c06;color:#ffe08c;font-size:9px;font-weight:950}
+
     .version{text-align:center;color:#776b7d;font-size:9px;margin:19px 0 4px}
 
-    /* PANELES */
-    .backdrop{position:fixed;z-index:90;inset:0;background:#020003d6;backdrop-filter:blur(4px)}
-    .sheet{position:fixed;z-index:91;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,520px);max-height:88svh;overflow:auto;padding:15px 15px calc(18px + var(--safe-bottom));border:1px solid #74308e;border-radius:24px 24px 0 0;background:linear-gradient(180deg,#25052f,#08000d);box-shadow:0 -20px 60px #000}
-    .sheet-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.sheet-head strong{font-size:19px}.sheet-close{width:39px;height:39px;border:0;border-radius:13px;background:#3a0d45;font-size:24px}.edit-avatar{display:flex;align-items:center;gap:13px;margin:13px 0}.edit-avatar-preview{width:78px;height:78px;border:2px solid var(--gold);border-radius:50%;background:url('jemmo-fish-nav.webp') center/cover no-repeat;overflow:hidden}.edit-avatar-preview img{width:100%;height:100%;object-fit:cover;display:none}.edit-avatar-preview.has-image img{display:block}.file-label{min-height:40px;padding:0 13px;border:1px solid #71328a;border-radius:13px;background:#2b0a36;display:flex;align-items:center;font-size:10px;font-weight:900}.file-label input{position:absolute;opacity:0;pointer-events:none}.field{display:grid;gap:6px;margin-top:10px}.field span{font-size:11px;font-weight:850}.field input,.field textarea,.field select{width:100%;border:1px solid #573068;border-radius:14px;background:#0b010e;color:#fff;padding:11px;outline:none}.field textarea{min-height:78px;resize:none}.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--purple);box-shadow:0 0 0 3px #b82cff22}.grid-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}.save{width:100%;min-height:49px;margin-top:13px;border:0;border-radius:15px;background:linear-gradient(90deg,var(--gold),var(--purple));color:#1b031f;font-weight:1000}.sheet-note{margin:9px 0 0;color:#a997af;font-size:8px;line-height:1.4}.media-preview{position:relative;height:220px;margin-top:12px;border:1px dashed #76318d;border-radius:18px;background:radial-gradient(circle,#290435,#0a010d);overflow:hidden;display:grid;place-items:center;color:#a995af;text-align:center}.media-preview img,.media-preview video{width:100%;height:100%;object-fit:contain;display:none}.media-preview.has-media img.active,.media-preview.has-media video.active{display:block}.media-preview.has-media .placeholder{display:none}.placeholder b{display:block;font-size:30px}.placeholder small{display:block;margin-top:7px;font-size:9px}.destello-kind{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:11px}.kind-button{min-height:42px;border:1px solid #572269;border-radius:13px;background:#16031c;color:#aa99b0;font-size:10px;font-weight:950}.kind-button.active{border-color:#b93ce8;background:#3b0b4b;color:#fff}.counter{color:#8e7d94;font-size:8px;text-align:right}
+    .menu-backdrop{position:fixed;z-index:80;inset:0;background:#020003c8}.side-menu{position:fixed;z-index:81;left:0;top:0;bottom:0;width:min(78vw,310px);padding:calc(15px + var(--safe-top)) 12px calc(15px + var(--safe-bottom));background:linear-gradient(180deg,#24052e,#09000d);border-right:1px solid #7a2b96;transform:translateX(-105%);transition:.22s;overflow:auto}.side-menu.open{transform:translateX(0)}
+    .menu-top{display:flex;align-items:center;justify-content:space-between;gap:8px}.menu-top small{color:#c6b4cc;font-size:8px;letter-spacing:1px}.menu-top h2{margin:3px 0 0;color:var(--gold);font-size:18px}.menu-close{width:38px;height:38px;border:1px solid #6e2886;border-radius:12px;background:#2d0b38;font-size:25px}.function-search{display:flex;align-items:center;gap:8px;margin-top:14px;padding:0 10px;min-height:42px;border:1px solid #6e2a88;border-radius:13px;background:#0d0111}.function-search input{width:100%;border:0;outline:0;background:transparent;color:#fff;font-size:11px}.search-hint,.role-note{color:#a997af;font-size:8px;line-height:1.35}.menu-list,.quick-results{display:grid;gap:6px;margin-top:10px}.menu-list button,.quick-results button{min-height:48px;border:1px solid #542069;border-radius:14px;background:#15031b;padding:8px;display:grid;grid-template-columns:32px minmax(0,1fr) auto;align-items:center;gap:8px;text-align:left}.menu-list b{font-size:11px}.menu-list small{display:block;color:#af9bb6;font-size:8px}.menu-list i,.quick-results i{font-style:normal}.quick-results p{margin:5px 0;color:var(--gold);font-size:10px;font-weight:900}.logout-item{border-color:#7d2e49!important}
 
-    .menu-backdrop{position:fixed;z-index:80;inset:0;background:#020003c8}.side-menu{position:fixed;z-index:81;left:0;top:0;bottom:0;width:min(78vw,310px);padding:calc(15px + var(--safe-top)) 12px calc(15px + var(--safe-bottom));background:linear-gradient(180deg,#24052e,#09000d);border-right:1px solid #7a2b96;transform:translateX(-105%);transition:.22s;overflow:auto}.side-menu.open{transform:translateX(0)}.menu-top{display:flex;align-items:center;justify-content:space-between;gap:8px}.menu-top small{color:#c6b4cc;font-size:8px;letter-spacing:1px}.menu-top h2{margin:3px 0 0;color:var(--gold);font-size:18px}.menu-close{width:38px;height:38px;border:1px solid #6e2886;border-radius:12px;background:#2d0b38;font-size:25px}.function-search{display:flex;align-items:center;gap:8px;margin-top:14px;padding:0 10px;min-height:42px;border:1px solid #6e2a88;border-radius:13px;background:#0d0111}.function-search input{width:100%;border:0;outline:0;background:transparent;color:#fff;font-size:11px}.search-hint{color:#a997af;font-size:8px;line-height:1.35}.menu-list{display:grid;gap:6px;margin-top:10px}.menu-list button{min-height:48px;border:1px solid #542069;border-radius:14px;background:#15031b;padding:8px;display:grid;grid-template-columns:32px minmax(0,1fr) auto;align-items:center;gap:8px;text-align:left}.menu-list b{font-size:11px}.menu-list small{display:block;color:#af9bb6;font-size:8px}.menu-list i{font-style:normal}.logout-item{border-color:#7d2e49!important}
+    .edit-backdrop{position:fixed;z-index:90;inset:0;background:#020003d6;backdrop-filter:blur(4px)}.edit-sheet{position:fixed;z-index:91;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,520px);max-height:84svh;overflow:auto;padding:15px 15px calc(18px + var(--safe-bottom));border:1px solid #74308e;border-radius:24px 24px 0 0;background:linear-gradient(180deg,#25052f,#08000d);box-shadow:0 -20px 60px #000}.edit-head{display:flex;align-items:center;justify-content:space-between}.edit-head strong{font-size:19px}.edit-close{width:39px;height:39px;border:0;border-radius:13px;background:#3a0d45;font-size:24px}.edit-avatar{display:flex;align-items:center;gap:13px;margin:13px 0}.edit-avatar-preview{width:78px;height:78px;border:2px solid var(--gold);border-radius:50%;background:url('jemmo-fish-nav.webp') center/cover no-repeat;overflow:hidden}.edit-avatar-preview img{width:100%;height:100%;object-fit:cover;display:none}.edit-avatar-preview.has-image img{display:block}.file-label{min-height:40px;padding:0 13px;border:1px solid #71328a;border-radius:13px;background:#2b0a36;display:flex;align-items:center;font-size:10px;font-weight:900}.file-label input{position:absolute;opacity:0;pointer-events:none}.field{display:grid;gap:6px;margin-top:10px}.field span{font-size:11px;font-weight:850}.field input,.field textarea{width:100%;border:1px solid #573068;border-radius:14px;background:#0b010e;color:#fff;padding:11px;outline:none}.field textarea{min-height:78px;resize:none}.field input:focus,.field textarea:focus{border-color:var(--purple);box-shadow:0 0 0 3px #b82cff22}.save{width:100%;min-height:49px;margin-top:13px;border:0;border-radius:15px;background:linear-gradient(90deg,var(--gold),var(--purple));color:#1b031f;font-weight:1000}
 
     .toast{position:fixed;z-index:150;left:50%;bottom:calc(78px + var(--safe-bottom));transform:translate(-50%,20px);width:min(calc(100% - 32px),430px);padding:11px 13px;border:1px solid #8e37ab;border-radius:14px;background:#19031fe8;text-align:center;font-size:11px;font-weight:800;opacity:0;pointer-events:none;transition:.22s}.toast.show{opacity:1;transform:translate(-50%,0)}
 
-    .bottom-nav{position:fixed!important;z-index:60!important;left:50%!important;bottom:0!important;transform:translateX(-50%)!important;width:min(100%,520px)!important;min-height:64px!important;padding:5px 7px calc(5px + var(--safe-bottom))!important;display:grid!important;grid-template-columns:repeat(5,1fr)!important;background:linear-gradient(180deg,#100016f2,#070009)!important;border-top:1px solid #4d1c5e!important;box-shadow:0 -7px 21px #0008!important}.bottom-nav a{position:relative!important;color:#8f8394!important;text-decoration:none!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;font-size:9px!important;font-weight:850!important}.bottom-nav .nav-icon{font-size:18px!important}.bottom-nav a[data-tab="yo"]{color:#db58ff!important}.bottom-nav a[data-tab="yo"]::before{content:""!important;position:absolute!important;top:-11px!important;width:40px!important;height:40px!important;border:2px solid #bc39f2!important;border-radius:50%!important;background:#22052b url('jemmo-fish-nav.webp') center/cover no-repeat!important;box-shadow:0 0 10px #b933ef!important}.bottom-nav a[data-tab="yo"] .nav-icon{opacity:0!important}.bottom-nav a[data-tab="yo"] b{margin-top:18px!important}.bottom-nav .badge{position:absolute!important;top:0!important;right:22%!important;min-width:15px!important;height:15px!important;padding:0 4px!important;border-radius:99px!important;background:#e92d69!important;color:#fff!important;display:grid!important;place-items:center!important;font-size:7px!important}
+    .bottom-nav{position:fixed!important;z-index:60!important;left:50%!important;bottom:0!important;transform:translateX(-50%)!important;width:min(100%,520px)!important;min-height:68px!important;padding:5px 7px calc(5px + var(--safe-bottom))!important;display:grid!important;grid-template-columns:repeat(5,1fr)!important;background:linear-gradient(180deg,#100016f2,#070009)!important;border-top:1px solid #4d1c5e!important;box-shadow:0 -8px 24px #0009!important}.bottom-nav a{position:relative!important;color:#8f8394!important;text-decoration:none!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;font-size:9px!important;font-weight:850!important}.bottom-nav .nav-icon{font-size:19px!important}.bottom-nav a[data-tab="yo"]{color:#db58ff!important}.bottom-nav a[data-tab="yo"]::before{content:""!important;position:absolute!important;top:-15px!important;width:46px!important;height:46px!important;border:2px solid #bc39f2!important;border-radius:50%!important;background:#22052b url('jemmo-fish-nav.webp') center/cover no-repeat!important;box-shadow:0 0 15px #b933ef!important}.bottom-nav a[data-tab="yo"] .nav-icon{opacity:0!important}.bottom-nav a[data-tab="yo"] b{margin-top:22px!important}.bottom-nav .badge{position:absolute!important;top:0!important;right:22%!important;min-width:15px!important;height:15px!important;padding:0 4px!important;border-radius:99px!important;background:#e92d69!important;color:#fff!important;display:grid!important;place-items:center!important;font-size:7px!important}
+
+    @media(max-width:380px){.profile-banner{height:132px}.profile-level{top:94px}.profile-top{grid-template-columns:92px minmax(0,1fr);gap:10px}.avatar-button{width:92px;height:92px}.identity h1{font-size:21px}.bio{margin-right:72px}.profile-action{font-size:9px}.activity-card{grid-template-columns:76px minmax(0,1fr) 48px;padding:11px}.activity-ring{width:70px;height:70px}.activity-fish{width:48px;height:48px}}
+
+
+    /* =========================================================
+       JEMMO LIVE V1 · PERFIL PRUEBA 04 · CABECERA REORDENADA
+       ========================================================= */
+    .yo-app{padding-bottom:calc(104px + var(--safe-bottom))}
+    .yo-topbar{height:56px}
+    .yo-round{border-color:#62237a}
+    .yo-logo{display:flex;justify-content:center;align-items:center;gap:6px;min-width:0;letter-spacing:.4px;white-space:nowrap}
+    .yo-logo .jemmo{font-size:21px;font-weight:1000;background:linear-gradient(90deg,#fff 0,#ecdcf2 34%,#dd48ff 68%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 18px #c034ff33}
+    .yo-logo .live{font-size:18px;font-weight:1000;color:var(--gold);text-shadow:0 0 14px #ffd34e4d}
+
+    .profile-card{margin-top:9px;border-radius:25px}
+    .profile-banner{height:148px;background:radial-gradient(circle at 70% 20%,#d341ff72,transparent 23%),linear-gradient(120deg,#21032d,#57086e 52%,#190322)}
+    .profile-banner::before{z-index:2;left:18px;top:31px;width:126px;font-size:21px;transform:rotate(-4deg)}
+    .profile-banner::after{background:linear-gradient(180deg,transparent 48%,#08000c),url('jemmo-fish-nav.webp') 76% 43%/158px auto no-repeat;opacity:.95}
+    .profile-level{z-index:5;right:14px;top:14px;width:62px;min-height:72px;padding:8px 5px 7px;filter:drop-shadow(0 0 10px #bb2dff70)}
+    .profile-level strong{font-size:21px}.profile-level span{font-size:8px;margin-top:3px}.profile-level small{font-size:7px}
+    .profile-body{padding:0 14px 16px;margin-top:-37px}
+    .profile-top{grid-template-columns:96px minmax(0,1fr);gap:13px;padding-right:0}
+    .avatar-button{width:96px;height:96px;box-shadow:0 0 0 5px #08000c,0 0 24px #c136ff62}
+    .identity{padding-bottom:4px}.identity-title{gap:6px}.identity h1{font-size:22px;line-height:1.08}.verified{flex:0 0 18px}
+    .username{font-size:11px}.id-line{margin-top:4px;font-size:9.5px;white-space:nowrap}.place{font-size:10.5px}
+    .bio{margin:10px 0 0;font-size:11.5px;line-height:1.43}
+    .profile-stats{gap:4px;margin-top:14px;padding-top:6px;border-top:1px solid #3f174e}.profile-stat span{font-size:8.5px}
+    .profile-actions{grid-template-columns:1fr 1fr 1.08fr;gap:7px;margin-top:10px}.profile-action{min-height:47px;font-size:9.5px}
+
+    .section{margin-top:18px}.section-head{padding-bottom:9px}.section-head h2{line-height:1.1}.section-head p{margin-top:4px}
+    .quick-scroll{gap:7px;padding:9px}.quick-tile{flex-basis:104px;min-height:108px;padding:9px 7px;border-radius:16px;gap:5px}.quick-tile .ico{width:42px;height:42px;border-radius:13px;font-size:22px}.quick-tile b{font-size:10.5px}.quick-tile small{font-size:7.8px}
+
+    .activity-card{position:relative;grid-template-columns:82px minmax(0,1fr);gap:13px;padding:14px;overflow:hidden}
+    .activity-ring{z-index:2;width:78px;height:78px}.activity-copy{position:relative;z-index:2;min-width:0}.activity-copy>small{margin-top:4px;max-width:235px;line-height:1.3}.activity-data{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.activity-data small{font-size:6.8px;white-space:nowrap}
+    .activity-fish{position:absolute;z-index:1;right:-8px;top:4px;width:90px;height:90px;opacity:.13;transform:rotate(-8deg)}
+
+    .moments{padding-bottom:4px}.moment{flex-basis:148px;min-height:148px;border-radius:17px}.moment::before{background-position:78% 22%;background-size:96px auto;opacity:.52}.moment:nth-child(3)::before{background-position:center 24%;background-size:82px auto;opacity:.36}.moment-copy{padding:28px 10px 10px}.moment-copy small{line-height:1.25}.moment.add::before{font-size:44px}
+
+    .bottom-nav{min-height:64px!important;box-shadow:0 -7px 21px #0008!important}.bottom-nav .nav-icon{font-size:18px!important}.bottom-nav a[data-tab="yo"]::before{top:-11px!important;width:40px!important;height:40px!important;box-shadow:0 0 10px #b933ef!important}.bottom-nav a[data-tab="yo"] b{margin-top:18px!important}
 
     @media(max-width:380px){
-      .profile-body{padding:13px 11px 15px}.profile-top{grid-template-columns:76px minmax(0,1fr) 47px;gap:9px}.avatar-button{width:76px;height:76px}.identity h1{font-size:18px}.username{font-size:9.5px}.id-line{font-size:7.8px}.place{font-size:9px}.profile-level{width:44px;min-height:54px}.profile-banner{height:102px;margin-top:11px}.profile-banner:not(.has-image)::after{background-size:168px auto}.profile-action{font-size:8.7px}.activity-card{grid-template-columns:72px minmax(0,1fr);padding:11px}.activity-ring{width:68px;height:68px}.destellos-grid{gap:6px}.destello-card{min-height:207px}.destello-media{height:132px}.grid-fields{grid-template-columns:1fr}
+      .profile-banner{height:140px}.profile-level{top:12px;right:11px;width:58px;min-height:68px}
+      .profile-top{grid-template-columns:88px minmax(0,1fr);gap:10px}.avatar-button{width:88px;height:88px}.identity h1{font-size:20px}
+      .profile-action{font-size:8.7px}.activity-card{grid-template-columns:72px minmax(0,1fr);padding:11px}.activity-ring{width:68px;height:68px}.activity-fish{width:76px;height:76px}.activity-data{gap:5px}.activity-data small{font-size:6.2px}
     }
-  </style>
+
+
+    /* =========================================================
+       JEMMO LIVE V1 · PERFIL PRUEBA 04 · CABECERA REORDENADA
+       Foto, identidad y nivel arriba; pez en banner inferior
+       ========================================================= */
+    .profile-card{padding:0;background:linear-gradient(165deg,#16031d,#08000c 74%)}
+    .profile-body{margin-top:0;padding:15px 14px 16px}
+    .profile-top{display:grid;grid-template-columns:88px minmax(0,1fr) 50px;gap:12px;align-items:center;padding:0}
+    .avatar-button{width:88px;height:88px;box-shadow:0 0 0 4px #08000c,0 0 22px #c136ff5e}
+    .camera-badge{width:27px;height:27px;font-size:17px}
+    .identity{min-width:0;padding:0}
+    .identity-title{align-items:center;gap:6px}
+    .identity h1{font-size:21px;line-height:1.08;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .username{margin-top:5px;font-size:10.5px}
+    .id-line{margin-top:4px;font-size:8.8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .id-line button{font-size:8.8px}
+    .place{margin-top:6px;font-size:10px}
+    .profile-level{position:static;z-index:auto;right:auto;top:auto;width:50px;min-height:60px;padding:7px 4px 6px;filter:drop-shadow(0 0 8px #bb2dff60)}
+    .profile-level strong{font-size:18px}.profile-level span{font-size:7px;margin-top:3px}.profile-level small{font-size:6px;margin-top:2px}
+    .profile-banner{height:108px;margin-top:13px;border:1px solid #65267b;border-radius:18px;background:radial-gradient(circle at 70% 28%,#d341ff5e,transparent 28%),linear-gradient(105deg,#21032d,#57086e 48%,#17021f);box-shadow:inset 0 0 30px #b82cff1d;overflow:hidden}
+    .profile-banner::before{content:none!important}
+    .profile-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#08000c2b 0,#08000c00 36%,#08000c24 100%),url('jemmo-fish-nav.webp') 72% 52%/176px auto no-repeat;opacity:.98}
+    .bio{margin:12px 0 0;font-size:11.5px;line-height:1.43}
+    .profile-stats{margin-top:13px}
+
+    @media(max-width:380px){
+      .profile-body{padding:13px 11px 15px}
+      .profile-top{grid-template-columns:76px minmax(0,1fr) 44px;gap:9px}
+      .avatar-button{width:76px;height:76px}
+      .camera-badge{width:24px;height:24px;font-size:15px}
+      .identity h1{font-size:18px}.username{font-size:9.5px}.id-line{font-size:7.8px}.id-line button{font-size:7.8px}.place{font-size:9px}
+      .profile-level{width:44px;min-height:54px;padding:6px 3px 5px}.profile-level strong{font-size:16px}.profile-level span{font-size:6.4px}.profile-level small{font-size:5.5px}
+      .profile-banner{height:96px;margin-top:11px}.profile-banner::after{background-position:73% 52%;background-size:154px auto}
+    }
+
+
+    /* =========================================================
+       JEMMO LIVE V1 · PERFIL PRUEBA 05 · BANNER PREMIUM
+       Fondo extendido, pez protagonista y laterales integrados
+       ========================================================= */
+    .profile-banner{
+      height:112px;
+      margin-top:13px;
+      isolation:isolate;
+      border:1px solid #7b2e91;
+      border-radius:19px;
+      background:
+        linear-gradient(90deg,#14021dcc 0%,#20032cb8 28%,#30043ea0 55%,#16021fd1 100%),
+        url('jemmo-fish-nav.webp') center 47%/cover no-repeat;
+      box-shadow:
+        inset 0 0 0 1px #ffffff0a,
+        inset 0 -28px 34px #06000882,
+        0 10px 24px #0007,
+        0 0 22px #bd32ff1d;
+      overflow:hidden;
+    }
+    .profile-banner::before{
+      content:""!important;
+      position:absolute;
+      z-index:1;
+      inset:0;
+      background:
+        radial-gradient(circle at 10% 25%,#f05cff8c 0 2px,transparent 3px),
+        radial-gradient(circle at 18% 70%,#ffd34e66 0 2px,transparent 3px),
+        radial-gradient(circle at 31% 35%,#bd4cff70 0 1.5px,transparent 2.5px),
+        radial-gradient(circle at 87% 20%,#ffffff5c 0 1.5px,transparent 2.5px),
+        linear-gradient(115deg,#ffffff12 0%,transparent 24%,transparent 68%,#c341ff18 100%);
+      backdrop-filter:blur(5px) saturate(1.2);
+      -webkit-backdrop-filter:blur(5px) saturate(1.2);
+      opacity:.92;
+      pointer-events:none;
+    }
+    .profile-banner::after{
+      content:"";
+      position:absolute;
+      z-index:2;
+      inset:0;
+      background:url('jemmo-fish-nav.webp') 68% 51%/190px auto no-repeat;
+      filter:drop-shadow(0 0 13px #d24cff88) drop-shadow(0 8px 14px #000a);
+      opacity:1;
+      transform:translateZ(0);
+      pointer-events:none;
+    }
+    @media(max-width:380px){
+      .profile-banner{height:102px;margin-top:11px}
+      .profile-banner::after{background-position:70% 51%;background-size:168px auto}
+    }
+
+
+    /* =========================================================
+       JEMMO LIVE V1 · PERFIL PRUEBA 06 · PORTADA EDITABLE
+       Portada personal por usuario, sin pez fijo ni iconos permanentes
+       ========================================================= */
+    .profile-banner{
+      position:relative;
+      display:block;
+      width:100%;
+      height:112px;
+      margin-top:13px;
+      padding:0;
+      appearance:none;
+      -webkit-appearance:none;
+      border:1px solid #7b2e91;
+      border-radius:19px;
+      background:
+        radial-gradient(circle at 12% 24%,#f05cff26 0 2px,transparent 3px),
+        radial-gradient(circle at 23% 73%,#ffd34e1f 0 2px,transparent 3px),
+        radial-gradient(circle at 78% 22%,#d341ff35 0,transparent 30%),
+        radial-gradient(circle at 47% 125%,#6f188f70 0,transparent 49%),
+        linear-gradient(112deg,#16021f 0%,#2c053a 46%,#180221 100%);
+      box-shadow:
+        inset 0 0 0 1px #ffffff09,
+        inset 0 -28px 34px #06000866,
+        0 10px 24px #0007,
+        0 0 22px #bd32ff1d;
+      overflow:hidden;
+      cursor:pointer;
+    }
+    .profile-banner::before{
+      content:""!important;
+      position:absolute;
+      z-index:2;
+      inset:0;
+      background:
+        linear-gradient(118deg,#ffffff0c 0%,transparent 24%,transparent 70%,#c341ff12 100%),
+        linear-gradient(180deg,transparent 58%,#08000c66 100%);
+      opacity:1;
+      backdrop-filter:none;
+      -webkit-backdrop-filter:none;
+      pointer-events:none;
+    }
+    .profile-banner::after{content:none!important;display:none!important}
+    .profile-cover-image{
+      position:absolute;
+      z-index:1;
+      inset:0;
+      width:100%;
+      height:100%;
+      display:none;
+      object-fit:cover;
+      object-position:center;
+      transform:translateZ(0);
+    }
+    .profile-banner.has-cover .profile-cover-image{display:block}
+    .profile-banner.has-cover{
+      background:#16021f;
+      box-shadow:inset 0 0 0 1px #ffffff0b,0 10px 24px #0008,0 0 22px #bd32ff20;
+    }
+    .camera-badge{display:none!important}
+
+    .edit-media-title{margin:14px 0 7px;color:#eadff0;font-size:10px;font-weight:950;letter-spacing:.08em;text-transform:uppercase}
+    .edit-cover-block{display:grid;gap:9px}
+    .edit-cover-preview{
+      position:relative;
+      height:116px;
+      overflow:hidden;
+      border:1px solid #74308e;
+      border-radius:17px;
+      background:
+        radial-gradient(circle at 78% 24%,#d341ff35 0,transparent 31%),
+        radial-gradient(circle at 46% 126%,#6f188f70 0,transparent 50%),
+        linear-gradient(112deg,#16021f 0%,#2c053a 46%,#180221 100%);
+      box-shadow:inset 0 0 24px #b82cff18;
+    }
+    .edit-cover-preview::after{content:"📷";position:absolute;right:10px;bottom:9px;width:34px;height:34px;border-radius:12px;background:#09000dcc;border:1px solid #a83fca;display:grid;place-items:center;font-size:17px;box-shadow:0 0 14px #b82cff44}
+    .edit-cover-preview img{width:100%;height:100%;display:none;object-fit:cover;object-position:center}
+    .edit-cover-preview.has-image img{display:block}
+    .edit-cover-placeholder{position:absolute;inset:0;display:grid;place-content:center;text-align:center;padding:14px;color:#d8c9de}
+    .edit-cover-placeholder b{font-size:12px}.edit-cover-placeholder small{display:block;margin-top:4px;color:#a997b0;font-size:9px}
+    .edit-cover-preview.has-image .edit-cover-placeholder{display:none}
+    .edit-media-actions{display:grid;grid-template-columns:1fr auto;gap:8px}
+    .file-label.cover-label{justify-content:center;min-height:42px}
+    .remove-cover{min-height:42px;padding:0 12px;border:1px solid #5b2a69;border-radius:13px;background:#16031d;color:#cbbbd0;font-size:9px;font-weight:900}
+    .remove-cover:disabled{opacity:.42}
+    .edit-avatar{margin-top:0}
+    .edit-avatar-preview{position:relative}
+    .edit-avatar-preview::after{content:"📷";position:absolute;right:1px;bottom:1px;width:27px;height:27px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--orange));color:#250718;border:2px solid #15021c;display:grid;place-items:center;font-size:13px}
+
+    @media(max-width:380px){
+      .profile-banner{height:102px;margin-top:11px}
+      .edit-cover-preview{height:104px}
+    }
+
+
+    /* =========================================================
+       JEMMO LIVE V1 · PERFIL PRUEBA 08 · ENCUADRE DE PORTADA
+       Arrastre táctil para elegir y guardar la posición final
+       ========================================================= */
+    .profile-cover-image{
+      object-position:50% 50%;
+      will-change:object-position;
+    }
+    .edit-cover-preview{
+      touch-action:none;
+      cursor:grab;
+      user-select:none;
+      -webkit-user-select:none;
+    }
+    .edit-cover-preview.dragging{cursor:grabbing}
+    .edit-cover-preview img{
+      object-position:50% 50%;
+      pointer-events:none;
+      user-select:none;
+      -webkit-user-drag:none;
+      will-change:object-position;
+    }
+    .cover-position-row{
+      min-height:34px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:0 2px;
+      color:#c8b8ce;
+      font-size:9px;
+      line-height:1.25;
+    }
+    .cover-position-row span{min-width:0;flex:1}
+    .center-cover{
+      flex:0 0 auto;
+      min-height:30px;
+      padding:0 10px;
+      border:1px solid #6d2c83;
+      border-radius:10px;
+      background:#1a0322;
+      color:#f1e5f5;
+      font-size:8px;
+      font-weight:950;
+    }
+    .edit-cover-preview:not(.has-image)+.cover-position-row{opacity:.42;pointer-events:none}
+
+
+    /* =========================================================
+       JEMMO LIVE V1 · PERFIL PRUEBA 13 · NIVEL RECOLOCADO
+       Acceso de edición únicamente desde el botón inferior; nivel alineado arriba
+       ========================================================= */
+    .profile-top{grid-template-columns:88px minmax(0,1fr) 52px;align-items:start}
+    .profile-side{display:flex;flex-direction:column;align-items:center;gap:7px;min-width:52px;padding-top:0}
+    .profile-level{margin-top:0;width:48px;min-height:57px}
+    .avatar-button,.profile-banner{cursor:default}
+    .profile-extra{display:flex;align-items:center;gap:7px;margin-top:7px;min-height:30px;overflow:visible}
+    .profile-extra[hidden]{display:none!important}
+    .profile-age{flex:0 0 auto;min-height:28px;padding:0 9px;border:1px solid #5e286f;border-radius:999px;background:#17031e;color:#eadff0;display:flex;align-items:center;gap:4px;font-size:9px;font-weight:900;white-space:nowrap}
+    .social-buttons{display:flex;align-items:center;gap:6px;min-width:0}
+    .social-link{width:28px;height:28px;flex:0 0 28px;border:1px solid #6b2d7d;border-radius:9px;display:grid;place-items:center;color:#fff;text-decoration:none;box-shadow:0 4px 12px #0005;transition:transform .16s ease,filter .16s ease,opacity .16s ease}
+    .social-link:active{transform:scale(.92)}
+    .social-link svg{width:15px;height:15px;display:block;fill:currentColor}
+    .social-link.instagram{background:radial-gradient(circle at 30% 105%,#ffd16a 0 18%,#ff3f72 42%,#a42ac1 70%,#4e5bd5 100%);border-color:#ef6aa8}
+    .social-link.tiktok{background:#08080c;border-color:#3ee7e9;box-shadow:-1px 0 0 #ff3c76,1px 0 0 #3ee7e9,0 4px 12px #0007}
+    .social-link.youtube{background:#e62117;border-color:#ff7068}
+    .social-link.facebook{background:#1877f2;border-color:#72aaff}
+    .social-link.disabled{opacity:.24;filter:grayscale(1);cursor:default;box-shadow:none}
+    .edit-sheet{max-height:91svh}
+    .edit-intro{margin:7px 0 11px;color:#bfaec6;font-size:9.5px;line-height:1.4}
+    .edit-section-label{margin:16px 0 7px;padding-top:12px;border-top:1px solid #4b1d5a;color:var(--gold);font-size:10px;font-weight:1000;letter-spacing:.08em;text-transform:uppercase}
+    .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+    .field-grid .field{margin-top:0}
+    .field small,.privacy-note{color:#9f90a7;font-size:8.5px;line-height:1.35}
+    .field-meta{display:flex;justify-content:space-between;gap:8px;margin-top:-1px;color:#9f90a7;font-size:8.5px}
+    .field-meta strong{color:var(--gold)}
+    .social-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+    .social-grid .field{margin-top:0}
+    @media(max-width:380px){
+      .profile-top{grid-template-columns:76px minmax(0,1fr) 46px}
+      .profile-side{min-width:46px;gap:0}
+      .profile-level{width:44px;min-height:53px}.field-grid,.social-grid{grid-template-columns:1fr}
+    }
+
+
+    /* =========================================================
+       JEMMO LIVE V1 · PERFIL PRUEBA 15 · MENSAJES Y ESTADO
+       Economía local de pruebas separada por usuario
+       ========================================================= */
+    .wallet-backdrop{position:fixed;inset:0;z-index:150;background:#040006d9;backdrop-filter:blur(6px)}
+    .wallet-sheet{position:fixed;z-index:151;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,520px);height:min(94svh,820px);padding:14px 14px calc(18px + env(safe-area-inset-bottom,0px));border:1px solid #7a2c92;border-radius:26px 26px 0 0;background:radial-gradient(circle at 75% 0,#4e0862 0,#1b0325 28%,#09000d 72%);box-shadow:0 -24px 70px #000;overflow:auto;overscroll-behavior:contain}
+    .wallet-head{position:sticky;top:-14px;z-index:3;display:flex;align-items:center;gap:10px;margin:-14px -14px 12px;padding:calc(14px + env(safe-area-inset-top,0px)) 14px 12px;background:linear-gradient(180deg,#24052ff8,#17021ff2);border-bottom:1px solid #5d2170;backdrop-filter:blur(16px)}
+    .wallet-head-copy{min-width:0;flex:1}.wallet-head-copy small{display:block;color:var(--gold);font-size:8px;font-weight:1000;letter-spacing:.14em}.wallet-head-copy strong{display:block;margin-top:2px;font-size:21px}.wallet-head-copy span{display:block;margin-top:2px;color:#bdafc2;font-size:9px}
+    .wallet-close{width:39px;height:39px;flex:0 0 39px;border:1px solid #74328a;border-radius:13px;background:#25062e;color:#fff;font-size:24px}
+    .wallet-test-chip{display:inline-flex;align-items:center;gap:5px;margin-bottom:10px;padding:6px 9px;border:1px solid #9a7024;border-radius:999px;background:#2a1806;color:#ffe292;font-size:8px;font-weight:1000}
+    .wallet-balances{display:grid;grid-template-columns:1fr 1fr;gap:8px}.wallet-balance{min-height:88px;padding:12px;border:1px solid #653078;border-radius:18px;background:linear-gradient(150deg,#260731,#100116);box-shadow:inset 0 0 24px #bb35ff12}.wallet-balance.coins{border-color:#8d6b22;background:linear-gradient(150deg,#3c2808,#171006)}.wallet-balance.earnings{grid-column:1/-1;min-height:76px;background:linear-gradient(150deg,#103125,#08150f);border-color:#276b4d}.wallet-balance small{display:flex;align-items:center;gap:5px;color:#c9bacd;font-size:8px;font-weight:900;letter-spacing:.05em}.wallet-balance b{display:block;margin-top:7px;font-size:25px;line-height:1}.wallet-balance.coins b{color:#ffd34e}.wallet-balance.diamonds b{color:#df7bff}.wallet-balance.earnings b{color:#62e6a1}.wallet-balance em{display:block;margin-top:6px;color:#9f91a5;font-size:8px;font-style:normal}
+    .wallet-tabs{display:flex;gap:7px;margin:12px -2px 10px;padding:2px;overflow-x:auto;scrollbar-width:none}.wallet-tabs::-webkit-scrollbar{display:none}.wallet-tab{flex:0 0 auto;min-height:36px;padding:0 12px;border:1px solid #572769;border-radius:999px;background:#14031b;color:#bfaec6;font-size:8px;font-weight:1000}.wallet-tab.active{border-color:var(--gold);background:linear-gradient(135deg,#5c3d08,#2a1204);color:#ffe28b;box-shadow:0 0 15px #ffd34e2a}
+    .wallet-view{display:grid;gap:10px}.wallet-view[hidden]{display:none!important}.wallet-card{padding:13px;border:1px solid #542267;border-radius:18px;background:#110117d9}.wallet-card h3{margin:0;font-size:14px}.wallet-card>p{margin:5px 0 0;color:#ad9eb3;font-size:9px;line-height:1.4}
+    .wallet-actions-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.wallet-shortcut{min-height:68px;padding:8px 5px;border:1px solid #643078;border-radius:15px;background:#1b0524;color:#fff;font-size:9px;font-weight:950}.wallet-shortcut span{display:block;margin-bottom:4px;font-size:22px}.wallet-shortcut.gold{border-color:#8b6721;background:#2d1d06;color:#ffe18a}
+    .wallet-method-line{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding:10px;border:1px solid #492057;border-radius:14px;background:#0b010f}.wallet-method-line span{min-width:0}.wallet-method-line b{display:block;font-size:10px}.wallet-method-line small{display:block;margin-top:2px;color:#9f91a5;font-size:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.wallet-method-line button{min-height:32px;padding:0 10px;border:1px solid #6b2c80;border-radius:10px;background:#270730;color:#fff;font-size:8px;font-weight:950}
+    .wallet-packages{display:grid;grid-template-columns:1fr 1fr;gap:9px}.wallet-package{min-height:82px;padding:10px;border:1px solid #7b5b1e;border-radius:17px;background:radial-gradient(circle at 80% 10%,#ffcf4730,transparent 36%),linear-gradient(150deg,#3b2607,#170d03);color:#fff;text-align:left}.wallet-package strong{display:block;color:#ffd34e;font-size:18px}.wallet-package small{display:block;margin-top:5px;color:#d6c298;font-size:8px}.wallet-package span{display:inline-block;margin-top:8px;padding:4px 7px;border-radius:999px;background:#ffd34e;color:#2b1703;font-size:7px;font-weight:1000}
+    .wallet-field{display:grid;gap:6px}.wallet-field>span{color:#e6dbe9;font-size:9px;font-weight:900}.wallet-field input,.wallet-field select{width:100%;min-height:45px;border:1px solid #5c2a6d;border-radius:13px;background:#09000d;color:#fff;padding:0 12px;outline:none}.wallet-field input:focus,.wallet-field select:focus{border-color:var(--gold);box-shadow:0 0 0 3px #ffd34e1d}.wallet-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.wallet-preview{padding:11px;border:1px dashed #6c377d;border-radius:14px;background:#0b010f;color:#bfaec5;font-size:9px;line-height:1.45}.wallet-preview b{color:#ffe17c}.wallet-primary{width:100%;min-height:47px;border:0;border-radius:14px;background:linear-gradient(90deg,#ffd34e,#d63aff);color:#1c031f;font-weight:1000}.wallet-secondary{width:100%;min-height:42px;border:1px solid #673079;border-radius:13px;background:#210529;color:#fff;font-weight:900}.wallet-note{padding:10px;border:1px solid #6e5320;border-radius:13px;background:#251706;color:#dbc991;font-size:8px;line-height:1.45}
+    .wallet-history{display:grid;gap:8px}.wallet-empty{padding:24px 12px;border:1px dashed #50305a;border-radius:16px;color:#8f8095;text-align:center;font-size:9px}.wallet-movement{display:grid;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;gap:9px;padding:10px;border:1px solid #482057;border-radius:14px;background:#0d0112}.wallet-movement-icon{width:36px;height:36px;border-radius:12px;background:#2b0736;display:grid;place-items:center;font-size:18px}.wallet-movement-copy{min-width:0}.wallet-movement-copy b{display:block;font-size:9.5px}.wallet-movement-copy small{display:block;margin-top:3px;color:#94869a;font-size:7.5px;line-height:1.3}.wallet-movement-amount{text-align:right;font-size:9px;font-weight:1000;white-space:nowrap}.wallet-movement-amount.positive{color:#62e6a1}.wallet-movement-amount.negative{color:#ff8fa4}.wallet-movement-amount.neutral{color:#ffe17b}
+    .wallet-rate{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;border:1px solid #51305d;border-radius:13px;background:#0b010f;color:#a898ae;font-size:8px}.wallet-rate b{color:#ffe17b}
+    @media(max-width:380px){.wallet-sheet{padding-left:11px;padding-right:11px}.wallet-head{margin-left:-11px;margin-right:-11px;padding-left:11px;padding-right:11px}.wallet-balances{gap:7px}.wallet-balance{padding:10px}.wallet-actions-grid{gap:6px}.wallet-shortcut{font-size:8px}.wallet-form-grid{grid-template-columns:1fr}}
+
+  
+
+    /* =========================================================
+       JEMMO LIVE V1 · PERFIL PRUEBA 15 · MENSAJES Y ESTADO
+       Mensajes personales, copia de ID y presencia junto al nivel
+       ========================================================= */
+    .yo-messages svg{width:21px;height:21px;fill:currentColor;display:block}
+    .id-line{display:flex;align-items:center;gap:3px;min-width:0;overflow:visible;text-overflow:clip}
+    .id-prefix{flex:0 0 auto}.id-line #profileId{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .copy-id-button{width:24px;height:24px;flex:0 0 24px!important;margin-left:2px!important;padding:0!important;border:1px solid #622775!important;border-radius:8px!important;background:#1a0322!important;color:#f2d8ff!important;display:grid!important;place-items:center!important;box-shadow:0 0 11px #c13bff22}
+    .copy-id-button svg{width:13px;height:13px;display:block;fill:currentColor}
+    .copy-id-button:active{transform:scale(.92)}
+    .profile-side{justify-content:flex-start}
+    .profile-presence{width:52px;min-height:27px;padding:4px 3px;border:1px solid #4a2850;border-radius:9px;background:#130318;color:#cdbfd2;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:5.8px;line-height:1;font-weight:1000;letter-spacing:.02em;white-space:nowrap;box-shadow:0 0 10px #0005}
+    .profile-presence .presence-dot{width:7px;height:7px;border-radius:50%;background:#ef4d62;box-shadow:0 0 8px #ef4d62}
+    .profile-presence.offline{border-color:#6c2934;color:#f0b7bf}.profile-presence.offline .presence-dot{background:#ef4d62;box-shadow:0 0 8px #ef4d62}
+    .profile-presence.online{border-color:#246747;color:#bcf2d3}.profile-presence.online .presence-dot{background:#38df86;box-shadow:0 0 9px #38df86}
+    .profile-presence.live{border-color:#2776bf;color:#c7e7ff;background:#071d34}.profile-presence.live .presence-dot{background:#2e9cff;box-shadow:0 0 10px #2e9cff}
+    .profile-presence.audio{border-color:#9b6920;color:#ffe3a3;background:#291806}.profile-presence.audio .presence-dot{background:#f4a62a;box-shadow:0 0 10px #f4a62a}
+    .profile-presence:not(:disabled){cursor:pointer}.profile-presence:not(:disabled):active{transform:scale(.94)}
+    .profile-action.messages{border-color:#71318a;background:linear-gradient(160deg,#280731,#100116);color:#f5eaff}
+    .profile-action.messages svg{width:16px;height:16px;fill:currentColor;display:block}
+    @media(max-width:380px){.profile-presence{width:46px;min-height:25px;font-size:5.2px}.copy-id-button{width:22px;height:22px;flex-basis:22px!important}}
+</style>
+  <script>
+    document.documentElement.classList.add('jemmo-auth-pending');
+    setTimeout(()=>{
+      if(!document.documentElement.classList.contains('jemmo-auth-pending')) return;
+      if(localStorage.getItem('jemmo_active_uid')) document.documentElement.classList.remove('jemmo-auth-pending');
+      else location.replace('acceso.html?sesion=timeout');
+    },5500);
+  </script>
 </head>
 <body>
   <main class="yo-app">
     <header class="yo-topbar">
-      <button class="yo-round" id="menuOpen" aria-label="Abrir menú">☰</button>
+      <button class="yo-round" id="menuOpen" type="button" aria-label="Abrir menú">☰</button>
       <div class="yo-logo" aria-label="JEMMO LIVE"><span class="jemmo">JEMMO</span><span class="live">LIVE</span></div>
-      <button class="yo-round" id="inboxMessages" aria-label="Mensajes personales">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3 1.5-5A7 7 0 0 1 3 13V8a5 5 0 0 1 5-5h8a5 5 0 0 1 5 5z"/></svg>
+      <button class="yo-round yo-messages" id="inboxMessages" type="button" aria-label="Abrir mensajes personales" title="Mensajes personales">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.4 4h13.2A3.4 3.4 0 0 1 22 7.4v7.2a3.4 3.4 0 0 1-3.4 3.4H10l-4.9 3.2c-.7.4-1.6-.1-1.6-.9V18A3.4 3.4 0 0 1 2 14.6V7.4A3.4 3.4 0 0 1 5.4 4Zm0 2A1.4 1.4 0 0 0 4 7.4v7.2A1.4 1.4 0 0 0 5.4 16h.1v2.5L9.4 16h9.2a1.4 1.4 0 0 0 1.4-1.4V7.4A1.4 1.4 0 0 0 18.6 6H5.4Z"/></svg>
       </button>
     </header>
 
-    <section class="profile-card">
+    <section class="profile-card" aria-label="Mi perfil">
       <div class="profile-body">
         <div class="profile-top">
-          <button class="avatar-button" id="avatarButton" type="button" aria-label="Cambiar foto de perfil">
-            <span class="avatar-fallback" aria-hidden="true"></span><img id="avatarImage" alt="Foto de perfil"><span class="camera-badge">⌾</span>
-          </button>
+          <div class="avatar-button" id="avatarButton" role="img" aria-label="Foto de perfil">
+            <img id="avatarImage" alt="Foto de perfil">
+            <span class="avatar-fallback" aria-hidden="true"></span>
+          </div>
           <div class="identity">
-            <div class="identity-title"><h1 id="profileName">Jesús</h1><span class="verified" title="Perfil verificado">✓</span></div>
-            <p class="username"><b id="profileUsername">@jesusjemmo</b></p>
-            <p class="id-line"><span>ID:</span><span id="profileId">JEMMO-000001</span><button class="copy-id-button" id="copyId" type="button" aria-label="Copiar ID" title="Copiar ID"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7.2A3.2 3.2 0 0 1 11.2 4h7.6A3.2 3.2 0 0 1 22 7.2v7.6a3.2 3.2 0 0 1-3.2 3.2H17v.8a3.2 3.2 0 0 1-3.2 3.2H6.2A3.2 3.2 0 0 1 3 18.8v-7.6A3.2 3.2 0 0 1 6.2 8H8v-.8Zm3.2-1.1c-.6 0-1.1.5-1.1 1.1v7.6c0 .6.5 1.1 1.1 1.1h7.6c.6 0 1.1-.5 1.1-1.1V7.2c0-.6-.5-1.1-1.1-1.1h-7.6ZM6.2 10.1c-.6 0-1.1.5-1.1 1.1v7.6c0 .6.5 1.1 1.1 1.1h7.6c.6 0 1.1-.5 1.1-1.1V18h-3.7A3.2 3.2 0 0 1 8 14.8v-4.7H6.2Z"/></svg></button></p>
+            <div class="identity-title"><h1 id="profileName">Usuario JEMMO</h1><span class="verified" id="verifiedBadge" title="Cuenta verificada" hidden>✓</span></div>
+            <p class="username"><b id="profileUsername">@usuariojemmo</b></p>
+            <p class="id-line"><span class="id-prefix">ID:</span> <span id="profileId">JEMMO-000001</span><button class="copy-id-button" id="copyId" type="button" aria-label="Copiar ID" title="Copiar ID"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7.2A3.2 3.2 0 0 1 11.2 4h7.6A3.2 3.2 0 0 1 22 7.2v7.6a3.2 3.2 0 0 1-3.2 3.2H17v.8a3.2 3.2 0 0 1-3.2 3.2H6.2A3.2 3.2 0 0 1 3 18.8v-7.6A3.2 3.2 0 0 1 6.2 8H8v-.8Zm3.2-1.1c-.6 0-1.1.5-1.1 1.1v7.6c0 .6.5 1.1 1.1 1.1h7.6c.6 0 1.1-.5 1.1-1.1V7.2c0-.6-.5-1.1-1.1-1.1h-7.6ZM6.2 10.1c-.6 0-1.1.5-1.1 1.1v7.6c0 .6.5 1.1 1.1 1.1h7.6c.6 0 1.1-.5 1.1-1.1V18h-3.7A3.2 3.2 0 0 1 8 14.8v-4.7H6.2Z"/></svg></button></p>
             <p class="place" id="profilePlace">📍 España</p>
+            <div class="profile-extra" id="profileExtra" hidden></div>
           </div>
           <div class="profile-side">
             <div class="profile-level"><strong id="levelNumber">1</strong><span>NIVEL</span><small id="levelName">INICIAL</small></div>
-            <div class="profile-presence"><span class="presence-dot"></span><span>EN LÍNEA</span></div>
+            <button class="profile-presence online" id="profilePresence" type="button" aria-label="Estado: en línea" disabled>
+              <span class="presence-dot" aria-hidden="true"></span><span id="presenceLabel">EN LÍNEA</span>
+            </button>
           </div>
         </div>
-        <div class="profile-banner" id="coverButton" role="button" tabindex="0" aria-label="Cambiar foto de portada"><img class="profile-cover-image" id="coverImage" alt="Foto de portada"></div>
+        <div class="profile-banner" id="coverButton" role="img" aria-label="Foto de portada"><img class="profile-cover-image" id="coverImage" alt="Foto de portada"></div>
         <p class="bio" id="profileBio">Construyendo mi historia en JEMMO LIVE.</p>
 
         <div class="profile-stats">
-          <button class="profile-stat" data-demo="Seguidores"><b id="followersCount">0</b><span>SEGUIDORES</span></button>
-          <button class="profile-stat" data-demo="Seguidos"><b id="followingCount">0</b><span>SEGUIDOS</span></button>
-          <button class="profile-stat" data-demo="Amigos"><b id="friendsCount">0</b><span>AMIGOS</span></button>
-          <button class="profile-stat" data-demo="Visitas"><b id="visitsCount">0</b><span>VISITAS</span></button>
+          <button class="profile-stat" type="button" data-action="Seguidores"><b id="followersCount">0</b><span>Seguidores</span></button>
+          <button class="profile-stat" type="button" data-action="Siguiendo"><b id="followingCount">0</b><span>Seguidos</span></button>
+          <button class="profile-stat" type="button" data-action="Fans"><b id="fansCount">0</b><span>Fans</span></button>
+          <button class="profile-stat" type="button" data-action="Amigos"><b id="friendsCount">0</b><span>Amigos</span></button>
         </div>
 
         <div class="profile-actions">
-          <button class="profile-action" id="editProfile">✎ EDITAR PERFIL</button>
-          <button class="profile-action" id="openMessages">✉ MENSAJES</button>
-          <button class="profile-action wallet" data-demo="Monedero"><span>◉</span><span><strong id="walletAmount">0</strong><small>JEMMOS</small></span></button>
+          <button class="profile-action" id="editProfile" type="button">✎ Editar perfil</button>
+          <button class="profile-action messages" id="openMessages" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.4 4h13.2A3.4 3.4 0 0 1 22 7.4v7.2a3.4 3.4 0 0 1-3.4 3.4H10l-4.9 3.2c-.7.4-1.6-.1-1.6-.9V18A3.4 3.4 0 0 1 2 14.6V7.4A3.4 3.4 0 0 1 5.4 4Zm0 2A1.4 1.4 0 0 0 4 7.4v7.2A1.4 1.4 0 0 0 5.4 16h.1v2.5L9.4 16h9.2a1.4 1.4 0 0 0 1.4-1.4V7.4A1.4 1.4 0 0 0 18.6 6H5.4Z"/></svg><span>Mensajes</span></button>
+          <button class="profile-action wallet" id="openWallet" type="button" data-open-wallet><span>🪙</span><span><strong>Monedero</strong><small><b id="coinBalance" data-jemmo-jemmos>0</b> JEMMOS</small></span></button>
         </div>
       </div>
     </section>
 
     <section class="section">
-      <div class="section-head"><div><h2>Mi evolución</h2><p>Logros, medallas y progreso personal.</p></div><button data-demo="Ver evolución completa">VER TODO</button></div>
+      <div class="section-head"><div><h2>Mi espacio</h2><p>Contenido, comunidad y progreso</p></div></div>
       <div class="card quick-scroll">
-        <button class="quick-tile gold" data-demo="Logros"><span class="ico">🏆</span><b>Logros</b><small>0 desbloqueados</small><span class="progress"><i style="--p:12%"></i></span></button>
-        <button class="quick-tile" data-demo="Medallas"><span class="ico">🎖</span><b>Medallas</b><small>Tu vitrina JEMMO</small><span class="progress"><i style="--p:8%"></i></span></button>
-        <button class="quick-tile gold" data-demo="Tareas"><span class="ico">✓</span><b>Tareas</b><small>Completa y avanza</small><span class="progress"><i style="--p:35%"></i></span></button>
-        <button class="quick-tile" data-demo="Nivel"><span class="ico">◆</span><b>Nivel</b><small>Próximo: nivel 2</small><span class="progress"><i style="--p:24%"></i></span></button>
+        <button class="quick-tile" type="button" data-action="Mis LIVE"><span class="ico">▣</span><b>Mis LIVE</b><small><span id="liveCount">0</span> transmisiones</small></button>
+        <button class="quick-tile" type="button" data-action="Mis Salas"><span class="ico">⌂</span><b>Mis Salas</b><small><span id="roomsCount">0</span> salas creadas</small></button>
+        <button class="quick-tile gold" type="button" data-action="Logros"><span class="ico">♛</span><b>Logros</b><small><span id="achievementCount">1</span>/36</small><span class="progress"><i id="achievementProgress" style="--p:3%"></i></span></button>
+        <button class="quick-tile" type="button" data-action="Galería"><span class="ico">▧</span><b>Galería</b><small><span id="photoCount">0</span> fotos</small></button>
+        <button class="quick-tile" type="button" data-action="Club de fans"><span class="ico">♕</span><b>Club de fans</b><small>Nivel <span id="fanClubLevel">1</span></small></button>
       </div>
     </section>
 
     <section class="section">
-      <div class="section-head"><div><h2>Actividad</h2><p>Resumen de tu progreso de hoy.</p></div></div>
-      <article class="card activity-card">
-        <div class="activity-ring" style="--progress:35%"><strong>35%</strong></div>
-        <div class="activity-copy"><b>Tu día en JEMMO</b><small>Sigue creando, participando y conectando con tu comunidad.</small><div class="activity-data"><span><small>MINUTOS LIVE</small><b>0</b></span><span><small>REGALOS</small><b>0</b></span><span><small>EXP.</small><b>35</b></span></div></div>
-        <div class="activity-fish" aria-hidden="true"></div>
-      </article>
-    </section>
-
-    <section class="section" id="destellosSection">
-      <div class="section-head"><div><h2>Destellos</h2><p>Momentos breves de tu historia en JEMMO.</p></div><button id="createDestelloTop">CREAR</button></div>
-      <div class="card destellos-panel">
-        <div class="destellos-toolbar">
-          <div class="destello-tabs" role="tablist" aria-label="Filtrar Destellos">
-            <button class="destello-tab active" data-filter="all" role="tab">DESTELLOS</button>
-            <button class="destello-tab" data-filter="image" role="tab">FOTOS</button>
-            <button class="destello-tab" data-filter="video" role="tab">VÍDEOS</button>
+      <div class="section-head"><div><h2>Actividad esta semana ✨</h2><p>Tu evolución como creador</p></div><button type="button" data-action="Estadísticas">VER TODO</button></div>
+      <div class="card activity-card">
+        <div class="activity-ring" id="activityRing" style="--progress:35%"><strong id="profileProgress">35%</strong></div>
+        <div class="activity-copy">
+          <b>Tu progreso en JEMMO</b>
+          <small id="progressMessage">Completa el perfil y empieza tu primer LIVE.</small>
+          <div class="activity-data">
+            <span><small>TRANSMISIONES</small><b id="weekLives">0</b></span>
+            <span><small>HORAS LIVE</small><b id="weekHours">0</b></span>
+            <span><small>NUEVOS FANS</small><b id="weekFans">+0</b></span>
           </div>
-          <button class="create-destello" id="createDestello" aria-label="Crear Destello">+</button>
         </div>
-        <div class="destellos-grid" id="destellosGrid"></div>
+        <div class="activity-fish" aria-hidden="true"></div>
       </div>
     </section>
 
     <section class="section">
-      <div class="section-head"><div><h2>Mi Casa</h2><p>Comunidad y equipo al que perteneces.</p></div></div>
-      <article class="card house-strip"><div class="house-icon">🏠</div><div><b>Aún no perteneces a una Casa</b><small>Explora Casas y encuentra tu comunidad.</small></div><button onclick="location.href='inicio.html#casas'">EXPLORAR</button></article>
+      <div class="section-head"><div><h2>Momentos recientes ✨</h2><p>Fotos y recuerdos de tus emisiones</p></div><button type="button" data-action="Galería">VER TODO</button></div>
+      <div class="moments">
+        <button class="moment add" type="button" data-action="Publicar momento"><span class="moment-copy"><b>Nuevo momento</b><small>Comparte tu primera foto</small></span></button>
+        <button class="moment" type="button" data-action="Mis momentos"><span class="moment-copy"><b>Tus LIVE aparecerán aquí</b><small>Aún no hay publicaciones</small></span></button>
+        <button class="moment" type="button" data-action="Galería"><span class="moment-copy"><b>Galería JEMMO</b><small>Guarda tus mejores momentos</small></span></button>
+      </div>
     </section>
 
-    <p class="version">JEMMO LIVE V1 · PERFIL DESTELLOS PRUEBA 01</p>
+    <section class="section">
+      <div class="section-head"><div><h2>Mi Casa</h2><p>Tu comunidad dentro de JEMMO LIVE</p></div></div>
+      <div class="card house-strip">
+        <span class="house-icon">🏠</span>
+        <div><b id="houseName">Todavía no perteneces a una Casa</b><small id="houseText">Explora comunidades y solicita unirte cuando estés preparado.</small></div>
+        <button type="button" data-action="Explorar Casas">EXPLORAR</button>
+      </div>
+    </section>
+
+    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 15 · MENSAJES Y ESTADO</p>
   </main>
 
   <div class="menu-backdrop" id="menuBackdrop" hidden></div>
   <aside class="side-menu" id="sideMenu" aria-hidden="true">
-    <div class="menu-top"><div><small>MENÚ DE USUARIO</small><h2>JEMMO LIVE</h2></div><button class="menu-close" id="menuClose" aria-label="Cerrar menú">×</button></div>
-    <label class="function-search"><span>⌕</span><input id="functionSearch" placeholder="Buscar una función" autocomplete="off"></label>
-    <div class="search-hint">Busca perfil, monedero, privacidad, soporte o LIVE.</div>
+    <div class="menu-top"><div><small>MENÚ DE USUARIO</small><h2>JEMMO LIVE</h2></div><button class="menu-close" id="menuClose" type="button" aria-label="Cerrar menú">×</button></div>
+    <label class="function-search"><span>⌕</span><input id="functionSearch" placeholder="Buscar una función..." autocomplete="off"></label>
+    <div class="search-hint">Escribe, por ejemplo: idioma, seguridad, ayuda o perfil.</div>
     <nav class="menu-list" id="menuList">
-      <button data-route="yo.html" data-search="perfil editar foto nombre biografia"><span>👤</span><span><b>Mi perfil</b><small>Datos, fotos y Destellos</small></span><i>›</i></button>
-      <button data-demo="Monedero" data-search="monedero saldo jemmos recargar retirar"><span>🪙</span><span><b>Monedero</b><small>Saldo, recargas y retiros</small></span><i>›</i></button>
-      <button data-demo="Configuración" data-search="configuracion idioma permisos seguridad privacidad"><span>⚙️</span><span><b>Configuración</b><small>Idioma, permisos y seguridad</small></span><i>›</i></button>
-      <button data-route="mensajes.html?seccion=personales" data-search="mensajes chat personales"><span>💬</span><span><b>Mensajes</b><small>Conversaciones personales</small></span><i>›</i></button>
-      <button data-demo="Ayuda y soporte" data-search="ayuda soporte problemas contacto"><span>❓</span><span><b>Ayuda y soporte</b><small>Soporte y centro de seguridad</small></span><i>›</i></button>
-      <button class="logout-item" id="logoutButton" data-search="cerrar sesion salir"><span>↪</span><span><b>Cerrar sesión</b></span><i>›</i></button>
+      <button data-search="mi perfil editar perfil foto nombre biografia avatar apariencia" data-route="yo.html"><span>👤</span><span><b>Mi perfil</b></span><i>›</i></button>
+      <button data-search="configuracion idioma permisos camara microfono preferencias aplicacion notificaciones" data-menu-action="Configuración"><span>⚙️</span><span><b>Configuración</b><small>Idioma y ajustes de la aplicación</small></span><i>›</i></button>
+      <button data-search="seguridad privacidad contraseña dispositivos usuarios bloqueados verificacion" data-menu-action="Seguridad y privacidad"><span>🔒</span><span><b>Seguridad y privacidad</b><small>Cuenta, contraseña y bloqueos</small></span><i>›</i></button>
+      <button data-search="ayuda soporte problemas contacto preguntas" data-menu-action="Ayuda y soporte"><span>❓</span><span><b>Ayuda y soporte</b><small>Contacta con el equipo JEMMO</small></span><i>›</i></button>
+      <button data-search="normas comunidad convivencia seguridad contenido permitido" data-menu-action="Normas de la comunidad"><span>§</span><span><b>Normas de la comunidad</b></span><i>›</i></button>
+      <button class="logout-item" data-search="cerrar sesion salir desconectar cuenta" id="logoutButton"><span>↪</span><span><b>Cerrar sesión</b></span><i>›</i></button>
     </nav>
+    <div class="quick-results" id="quickResults" hidden>
+      <p>Resultados rápidos</p>
+      <button data-route="live.html">🔴 Iniciar LIVE <i>›</i></button>
+      <button data-route="salas.html">🎙️ Salas <i>›</i></button>
+      <button data-route="mensajes.html">💬 Mensajes <i>›</i></button>
+      <button data-menu-action="Idioma">🌍 Idioma <i>›</i></button>
+      <button data-menu-action="Seguridad y privacidad">🔒 Seguridad y privacidad <i>›</i></button>
+    </div>
+    <p class="role-note">El menú se adaptará al rol del usuario: usuario, emisor, agente o colaborador.</p>
   </aside>
 
-  <div class="backdrop" id="editBackdrop" hidden></div>
-  <section class="sheet" id="editSheet" hidden aria-modal="true" role="dialog" aria-labelledby="editTitle">
-    <div class="sheet-head"><strong id="editTitle">Editar perfil</strong><button class="sheet-close" id="editClose" aria-label="Cerrar">×</button></div>
-    <div class="edit-avatar"><div class="edit-avatar-preview" id="editAvatarPreview"><img id="editAvatarImage" alt="Vista previa de avatar"></div><label class="file-label">CAMBIAR FOTO<input id="avatarInput" type="file" accept="image/*"></label></div>
-    <label class="field"><span>Nombre</span><input id="editName" maxlength="28"></label>
-    <label class="field"><span>Usuario</span><input id="editUsername" maxlength="24" placeholder="@usuario"></label>
-    <label class="field"><span>Frase personal · máximo 15 palabras</span><textarea id="editBio" maxlength="140"></textarea></label>
-    <div class="grid-fields"><label class="field"><span>País</span><input id="editCountry" maxlength="28"></label><label class="field"><span>Ciudad</span><input id="editCity" maxlength="28"></label></div>
-    <label class="field"><span>Foto de portada</span><input id="coverInput" type="file" accept="image/*"></label>
-    <button class="save" id="saveProfile">GUARDAR CAMBIOS</button>
+  <div class="edit-backdrop" id="editBackdrop" hidden></div>
+  <section class="edit-sheet" id="editSheet" hidden aria-modal="true" role="dialog" aria-labelledby="editTitle">
+    <div class="edit-head"><strong id="editTitle">Editar datos personales</strong><button class="edit-close" id="editClose" type="button" aria-label="Cerrar">×</button></div>
+    <p class="edit-intro">Aquí puedes cambiar la información personal que aparece en tu perfil. La foto y la portada solo se modifican desde este editor.</p>
+
+    <p class="edit-media-title">Foto de portada</p>
+    <div class="edit-cover-block">
+      <div class="edit-cover-preview" id="editCoverPreview">
+        <img id="editCoverImage" alt="Vista previa de la portada">
+        <span class="edit-cover-placeholder"><b>PORTADA PERSONAL</b><small>Sube una foto y ajústala al espacio</small></span>
+      </div>
+      <div class="cover-position-row"><span>Arrastra la foto con el dedo hasta dejarla en la posición que quieras.</span><button class="center-cover" id="centerCover" type="button">CENTRAR</button></div>
+      <div class="edit-media-actions">
+        <label class="file-label cover-label">📷 CAMBIAR PORTADA<input id="coverInput" type="file" accept="image/*"></label>
+        <button class="remove-cover" id="removeCover" type="button">QUITAR</button>
+      </div>
+    </div>
+
+    <p class="edit-media-title">Foto de perfil</p>
+    <div class="edit-avatar">
+      <div class="edit-avatar-preview" id="editAvatarPreview"><img id="editAvatarImage" alt="Vista previa de la foto de perfil"></div>
+      <label class="file-label">📷 CAMBIAR FOTO<input id="avatarInput" type="file" accept="image/*"></label>
+    </div>
+
+    <p class="edit-section-label">Información pública</p>
+    <label class="field"><span>Nombre público</span><input id="editName" maxlength="30" autocomplete="name" placeholder="Tu nombre en JEMMO"></label>
+    <label class="field"><span>Nombre de usuario</span><input id="editUsername" maxlength="24" autocomplete="username" placeholder="usuariojemmo"></label>
+    <label class="field"><span>Frase del perfil</span><textarea id="editBio" maxlength="120" placeholder="Escribe una frase, pensamiento o refrán"></textarea><span class="field-meta"><small>Máximo 15 palabras.</small><strong id="bioWordCount">0/15</strong></span></label>
+    <div class="field-grid">
+      <label class="field"><span>País o región</span><input id="editCountry" maxlength="35" autocomplete="country-name" placeholder="España"></label>
+      <label class="field"><span>Ciudad</span><input id="editCity" maxlength="35" autocomplete="address-level2" placeholder="Tu ciudad"></label>
+    </div>
+    <div class="field-grid">
+      <label class="field"><span>Edad</span><input id="editAge" type="number" inputmode="numeric" min="13" max="120" placeholder="Edad"></label>
+      <label class="field"><span>Teléfono</span><input id="editPhone" type="tel" maxlength="25" autocomplete="tel" placeholder="+34 600 000 000"><small>No se mostrará públicamente.</small></label>
+    </div>
+
+    <p class="edit-section-label">Redes sociales</p>
+    <div class="social-grid">
+      <label class="field"><span>Instagram</span><input id="editInstagram" maxlength="180" placeholder="@usuario o enlace"></label>
+      <label class="field"><span>TikTok</span><input id="editTiktok" maxlength="180" placeholder="@usuario o enlace"></label>
+      <label class="field"><span>YouTube</span><input id="editYoutube" maxlength="180" placeholder="Enlace del canal"></label>
+      <label class="field"><span>Facebook</span><input id="editFacebook" maxlength="180" placeholder="Enlace del perfil"></label>
+    </div>
+    <p class="privacy-note">En el perfil solo se muestran los cuatro botones. Los enlaces nunca aparecen escritos.</p>
+    <button class="save" id="saveProfile" type="button">GUARDAR CAMBIOS</button>
   </section>
 
-  <div class="backdrop" id="destelloBackdrop" hidden></div>
-  <section class="sheet" id="destelloSheet" hidden aria-modal="true" role="dialog" aria-labelledby="destelloTitle">
-    <div class="sheet-head"><strong id="destelloTitle">Crear Destello</strong><button class="sheet-close" id="destelloClose" aria-label="Cerrar">×</button></div>
-    <div class="destello-kind"><button class="kind-button active" data-kind="image">📷 FOTO</button><button class="kind-button" data-kind="video">▶ VÍDEO</button></div>
-    <label class="field"><span id="mediaLabel">Seleccionar foto</span><input id="destelloMedia" type="file" accept="image/*"></label>
-    <div class="media-preview" id="mediaPreview"><div class="placeholder"><b>✦</b><small>Tu Destello aparecerá aquí</small></div><img id="destelloImagePreview" alt="Vista previa"><video id="destelloVideoPreview" controls playsinline></video></div>
-    <label class="field"><span>Texto del Destello</span><textarea id="destelloText" maxlength="160" placeholder="Cuenta algo breve..."></textarea><small class="counter"><span id="destelloCounter">0</span>/160</small></label>
-    <button class="save" id="publishDestello">PUBLICAR DESTELLO</button>
-    <p class="sheet-note">Las fotos, vídeos y datos se guardan de forma local en este dispositivo durante las pruebas.</p>
-  </section>
 
-  <nav class="bottom-nav" data-current="yo" aria-label="Navegación principal">
-    <a href="inicio.html" data-tab="inicio"><span class="nav-icon">⌂</span><b>INICIO</b></a>
-    <a href="live.html" data-tab="live"><span class="nav-icon">●</span><b>LIVE</b></a>
-    <a href="salas.html" data-tab="salas"><span class="nav-icon">◉</span><b>SALAS</b></a>
-    <a href="mensajes.html" data-tab="mensajes"><span class="nav-icon">✉</span><b>MENSAJES</b><span class="badge">1</span></a>
-    <a href="yo.html" data-tab="yo"><span class="nav-icon">◆</span><b>YO</b></a>
+
+  <div class="toast" id="yoToast" role="status" aria-live="polite"></div>
+
+  <nav class="bottom-nav" data-current="yo">
+    <a data-tab="inicio" href="inicio.html"><span class="nav-icon">⌂</span><b>Inicio</b></a>
+    <a data-tab="live" href="live.html"><span class="nav-icon">▣</span><b>Live</b></a>
+    <a data-tab="salas" href="salas.html"><span class="nav-icon">🎙</span><b>Salas</b></a>
+    <a data-tab="mensajes" href="mensajes.html"><span class="badge">8</span><span class="nav-icon">◌</span><b>Mensajes</b></a>
+    <a data-tab="yo" href="yo.html"><span class="nav-icon">♙</span><b>Yo</b></a>
   </nav>
 
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
-
+  <script src="app.js"></script>
   <script>
-  (()=>{
-    'use strict';
-    const $=id=>document.getElementById(id), $$=selector=>[...document.querySelectorAll(selector)];
-    const PROFILE_KEY='jemmo_profile_v1';
-    const DESTELLOS_KEY='jemmo_destellos_v1';
-    const DB_NAME='jemmo_media_v1';
-    const STORE='media';
-    const defaultProfile={name:'Jesús',username:'@jesusjemmo',bio:'Construyendo mi historia en JEMMO LIVE.',country:'España',city:'',id:'JEMMO-000001',followers:0,following:0,friends:0,visits:0,wallet:0,level:1};
-    let profile=loadJSON(PROFILE_KEY,defaultProfile), currentFilter='all', currentKind='image', pendingDestelloFile=null, previewUrl='', pendingAvatar=null, pendingCover=null;
+    (()=>{
+      'use strict';
+      const $=id=>document.getElementById(id);
+      const uid=localStorage.getItem('jemmo_active_uid')||'local-user';
+      const KEY=`jemmo_profile_v1_${uid}`;
+      const statsKey=`jemmo_profile_stats_v1_${uid}`;
+      const MEDIA_DB='jemmo-profile-media-v1';
+      const MEDIA_STORE='media';
+      const avatarMediaKey=`${uid}:avatar`;
+      const coverMediaKey=`${uid}:cover`;
+      let avatarData='';
+      let coverData='';
+      let pendingAvatar='';
+      let pendingCover='';
+      let coverPosition={x:50,y:50};
+      let pendingCoverPosition={x:50,y:50};
 
-    function loadJSON(key,fallback){try{return {...fallback,...JSON.parse(localStorage.getItem(key)||'{}')}}catch{return {...fallback}}}
-    function loadArray(key){try{const value=JSON.parse(localStorage.getItem(key)||'[]');return Array.isArray(value)?value:[]}catch{return []}}
-    function saveJSON(key,value){localStorage.setItem(key,JSON.stringify(value))}
-    function uid(prefix='id'){return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2,8)}`}
-    function escapeHTML(value=''){return String(value).replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]))}
-    function toast(message){const node=$('toast');node.textContent=message;node.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>node.classList.remove('show'),2100)}
-    function formatNumber(n){return new Intl.NumberFormat('es-ES',{notation:Number(n)>=10000?'compact':'standard',maximumFractionDigits:1}).format(Number(n)||0)}
-    function safeUsername(value){let out=(value||'').trim().replace(/\s+/g,'').replace(/[^a-zA-Z0-9_.@]/g,'');if(!out.startsWith('@'))out='@'+out;return out.slice(0,24)}
-    function countWords(value){return value.trim()?value.trim().split(/\s+/).length:0}
-    function limitWords(value,max){return value.trim().split(/\s+/).slice(0,max).join(' ')}
+      const toast=(message,duration=2400)=>{
+        const el=$('yoToast');if(!el)return;el.textContent=message;el.classList.add('show');
+        clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),duration);
+      };
+      const makeId=()=>{const raw=String(uid).replace(/[^a-z0-9]/gi,'').toUpperCase();const tail=(raw.slice(-6)||Math.random().toString(36).slice(2,8)).padStart(6,'0');return `JEMMO-${tail}`};
+      const safeUsername=value=>String(value||'usuariojemmo').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9._]/g,'').slice(0,24)||'usuariojemmo';
+      const countWords=value=>String(value||'').trim().split(/\s+/).filter(Boolean).length;
+      const limitWords=(value,max=15)=>String(value||'').trimStart().split(/\s+/).filter(Boolean).slice(0,max).join(' ');
+      const cleanSocial=value=>String(value||'').trim().slice(0,180);
+      const ensureHttps=value=>{const text=String(value||'').trim();if(!text)return'';if(/^https?:\/\//i.test(text))return text;if(/^www\./i.test(text))return `https://${text}`;return''};
+      const socialUrl=(network,value)=>{
+        const raw=String(value||'').trim();if(!raw)return'';
+        const direct=ensureHttps(raw);if(direct)return direct;
+        const handle=raw.replace(/^@+/, '').replace(/^\/+|\/+$/g,'');
+        if(!handle)return'';
+        if(network==='instagram')return `https://www.instagram.com/${encodeURIComponent(handle)}/`;
+        if(network==='tiktok')return `https://www.tiktok.com/@${encodeURIComponent(handle)}`;
+        if(network==='youtube')return `https://www.youtube.com/@${encodeURIComponent(handle)}`;
+        if(network==='facebook')return `https://www.facebook.com/${encodeURIComponent(handle)}`;
+        return'';
+      };
+      const socialIcons={
+        instagram:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2Zm-.2 2A3.6 3.6 0 0 0 4 7.6v8.8A3.6 3.6 0 0 0 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6A3.6 3.6 0 0 0 16.4 4H7.6Zm9.65 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg>',
+        tiktok:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.4 2h3.1c.2 1.4 1 2.8 2.1 3.7A6.3 6.3 0 0 0 23 7.2v3.2a9.3 9.3 0 0 1-5.4-1.7v7.1a6.2 6.2 0 1 1-5.4-6.2v3.2a3.1 3.1 0 1 0 2.2 3V2Z"/></svg>',
+        youtube:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.7V8.3l6.3 3.7-6.3 3.7Z"/></svg>',
+        facebook:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.8 22v-8h2.7l.4-3.1h-3.1V8.9c0-.9.3-1.5 1.6-1.5H17V4.6c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4.1v2.3H8.2V14h2.6v8h3Z"/></svg>'
+      };
+      const clampPercent=value=>Math.max(0,Math.min(100,Number.isFinite(Number(value))?Number(value):50));
+      const normalizeCoverPosition=value=>({x:clampPercent(value?.x),y:clampPercent(value?.y)});
+      const defaultProfile={name:'Usuario JEMMO',username:'usuariojemmo',bio:'Construyendo mi historia en JEMMO LIVE.',country:'España',city:'',age:'',phone:'',instagram:'',tiktok:'',youtube:'',facebook:'',avatar:'',cover:'',coverPosition:{x:50,y:50},id:makeId(),level:Number(localStorage.getItem('jemmo_transmission_level')||1),verified:localStorage.getItem('jemmo_verified')==='true'};
+      const readJSON=(key,fallback)=>{try{return {...fallback,...JSON.parse(localStorage.getItem(key)||'{}')}}catch{return {...fallback}}};
+      let profile=readJSON(KEY,defaultProfile);
+      coverPosition=normalizeCoverPosition(profile.coverPosition);
+      pendingCoverPosition={...coverPosition};
+      const stats=readJSON(statsKey,{followers:0,following:0,friends:0,fans:0,likes:0,coins:0,liveCount:0,rooms:0,achievements:1,photos:0,fanClubLevel:1,weekLives:0,weekHours:0,weekFans:0});
+      const walletStorageKey=`jemmo_wallet_v1_${uid}`;
+      const presenceStorageKey=`jemmo_presence_v1_${uid}`;
+      const presenceStates={
+        offline:{label:'FUERA',aria:'desconectado',route:''},
+        online:{label:'EN LÍNEA',aria:'en línea',route:''},
+        live:{label:'VER LIVE',aria:'en LIVE',route:'live.html'},
+        audio:{label:'AUDIO',aria:'en Audio Room',route:'salas.html'}
+      };
+      const readPresence=()=>{
+        try{
+          const saved=JSON.parse(localStorage.getItem(presenceStorageKey)||'{}');
+          const status=Object.hasOwn(presenceStates,saved.status)?saved.status:'online';
+          return {status,route:String(saved.route||presenceStates[status].route||'')};
+        }catch{return {status:'online',route:''}}
+      };
+      const getWalletSnapshot=()=>{
+        try{
+          const value=JSON.parse(localStorage.getItem(walletStorageKey)||'{}');
+          return {jemmos:Math.max(0,Math.floor(Number(value.jemmos??value.coins)||0))};
+        }catch{return {jemmos:0}}
+      };
 
-    function openDB(){return new Promise((resolve,reject)=>{const request=indexedDB.open(DB_NAME,1);request.onupgradeneeded=()=>{if(!request.result.objectStoreNames.contains(STORE))request.result.createObjectStore(STORE)};request.onsuccess=()=>resolve(request.result);request.onerror=()=>reject(request.error)})}
-    async function mediaWrite(key,blob){if(!blob)return;const db=await openDB();await new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(blob,key);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close()}
-    async function mediaRead(key){if(!key)return null;const db=await openDB();const value=await new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readonly'),req=tx.objectStore(STORE).get(key);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error)});db.close();return value}
-    async function mediaDelete(key){if(!key)return;const db=await openDB();await new Promise((resolve,reject)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).delete(key);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error)});db.close()}
-    function applyBlob(node,blob,parent){if(!node||!blob)return;node.src=URL.createObjectURL(blob);parent?.classList.add('has-image')}
 
-    async function renderProfile(){
-      $('profileName').textContent=profile.name||defaultProfile.name;
-      $('profileUsername').textContent=safeUsername(profile.username||defaultProfile.username);
-      $('profileId').textContent=profile.id||defaultProfile.id;
-      $('profilePlace').textContent='📍 '+[profile.city,profile.country].filter(Boolean).join(', ');
-      $('profileBio').textContent=profile.bio||defaultProfile.bio;
-      $('followersCount').textContent=formatNumber(profile.followers);
-      $('followingCount').textContent=formatNumber(profile.following);
-      $('friendsCount').textContent=formatNumber(profile.friends);
-      $('visitsCount').textContent=formatNumber(profile.visits);
-      $('walletAmount').textContent=formatNumber(profile.wallet);
-      $('levelNumber').textContent=profile.level||1;
-      $('levelName').textContent=(Number(profile.level)||1)<5?'INICIAL':(Number(profile.level)<15?'CREADOR':'ÉLITE');
-      const avatar=await mediaRead('profile_avatar'),cover=await mediaRead('profile_cover');
-      if(avatar){applyBlob($('avatarImage'),avatar,$('avatarButton'));applyBlob($('editAvatarImage'),avatar,$('editAvatarPreview'))}
-      if(cover)applyBlob($('coverImage'),cover,$('coverButton'));
-    }
+      const openMediaDB=()=>new Promise((resolve,reject)=>{
+        if(!('indexedDB' in window)){reject(new Error('indexeddb-unavailable'));return}
+        const request=indexedDB.open(MEDIA_DB,1);
+        request.onupgradeneeded=()=>{const db=request.result;if(!db.objectStoreNames.contains(MEDIA_STORE))db.createObjectStore(MEDIA_STORE)};
+        request.onsuccess=()=>resolve(request.result);
+        request.onerror=()=>reject(request.error||new Error('indexeddb-open-error'));
+      });
+      const mediaRead=async key=>{
+        const db=await openMediaDB();
+        try{return await new Promise((resolve,reject)=>{const tx=db.transaction(MEDIA_STORE,'readonly');const request=tx.objectStore(MEDIA_STORE).get(key);request.onsuccess=()=>resolve(request.result||'');request.onerror=()=>reject(request.error||new Error('indexeddb-read-error'))})}
+        finally{db.close()}
+      };
+      const mediaWrite=async(key,value)=>{
+        const db=await openMediaDB();
+        try{await new Promise((resolve,reject)=>{const tx=db.transaction(MEDIA_STORE,'readwrite');const store=tx.objectStore(MEDIA_STORE);value?store.put(value,key):store.delete(key);tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error||new Error('indexeddb-write-error'));tx.onabort=()=>reject(tx.error||new Error('indexeddb-abort'))})}
+        finally{db.close()}
+      };
+      const isImageData=value=>typeof value==='string'&&value.startsWith('data:image/');
 
-    function openMenu(){ $('menuBackdrop').hidden=false;$('sideMenu').classList.add('open');$('sideMenu').setAttribute('aria-hidden','false') }
-    function closeMenu(){ $('sideMenu').classList.remove('open');$('sideMenu').setAttribute('aria-hidden','true');setTimeout(()=>$('menuBackdrop').hidden=true,220) }
-    $('menuOpen').addEventListener('click',openMenu);$('menuClose').addEventListener('click',closeMenu);$('menuBackdrop').addEventListener('click',closeMenu);
-    $('functionSearch').addEventListener('input',event=>{const term=event.target.value.trim().toLowerCase();$$('#menuList button').forEach(button=>button.hidden=term&&!String(button.dataset.search||'').includes(term))});
-    $$('#menuList button').forEach(button=>button.addEventListener('click',()=>{if(button.dataset.route)location.href=button.dataset.route;else if(button.dataset.demo)toast(`${button.dataset.demo}: disponible en la siguiente conexión del módulo.`)}));
-    $$('[data-demo]').forEach(button=>button.addEventListener('click',()=>toast(`${button.dataset.demo}: módulo preparado para conectar.`)));
-    $('logoutButton').addEventListener('click',()=>{try{localStorage.removeItem('jemmo_logged');sessionStorage.clear()}catch{}location.href='acceso.html'});
+      const setAvatar=data=>{
+        const img=$('avatarImage'),button=$('avatarButton'),editImg=$('editAvatarImage'),editPreview=$('editAvatarPreview');
+        if(data){img.src=data;button.classList.add('has-image');editImg.src=data;editPreview.classList.add('has-image')}
+        else{img.removeAttribute('src');button.classList.remove('has-image');editImg.removeAttribute('src');editPreview.classList.remove('has-image')}
+      };
+      const setCover=(data,position=coverPosition)=>{
+        const img=$('coverImage'),button=$('coverButton'),editImg=$('editCoverImage'),editPreview=$('editCoverPreview'),remove=$('removeCover');
+        const normalized=normalizeCoverPosition(position);
+        const objectPosition=`${normalized.x}% ${normalized.y}%`;
+        img.style.objectPosition=objectPosition;
+        editImg.style.objectPosition=objectPosition;
+        if(data){img.src=data;button.classList.add('has-cover');editImg.src=data;editPreview.classList.add('has-image');if(remove)remove.disabled=false}
+        else{img.removeAttribute('src');button.classList.remove('has-cover');editImg.removeAttribute('src');editPreview.classList.remove('has-image');if(remove)remove.disabled=true}
+      };
+      const levelName=level=>level>=30?'ÉLITE':level>=15?'PRO':level>=6?'AVANZADO':level>=3?'EMISOR':'INICIAL';
+      const format=n=>Number(n||0).toLocaleString('es-ES',{notation:Number(n||0)>=10000?'compact':'standard',maximumFractionDigits:1});
+      const profileCompletion=()=>{
+        let score=20;if(profile.name&&profile.name!==defaultProfile.name)score+=15;if(profile.username&&profile.username!=='usuariojemmo')score+=10;
+        if(profile.bio&&profile.bio!==defaultProfile.bio)score+=15;if(profile.country)score+=10;if(profile.city)score+=5;if(avatarData)score+=15;if(coverData)score+=10;return Math.min(100,score);
+      };
+      const render=()=>{
+        const level=Math.max(1,Number(profile.level)||1);const fans=Number(stats.fans??stats.likes??0);const completion=profileCompletion();
+        $('profileName').textContent=profile.name||defaultProfile.name;$('profileUsername').textContent=`@${safeUsername(profile.username||profile.name)}`;
+        $('profileBio').textContent=profile.bio||defaultProfile.bio;$('profilePlace').textContent=`📍 ${[profile.country,profile.city].filter(Boolean).join(' · ')||'Sin ubicación'}`;
+        const extras=$('profileExtra');extras.replaceChildren();
+        if(profile.age){const age=document.createElement('span');age.className='profile-age';age.textContent=`🎂 ${profile.age}`;age.setAttribute('aria-label',`${profile.age} años`);extras.append(age)}
+        const socialWrap=document.createElement('div');socialWrap.className='social-buttons';
+        [['instagram','Instagram',profile.instagram],['tiktok','TikTok',profile.tiktok],['youtube','YouTube',profile.youtube],['facebook','Facebook',profile.facebook]].forEach(([network,label,value])=>{
+          const url=socialUrl(network,value),link=document.createElement('a');link.className=`social-link ${network}${url?'':' disabled'}`;link.innerHTML=socialIcons[network];link.setAttribute('aria-label',url?`Abrir ${label}`:`${label} no configurado`);link.title=url?`Abrir ${label}`:`Añade ${label} desde Editar perfil`;
+          if(url){link.href=url;link.target='_blank';link.rel='noopener noreferrer'}else{link.setAttribute('aria-disabled','true');link.tabIndex=-1;link.addEventListener('click',event=>event.preventDefault())}
+          socialWrap.append(link)
+        });
+        extras.append(socialWrap);extras.hidden=false;
+        $('profileId').textContent=profile.id||makeId();$('levelNumber').textContent=level;$('levelName').textContent=levelName(level);$('verifiedBadge').hidden=!profile.verified;
+        const presence=readPresence(),presenceConfig=presenceStates[presence.status],presenceButton=$('profilePresence');
+        presenceButton.className=`profile-presence ${presence.status}`;$('presenceLabel').textContent=presenceConfig.label;presenceButton.setAttribute('aria-label',`Estado: ${presenceConfig.aria}`);presenceButton.disabled=!presence.route;presenceButton.dataset.route=presence.route;
+        $('followersCount').textContent=format(stats.followers);$('followingCount').textContent=format(stats.following);$('fansCount').textContent=format(fans);$('friendsCount').textContent=format(stats.friends);
+        $('coinBalance').textContent=format(getWalletSnapshot().jemmos);$('liveCount').textContent=format(stats.liveCount);$('roomsCount').textContent=format(stats.rooms);$('photoCount').textContent=format(stats.photos);
+        const achievements=Math.max(1,Number(stats.achievements||1));$('achievementCount').textContent=achievements;$('achievementProgress').style.setProperty('--p',`${Math.min(100,achievements/36*100)}%`);$('fanClubLevel').textContent=Math.max(1,Number(stats.fanClubLevel||1));
+        $('profileProgress').textContent=`${completion}%`;$('activityRing').style.setProperty('--progress',`${completion}%`);$('progressMessage').textContent=completion>=100?'Perfil completo. Ya puedes centrarte en crecer.':'Completa tu perfil y empieza tu primer LIVE.';
+        $('weekLives').textContent=format(stats.weekLives);$('weekHours').textContent=format(stats.weekHours);$('weekFans').textContent=`+${format(stats.weekFans)}`;
+        const house=localStorage.getItem('jemmo_house_name')||'';if(house){$('houseName').textContent=house;$('houseText').textContent='Tu comunidad oficial dentro de JEMMO LIVE.'}
+        setAvatar(avatarData);setCover(coverData,coverPosition);
+      };
 
-    function openEdit(){
-      $('editName').value=profile.name||'';$('editUsername').value=profile.username||'';$('editBio').value=profile.bio||'';$('editCountry').value=profile.country||'';$('editCity').value=profile.city||'';
-      pendingAvatar=pendingCover=null;$('editBackdrop').hidden=false;$('editSheet').hidden=false;document.body.style.overflow='hidden';
-    }
-    function closeEdit(){ $('editBackdrop').hidden=true;$('editSheet').hidden=true;document.body.style.overflow='' }
-    $('editProfile').addEventListener('click',openEdit);$('avatarButton').addEventListener('click',openEdit);$('coverButton').addEventListener('click',openEdit);$('coverButton').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openEdit()}});$('editClose').addEventListener('click',closeEdit);$('editBackdrop').addEventListener('click',closeEdit);
-    $('avatarInput').addEventListener('change',event=>{const file=event.target.files?.[0];if(!file)return;pendingAvatar=file;applyBlob($('editAvatarImage'),file,$('editAvatarPreview'))});
-    $('coverInput').addEventListener('change',event=>{const file=event.target.files?.[0];if(file)pendingCover=file});
-    $('saveProfile').addEventListener('click',async()=>{
-      const name=$('editName').value.trim(),bio=limitWords($('editBio').value,15);if(name.length<2){toast('Escribe un nombre válido.');return}if(countWords($('editBio').value)>15){toast('La frase puede tener un máximo de 15 palabras.');return}
-      const button=$('saveProfile');button.disabled=true;button.textContent='GUARDANDO…';
-      try{if(pendingAvatar)await mediaWrite('profile_avatar',pendingAvatar);if(pendingCover)await mediaWrite('profile_cover',pendingCover);profile={...profile,name,username:safeUsername($('editUsername').value),bio:bio||defaultProfile.bio,country:$('editCountry').value.trim()||'Sin país',city:$('editCity').value.trim()};saveJSON(PROFILE_KEY,profile);location.reload()}catch(error){console.error(error);toast('No se pudo guardar. Vuelve a intentarlo.')}finally{button.disabled=false;button.textContent='GUARDAR CAMBIOS'}
-    });
-    $('copyId').addEventListener('click',async()=>{const value=$('profileId').textContent;try{await navigator.clipboard.writeText(value);toast('ID copiado.')}catch{toast(`Tu ID es ${value}`)}});
-    const openPersonalMessages=()=>location.href='mensajes.html?seccion=personales';$('inboxMessages').addEventListener('click',openPersonalMessages);$('openMessages').addEventListener('click',openPersonalMessages);
+      const updateBioWordCount=()=>{const count=countWords($('editBio').value);$('bioWordCount').textContent=`${count}/15`;};
+      const openEdit=()=>{pendingAvatar=avatarData;pendingCover=coverData;pendingCoverPosition={...coverPosition};$('editName').value=profile.name||'';$('editUsername').value=profile.username||safeUsername(profile.name);$('editBio').value=profile.bio||'';$('editCountry').value=profile.country||'';$('editCity').value=profile.city||'';$('editAge').value=profile.age||'';$('editPhone').value=profile.phone||'';$('editInstagram').value=profile.instagram||'';$('editTiktok').value=profile.tiktok||'';$('editYoutube').value=profile.youtube||'';$('editFacebook').value=profile.facebook||'';updateBioWordCount();setAvatar(pendingAvatar);setCover(pendingCover,pendingCoverPosition);$('editBackdrop').hidden=false;$('editSheet').hidden=false;document.body.style.overflow='hidden'};
+      const closeEdit=()=>{$('editBackdrop').hidden=true;$('editSheet').hidden=true;document.body.style.overflow='';setAvatar(avatarData);setCover(coverData,coverPosition)};
+      const compressImage=file=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=reject;reader.onload=()=>{const image=new Image();image.onerror=reject;image.onload=()=>{const side=Math.min(image.naturalWidth,image.naturalHeight),sx=(image.naturalWidth-side)/2,sy=(image.naturalHeight-side)/2,canvas=document.createElement('canvas');canvas.width=canvas.height=420;const context=canvas.getContext('2d',{alpha:false});context.drawImage(image,sx,sy,side,side,0,0,420,420);resolve(canvas.toDataURL('image/webp',.76))};image.src=reader.result};reader.readAsDataURL(file)});
+      const compressCover=file=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=reject;reader.onload=()=>{const image=new Image();image.onerror=reject;image.onload=()=>{const maxWidth=1600,maxHeight=1200,scale=Math.min(1,maxWidth/image.naturalWidth,maxHeight/image.naturalHeight),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(image.naturalWidth*scale));canvas.height=Math.max(1,Math.round(image.naturalHeight*scale));const context=canvas.getContext('2d',{alpha:false});context.drawImage(image,0,0,canvas.width,canvas.height);resolve(canvas.toDataURL('image/webp',.72))};image.src=reader.result};reader.readAsDataURL(file)});
 
-    function openDestello(){pendingDestelloFile=null;currentKind='image';$('destelloText').value='';$('destelloCounter').textContent='0';setKind('image');clearPreview();$('destelloBackdrop').hidden=false;$('destelloSheet').hidden=false;document.body.style.overflow='hidden'}
-    function closeDestello(){if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl='';$('destelloBackdrop').hidden=true;$('destelloSheet').hidden=true;document.body.style.overflow=''}
-    function setKind(kind){currentKind=kind;$$('.kind-button').forEach(b=>b.classList.toggle('active',b.dataset.kind===kind));$('destelloMedia').accept=kind==='image'?'image/*':'video/*';$('mediaLabel').textContent=kind==='image'?'Seleccionar foto':'Seleccionar vídeo';pendingDestelloFile=null;clearPreview()}
-    function clearPreview(){if(previewUrl)URL.revokeObjectURL(previewUrl);previewUrl='';$('mediaPreview').classList.remove('has-media');$('destelloImagePreview').classList.remove('active');$('destelloVideoPreview').classList.remove('active');$('destelloVideoPreview').pause();$('destelloImagePreview').removeAttribute('src');$('destelloVideoPreview').removeAttribute('src')}
-    $('createDestello').addEventListener('click',openDestello);$('createDestelloTop').addEventListener('click',openDestello);$('destelloClose').addEventListener('click',closeDestello);$('destelloBackdrop').addEventListener('click',closeDestello);
-    $$('.kind-button').forEach(button=>button.addEventListener('click',()=>setKind(button.dataset.kind)));
-    $('destelloText').addEventListener('input',event=>$('destelloCounter').textContent=event.target.value.length);
-    $('destelloMedia').addEventListener('change',event=>{const file=event.target.files?.[0];if(!file)return;const expected=currentKind==='image'?'image/':'video/';if(!file.type.startsWith(expected)){toast(`Selecciona ${currentKind==='image'?'una foto':'un vídeo'} válido.`);return}pendingDestelloFile=file;clearPreview();previewUrl=URL.createObjectURL(file);const node=currentKind==='image'?$('destelloImagePreview'):$('destelloVideoPreview');node.src=previewUrl;node.classList.add('active');$('mediaPreview').classList.add('has-media')});
-    $('publishDestello').addEventListener('click',async()=>{
-      const text=$('destelloText').value.trim();if(!pendingDestelloFile&&!text){toast('Añade una foto, un vídeo o un texto.');return}
-      if(currentKind==='video'&&pendingDestelloFile?.size>80*1024*1024){toast('El vídeo supera 80 MB.');return}if(currentKind==='image'&&pendingDestelloFile?.size>15*1024*1024){toast('La foto supera 15 MB.');return}
-      const button=$('publishDestello');button.disabled=true;button.textContent='PUBLICANDO…';
-      try{const id=uid('destello'),mediaKey=pendingDestelloFile?`destello_media_${id}`:'';if(pendingDestelloFile)await mediaWrite(mediaKey,pendingDestelloFile);const list=loadArray(DESTELLOS_KEY);list.unshift({id,type:pendingDestelloFile?currentKind:'text',text,mediaKey,createdAt:Date.now(),likes:0,comments:0,gifts:0,views:1,jemmos:0,liked:false});localStorage.setItem(DESTELLOS_KEY,JSON.stringify(list.slice(0,40)));closeDestello();await renderDestellos();toast('Destello publicado.')}catch(error){console.error(error);toast('No se pudo publicar el Destello.')}finally{button.disabled=false;button.textContent='PUBLICAR DESTELLO'}
-    });
+      $('editProfile')?.addEventListener('click',openEdit);$('editClose')?.addEventListener('click',closeEdit);$('editBackdrop')?.addEventListener('click',closeEdit);
+      $('editBio')?.addEventListener('input',event=>{if(countWords(event.target.value)>15)event.target.value=limitWords(event.target.value,15);updateBioWordCount()});
+      $('avatarInput')?.addEventListener('change',async event=>{const file=event.target.files?.[0];if(!file)return;if(!file.type.startsWith('image/')){toast('Selecciona una imagen válida.');return}try{pendingAvatar=await compressImage(file);setAvatar(pendingAvatar);toast('Foto preparada. Pulsa Guardar cambios.')}catch{toast('No se pudo preparar esa foto.')}});
+      $('coverInput')?.addEventListener('change',async event=>{const file=event.target.files?.[0];if(!file)return;if(!file.type.startsWith('image/')){toast('Selecciona una imagen válida.');return}try{pendingCover=await compressCover(file);pendingCoverPosition={x:50,y:50};setCover(pendingCover,pendingCoverPosition);toast('Portada preparada. Arrástrala para elegir el encuadre.')}catch{toast('No se pudo preparar esa portada.')}});
+      $('removeCover')?.addEventListener('click',()=>{pendingCover='';pendingCoverPosition={x:50,y:50};setCover('',pendingCoverPosition);toast('La portada se quitará al guardar los cambios.')});
+      $('centerCover')?.addEventListener('click',()=>{if(!pendingCover)return;pendingCoverPosition={x:50,y:50};setCover(pendingCover,pendingCoverPosition);toast('Portada centrada.')});
 
-    function relativeTime(timestamp){const seconds=Math.max(1,Math.floor((Date.now()-timestamp)/1000));if(seconds<60)return 'ahora';if(seconds<3600)return `hace ${Math.floor(seconds/60)} min`;if(seconds<86400)return `hace ${Math.floor(seconds/3600)} h`;return `hace ${Math.floor(seconds/86400)} d`}
-    async function renderDestellos(){
-      const grid=$('destellosGrid'),all=loadArray(DESTELLOS_KEY),items=all.filter(item=>currentFilter==='all'||item.type===currentFilter);grid.innerHTML='';
-      if(!items.length){grid.innerHTML='<div class="destello-empty"><div class="big">✦</div><b>Aún no hay Destellos</b><small>Crea una foto, un vídeo o un mensaje breve para comenzar tu historia.</small></div>';return}
-      for(const item of items){
-        const article=document.createElement('article');article.className='destello-card';article.dataset.id=item.id;
-        article.innerHTML=`<div class="destello-media ${item.mediaKey?'':'fallback'}"><span class="destello-type">${item.type==='video'?'VÍDEO':item.type==='image'?'FOTO':'DESTELLO'}</span><button class="destello-delete" data-action="delete" aria-label="Eliminar Destello">×</button></div><div class="destello-content"><p class="destello-text">${escapeHTML(item.text||'Mi nuevo Destello en JEMMO LIVE')}</p><small class="destello-time">${relativeTime(item.createdAt)}</small><div class="destello-actions"><button class="destello-action ${item.liked?'liked':''}" data-action="like"><i>♥</i><span>${formatNumber(item.likes)}</span></button><button class="destello-action" data-action="comment"><i>💬</i><span>${formatNumber(item.comments)}</span></button><button class="destello-action" data-action="gift"><i>🎁</i><span>${formatNumber(item.gifts)}</span></button><button class="destello-action" data-action="view"><i>◉</i><span>${formatNumber(item.views)}</span></button><button class="destello-action" data-action="jemmos"><i>◆</i><span>${formatNumber(item.jemmos)}</span></button></div></div>`;
-        grid.append(article);
-        if(item.mediaKey){const blob=await mediaRead(item.mediaKey);if(blob){const url=URL.createObjectURL(blob),media=item.type==='video'?document.createElement('video'):document.createElement('img');media.src=url;if(item.type==='video'){media.controls=true;media.playsInline=true;media.preload='metadata'}else media.alt='Destello';article.querySelector('.destello-media').prepend(media)}}
-      }
-    }
-    function updateDestello(id,mutator){const list=loadArray(DESTELLOS_KEY),index=list.findIndex(x=>x.id===id);if(index<0)return;list[index]=mutator({...list[index]});localStorage.setItem(DESTELLOS_KEY,JSON.stringify(list));renderDestellos()}
-    $('destellosGrid').addEventListener('click',async event=>{const button=event.target.closest('[data-action]'),article=event.target.closest('.destello-card');if(!button||!article)return;const id=article.dataset.id,action=button.dataset.action;
-      if(action==='delete'){const list=loadArray(DESTELLOS_KEY),item=list.find(x=>x.id===id);if(!confirm('¿Eliminar este Destello?'))return;if(item?.mediaKey)await mediaDelete(item.mediaKey);localStorage.setItem(DESTELLOS_KEY,JSON.stringify(list.filter(x=>x.id!==id)));renderDestellos();toast('Destello eliminado.');return}
-      if(action==='like')updateDestello(id,item=>({...item,liked:!item.liked,likes:Math.max(0,(item.likes||0)+(item.liked?-1:1))}));
-      if(action==='comment')updateDestello(id,item=>({...item,comments:(item.comments||0)+1}));
-      if(action==='gift')updateDestello(id,item=>({...item,gifts:(item.gifts||0)+1,jemmos:(item.jemmos||0)+10}));
-      if(action==='view')toast('Visualizaciones del Destello.');
-      if(action==='jemmos')toast('JEMMOS recibidos en este Destello.');
-    });
-    $$('.destello-tab').forEach(tab=>tab.addEventListener('click',()=>{currentFilter=tab.dataset.filter;$$('.destello-tab').forEach(x=>x.classList.toggle('active',x===tab));renderDestellos()}));
+      const coverPreview=$('editCoverPreview');
+      let coverDrag=null;
+      coverPreview?.addEventListener('pointerdown',event=>{if(!pendingCover)return;event.preventDefault();coverDrag={pointerId:event.pointerId,startX:event.clientX,startY:event.clientY,startPosition:{...pendingCoverPosition}};coverPreview.setPointerCapture?.(event.pointerId);coverPreview.classList.add('dragging')});
+      coverPreview?.addEventListener('pointermove',event=>{if(!coverDrag||event.pointerId!==coverDrag.pointerId)return;event.preventDefault();const rect=coverPreview.getBoundingClientRect(),dx=(event.clientX-coverDrag.startX)/Math.max(1,rect.width)*100,dy=(event.clientY-coverDrag.startY)/Math.max(1,rect.height)*100;pendingCoverPosition={x:clampPercent(coverDrag.startPosition.x-dx),y:clampPercent(coverDrag.startPosition.y-dy)};setCover(pendingCover,pendingCoverPosition)});
+      const finishCoverDrag=event=>{if(!coverDrag||event.pointerId!==coverDrag.pointerId)return;coverPreview.releasePointerCapture?.(event.pointerId);coverPreview.classList.remove('dragging');coverDrag=null};
+      coverPreview?.addEventListener('pointerup',finishCoverDrag);
+      coverPreview?.addEventListener('pointercancel',finishCoverDrag);
+      $('saveProfile')?.addEventListener('click',async()=>{const button=$('saveProfile'),name=$('editName').value.trim(),username=safeUsername($('editUsername').value),bio=limitWords($('editBio').value.trim(),15),country=$('editCountry').value.trim(),city=$('editCity').value.trim(),age=$('editAge').value.trim(),phone=$('editPhone').value.trim(),instagram=cleanSocial($('editInstagram').value),tiktok=cleanSocial($('editTiktok').value),youtube=cleanSocial($('editYoutube').value),facebook=cleanSocial($('editFacebook').value);if(name.length<2){toast('Escribe un nombre válido.');return}if(age&&(Number(age)<13||Number(age)>120)){toast('Revisa la edad indicada.');return}if(countWords(bio)>15){toast('La frase puede tener un máximo de 15 palabras.');return}button.disabled=true;button.textContent='GUARDANDO…';try{await Promise.all([mediaWrite(avatarMediaKey,pendingAvatar),mediaWrite(coverMediaKey,pendingCover)]);avatarData=pendingAvatar;coverData=pendingCover;coverPosition=normalizeCoverPosition(pendingCoverPosition);profile={...profile,name,username,bio:bio||defaultProfile.bio,country:country||'Sin país',city,age,phone,instagram,tiktok,youtube,facebook,avatar:avatarData?'indexeddb':'',cover:coverData?'indexeddb':'',coverPosition,id:profile.id||makeId(),updatedAt:Date.now()};localStorage.removeItem(KEY);localStorage.setItem(KEY,JSON.stringify(profile));render();closeEdit();toast('Datos personales y fotos guardados correctamente.')}catch(error){console.error('JEMMO profile save',error);toast('No se pudo guardar. Vuelve a intentarlo.')}finally{button.disabled=false;button.textContent='GUARDAR CAMBIOS'}});
 
-    document.addEventListener('keydown',event=>{if(event.key!=='Escape')return;if(!$('destelloSheet').hidden)closeDestello();else if(!$('editSheet').hidden)closeEdit();else closeMenu()});
-    renderProfile();renderDestellos();
-  })();
+      $('copyId')?.addEventListener('click',async()=>{const text=$('profileId').textContent;try{await navigator.clipboard.writeText(text);toast('ID copiado.')}catch{toast(`Tu ID es ${text}`)}});
+      const openPersonalMessages=()=>{location.href='mensajes.html?seccion=personales'};
+      $('inboxMessages')?.addEventListener('click',openPersonalMessages);
+      $('openMessages')?.addEventListener('click',openPersonalMessages);
+      $('profilePresence')?.addEventListener('click',event=>{const route=event.currentTarget.dataset.route;if(route)location.href=route});
+
+
+      const openGlobalWallet=event=>{
+        event?.preventDefault?.();
+        event?.stopImmediatePropagation?.();
+        window.JemmoWallet?.open?.('summary');
+      };
+      $('openWallet')?.addEventListener('click',openGlobalWallet,true);
+      window.addEventListener('jemmo-wallet-change',render);
+      window.addEventListener('storage',event=>{if(event.key===walletStorageKey||event.key===presenceStorageKey)render()});
+
+      document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>toast(`${button.dataset.action}: preparado para conectarse en una fase posterior.`)));
+      document.querySelectorAll('[data-route]').forEach(button=>button.addEventListener('click',()=>{location.href=button.dataset.route}));
+
+      const openMenu=()=>{$('menuBackdrop').hidden=false;$('sideMenu').classList.add('open');$('sideMenu').setAttribute('aria-hidden','false')};
+      const closeMenu=()=>{$('menuBackdrop').hidden=true;$('sideMenu').classList.remove('open');$('sideMenu').setAttribute('aria-hidden','true')};
+      $('menuOpen')?.addEventListener('click',openMenu);$('menuClose')?.addEventListener('click',closeMenu);$('menuBackdrop')?.addEventListener('click',closeMenu);
+      document.querySelectorAll('[data-menu-action]').forEach(button=>button.addEventListener('click',()=>{closeMenu();toast(`${button.dataset.menuAction}: preparado para conectarse en una fase posterior.`)}));
+      $('functionSearch')?.addEventListener('input',event=>{const query=event.target.value.trim().toLowerCase();document.querySelectorAll('#menuList [data-search]').forEach(button=>{button.hidden=!!query&&!button.dataset.search.includes(query)});$('quickResults').hidden=!query});
+
+      const logout=async()=>{try{const [{initializeApp,getApps},{getAuth,signOut}]=await Promise.all([import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js'),import('https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js')]);const config={apiKey:'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',authDomain:'jemmo-live.firebaseapp.com',projectId:'jemmo-live',storageBucket:'jemmo-live.firebasestorage.app',messagingSenderId:'355540892255',appId:'1:355540892255:web:d15a8dd03b2915e31939ea'};const app=getApps()[0]||initializeApp(config);await signOut(getAuth(app))}catch{}localStorage.removeItem('jemmo_active_uid');localStorage.removeItem('jemmo_session');sessionStorage.clear();location.replace('acceso.html')};
+      $('logoutButton')?.addEventListener('click',()=>{if(confirm('¿Quieres cerrar tu sesión de JEMMO LIVE?'))logout()});
+
+      const bootstrap=async()=>{
+        try{
+          const legacyAvatar=isImageData(profile.avatar)?profile.avatar:'';
+          const legacyCover=isImageData(profile.cover)?profile.cover:'';
+          avatarData=legacyAvatar||await mediaRead(avatarMediaKey).catch(()=> '');
+          coverData=legacyCover||await mediaRead(coverMediaKey).catch(()=> '');
+          if(legacyAvatar||legacyCover){
+            await Promise.all([legacyAvatar?mediaWrite(avatarMediaKey,legacyAvatar):Promise.resolve(),legacyCover?mediaWrite(coverMediaKey,legacyCover):Promise.resolve()]);
+            profile={...profile,avatar:avatarData?'indexeddb':'',cover:coverData?'indexeddb':''};
+            localStorage.removeItem(KEY);
+            localStorage.setItem(KEY,JSON.stringify(profile));
+          }
+        }catch(error){console.warn('JEMMO profile media load',error);avatarData=isImageData(profile.avatar)?profile.avatar:'';coverData=isImageData(profile.cover)?profile.cover:''}
+        coverPosition=normalizeCoverPosition(profile.coverPosition);pendingCoverPosition={...coverPosition};
+        render();document.documentElement.classList.remove('jemmo-auth-pending');
+      };
+      bootstrap();
+    })();
   </script>
+  <script src="jemmo-wallet.js"></script>
 </body>
 </html>
