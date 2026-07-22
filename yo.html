@@ -480,6 +480,36 @@
     .destello-gift-note{margin:5px 2px 0;color:#95879b;font-size:8px;line-height:1.4;text-align:center}
     @media(max-width:380px){.destello-gift-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.destello-gift-option{min-height:82px}}
 
+
+    /* =========================================================
+       JEMMO LIVE V1 · JEMMO FINANZAS PRUEBA 01
+       Monederos vinculados + contabilidad privada en simulación
+       ========================================================= */
+    .jf-backdrop{position:fixed;inset:0;z-index:210;background:#020003e6;backdrop-filter:blur(7px)}
+    .jf-sheet{position:fixed;z-index:211;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,540px);height:min(96svh,900px);overflow:auto;overscroll-behavior:contain;padding:14px 14px calc(20px + var(--safe-bottom));border:1px solid #78308e;border-radius:27px 27px 0 0;background:radial-gradient(circle at 82% -4%,#5c0870 0,#20042a 28%,#09000d 70%);box-shadow:0 -28px 80px #000}
+    .jf-head{position:sticky;z-index:6;top:-14px;display:flex;align-items:center;gap:10px;margin:-14px -14px 12px;padding:calc(14px + var(--safe-top)) 14px 12px;background:linear-gradient(180deg,#260531fa,#16021ef2);border-bottom:1px solid #5d226f;backdrop-filter:blur(18px)}
+    .jf-head-copy{min-width:0;flex:1}.jf-head-copy small{display:block;color:var(--gold);font-size:7.5px;font-weight:1000;letter-spacing:.13em}.jf-head-copy strong{display:block;margin-top:3px;font-size:20px}.jf-head-copy span{display:block;margin-top:3px;color:#bcaec1;font-size:8.5px}
+    .jf-close{width:40px;height:40px;flex:0 0 40px;border:1px solid #713087;border-radius:13px;background:#290733;color:#fff;font-size:24px}
+    .jf-sim{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;padding:8px 10px;border:1px solid #8d6621;border-radius:13px;background:#2b1906;color:#ffe39a;font-size:8px;font-weight:900}.jf-sim b{color:#fff0b8}
+    .jf-balances{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.jf-balance{min-height:88px;padding:12px;border:1px solid #5e2a70;border-radius:18px;background:linear-gradient(150deg,#250630,#0e0113);box-shadow:inset 0 0 23px #b72cff13}.jf-balance.gold{border-color:#89671f;background:linear-gradient(150deg,#392607,#150e04)}.jf-balance.green{border-color:#286c4d;background:linear-gradient(150deg,#103125,#06140d)}.jf-balance.pending{border-color:#8b5720;background:linear-gradient(150deg,#3a1b08,#170a04)}.jf-balance small{display:block;color:#bcaec1;font-size:7.5px;font-weight:900;letter-spacing:.05em}.jf-balance b{display:block;margin-top:8px;font-size:23px;line-height:1}.jf-balance.gold b{color:#ffd34e}.jf-balance.green b{color:#62e6a1}.jf-balance.pending b{color:#ffb35f}.jf-balance em{display:block;margin-top:6px;color:#918397;font-size:7.5px;font-style:normal;line-height:1.25}
+    .jf-tabs{display:flex;gap:7px;margin:12px -2px 10px;padding:2px;overflow-x:auto;scrollbar-width:none}.jf-tabs::-webkit-scrollbar{display:none}.jf-tab{flex:0 0 auto;min-height:36px;padding:0 12px;border:1px solid #552666;border-radius:999px;background:#120218;color:#b5a5bb;font-size:8px;font-weight:1000}.jf-tab.active{border-color:#d2a536;background:linear-gradient(135deg,#5b3d08,#2a1204);color:#ffe493;box-shadow:0 0 15px #ffd34e24}
+    .jf-view{display:grid;gap:10px}.jf-view[hidden]{display:none!important}.jf-card{padding:13px;border:1px solid #522363;border-radius:18px;background:#100116d9}.jf-card h3{margin:0;font-size:14px}.jf-card>p{margin:5px 0 0;color:#a99bad;font-size:8.5px;line-height:1.45}.jf-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.jf-card-head button{min-height:31px;padding:0 9px;border:1px solid #69307d;border-radius:10px;background:#210529;color:#fff;font-size:7.5px;font-weight:950}
+    .jf-methods{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.jf-method{min-height:74px;padding:10px;border:1px solid #5b296d;border-radius:16px;background:#190320;color:#fff;text-align:left}.jf-method.active{border-color:#ffd34e;background:linear-gradient(145deg,#3b2808,#1b0d03);box-shadow:0 0 15px #ffd34e20}.jf-method:disabled{opacity:.38}.jf-method b{display:block;font-size:10px}.jf-method small{display:block;margin-top:4px;color:#a99bad;font-size:7.5px;line-height:1.3}.jf-method.active small{color:#dacb9b}
+    .jf-packages{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.jf-package{min-height:84px;padding:10px;border:1px solid #795a1e;border-radius:16px;background:radial-gradient(circle at 82% 8%,#ffd34e28,transparent 35%),linear-gradient(145deg,#382307,#160d03);color:#fff;text-align:left}.jf-package strong{display:block;color:#ffd34e;font-size:17px}.jf-package b{display:block;margin-top:4px;font-size:10px}.jf-package small{display:block;margin-top:5px;color:#d3bf92;font-size:7.4px;line-height:1.3}.jf-package span{display:inline-block;margin-top:6px;padding:3px 6px;border-radius:999px;background:#ffd34e;color:#281503;font-size:6.5px;font-weight:1000}
+    .jf-form{display:grid;gap:9px}.jf-grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.jf-field{display:grid;gap:5px}.jf-field span{color:#ddd2e1;font-size:8.5px;font-weight:900}.jf-field input,.jf-field select{width:100%;min-height:44px;border:1px solid #5b2a6b;border-radius:13px;background:#08000c;color:#fff;padding:0 11px;outline:0}.jf-field input:focus,.jf-field select:focus{border-color:#ffd34e;box-shadow:0 0 0 3px #ffd34e18}
+    .jf-preview{padding:10px;border:1px dashed #6a3579;border-radius:14px;background:#0a010e;color:#b8a9be;font-size:8.5px;line-height:1.5}.jf-preview b{color:#ffe17d}.jf-primary{width:100%;min-height:47px;border:0;border-radius:14px;background:linear-gradient(90deg,#ffd34e,#d43cff);color:#1b031f;font-weight:1000}.jf-primary:disabled{opacity:.45}.jf-secondary{width:100%;min-height:41px;border:1px solid #673079;border-radius:13px;background:#210529;color:#fff;font-size:8.5px;font-weight:950}
+    .jf-list{display:grid;gap:8px}.jf-empty{padding:22px 12px;border:1px dashed #50305a;border-radius:15px;color:#8f8095;text-align:center;font-size:8.5px}.jf-row{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:9px;align-items:center;padding:10px;border:1px solid #482057;border-radius:14px;background:#0c0111}.jf-row-icon{width:38px;height:38px;border-radius:12px;background:#290733;display:grid;place-items:center;font-size:18px}.jf-row-copy{min-width:0}.jf-row-copy b{display:block;font-size:9.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.jf-row-copy small{display:block;margin-top:3px;color:#918397;font-size:7px;line-height:1.35}.jf-row-amount{text-align:right;font-size:8.5px;font-weight:1000;white-space:nowrap}.jf-row-amount.plus{color:#62e6a1}.jf-row-amount.minus{color:#ff8da4}.jf-row-amount.pending{color:#ffb35f}.jf-row-amount.neutral{color:#ffe17b}
+    .jf-status{display:inline-flex;align-items:center;gap:4px;margin-top:4px;padding:3px 6px;border:1px solid #4e2a58;border-radius:999px;color:#b5a7ba;font-size:6.3px;font-weight:950}.jf-status.confirmed{border-color:#276b4d;color:#78e6aa}.jf-status.pending{border-color:#865821;color:#ffbd6f}.jf-status.sim{border-color:#7b5d22;color:#ffe18a}
+    .jf-summary-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.jf-kpi{padding:11px;border:1px solid #4c205b;border-radius:15px;background:#0c0111}.jf-kpi small{display:block;color:#9c8ca2;font-size:7px}.jf-kpi b{display:block;margin-top:5px;font-size:16px}.jf-kpi em{display:block;margin-top:4px;color:#766b7b;font-size:6.8px;font-style:normal}.jf-kpi.good b{color:#62e6a1}.jf-kpi.warn b{color:#ffb35f}.jf-kpi.gold b{color:#ffe17b}
+    .jf-rule{display:grid;grid-template-columns:1fr auto;gap:8px;padding:9px 0;border-bottom:1px solid #35133f;color:#b9aabe;font-size:8px}.jf-rule:last-child{border-bottom:0}.jf-rule b{color:#fff;text-align:right}.jf-rule .good{color:#62e6a1}.jf-rule .gold{color:#ffe17b}.jf-rule .warn{color:#ffb35f}
+    .jf-owner-button{border-color:#8d6721!important;background:linear-gradient(150deg,#3a2607,#160e04)!important}.jf-owner-button b{color:#ffe18b}.jf-owner-button small{color:#bfae87!important}
+    .jf-lock-sheet{height:auto;max-height:86svh}.jf-lock-icon{width:66px;height:66px;margin:5px auto 12px;border:1px solid #8c6923;border-radius:22px;background:linear-gradient(145deg,#3d2908,#170d03);display:grid;place-items:center;font-size:31px;box-shadow:0 0 22px #ffd34e24}.jf-lock-copy{text-align:center}.jf-lock-copy h2{margin:0;font-size:19px}.jf-lock-copy p{margin:7px auto 14px;max-width:330px;color:#ae9fb3;font-size:8.5px;line-height:1.5}.jf-pin{letter-spacing:.5em;text-align:center;font-size:18px!important;font-weight:1000}.jf-lock-status{min-height:19px;margin-top:8px;color:#ff9aaf;text-align:center;font-size:8px;font-weight:900}
+    .jf-finance-sheet{width:min(100%,590px)}.jf-finance-hero{display:grid;grid-template-columns:1.2fr .8fr;gap:8px}.jf-profit{padding:14px;border:1px solid #2b714f;border-radius:19px;background:radial-gradient(circle at 82% 15%,#58e29b26,transparent 34%),linear-gradient(145deg,#103426,#07150f)}.jf-profit small{color:#9ed6b9;font-size:7.5px;font-weight:950}.jf-profit b{display:block;margin-top:7px;color:#67eba8;font-size:27px}.jf-profit span{display:block;margin-top:6px;color:#86a997;font-size:7px;line-height:1.35}.jf-owner-state{padding:12px;border:1px solid #795a1f;border-radius:19px;background:linear-gradient(145deg,#382407,#150d03);display:grid;place-content:center;text-align:center}.jf-owner-state span{font-size:21px}.jf-owner-state b{display:block;margin-top:5px;color:#ffe18a;font-size:9px}.jf-owner-state small{display:block;margin-top:4px;color:#b7a67d;font-size:6.8px}
+    .jf-task-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.jf-task{min-height:92px;padding:10px;border:1px solid #5c296d;border-radius:16px;background:#16031d;color:#fff;text-align:left}.jf-task span{font-size:21px}.jf-task b{display:block;margin-top:5px;font-size:9px}.jf-task small{display:block;margin-top:4px;color:#a99bad;font-size:7px;line-height:1.35}.jf-task em{display:inline-block;margin-top:6px;color:#ffe17b;font-size:7px;font-style:normal;font-weight:950}
+    .jf-expense-row{display:grid;grid-template-columns:1fr 105px auto;gap:7px}.jf-expense-row input{min-width:0;min-height:42px;border:1px solid #5b2a6b;border-radius:12px;background:#08000c;color:#fff;padding:0 10px}.jf-expense-row button{min-height:42px;padding:0 11px;border:0;border-radius:12px;background:#d43cff;color:#fff;font-size:8px;font-weight:1000}
+    .jf-setting{display:grid;grid-template-columns:minmax(0,1fr) 92px;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid #35133f}.jf-setting:last-child{border-bottom:0}.jf-setting span b{display:block;font-size:9px}.jf-setting span small{display:block;margin-top:3px;color:#92849a;font-size:7px;line-height:1.3}.jf-setting input{width:100%;min-height:39px;border:1px solid #5b2a6b;border-radius:11px;background:#08000c;color:#fff;text-align:center}
+    @media(max-width:390px){.jf-sheet{padding-left:11px;padding-right:11px}.jf-head{margin-left:-11px;margin-right:-11px;padding-left:11px;padding-right:11px}.jf-balances,.jf-summary-grid,.jf-methods,.jf-packages,.jf-task-grid{gap:6px}.jf-balance{padding:10px}.jf-grid2{grid-template-columns:1fr}.jf-expense-row{grid-template-columns:1fr 86px}.jf-expense-row button{grid-column:1/-1}.jf-finance-hero{grid-template-columns:1fr}.jf-owner-state{min-height:74px}}
+
 </style>
   <script>
     document.documentElement.classList.add('jemmo-auth-pending');
@@ -589,7 +619,7 @@
       </div>
     </section>
 
-    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 15 + DESTELLOS PRUEBA 03</p>
+    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 16 + DESTELLOS PRUEBA 04 + JEMMO FINANZAS 01</p>
   </main>
 
   <div class="menu-backdrop" id="menuBackdrop" hidden></div>
@@ -601,6 +631,7 @@
       <button data-search="mi perfil editar perfil foto nombre biografia avatar apariencia" data-route="yo.html"><span>👤</span><span><b>Mi perfil</b></span><i>›</i></button>
       <button data-search="configuracion idioma permisos camara microfono preferencias aplicacion notificaciones" data-menu-action="Configuración"><span>⚙️</span><span><b>Configuración</b><small>Idioma y ajustes de la aplicación</small></span><i>›</i></button>
       <button data-search="seguridad privacidad contraseña dispositivos usuarios bloqueados verificacion" data-menu-action="Seguridad y privacidad"><span>🔒</span><span><b>Seguridad y privacidad</b><small>Cuenta, contraseña y bloqueos</small></span><i>›</i></button>
+      <button class="jf-owner-button" data-search="jemmo finanzas ingresos pagos gastos beneficio propietario privado" data-open-finance><span>📊</span><span><b>JEMMO Finanzas</b><small>Acceso privado del propietario</small></span><i>🔒</i></button>
       <button data-search="ayuda soporte problemas contacto preguntas" data-menu-action="Ayuda y soporte"><span>❓</span><span><b>Ayuda y soporte</b><small>Contacta con el equipo JEMMO</small></span><i>›</i></button>
       <button data-search="normas comunidad convivencia seguridad contenido permitido" data-menu-action="Normas de la comunidad"><span>§</span><span><b>Normas de la comunidad</b></span><i>›</i></button>
       <button class="logout-item" data-search="cerrar sesion salir desconectar cuenta" id="logoutButton"><span>↪</span><span><b>Cerrar sesión</b></span><i>›</i></button>
@@ -693,15 +724,81 @@
   <div class="destello-backdrop" id="destelloGiftBackdrop" hidden></div>
   <section class="destello-sheet destello-gift-sheet" id="destelloGiftSheet" hidden role="dialog" aria-modal="true" aria-labelledby="destelloGiftTitle">
     <div class="destello-sheet-head"><div><small>REGALOS PARA DESTELLOS</small><strong id="destelloGiftTitle">Elige un regalo</strong></div><button class="destello-close" id="closeDestelloGift" type="button" aria-label="Cerrar">×</button></div>
-    <p class="destello-compose-copy">Cada regalo se paga con JEMMOS. El creador recibe su valor como JEMS de ganancias.</p>
+    <p class="destello-compose-copy">Cada regalo se paga con JEMMOS. El creador recibe el 70 % como JEMS; el resto se reparte entre JEMMO LIVE y la Casa cuando corresponda.</p>
     <div class="destello-gift-balance"><span>Saldo disponible</span><span><b id="destelloGiftBalance">0</b> JEMMOS</span></div>
     <div class="destello-gift-grid" id="destelloGiftGrid" aria-label="Regalos disponibles"></div>
     <div class="destello-gift-summary"><span>Seleccionado: <strong id="destelloGiftSelectedName">—</strong></span><span><b id="destelloGiftSelectedValue">0</b> JEMS</span></div>
     <button class="destello-gift-send" id="sendDestelloGift" type="button">ENVIAR REGALO</button>
     <button class="destello-gift-recharge" id="rechargeDestelloGift" type="button" hidden>RECARGAR JEMMOS</button>
     <p class="destello-gift-status" id="destelloGiftStatus" role="status"></p>
-    <p class="destello-gift-note">En esta prueba, 1 JEMMO enviado mediante un regalo acredita 1 JEM al creador.</p>
+    <p class="destello-gift-note">Reparto oficial: 70 % emisora; 20 % JEMMO LIVE y 10 % Casa, o 30 % JEMMO LIVE si la emisora es independiente.</p>
   </section>
+
+
+  <!-- JEMMO LIVE · Monedero global vinculado -->
+  <div class="jf-backdrop" id="jfWalletBackdrop" hidden></div>
+  <section class="jf-sheet" id="jfWalletSheet" hidden role="dialog" aria-modal="true" aria-labelledby="jfWalletTitle">
+    <div class="jf-head"><div class="jf-head-copy"><small>JEMMO LIVE · ECONOMÍA</small><strong id="jfWalletTitle">Monedero y ganancias</strong><span>JEMMOS para consumir · JEMS para retirar</span></div><button class="jf-close" id="jfWalletClose" type="button" aria-label="Cerrar">×</button></div>
+    <div class="jf-sim"><span>🧪 <b>MODO SIMULACIÓN</b></span><span>Sin dinero real</span></div>
+    <div class="jf-balances">
+      <article class="jf-balance gold"><small>JEMMOS DISPONIBLES</small><b id="jfJemmos">0</b><em>Moneda recargable y no retirable</em></article>
+      <article class="jf-balance green"><small>JEMS CONFIRMADOS</small><b id="jfJemsConfirmed">0</b><em id="jfJemsUsd">0,00 USD retirables</em></article>
+      <article class="jf-balance pending"><small>JEMS POR CONFIRMAR</small><b id="jfJemsPending">0</b><em>Google Play, tarjeta o revisión</em></article>
+      <article class="jf-balance"><small>JEMS RETIRADOS</small><b id="jfJemsWithdrawn">0</b><em id="jfWithdrawnUsd">0,00 USD procesados</em></article>
+    </div>
+    <div class="jf-tabs" id="jfWalletTabs">
+      <button class="jf-tab active" type="button" data-jf-wallet-tab="summary">RESUMEN</button>
+      <button class="jf-tab" type="button" data-jf-wallet-tab="recharge">RECARGAR</button>
+      <button class="jf-tab" type="button" data-jf-wallet-tab="earnings">GANANCIAS</button>
+      <button class="jf-tab" type="button" data-jf-wallet-tab="withdraw">RETIRAR</button>
+      <button class="jf-tab" type="button" data-jf-wallet-tab="history">MOVIMIENTOS</button>
+    </div>
+    <div class="jf-view" data-jf-wallet-view="summary">
+      <article class="jf-card"><h3>Estado de tus saldos</h3><p>Los JEMMOS comprados se usan en regalos y funciones. Los JEMS proceden de regalos o tareas autorizadas y son los únicos que pueden retirarse.</p><div class="jf-summary-grid" id="jfWalletSummaryGrid"></div></article>
+      <article class="jf-card"><h3>Reglas activas</h3><div class="jf-rule"><span>Conversión</span><b>10.000 JEMS = 1 USD</b></div><div class="jf-rule"><span>Retirada mínima</span><b>100.000 JEMS = 10 USD</b></div><div class="jf-rule"><span>Comisión de retirada</span><b>La paga quien retira</b></div><div class="jf-rule"><span>Estado actual</span><b class="gold">SIMULACIÓN</b></div></article>
+    </div>
+    <div class="jf-view" data-jf-wallet-view="recharge" hidden>
+      <article class="jf-card"><h3>Elige el método</h3><p>Todos los métodos funcionan como prueba. Cada operación queda registrada y vinculada con JEMMO Finanzas.</p><div class="jf-methods" id="jfRechargeMethods"></div></article>
+      <article class="jf-card"><div class="jf-card-head"><div><h3 id="jfPackageTitle">Paquetes</h3><p id="jfPackageCopy">Selecciona una recarga ficticia.</p></div></div><div class="jf-packages" id="jfRechargePackages"></div></article>
+      <article class="jf-card" id="jfCryptoRecharge" hidden><h3>Recarga cripto simulada</h3><div class="jf-form"><div class="jf-grid2"><label class="jf-field"><span>Cantidad</span><input id="jfCryptoAmount" type="number" inputmode="decimal" min="1" step="1" value="10"></label><label class="jf-field"><span>Red</span><select id="jfCryptoNetwork"></select></label></div><div class="jf-preview" id="jfCryptoPreview"></div><button class="jf-primary" id="jfCryptoSubmit" type="button">SIMULAR RECARGA</button></div></article>
+    </div>
+    <div class="jf-view" data-jf-wallet-view="earnings" hidden>
+      <article class="jf-card"><div class="jf-card-head"><div><h3>Ganancias recibidas</h3><p>Separadas por estado y por origen.</p></div><button id="jfRefreshPending" type="button">ACTUALIZAR</button></div><div class="jf-list" id="jfEarningsList"></div></article>
+    </div>
+    <div class="jf-view" data-jf-wallet-view="withdraw" hidden>
+      <article class="jf-card"><h3>Solicitar retirada</h3><p>Solo se utilizan JEMS confirmados. La comisión de red o proveedor se descuenta del importe que recibes.</p><div class="jf-form"><label class="jf-field"><span>JEMS que deseas retirar</span><input id="jfWithdrawJems" type="number" inputmode="numeric" min="100000" step="10000" value="100000"></label><label class="jf-field"><span>Método de retirada</span><select id="jfWithdrawMethod"><option value="binance_bep20">Binance · BEP20</option><option value="usdt_trc20">USDT · TRC20</option><option value="usdc_bep20">USDC · BEP20</option></select></label><label class="jf-field"><span>Dirección o identificador</span><input id="jfWithdrawAddress" maxlength="80" placeholder="Dirección de cartera o ID de pago"></label><div class="jf-preview" id="jfWithdrawPreview"></div><button class="jf-primary" id="jfWithdrawSubmit" type="button">CONFIRMAR RETIRADA</button></div></article>
+      <article class="jf-card"><h3>Historial de retiradas</h3><div class="jf-list" id="jfWithdrawalsList"></div></article>
+    </div>
+    <div class="jf-view" data-jf-wallet-view="history" hidden>
+      <article class="jf-card"><h3>Libro de movimientos</h3><p>Las operaciones no se eliminan; las correcciones se registran como nuevos movimientos.</p><div class="jf-list" id="jfWalletHistory"></div></article>
+    </div>
+  </section>
+
+  <!-- Acceso protegido del propietario -->
+  <div class="jf-backdrop" id="jfOwnerBackdrop" hidden></div>
+  <section class="jf-sheet jf-lock-sheet" id="jfOwnerAccess" hidden role="dialog" aria-modal="true" aria-labelledby="jfOwnerTitle">
+    <div class="jf-head"><div class="jf-head-copy"><small>ACCESO PRIVADO</small><strong id="jfOwnerTitle">JEMMO Finanzas</strong><span>Protección local de la versión de pruebas</span></div><button class="jf-close" id="jfOwnerClose" type="button" aria-label="Cerrar">×</button></div>
+    <div class="jf-lock-icon">🔐</div><div class="jf-lock-copy"><h2 id="jfOwnerModeTitle">Acceso del propietario</h2><p id="jfOwnerModeCopy">Introduce tu PIN para consultar los datos financieros de JEMMO LIVE.</p></div>
+    <div class="jf-form"><label class="jf-field"><span>PIN de propietario</span><input class="jf-pin" id="jfOwnerPin" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="••••••"></label><label class="jf-field" id="jfOwnerConfirmField" hidden><span>Repite el PIN</span><input class="jf-pin" id="jfOwnerPinConfirm" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="••••••"></label><button class="jf-primary" id="jfOwnerSubmit" type="button">DESBLOQUEAR</button></div><p class="jf-lock-status" id="jfOwnerStatus"></p>
+  </section>
+
+  <!-- Panel financiero privado -->
+  <div class="jf-backdrop" id="jfFinanceBackdrop" hidden></div>
+  <section class="jf-sheet jf-finance-sheet" id="jfFinanceSheet" hidden role="dialog" aria-modal="true" aria-labelledby="jfFinanceTitle">
+    <div class="jf-head"><div class="jf-head-copy"><small>CONTROL PRIVADO DEL PROPIETARIO</small><strong id="jfFinanceTitle">JEMMO Finanzas</strong><span>Ingresos · Pagos · Gastos · Beneficio</span></div><button class="jf-close" id="jfFinanceClose" type="button" aria-label="Cerrar">×</button></div>
+    <div class="jf-sim"><span>🧪 <b>CONTABILIDAD DE PRUEBAS</b></span><button class="jf-secondary" id="jfFinanceLock" type="button" style="width:auto;min-height:29px;padding:0 9px">BLOQUEAR</button></div>
+    <div class="jf-finance-hero"><article class="jf-profit"><small>BENEFICIO DISPONIBLE SIMULADO</small><b id="jfOwnerProfit">0,00 USD</b><span>Dinero recibido menos pagos, obligaciones, gastos y reservas visibles.</span></article><article class="jf-owner-state"><span>🛡️</span><b>PROPIETARIO VERIFICADO</b><small id="jfOwnerSessionText">Sesión protegida</small></article></div>
+    <div class="jf-tabs" id="jfFinanceTabs"><button class="jf-tab active" type="button" data-jf-finance-tab="overview">RESUMEN</button><button class="jf-tab" type="button" data-jf-finance-tab="recharges">RECARGAS</button><button class="jf-tab" type="button" data-jf-finance-tab="gifts">REGALOS</button><button class="jf-tab" type="button" data-jf-finance-tab="tasks">TAREAS</button><button class="jf-tab" type="button" data-jf-finance-tab="payments">PAGOS</button><button class="jf-tab" type="button" data-jf-finance-tab="expenses">GASTOS</button><button class="jf-tab" type="button" data-jf-finance-tab="audit">AUDITORÍA</button><button class="jf-tab" type="button" data-jf-finance-tab="settings">AJUSTES</button></div>
+    <div class="jf-view" data-jf-finance-view="overview"><article class="jf-card"><h3>Estado general</h3><div class="jf-summary-grid" id="jfFinanceKpis"></div></article><article class="jf-card"><h3>Reparto oficial de regalos</h3><div class="jf-rule"><span>Emisora con Casa</span><b>70 % emisora · 20 % JEMMO · 10 % Casa</b></div><div class="jf-rule"><span>Emisora independiente</span><b>70 % emisora · 30 % JEMMO</b></div><div class="jf-rule"><span>Retirada mínima</span><b>100.000 JEMS · 10 USD</b></div></article><article class="jf-card"><div class="jf-card-head"><div><h3>Liquidaciones pendientes</h3><p>Google Play, tarjeta y Epay se mantienen separados del dinero recibido.</p></div><button id="jfSettlePending" type="button">SIMULAR INGRESO</button></div><div class="jf-list" id="jfSettlementSummary"></div></article></div>
+    <div class="jf-view" data-jf-finance-view="recharges" hidden><article class="jf-card"><h3>Recargas por método</h3><div class="jf-list" id="jfFinanceRecharges"></div></article></div>
+    <div class="jf-view" data-jf-finance-view="gifts" hidden><article class="jf-card"><div class="jf-card-head"><div><h3>Regalos y repartos</h3><p>Cada operación identifica origen, emisora, Casa y parte de JEMMO LIVE.</p></div><button id="jfToggleHouse" type="button">CAMBIAR CASA</button></div><div class="jf-rule"><span>Estado de la emisora de prueba</span><b id="jfHouseStatus">INDEPENDIENTE</b></div><div class="jf-list" id="jfFinanceGifts"></div></article></div>
+    <div class="jf-view" data-jf-finance-view="tasks" hidden><article class="jf-card"><h3>Tareas de prueba vinculadas</h3><p>Los premios en JEMS son gasto de JEMMO LIVE. Los premios en JEMMOS no son retirables.</p><div class="jf-task-grid" id="jfTaskGrid"></div></article><article class="jf-card"><div class="jf-card-head"><div><h3>JEMS pendientes</h3><p>Libera únicamente las recompensas revisadas.</p></div><button id="jfConfirmAllPending" type="button">CONFIRMAR TODO</button></div><div class="jf-list" id="jfPendingCredits"></div></article></div>
+    <div class="jf-view" data-jf-finance-view="payments" hidden><article class="jf-card"><h3>Pagos y obligaciones</h3><div class="jf-summary-grid" id="jfPaymentKpis"></div></article><article class="jf-card"><h3>Solicitudes de retirada</h3><div class="jf-list" id="jfFinancePayments"></div></article></div>
+    <div class="jf-view" data-jf-finance-view="expenses" hidden><article class="jf-card"><h3>Registrar gasto real de la app</h3><p>Servidores, vídeo, publicidad, moderación u otros costes. En esta fase son simulados.</p><div class="jf-expense-row"><input id="jfExpenseConcept" maxlength="60" placeholder="Concepto del gasto"><input id="jfExpenseAmount" type="number" min="0.01" step="0.01" placeholder="USD"><button id="jfAddExpense" type="button">AÑADIR</button></div></article><article class="jf-card"><h3>Gastos registrados</h3><div class="jf-list" id="jfFinanceExpenses"></div></article></div>
+    <div class="jf-view" data-jf-finance-view="audit" hidden><article class="jf-card"><h3>Auditoría inalterable</h3><p>En producción este libro se guardará en servidor. En la prueba se conserva localmente y ninguna operación se edita.</p><div class="jf-list" id="jfFinanceAudit"></div></article></div>
+    <div class="jf-view" data-jf-finance-view="settings" hidden><article class="jf-card"><h3>Parámetros de simulación</h3><p>Los cambios afectan operaciones nuevas. Las anteriores conservan su cálculo original.</p><div id="jfSettingsList"></div><button class="jf-primary" id="jfSaveSettings" type="button">GUARDAR AJUSTES</button></article></div>
+  </section>
+
 
   <div class="toast" id="yoToast" role="status" aria-live="polite"></div>
 
@@ -714,6 +811,294 @@
   </nav>
 
   <script src="app.js"></script>
+  <script>
+  (()=>{
+    'use strict';
+    const uid=localStorage.getItem('jemmo_active_uid')||'local-user';
+    const walletKey=id=>`jemmo_wallet_v1_${id}`;
+    const FINANCE_KEY='jemmo_finance_v1';
+    const OWNER_KEY='jemmo_owner_security_v1';
+    const OWNER_SESSION='jemmo_owner_unlocked_until';
+    const $=id=>document.getElementById(id);
+    const money=value=>Number(value||0).toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2});
+    const number=value=>Math.floor(Number(value)||0).toLocaleString('es-ES');
+    const date=value=>new Date(Number(value)||Date.now()).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+    const esc=value=>String(value??'').replace(/[&<>'"]/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+    const id=(prefix='op')=>`${prefix}_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
+    const readJSON=(key,fallback)=>{try{const parsed=JSON.parse(localStorage.getItem(key)||'null');return parsed&&typeof parsed==='object'?parsed:fallback}catch{return fallback}};
+    const saveJSON=(key,value)=>localStorage.setItem(key,JSON.stringify(value));
+    const notify=()=>window.dispatchEvent(new CustomEvent('jemmo-wallet-change',{detail:{source:'jemmo-finance'}}));
+    const toast=message=>{const el=$('yoToast');if(el){el.textContent=message;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),2700)}else alert(message)};
+
+    const DEFAULT_SETTINGS={
+      jemsPerUsd:10000,minimumWithdrawJems:100000,confirmationHours:72,reservePct:15,
+      hostPct:70,appHousePct:20,agencyPct:10,appIndependentPct:30,
+      googleFeePct:15,cardFeePct:3.5,epayFeePct:5,cryptoFeePct:1,
+      feeBinanceBep20:0.5,feeUsdtTrc20:1,feeUsdcBep20:0.5
+    };
+    const defaultFinance=()=>({version:1,settings:{...DEFAULT_SETTINGS},cash:{gross:0,received:0,pending:0,fees:0,paidOut:0},app:{confirmed:0,pending:0},agencies:{},membership:{},recharges:[],gifts:[],tasks:[],withdrawals:[],expenses:[],pendingSystem:[],audit:[]});
+    const normalizeFinance=raw=>{
+      const base=defaultFinance(),state={...base,...(raw||{})};
+      state.settings={...DEFAULT_SETTINGS,...(raw?.settings||{})};state.cash={...base.cash,...(raw?.cash||{})};state.app={...base.app,...(raw?.app||{})};
+      ['agencies','membership'].forEach(key=>{if(!state[key]||typeof state[key]!=='object'||Array.isArray(state[key]))state[key]={}});
+      ['recharges','gifts','tasks','withdrawals','expenses','pendingSystem','audit'].forEach(key=>{if(!Array.isArray(state[key]))state[key]=[]});
+      return state;
+    };
+    const readFinance=()=>normalizeFinance(readJSON(FINANCE_KEY,null));
+    const writeFinance=state=>saveJSON(FINANCE_KEY,normalizeFinance(state));
+    const audit=(state,type,label,details={})=>{state.audit.unshift({id:id('audit'),type,label,details,actor:uid,createdAt:Date.now(),simulation:true});state.audit=state.audit.slice(0,600)};
+
+    const defaultWallet=()=>({version:2,jemmos:0,coins:0,jems:0,earnings:0,jemsConfirmed:0,jemsPending:0,jemsWithdrawn:0,lots:[],pendingCredits:[],earningsHistory:[],withdrawals:[],ledger:[]});
+    const syncWallet=wallet=>{
+      wallet.jemmos=Math.max(0,Math.floor(Number(wallet.jemmos??wallet.coins)||0));wallet.coins=wallet.jemmos;
+      wallet.jemsConfirmed=Math.max(0,Math.floor(Number(wallet.jemsConfirmed)||0));wallet.jemsPending=Math.max(0,Math.floor(Number(wallet.jemsPending)||0));wallet.jemsWithdrawn=Math.max(0,Math.floor(Number(wallet.jemsWithdrawn)||0));
+      wallet.jems=wallet.jemsConfirmed+wallet.jemsPending;wallet.earnings=wallet.jems;
+      ['lots','pendingCredits','earningsHistory','withdrawals','ledger'].forEach(key=>{if(!Array.isArray(wallet[key]))wallet[key]=[]});
+      return wallet;
+    };
+    const normalizeWallet=raw=>{
+      const wallet={...defaultWallet(),...(raw||{})};
+      if(!Object.hasOwn(raw||{},'jemsConfirmed'))wallet.jemsConfirmed=Math.max(0,Math.floor(Number(raw?.jems??raw?.earnings)||0));
+      syncWallet(wallet);
+      const lotsTotal=wallet.lots.reduce((sum,lot)=>sum+Math.max(0,Math.floor(Number(lot.remaining)||0)),0);
+      if(wallet.jemmos>lotsTotal)wallet.lots.push({id:id('legacy'),method:'legacy',label:'Saldo anterior',risk:'confirmed',remaining:wallet.jemmos-lotsTotal,createdAt:Date.now()});
+      if(lotsTotal>wallet.jemmos){let difference=lotsTotal-wallet.jemmos;for(let i=wallet.lots.length-1;i>=0&&difference>0;i--){const cut=Math.min(difference,Math.max(0,Number(wallet.lots[i].remaining)||0));wallet.lots[i].remaining-=cut;difference-=cut}}
+      return syncWallet(wallet);
+    };
+    const readWallet=(idValue=uid)=>normalizeWallet(readJSON(walletKey(idValue),null));
+    const writeWallet=(wallet,idValue=uid)=>{const clean=syncWallet(wallet);saveJSON(walletKey(idValue),clean);return clean};
+    const walletLedger=(wallet,type,label,data={})=>{wallet.ledger.unshift({id:id('mov'),type,label,...data,createdAt:Date.now(),simulation:true});wallet.ledger=wallet.ledger.slice(0,400)};
+
+    const getProfile=()=>readJSON(`jemmo_profile_v1_${uid}`,{});
+    const isCuba=()=>String(getProfile().country||'').toLowerCase().includes('cuba');
+    const membership=(state,userId=uid)=>state.membership[userId]||{hasHouse:false,houseId:'',houseName:''};
+    const ensureAgency=(state,houseId='casa-demo',houseName='Casa JEMMO Demo')=>{
+      if(!state.agencies[houseId])state.agencies[houseId]={id:houseId,name:houseName,confirmed:0,pending:0,withdrawn:0};
+      return state.agencies[houseId];
+    };
+    const addPendingCredit=(wallet,amount,source,label,releaseAt,reference)=>{
+      amount=Math.max(0,Math.floor(amount));if(!amount)return;
+      wallet.jemsPending+=amount;wallet.pendingCredits.push({id:id('pending'),amount,source,label,releaseAt,status:'pending',reference,createdAt:Date.now()});
+      wallet.earningsHistory.unshift({id:id('earn'),amount,status:'pending',source,label,reference,createdAt:Date.now()});
+    };
+    const addConfirmedCredit=(wallet,amount,source,label,reference)=>{
+      amount=Math.max(0,Math.floor(amount));if(!amount)return;
+      wallet.jemsConfirmed+=amount;wallet.earningsHistory.unshift({id:id('earn'),amount,status:'confirmed',source,label,reference,createdAt:Date.now()});
+    };
+    const releasePending=(all=false)=>{
+      const state=readFinance(),wallet=readWallet(),now=Date.now();let released=0;
+      wallet.pendingCredits.forEach(entry=>{if(entry.status==='pending'&&(all||Number(entry.releaseAt)<=now)){entry.status='confirmed';entry.confirmedAt=now;wallet.jemsPending=Math.max(0,wallet.jemsPending-entry.amount);wallet.jemsConfirmed+=entry.amount;released+=entry.amount;const history=wallet.earningsHistory.find(item=>item.reference===entry.reference&&item.status==='pending'&&item.amount===entry.amount);if(history){history.status='confirmed';history.confirmedAt=now}}});
+      state.pendingSystem.forEach(entry=>{if(entry.status!=='pending'||(!all&&Number(entry.releaseAt)>now))return;entry.status='confirmed';entry.confirmedAt=now;if(entry.app){state.app.pending=Math.max(0,state.app.pending-entry.app);state.app.confirmed+=entry.app}if(entry.agency&&entry.houseId){const agency=ensureAgency(state,entry.houseId,entry.houseName);agency.pending=Math.max(0,agency.pending-entry.agency);agency.confirmed+=entry.agency}});
+      if(released){walletLedger(wallet,'confirm','JEMS confirmados',{amountJems:released,status:'confirmed'});audit(state,'confirm','Liberación de JEMS pendientes',{amountJems:released,all});writeWallet(wallet);writeFinance(state);notify()}
+      return released;
+    };
+
+    const spendLots=(wallet,amount)=>{
+      amount=Math.max(0,Math.floor(amount));if(wallet.jemmos<amount)return null;
+      const allocations=[];let remaining=amount;
+      wallet.lots.sort((a,b)=>Number(a.createdAt)-Number(b.createdAt));
+      for(const lot of wallet.lots){if(remaining<=0)break;const available=Math.max(0,Math.floor(Number(lot.remaining)||0));if(!available)continue;const used=Math.min(available,remaining);lot.remaining=available-used;remaining-=used;allocations.push({method:lot.method||'legacy',label:lot.label||lot.method||'Saldo',risk:lot.risk||'confirmed',amount:used,lotId:lot.id})}
+      if(remaining>0)return null;wallet.lots=wallet.lots.filter(lot=>Number(lot.remaining)>0);wallet.jemmos-=amount;syncWallet(wallet);return allocations;
+    };
+
+    const rechargePackages={
+      google:[{usd:.99,jemmos:7000},{usd:2.99,jemmos:21000},{usd:9.99,jemmos:70000},{usd:29.99,jemmos:210000},{usd:49.99,jemmos:350000},{usd:99.99,jemmos:700000},{usd:199.99,jemmos:1400000}],
+      card:[{usd:10,jemmos:83000,bonus:18},{usd:30,jemmos:252000,bonus:20},{usd:50,jemmos:430000,bonus:22},{usd:100,jemmos:870000,bonus:24},{usd:200,jemmos:1780000,bonus:27}],
+      epay:[{usd:10,jemmos:83000,bonus:18},{usd:30,jemmos:252000,bonus:20},{usd:50,jemmos:430000,bonus:22},{usd:100,jemmos:870000,bonus:24},{usd:200,jemmos:1780000,bonus:27}]
+    };
+    const methodInfo={google:{icon:'▶',name:'Google Play',copy:'7.000 JEMMOS por USD aprox.',risk:'reversible'},card:{icon:'💳',name:'Tarjeta',copy:'Bonificación del 18 % al 27 %',risk:'reversible'},epay:{icon:'🌐',name:'Epay',copy:'Paquetes externos bonificados',risk:'reversible'},usdt:{icon:'₮',name:'USDT',copy:'1 USDT = 9.900 JEMMOS',risk:'confirmed'},usdc:{icon:'◉',name:'USDC',copy:'1 USDC = 9.900 JEMMOS',risk:'confirmed'}};
+    const feePct=(settings,method)=>method==='google'?settings.googleFeePct:method==='card'?settings.cardFeePct:method==='epay'?settings.epayFeePct:settings.cryptoFeePct;
+    const simulateRecharge=({method,usd,jemmos,bonus=0,network=''})=>{
+      const info=methodInfo[method];if(!info)return;
+      if(method==='google'&&isCuba()){toast('Google Play no está habilitado para Cuba. Elige otro método.');return}
+      const settings=readFinance().settings;
+      const commission=Number(usd)*feePct(settings,method)/100,net=Math.max(0,Number(usd)-commission);
+      if(!confirm(`SIMULACIÓN\n\n${info.name}\nPagas: ${money(usd)} ${method==='usdt'?'USDT':method==='usdc'?'USDC':'USD'}\nRecibes: ${number(jemmos)} JEMMOS\nComisión simulada: ${money(commission)} USD\n\n¿Registrar esta recarga ficticia?`))return;
+      const state=readFinance(),wallet=readWallet(),operationId=id('recharge'),createdAt=Date.now();
+      wallet.jemmos+=Math.floor(jemmos);wallet.lots.push({id:operationId,method,label:info.name,risk:info.risk,remaining:Math.floor(jemmos),createdAt,network});
+      walletLedger(wallet,'recharge',`Recarga ${info.name}`,{amountJemmos:Math.floor(jemmos),usd:Number(usd),method,network,bonus,status:'confirmed'});
+      state.cash.gross+=Number(usd);state.cash.fees+=commission;if(info.risk==='confirmed')state.cash.received+=net;else state.cash.pending+=net;
+      state.recharges.unshift({id:operationId,userId:uid,method,methodName:info.name,network,usd:Number(usd),jemmos:Math.floor(jemmos),bonus,commission,net,settlement:info.risk==='confirmed'?'received':'pending',createdAt,simulation:true});state.recharges=state.recharges.slice(0,500);
+      audit(state,'recharge',`Recarga simulada por ${info.name}`,{operationId,usd:Number(usd),jemmos:Math.floor(jemmos),commission,net,network});
+      writeWallet(wallet);writeFinance(state);notify();renderWallet();renderFinance();toast(`${number(jemmos)} JEMMOS añadidos mediante ${info.name}.`);
+    };
+
+    const sendGift=({amount,context='Regalo',recipientUid=uid,reference='',giftName='Regalo JEMMO'})=>{
+      amount=Math.max(1,Math.floor(Number(amount)||0));const state=readFinance(),settings=state.settings,member=membership(state,recipientUid);
+      let sender=readWallet(uid);const allocations=spendLots(sender,amount);if(!allocations)return {ok:false,reason:'insufficient',missing:Math.max(0,amount-sender.jemmos)};
+      const pendingSpent=allocations.filter(item=>item.risk==='reversible').reduce((sum,item)=>sum+item.amount,0),pendingRatio=amount?pendingSpent/amount:0;
+      const hostTotal=Math.floor(amount*settings.hostPct/100),agencyTotal=member.hasHouse?Math.floor(amount*settings.agencyPct/100):0,appTotal=amount-hostTotal-agencyTotal;
+      const hostPending=Math.round(hostTotal*pendingRatio),hostConfirmed=hostTotal-hostPending,appPending=Math.round(appTotal*pendingRatio),appConfirmed=appTotal-appPending,agencyPending=Math.round(agencyTotal*pendingRatio),agencyConfirmed=agencyTotal-agencyPending;
+      const operationId=id('gift'),releaseAt=Date.now()+Math.max(0,Number(settings.confirmationHours)||0)*3600000;
+      let recipient=recipientUid===uid?sender:readWallet(recipientUid);
+      if(hostConfirmed)addConfirmedCredit(recipient,hostConfirmed,'gift',giftName,operationId);
+      if(hostPending)addPendingCredit(recipient,hostPending,'gift',giftName,releaseAt,operationId);
+      walletLedger(sender,'gift_sent',`${giftName} enviado`,{amountJemmos:-amount,context,reference,operationId,allocations});
+      if(recipientUid!==uid)writeWallet(sender,uid);
+      walletLedger(recipient,'gift_received',`${giftName} recibido`,{amountJems:hostTotal,confirmed:hostConfirmed,pending:hostPending,context,reference,operationId});
+      state.app.confirmed+=appConfirmed;state.app.pending+=appPending;
+      if(member.hasHouse){const agency=ensureAgency(state,member.houseId,member.houseName);agency.confirmed+=agencyConfirmed;agency.pending+=agencyPending}
+      if(appPending||agencyPending)state.pendingSystem.push({id:operationId,status:'pending',releaseAt,app:appPending,agency:agencyPending,houseId:member.houseId,houseName:member.houseName});
+      state.gifts.unshift({id:operationId,senderUid:uid,recipientUid,context,reference,giftName,total:amount,hostTotal,hostConfirmed,hostPending,appTotal,appConfirmed,appPending,agencyTotal,agencyConfirmed,agencyPending,hasHouse:member.hasHouse,houseId:member.houseId,houseName:member.houseName,sourceMethods:allocations,createdAt:Date.now(),simulation:true});state.gifts=state.gifts.slice(0,600);
+      audit(state,'gift',`${giftName} repartido`,{operationId,total:amount,hostTotal,appTotal,agencyTotal,hostPending,appPending,agencyPending,hasHouse:member.hasHouse});
+      writeWallet(recipient,recipientUid);writeFinance(state);notify();
+      return {ok:true,operationId,hostTotal,hostConfirmed,hostPending,appTotal,agencyTotal,hasHouse:member.hasHouse};
+    };
+
+    const taskCatalog=[
+      {key:'vip',icon:'👑',name:'Recompensa VIP diaria',kind:'jemmos',amount:35000,copy:'Premio no retirable'},
+      {key:'video',icon:'🎬',name:'Vídeo aprobado',kind:'jems',amount:1000,copy:'Pendiente de revisión'},
+      {key:'quality',icon:'✨',name:'Vídeo de alta calidad',kind:'jems',amount:3000,copy:'Pendiente de revisión'},
+      {key:'recommended',icon:'🚀',name:'Vídeo recomendado',kind:'jems',amount:60000,copy:'Campaña destacada'},
+      {key:'event',icon:'🎁',name:'30 regalos de evento',kind:'jems',amount:30000,copy:'Actividad completada'},
+      {key:'host',icon:'🤝',name:'Invitar anfitrión',kind:'jems',amount:140000,copy:'Campaña de captación'}
+    ];
+    const awardTask=task=>{
+      const state=readFinance(),wallet=readWallet(),operationId=id('task'),releaseAt=Date.now()+Math.max(0,Number(state.settings.confirmationHours)||0)*3600000;
+      if(task.kind==='jemmos'){
+        wallet.jemmos+=task.amount;wallet.lots.push({id:operationId,method:'promotion',label:'Tarea promocional',risk:'confirmed',remaining:task.amount,createdAt:Date.now()});walletLedger(wallet,'task_jemmos',task.name,{amountJemmos:task.amount,operationId});
+      }else{
+        addPendingCredit(wallet,task.amount,'task',task.name,releaseAt,operationId);walletLedger(wallet,'task_jems',task.name,{amountJems:task.amount,status:'pending',operationId});
+      }
+      state.tasks.unshift({id:operationId,userId:uid,...task,status:task.kind==='jemmos'?'confirmed':'pending',releaseAt,createdAt:Date.now(),simulation:true});state.tasks=state.tasks.slice(0,300);
+      audit(state,'task',`Tarea simulada: ${task.name}`,{operationId,kind:task.kind,amount:task.amount});writeWallet(wallet);writeFinance(state);notify();renderWallet();renderFinance();toast(`${task.name}: +${number(task.amount)} ${task.kind==='jemmos'?'JEMMOS':'JEMS pendientes'}.`);
+    };
+
+    const withdrawalFees=settings=>({binance_bep20:{name:'Binance · BEP20',fee:Number(settings.feeBinanceBep20)||0},usdt_trc20:{name:'USDT · TRC20',fee:Number(settings.feeUsdtTrc20)||0},usdc_bep20:{name:'USDC · BEP20',fee:Number(settings.feeUsdcBep20)||0}});
+    const withdraw=()=>{
+      releasePending(false);const state=readFinance(),wallet=readWallet(),settings=state.settings,amount=Math.floor(Number($('jfWithdrawJems').value)||0),method=$('jfWithdrawMethod').value,address=$('jfWithdrawAddress').value.trim(),methodData=withdrawalFees(settings)[method];
+      if(amount<settings.minimumWithdrawJems){toast(`El mínimo es ${number(settings.minimumWithdrawJems)} JEMS.`);return}if(amount>wallet.jemsConfirmed){toast('No tienes suficientes JEMS confirmados.');return}if(address.length<5){toast('Escribe una dirección o identificador válido.');return}
+      const gross=amount/settings.jemsPerUsd,fee=Math.min(gross,methodData.fee),net=Math.max(0,gross-fee),bank=state.cash.received-state.cash.paidOut-state.expenses.reduce((sum,item)=>sum+Number(item.usd||0),0);
+      if(bank<gross){toast('JEMMO Finanzas no tiene liquidez recibida suficiente para esta prueba. Liquida primero las recargas pendientes.');return}
+      if(!confirm(`RETIRADA SIMULADA\n\nSolicitado: ${money(gross)} USD\nComisión para el usuario: ${money(fee)} USD\nRecibirá: ${money(net)} USD\nMétodo: ${methodData.name}\n\n¿Confirmar?`))return;
+      const operationId=id('withdraw'),masked=address.length>10?`${address.slice(0,4)}••••${address.slice(-4)}`:address;
+      wallet.jemsConfirmed-=amount;wallet.jemsWithdrawn+=amount;wallet.withdrawals.unshift({id:operationId,amountJems:amount,grossUsd:gross,feeUsd:fee,netUsd:net,method,methodName:methodData.name,addressMasked:masked,status:'paid',createdAt:Date.now(),simulation:true});walletLedger(wallet,'withdrawal','Retirada completada',{amountJems:-amount,grossUsd:gross,feeUsd:fee,netUsd:net,method:methodData.name,operationId});
+      state.cash.paidOut+=gross;state.withdrawals.unshift({id:operationId,userId:uid,amountJems:amount,grossUsd:gross,feeUsd:fee,netUsd:net,method,methodName:methodData.name,addressMasked:masked,status:'paid',requestedAt:Date.now(),paidAt:Date.now(),simulation:true});state.withdrawals=state.withdrawals.slice(0,400);
+      audit(state,'withdrawal','Retirada simulada pagada',{operationId,amountJems:amount,grossUsd:gross,feeUsd:fee,netUsd:net,method:methodData.name});writeWallet(wallet);writeFinance(state);notify();$('jfWithdrawAddress').value='';renderWallet();renderFinance();toast(`Retirada completada: ${money(net)} USD netos.`);
+    };
+
+    const financeMetrics=()=>{
+      releasePending(false);const state=readFinance(),wallet=readWallet(),agencyTotals=Object.values(state.agencies).reduce((acc,item)=>{acc.confirmed+=Number(item.confirmed)||0;acc.pending+=Number(item.pending)||0;acc.withdrawn+=Number(item.withdrawn)||0;return acc},{confirmed:0,pending:0,withdrawn:0});
+      const expenses=state.expenses.reduce((sum,item)=>sum+Number(item.usd||0),0),bank=state.cash.received-state.cash.paidOut-expenses,userLiability=(wallet.jemsConfirmed+wallet.jemsPending)/state.settings.jemsPerUsd,agencyLiability=(agencyTotals.confirmed+agencyTotals.pending)/state.settings.jemsPerUsd,preReserve=bank-userLiability-agencyLiability,reserve=Math.max(0,preReserve*state.settings.reservePct/100),rawProfit=preReserve-reserve,profit=Math.abs(rawProfit)<0.005?0:rawProfit;
+      return {state,wallet,agencyTotals,expenses,bank,userLiability,agencyLiability,preReserve,reserve,profit};
+    };
+
+    const row=(icon,title,copy,amount='',amountClass='neutral',status='')=>`<div class="jf-row"><span class="jf-row-icon">${icon}</span><span class="jf-row-copy"><b>${esc(title)}</b><small>${esc(copy)}</small>${status?`<span class="jf-status ${esc(status.className||'')}">${esc(status.text||'')}</span>`:''}</span><span class="jf-row-amount ${esc(amountClass)}">${esc(amount)}</span></div>`;
+    const empty=text=>`<div class="jf-empty">${esc(text)}</div>`;
+    let walletTab='summary',financeTab='overview',rechargeMethod=isCuba()?'card':'google';
+
+    const showWalletTab=tab=>{walletTab=tab;document.querySelectorAll('[data-jf-wallet-tab]').forEach(button=>button.classList.toggle('active',button.dataset.jfWalletTab===tab));document.querySelectorAll('[data-jf-wallet-view]').forEach(view=>view.hidden=view.dataset.jfWalletView!==tab);renderWallet()};
+    const openWallet=(tab='summary')=>{releasePending(false);if($('jfFinanceBackdrop'))$('jfFinanceBackdrop').hidden=true;if($('jfFinanceSheet'))$('jfFinanceSheet').hidden=true;if($('jfOwnerBackdrop'))$('jfOwnerBackdrop').hidden=true;if($('jfOwnerAccess'))$('jfOwnerAccess').hidden=true;$('jfWalletBackdrop').hidden=false;$('jfWalletSheet').hidden=false;document.body.style.overflow='hidden';showWalletTab(tab)};
+    const closeWallet=()=>{$('jfWalletBackdrop').hidden=true;$('jfWalletSheet').hidden=true;document.body.style.overflow=''};
+    const renderRechargeMethods=()=>{
+      $('jfRechargeMethods').innerHTML=Object.entries(methodInfo).map(([key,info])=>`<button class="jf-method ${rechargeMethod===key?'active':''}" type="button" data-jf-method="${key}" ${key==='google'&&isCuba()?'disabled':''}><b>${info.icon} ${info.name}</b><small>${key==='google'&&isCuba()?'No disponible para Cuba':info.copy}</small></button>`).join('');
+      document.querySelectorAll('[data-jf-method]').forEach(button=>button.addEventListener('click',()=>{rechargeMethod=button.dataset.jfMethod;renderWallet()}));
+      const crypto=['usdt','usdc'].includes(rechargeMethod);$('jfCryptoRecharge').hidden=!crypto;$('jfRechargePackages').parentElement.hidden=crypto;
+      if(crypto){const info=methodInfo[rechargeMethod];$('jfPackageTitle').textContent=`Recarga con ${info.name}`;$('jfCryptoNetwork').innerHTML=(rechargeMethod==='usdt'?['BNB Smart Chain · BEP20','TRON · TRC20','Ethereum · ERC20']:['BNB Smart Chain · BEP20','Ethereum · ERC20']).map(value=>`<option>${value}</option>`).join('');updateCryptoPreview();return}
+      const packages=rechargePackages[rechargeMethod]||[];$('jfPackageTitle').textContent=`Paquetes ${methodInfo[rechargeMethod].name}`;$('jfPackageCopy').textContent='Los porcentajes corresponden a esta simulación.';
+      $('jfRechargePackages').innerHTML=packages.map((pack,index)=>`<button class="jf-package" type="button" data-jf-package="${index}"><strong>${number(pack.jemmos)}</strong><b>JEMMOS</b><small>${money(pack.usd)} USD · ${number(Math.round(pack.jemmos/pack.usd))} por USD</small>${pack.bonus?`<span>+${pack.bonus}%</span>`:'<span>TARIFA PLAY</span>'}</button>`).join('');
+      document.querySelectorAll('[data-jf-package]').forEach(button=>button.addEventListener('click',()=>{const pack=packages[Number(button.dataset.jfPackage)];simulateRecharge({method:rechargeMethod,...pack})}));
+    };
+    const updateCryptoPreview=()=>{const amount=Math.max(1,Number($('jfCryptoAmount')?.value)||0),jemmos=Math.floor(amount*9900),network=$('jfCryptoNetwork')?.value||'';if($('jfCryptoPreview'))$('jfCryptoPreview').innerHTML=`Enviarás <b>${money(amount)} ${rechargeMethod.toUpperCase()}</b> por <b>${esc(network)}</b><br>Recibirás <b>${number(jemmos)} JEMMOS</b> · Confirmación inmediata tras validar la red simulada.`};
+
+    const renderWallet=()=>{
+      if(!$('jfWalletSheet'))return;releasePending(false);const wallet=readWallet(),state=readFinance(),settings=state.settings;
+      $('jfJemmos').textContent=number(wallet.jemmos);$('jfJemsConfirmed').textContent=number(wallet.jemsConfirmed);$('jfJemsPending').textContent=number(wallet.jemsPending);$('jfJemsWithdrawn').textContent=number(wallet.jemsWithdrawn);$('jfJemsUsd').textContent=`${money(wallet.jemsConfirmed/settings.jemsPerUsd)} USD retirables`;$('jfWithdrawnUsd').textContent=`${money(wallet.jemsWithdrawn/settings.jemsPerUsd)} USD procesados`;
+      $('jfWalletSummaryGrid').innerHTML=`<div class="jf-kpi gold"><small>JEMS TOTALES GENERADOS</small><b>${number(wallet.jemsConfirmed+wallet.jemsPending+wallet.jemsWithdrawn)}</b><em>Confirmados, pendientes y retirados</em></div><div class="jf-kpi good"><small>DISPONIBLE PARA RETIRAR</small><b>${money(wallet.jemsConfirmed/settings.jemsPerUsd)} USD</b><em>Mínimo ${money(settings.minimumWithdrawJems/settings.jemsPerUsd)} USD</em></div><div class="jf-kpi warn"><small>POR CONFIRMAR</small><b>${money(wallet.jemsPending/settings.jemsPerUsd)} USD</b><em>Según origen o revisión</em></div><div class="jf-kpi"><small>LOTES DE RECARGA</small><b>${wallet.lots.length}</b><em>Conservan su método de origen</em></div>`;
+      if(walletTab==='recharge')renderRechargeMethods();
+      if(walletTab==='earnings'){
+        const list=wallet.earningsHistory.slice(0,80);$('jfEarningsList').innerHTML=list.length?list.map(item=>row(item.source==='task'?'🎯':'🎁',item.label||'Ganancia',`${date(item.createdAt)} · ${item.source==='task'?'Tarea':'Regalo'}`,`+${number(item.amount)} JEMS`,item.status==='pending'?'pending':'plus',{className:item.status,text:item.status==='pending'?'POR CONFIRMAR':'CONFIRMADO'})).join(''):empty('Todavía no hay ganancias registradas.');
+      }
+      if(walletTab==='withdraw'){
+        const method=withdrawalFees(settings)[$('jfWithdrawMethod').value]||withdrawalFees(settings).binance_bep20,amount=Math.max(0,Number($('jfWithdrawJems').value)||0),gross=amount/settings.jemsPerUsd,net=Math.max(0,gross-method.fee);$('jfWithdrawPreview').innerHTML=`Solicitas <b>${number(amount)} JEMS = ${money(gross)} USD</b><br>Tarifa a tu cargo: <b>${money(method.fee)} USD</b><br>Recibirás aproximadamente: <b>${money(net)} USD</b>`;
+        $('jfWithdrawSubmit').disabled=amount<settings.minimumWithdrawJems||amount>wallet.jemsConfirmed;
+        $('jfWithdrawalsList').innerHTML=wallet.withdrawals.length?wallet.withdrawals.slice(0,40).map(item=>row('↗',item.methodName,`${date(item.createdAt)} · ${item.addressMasked}`,`${money(item.netUsd)} USD`,'minus',{className:'confirmed',text:'PAGADO'})).join(''):empty('No hay retiradas registradas.');
+      }
+      if(walletTab==='history')$('jfWalletHistory').innerHTML=wallet.ledger.length?wallet.ledger.slice(0,100).map(item=>{const amount=item.amountJemmos??item.amountJems??0,label=item.amountJemmos!==undefined?'JEMMOS':'JEMS',cls=Number(amount)>0?'plus':Number(amount)<0?'minus':'neutral';return row(item.type.includes('recharge')?'🪙':item.type.includes('gift')?'🎁':item.type.includes('withdraw')?'↗':'◆',item.label,`${date(item.createdAt)} · SIMULACIÓN`,`${Number(amount)>0?'+':''}${number(amount)} ${label}`,cls,{className:'sim',text:'SIMULACIÓN'})}).join(''):empty('El libro de movimientos está vacío.');
+    };
+
+    const showFinanceTab=tab=>{financeTab=tab;document.querySelectorAll('[data-jf-finance-tab]').forEach(button=>button.classList.toggle('active',button.dataset.jfFinanceTab===tab));document.querySelectorAll('[data-jf-finance-view]').forEach(view=>view.hidden=view.dataset.jfFinanceView!==tab);renderFinance()};
+    const openFinanceSheet=()=>{if($('jfWalletBackdrop'))$('jfWalletBackdrop').hidden=true;if($('jfWalletSheet'))$('jfWalletSheet').hidden=true;$('jfFinanceBackdrop').hidden=false;$('jfFinanceSheet').hidden=false;document.body.style.overflow='hidden';showFinanceTab('overview')};
+    const closeFinance=()=>{$('jfFinanceBackdrop').hidden=true;$('jfFinanceSheet').hidden=true;document.body.style.overflow=''};
+    const closeOwnerAccess=()=>{$('jfOwnerBackdrop').hidden=true;$('jfOwnerAccess').hidden=true;document.body.style.overflow='';$('jfOwnerStatus').textContent='';$('jfOwnerPin').value='';$('jfOwnerPinConfirm').value=''};
+    const ownerData=()=>readJSON(OWNER_KEY,null);
+    const ownerUnlocked=()=>Number(sessionStorage.getItem(OWNER_SESSION)||0)>Date.now();
+    const ensureOwner=()=>{if(ownerUnlocked())return true;closeFinance();requestFinanceAccess();toast('La sesión financiera ha caducado. Vuelve a desbloquearla.');return false};
+    const hashPin=async(pin,salt)=>{const value=`${salt}:${pin}`;if(globalThis.crypto?.subtle){const bytes=new TextEncoder().encode(value),hash=await crypto.subtle.digest('SHA-256',bytes);return Array.from(new Uint8Array(hash)).map(byte=>byte.toString(16).padStart(2,'0')).join('')}let hash=2166136261;for(let index=0;index<value.length;index++){hash^=value.charCodeAt(index);hash=Math.imul(hash,16777619)}return `local-${(hash>>>0).toString(16)}`};
+    const requestFinanceAccess=()=>{
+      $('sideMenu')?.classList.remove('open');$('sideMenu')?.setAttribute('aria-hidden','true');if($('menuBackdrop'))$('menuBackdrop').hidden=true;
+      if(ownerUnlocked()){openFinanceSheet();return}
+      const security=ownerData(),setup=!security;$('jfOwnerModeTitle').textContent=setup?'Crear protección del propietario':'Acceso del propietario';$('jfOwnerModeCopy').textContent=setup?'Crea un PIN de 6 cifras para proteger JEMMO Finanzas en este dispositivo. En producción se sustituirá por autenticación de servidor y segundo factor.':'Introduce el PIN del propietario. La sesión se bloqueará automáticamente tras 10 minutos.';$('jfOwnerConfirmField').hidden=!setup;$('jfOwnerSubmit').textContent=setup?'CREAR Y ENTRAR':'DESBLOQUEAR';$('jfOwnerBackdrop').hidden=false;$('jfOwnerAccess').hidden=false;document.body.style.overflow='hidden';setTimeout(()=>$('jfOwnerPin').focus(),80);
+    };
+    const submitOwner=async()=>{
+      const pin=$('jfOwnerPin').value.trim(),confirmPin=$('jfOwnerPinConfirm').value.trim(),security=ownerData(),now=Date.now();
+      if(!/^\d{6}$/.test(pin)){$('jfOwnerStatus').textContent='El PIN debe tener exactamente 6 cifras.';return}
+      if(!security){if(pin!==confirmPin){$('jfOwnerStatus').textContent='Los dos PIN no coinciden.';return}const salt=globalThis.crypto?.getRandomValues?crypto.getRandomValues(new Uint32Array(4)).join('-'):`${Date.now()}-${Math.random()}`,hash=await hashPin(pin,salt);saveJSON(OWNER_KEY,{ownerUid:uid,salt,hash,attempts:0,lockedUntil:0,createdAt:now});sessionStorage.setItem(OWNER_SESSION,String(now+10*60*1000));closeOwnerAccess();openFinanceSheet();toast('JEMMO Finanzas protegido y desbloqueado.');return}
+      if(security.ownerUid!==uid){$('jfOwnerStatus').textContent='Esta cuenta no es la propietaria de este panel.';return}
+      if(Number(security.lockedUntil)>now){$('jfOwnerStatus').textContent=`Acceso bloqueado temporalmente. Espera ${Math.ceil((security.lockedUntil-now)/1000)} segundos.`;return}
+      const hash=await hashPin(pin,security.salt);if(hash!==security.hash){security.attempts=(Number(security.attempts)||0)+1;if(security.attempts>=5){security.attempts=0;security.lockedUntil=now+60000;$('jfOwnerStatus').textContent='Cinco intentos fallidos. Acceso bloqueado durante 60 segundos.'}else $('jfOwnerStatus').textContent=`PIN incorrecto. Intento ${security.attempts} de 5.`;saveJSON(OWNER_KEY,security);return}
+      security.attempts=0;security.lockedUntil=0;saveJSON(OWNER_KEY,security);sessionStorage.setItem(OWNER_SESSION,String(now+10*60*1000));closeOwnerAccess();openFinanceSheet();
+    };
+
+    const renderFinance=()=>{
+      if(!$('jfFinanceSheet'))return;const metrics=financeMetrics(),{state,wallet,agencyTotals,expenses,bank,userLiability,agencyLiability,reserve,profit}=metrics,settings=state.settings;
+      $('jfOwnerProfit').textContent=`${money(profit)} USD`;$('jfOwnerSessionText').textContent=`Bloqueo automático: ${Math.max(0,Math.ceil((Number(sessionStorage.getItem(OWNER_SESSION)||0)-Date.now())/60000))} min`;
+      $('jfFinanceKpis').innerHTML=`<div class="jf-kpi good"><small>DINERO RECIBIDO</small><b>${money(state.cash.received)} USD</b><em>Ya liquidado</em></div><div class="jf-kpi warn"><small>PENDIENTE DE INGRESAR</small><b>${money(state.cash.pending)} USD</b><em>Google, tarjeta y Epay</em></div><div class="jf-kpi"><small>CAJA DESPUÉS DE PAGOS</small><b>${money(bank)} USD</b><em>Menos retiradas y gastos</em></div><div class="jf-kpi gold"><small>RESERVA FISCAL</small><b>${money(reserve)} USD</b><em>${money(settings.reservePct)} % configurado</em></div><div class="jf-kpi"><small>DEUDA EMISORA</small><b>${money(userLiability)} USD</b><em>Confirmada + pendiente</em></div><div class="jf-kpi"><small>DEUDA CASAS</small><b>${money(agencyLiability)} USD</b><em>Comisiones acumuladas</em></div><div class="jf-kpi gold"><small>PARTE JEMMO LIVE</small><b>${number(state.app.confirmed+state.app.pending)}</b><em>JEMS contables de regalos</em></div><div class="jf-kpi"><small>GASTOS OPERATIVOS</small><b>${money(expenses)} USD</b><em>Registrados manualmente</em></div>`;
+      const pendingRecharge=state.recharges.filter(item=>item.settlement==='pending');$('jfSettlementSummary').innerHTML=pendingRecharge.length?pendingRecharge.slice(0,20).map(item=>row('⏳',item.methodName,`${date(item.createdAt)} · ${number(item.jemmos)} JEMMOS`,`${money(item.net)} USD`,'pending',{className:'pending',text:'PENDIENTE'})).join(''):empty('No existen liquidaciones pendientes.');
+      if(financeTab==='recharges')$('jfFinanceRecharges').innerHTML=state.recharges.length?state.recharges.slice(0,100).map(item=>row(item.method==='google'?'▶':item.method==='card'?'💳':item.method==='epay'?'🌐':'₮',item.methodName,`${date(item.createdAt)} · ${number(item.jemmos)} JEMMOS · comisión ${money(item.commission)} USD`,`${money(item.net)} USD`,item.settlement==='received'?'plus':'pending',{className:item.settlement==='received'?'confirmed':'pending',text:item.settlement==='received'?'RECIBIDO':'PENDIENTE'})).join(''):empty('Todavía no hay recargas.');
+      if(financeTab==='gifts'){
+        const member=membership(state);$('jfHouseStatus').textContent=member.hasHouse?`${member.houseName} · 70/20/10`:'INDEPENDIENTE · 70/30';$('jfHouseStatus').className=member.hasHouse?'good':'gold';
+        $('jfFinanceGifts').innerHTML=state.gifts.length?state.gifts.slice(0,100).map(item=>row('🎁',item.giftName,`${date(item.createdAt)} · Emisora ${number(item.hostTotal)} · JEMMO ${number(item.appTotal)}${item.agencyTotal?` · Casa ${number(item.agencyTotal)}`:''}`,`${number(item.total)} JEMMOS`,'neutral',{className:(item.hostPending+item.appPending+item.agencyPending)>0?'pending':'confirmed',text:(item.hostPending+item.appPending+item.agencyPending)>0?'PARCIAL PENDIENTE':'CONFIRMADO'})).join(''):empty('Todavía no hay regalos vinculados.');
+      }
+      if(financeTab==='tasks'){
+        $('jfTaskGrid').innerHTML=taskCatalog.map(task=>`<button class="jf-task" type="button" data-jf-task="${task.key}"><span>${task.icon}</span><b>${esc(task.name)}</b><small>${esc(task.copy)}</small><em>+${number(task.amount)} ${task.kind==='jemmos'?'JEMMOS':'JEMS'}</em></button>`).join('');document.querySelectorAll('[data-jf-task]').forEach(button=>button.addEventListener('click',()=>{if(!ensureOwner())return;const task=taskCatalog.find(item=>item.key===button.dataset.jfTask);if(task&&confirm(`¿Asignar la tarea ficticia “${task.name}”?`))awardTask(task)}));
+        const pending=wallet.pendingCredits.filter(item=>item.status==='pending');$('jfPendingCredits').innerHTML=pending.length?pending.map(item=>row(item.source==='task'?'🎯':'🎁',item.label,`${date(item.createdAt)} · liberación ${date(item.releaseAt)}`,`${number(item.amount)} JEMS`,'pending',{className:'pending',text:'POR CONFIRMAR'})).join(''):empty('No existen JEMS pendientes.');
+      }
+      if(financeTab==='payments'){
+        $('jfPaymentKpis').innerHTML=`<div class="jf-kpi"><small>EMISORA CONFIRMADO</small><b>${money(wallet.jemsConfirmed/settings.jemsPerUsd)} USD</b><em>Pendiente de retirar</em></div><div class="jf-kpi warn"><small>EMISORA NO CONFIRMADO</small><b>${money(wallet.jemsPending/settings.jemsPerUsd)} USD</b><em>Retenido por seguridad</em></div><div class="jf-kpi"><small>CASAS CONFIRMADO</small><b>${money(agencyTotals.confirmed/settings.jemsPerUsd)} USD</b><em>Comisiones de agentes</em></div><div class="jf-kpi good"><small>TOTAL YA PAGADO</small><b>${money(state.cash.paidOut)} USD</b><em>Incluye tarifa de retirada</em></div>`;
+        $('jfFinancePayments').innerHTML=state.withdrawals.length?state.withdrawals.slice(0,100).map(item=>row('↗',item.methodName,`${date(item.paidAt)} · ${item.addressMasked} · tarifa ${money(item.feeUsd)} USD`,`${money(item.netUsd)} USD`,'minus',{className:'confirmed',text:'PAGADO'})).join(''):empty('No existen pagos procesados.');
+      }
+      if(financeTab==='expenses')$('jfFinanceExpenses').innerHTML=state.expenses.length?state.expenses.slice(0,100).map(item=>row('−',item.concept,`${date(item.createdAt)} · registrado por propietario`,`${money(item.usd)} USD`,'minus',{className:'sim',text:'SIMULACIÓN'})).join(''):empty('No existen gastos registrados.');
+      if(financeTab==='audit')$('jfFinanceAudit').innerHTML=state.audit.length?state.audit.slice(0,150).map(item=>row('⌁',item.label,`${date(item.createdAt)} · ${item.actor} · ${item.type}`,item.details?.operationId?String(item.details.operationId).slice(-10):'REGISTRO','neutral',{className:'sim',text:'NO EDITABLE'})).join(''):empty('La auditoría está vacía.');
+      if(financeTab==='settings')renderSettings(state.settings);
+    };
+
+    const settingDefinitions=[
+      ['jemsPerUsd','Conversión JEMS por USD','Base aprobada: 10.000'],['minimumWithdrawJems','Retirada mínima en JEMS','Base aprobada: 100.000'],['confirmationHours','Horas de confirmación reversible','Google Play, tarjeta y Epay'],['reservePct','Reserva fiscal porcentual','Se descuenta del beneficio disponible'],
+      ['hostPct','Porcentaje de la emisora','Debe mantenerse con los repartos'],['appHousePct','JEMMO LIVE con Casa','Parte de la plataforma'],['agencyPct','Casa o agente','Solo cuando existe Casa'],['appIndependentPct','JEMMO LIVE independiente','Cuando no existe Casa'],
+      ['googleFeePct','Coste simulado Google Play %','Editable; no es una tarifa contractual'],['cardFeePct','Coste simulado tarjeta %','Editable'],['epayFeePct','Coste simulado Epay %','Editable'],['cryptoFeePct','Coste simulado cripto %','Editable'],
+      ['feeBinanceBep20','Retirada Binance BEP20 USD','La paga quien retira'],['feeUsdtTrc20','Retirada USDT TRC20 USD','La paga quien retira'],['feeUsdcBep20','Retirada USDC BEP20 USD','La paga quien retira']
+    ];
+    const renderSettings=settings=>{$('jfSettingsList').innerHTML=settingDefinitions.map(([key,label,copy])=>`<label class="jf-setting"><span><b>${esc(label)}</b><small>${esc(copy)}</small></span><input data-jf-setting="${key}" type="number" step="0.01" min="0" value="${Number(settings[key])}"></label>`).join('')};
+    const saveSettings=()=>{
+      if(!ensureOwner())return;const state=readFinance(),next={...state.settings};document.querySelectorAll('[data-jf-setting]').forEach(input=>next[input.dataset.jfSetting]=Number(input.value));
+      if(Math.round(next.hostPct+next.appHousePct+next.agencyPct)!==100){toast('El reparto con Casa debe sumar exactamente 100 %.');return}if(Math.round(next.hostPct+next.appIndependentPct)!==100){toast('El reparto independiente debe sumar exactamente 100 %.');return}if(next.jemsPerUsd<=0||next.minimumWithdrawJems<=0){toast('Revisa la conversión y la retirada mínima.');return}
+      if(!confirm('¿Guardar estos parámetros para las operaciones nuevas?'))return;state.settings=next;audit(state,'settings','Parámetros financieros actualizados',{settings:next});writeFinance(state);renderWallet();renderFinance();toast('Ajustes financieros guardados.');
+    };
+
+    const settlePending=()=>{if(!ensureOwner())return;const state=readFinance(),amount=Number(state.cash.pending)||0;if(amount<=0){toast('No hay liquidaciones pendientes.');return}if(!confirm(`¿Simular que han ingresado ${money(amount)} USD pendientes?`))return;state.cash.received+=amount;state.cash.pending=0;state.recharges.forEach(item=>{if(item.settlement==='pending'){item.settlement='received';item.settledAt=Date.now()}});audit(state,'settlement','Liquidaciones pendientes recibidas',{usd:amount});writeFinance(state);renderFinance();toast(`${money(amount)} USD pasaron a dinero recibido.`)};
+    const toggleHouse=()=>{if(!ensureOwner())return;const state=readFinance(),current=membership(state);state.membership[uid]=current.hasHouse?{hasHouse:false,houseId:'',houseName:''}:{hasHouse:true,houseId:'casa-jemmo-demo',houseName:'Casa JEMMO Demo'};audit(state,'membership',state.membership[uid].hasHouse?'Emisora vinculada a Casa':'Emisora convertida en independiente',{userId:uid,membership:state.membership[uid]});writeFinance(state);renderFinance();toast(state.membership[uid].hasHouse?'Próximos regalos: reparto 70/20/10.':'Próximos regalos: reparto 70/30.')};
+    const addExpense=()=>{if(!ensureOwner())return;const concept=$('jfExpenseConcept').value.trim(),usd=Number($('jfExpenseAmount').value);if(concept.length<2||!(usd>0)){toast('Escribe un concepto y un importe válido.');return}const state=readFinance();state.expenses.unshift({id:id('expense'),concept,usd,createdAt:Date.now(),simulation:true});audit(state,'expense',`Gasto registrado: ${concept}`,{usd});writeFinance(state);$('jfExpenseConcept').value='';$('jfExpenseAmount').value='';renderFinance();toast('Gasto añadido a JEMMO Finanzas.')};
+
+    $('jfWalletClose')?.addEventListener('click',closeWallet);$('jfWalletBackdrop')?.addEventListener('click',closeWallet);document.querySelectorAll('[data-jf-wallet-tab]').forEach(button=>button.addEventListener('click',()=>showWalletTab(button.dataset.jfWalletTab)));
+    $('jfCryptoAmount')?.addEventListener('input',updateCryptoPreview);$('jfCryptoNetwork')?.addEventListener('change',updateCryptoPreview);$('jfCryptoSubmit')?.addEventListener('click',()=>{const amount=Math.max(1,Number($('jfCryptoAmount').value)||0);simulateRecharge({method:rechargeMethod,usd:amount,jemmos:Math.floor(amount*9900),network:$('jfCryptoNetwork').value})});
+    $('jfRefreshPending')?.addEventListener('click',()=>{const released=releasePending(false);renderWallet();toast(released?`${number(released)} JEMS confirmados.`:'Todavía no hay JEMS vencidos para confirmar.')});
+    ['jfWithdrawJems','jfWithdrawMethod'].forEach(control=>$(control)?.addEventListener('input',renderWallet));$('jfWithdrawMethod')?.addEventListener('change',renderWallet);$('jfWithdrawSubmit')?.addEventListener('click',withdraw);
+    $('jfOwnerClose')?.addEventListener('click',closeOwnerAccess);$('jfOwnerBackdrop')?.addEventListener('click',closeOwnerAccess);$('jfOwnerSubmit')?.addEventListener('click',submitOwner);$('jfOwnerPin')?.addEventListener('keydown',event=>{if(event.key==='Enter')submitOwner()});
+    $('jfFinanceClose')?.addEventListener('click',closeFinance);$('jfFinanceBackdrop')?.addEventListener('click',closeFinance);document.querySelectorAll('[data-jf-finance-tab]').forEach(button=>button.addEventListener('click',()=>showFinanceTab(button.dataset.jfFinanceTab)));
+    $('jfFinanceLock')?.addEventListener('click',()=>{sessionStorage.removeItem(OWNER_SESSION);closeFinance();toast('JEMMO Finanzas bloqueado.')});$('jfSettlePending')?.addEventListener('click',settlePending);$('jfToggleHouse')?.addEventListener('click',toggleHouse);$('jfConfirmAllPending')?.addEventListener('click',()=>{if(!ensureOwner())return;const released=releasePending(true);renderFinance();renderWallet();toast(released?`${number(released)} JEMS confirmados manualmente.`:'No había JEMS pendientes.')});$('jfAddExpense')?.addEventListener('click',addExpense);$('jfSaveSettings')?.addEventListener('click',saveSettings);
+    document.querySelectorAll('[data-open-finance]').forEach(button=>button.addEventListener('click',event=>{event.preventDefault();requestFinanceAccess()}));
+
+    window.JemmoWallet={open:openWallet,close:closeWallet,render:renderWallet,getState:()=>readWallet()};
+    window.JemmoFinance={open:requestFinanceAccess,render:renderFinance,isUnlocked:ownerUnlocked};
+    window.JemmoEconomy={sendGift,simulateRecharge,awardTask,releasePending,readWallet,readFinance};
+    window.addEventListener('jemmo-wallet-change',()=>{renderWallet();if(ownerUnlocked())renderFinance()});
+    window.addEventListener('storage',event=>{if(event.key===walletKey(uid)||event.key===FINANCE_KEY){renderWallet();if(ownerUnlocked())renderFinance()}});
+    setInterval(()=>{if(!$('jfFinanceSheet')?.hidden&&!ownerUnlocked()){closeFinance();requestFinanceAccess()}},30000);
+    releasePending(false);renderWallet();
+  })();
+  </script>
+
   <script>
     (()=>{
       'use strict';
@@ -933,7 +1318,7 @@
       const renderDestelloGiftPicker=()=>{
         const grid=$('destelloGiftGrid');if(!grid)return;grid.replaceChildren();
         giftCatalog.forEach(gift=>{const option=makeElement('button',`destello-gift-option${gift.key===selectedDestelloGiftKey?' active':''}`);option.type='button';option.dataset.giftKey=gift.key;option.setAttribute('aria-pressed',String(gift.key===selectedDestelloGiftKey));option.append(makeElement('span','gift-icon',gift.icon),makeElement('b','',gift.name),makeElement('small','',`${format(gift.value)} JEMMOS`));option.addEventListener('click',()=>{selectedDestelloGiftKey=gift.key;renderDestelloGiftPicker()});grid.append(option)});
-        const gift=selectedGift(),wallet=readWalletState();$('destelloGiftBalance').textContent=format(walletJemmos(wallet));$('destelloGiftSelectedName').textContent=`${gift.icon} ${gift.name}`;$('destelloGiftSelectedValue').textContent=format(gift.value);$('destelloGiftStatus').textContent='';$('rechargeDestelloGift').hidden=true;
+        const gift=selectedGift(),wallet=readWalletState(),hostPct=Number(window.JemmoEconomy?.readFinance?.().settings?.hostPct||70);$('destelloGiftBalance').textContent=format(walletJemmos(wallet));$('destelloGiftSelectedName').textContent=`${gift.icon} ${gift.name}`;$('destelloGiftSelectedValue').textContent=format(Math.floor(gift.value*hostPct/100));$('destelloGiftStatus').textContent='';$('rechargeDestelloGift').hidden=true;
       };
       function openDestelloGift(id){activeDestelloGiftId=String(id);selectedDestelloGiftKey='destello';renderDestelloGiftPicker();$('destelloGiftBackdrop').hidden=false;$('destelloGiftSheet').hidden=false;document.body.style.overflow='hidden'}
       const closeDestelloGift=()=>{activeDestelloGiftId='';$('destelloGiftBackdrop').hidden=true;$('destelloGiftSheet').hidden=true;$('destelloGiftStatus').textContent='';$('rechargeDestelloGift').hidden=true;document.body.style.overflow=''};
@@ -941,11 +1326,11 @@
         const post=getDestello(activeDestelloGiftId),gift=selectedGift();if(!post||!gift)return;
         const wallet=readWalletState(),currentJemmos=walletJemmos(wallet);
         if(currentJemmos<gift.value){$('destelloGiftStatus').textContent=`Saldo insuficiente. Te faltan ${format(gift.value-currentJemmos)} JEMMOS.`;$('rechargeDestelloGift').hidden=false;return}
-        const remaining=currentJemmos-gift.value,newJems=walletJems(wallet)+gift.value;
-        wallet.jemmos=remaining;if(Object.hasOwn(wallet,'coins'))wallet.coins=remaining;wallet.jems=newJems;wallet.earnings=newJems;wallet.updatedAt=Date.now();writeWalletState(wallet);
-        const giftHistory=Array.isArray(post.giftHistory)?[...post.giftHistory]:[];giftHistory.unshift({id:`g_${Date.now()}`,key:gift.key,name:gift.name,icon:gift.icon,value:gift.value,createdAt:Date.now()});
-        updateDestello(post.id,{gifts:Math.max(0,Number(post.gifts)||0)+1,jems:Math.max(0,Number(post.jems??post.jemmos)||0)+gift.value,giftHistory:giftHistory.slice(0,30)});
-        closeDestelloGift();render();await renderDestellos();toast(`${gift.icon} ${gift.name} enviado. El creador recibió ${format(gift.value)} JEMS.`);
+        const result=window.JemmoEconomy?.sendGift?.({amount:gift.value,context:'Destello',recipientUid:uid,reference:post.id,giftName:gift.name});
+        if(!result?.ok){$('destelloGiftStatus').textContent='No se pudo registrar el reparto del regalo.';return}
+        const giftHistory=Array.isArray(post.giftHistory)?[...post.giftHistory]:[];giftHistory.unshift({id:result.operationId,key:gift.key,name:gift.name,icon:gift.icon,value:gift.value,hostJems:result.hostTotal,appJems:result.appTotal,agencyJems:result.agencyTotal,status:result.hostPending?'pending':'confirmed',createdAt:Date.now()});
+        updateDestello(post.id,{gifts:Math.max(0,Number(post.gifts)||0)+1,jems:Math.max(0,Number(post.jems??post.jemmos)||0)+result.hostTotal,giftHistory:giftHistory.slice(0,30)});
+        closeDestelloGift();render();await renderDestellos();toast(`${gift.icon} ${gift.name} enviado. Emisora: ${format(result.hostTotal)} JEMS · JEMMO: ${format(result.appTotal)}${result.agencyTotal?` · Casa: ${format(result.agencyTotal)}`:''}.`);
       };
 
       $('openDestelloComposer')?.addEventListener('click',openDestelloComposer);
@@ -1032,6 +1417,5 @@
       bootstrap();
     })();
   </script>
-  <script src="jemmo-wallet.js"></script>
 </body>
 </html>
