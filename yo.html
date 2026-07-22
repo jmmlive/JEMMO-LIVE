@@ -355,7 +355,7 @@
 
 
     /* =========================================================
-       JEMMO LIVE V1 · PERFIL PRUEBA 09 · EDITOR PERSONAL CLARO
+       JEMMO LIVE V1 · PERFIL PRUEBA 10 · REDES SOCIALES COMPACTAS
        Lápiz visible, nivel desplazado y datos personales completos
        ========================================================= */
     .profile-top{grid-template-columns:88px minmax(0,1fr) 52px;align-items:start}
@@ -368,9 +368,18 @@
     .profile-edit-shortcut:active{transform:scale(.94)}
     .profile-level{margin-top:1px;width:48px;min-height:57px}
     .avatar-button,.profile-banner{cursor:default}
-    .profile-extra{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+    .profile-extra{display:flex;align-items:center;gap:7px;margin-top:7px;min-height:30px;overflow:visible}
     .profile-extra[hidden]{display:none!important}
-    .profile-extra span{max-width:100%;padding:4px 7px;border:1px solid #4f205e;border-radius:999px;background:#16031d;color:#cdbfd2;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .profile-age{flex:0 0 auto;min-height:28px;padding:0 9px;border:1px solid #5e286f;border-radius:999px;background:#17031e;color:#eadff0;display:flex;align-items:center;gap:4px;font-size:9px;font-weight:900;white-space:nowrap}
+    .social-buttons{display:flex;align-items:center;gap:6px;min-width:0}
+    .social-link{width:28px;height:28px;flex:0 0 28px;border:1px solid #6b2d7d;border-radius:9px;display:grid;place-items:center;color:#fff;text-decoration:none;box-shadow:0 4px 12px #0005;transition:transform .16s ease,filter .16s ease,opacity .16s ease}
+    .social-link:active{transform:scale(.92)}
+    .social-link svg{width:15px;height:15px;display:block;fill:currentColor}
+    .social-link.instagram{background:radial-gradient(circle at 30% 105%,#ffd16a 0 18%,#ff3f72 42%,#a42ac1 70%,#4e5bd5 100%);border-color:#ef6aa8}
+    .social-link.tiktok{background:#08080c;border-color:#3ee7e9;box-shadow:-1px 0 0 #ff3c76,1px 0 0 #3ee7e9,0 4px 12px #0007}
+    .social-link.youtube{background:#e62117;border-color:#ff7068}
+    .social-link.facebook{background:#1877f2;border-color:#72aaff}
+    .social-link.disabled{opacity:.24;filter:grayscale(1);cursor:default;box-shadow:none}
     .edit-sheet{max-height:91svh}
     .edit-intro{margin:7px 0 11px;color:#bfaec6;font-size:9.5px;line-height:1.4}
     .edit-section-label{margin:16px 0 7px;padding-top:12px;border-top:1px solid #4b1d5a;color:var(--gold);font-size:10px;font-weight:1000;letter-spacing:.08em;text-transform:uppercase}
@@ -554,12 +563,12 @@
 
     <p class="edit-section-label">Redes sociales</p>
     <div class="social-grid">
-      <label class="field"><span>Instagram</span><input id="editInstagram" maxlength="50" placeholder="@usuario"></label>
-      <label class="field"><span>TikTok</span><input id="editTiktok" maxlength="50" placeholder="@usuario"></label>
-      <label class="field"><span>YouTube</span><input id="editYoutube" maxlength="70" placeholder="Canal o enlace"></label>
-      <label class="field"><span>Facebook</span><input id="editFacebook" maxlength="70" placeholder="Perfil o enlace"></label>
+      <label class="field"><span>Instagram</span><input id="editInstagram" maxlength="180" placeholder="@usuario o enlace"></label>
+      <label class="field"><span>TikTok</span><input id="editTiktok" maxlength="180" placeholder="@usuario o enlace"></label>
+      <label class="field"><span>YouTube</span><input id="editYoutube" maxlength="180" placeholder="Enlace del canal"></label>
+      <label class="field"><span>Facebook</span><input id="editFacebook" maxlength="180" placeholder="Enlace del perfil"></label>
     </div>
-    <p class="privacy-note">Las redes sociales solo aparecen en el perfil cuando las completas.</p>
+    <p class="privacy-note">En el perfil solo se muestran los cuatro botones. Los enlaces nunca aparecen escritos.</p>
     <button class="save" id="saveProfile" type="button">GUARDAR CAMBIOS</button>
   </section>
 
@@ -600,7 +609,25 @@
       const safeUsername=value=>String(value||'usuariojemmo').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9._]/g,'').slice(0,24)||'usuariojemmo';
       const countWords=value=>String(value||'').trim().split(/\s+/).filter(Boolean).length;
       const limitWords=(value,max=15)=>String(value||'').trimStart().split(/\s+/).filter(Boolean).slice(0,max).join(' ');
-      const cleanSocial=value=>String(value||'').trim().replace(/^@+/, '').slice(0,70);
+      const cleanSocial=value=>String(value||'').trim().slice(0,180);
+      const ensureHttps=value=>{const text=String(value||'').trim();if(!text)return'';if(/^https?:\/\//i.test(text))return text;if(/^www\./i.test(text))return `https://${text}`;return''};
+      const socialUrl=(network,value)=>{
+        const raw=String(value||'').trim();if(!raw)return'';
+        const direct=ensureHttps(raw);if(direct)return direct;
+        const handle=raw.replace(/^@+/, '').replace(/^\/+|\/+$/g,'');
+        if(!handle)return'';
+        if(network==='instagram')return `https://www.instagram.com/${encodeURIComponent(handle)}/`;
+        if(network==='tiktok')return `https://www.tiktok.com/@${encodeURIComponent(handle)}`;
+        if(network==='youtube')return `https://www.youtube.com/@${encodeURIComponent(handle)}`;
+        if(network==='facebook')return `https://www.facebook.com/${encodeURIComponent(handle)}`;
+        return'';
+      };
+      const socialIcons={
+        instagram:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2Zm-.2 2A3.6 3.6 0 0 0 4 7.6v8.8A3.6 3.6 0 0 0 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6A3.6 3.6 0 0 0 16.4 4H7.6Zm9.65 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"/></svg>',
+        tiktok:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.4 2h3.1c.2 1.4 1 2.8 2.1 3.7A6.3 6.3 0 0 0 23 7.2v3.2a9.3 9.3 0 0 1-5.4-1.7v7.1a6.2 6.2 0 1 1-5.4-6.2v3.2a3.1 3.1 0 1 0 2.2 3V2Z"/></svg>',
+        youtube:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8ZM9.6 15.7V8.3l6.3 3.7-6.3 3.7Z"/></svg>',
+        facebook:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.8 22v-8h2.7l.4-3.1h-3.1V8.9c0-.9.3-1.5 1.6-1.5H17V4.6c-.3 0-1.2-.1-2.3-.1-2.3 0-3.9 1.4-3.9 4.1v2.3H8.2V14h2.6v8h3Z"/></svg>'
+      };
       const clampPercent=value=>Math.max(0,Math.min(100,Number.isFinite(Number(value))?Number(value):50));
       const normalizeCoverPosition=value=>({x:clampPercent(value?.x),y:clampPercent(value?.y)});
       const defaultProfile={name:'Usuario JEMMO',username:'usuariojemmo',bio:'Construyendo mi historia en JEMMO LIVE.',country:'España',city:'',age:'',phone:'',instagram:'',tiktok:'',youtube:'',facebook:'',avatar:'',cover:'',coverPosition:{x:50,y:50},id:makeId(),level:Number(localStorage.getItem('jemmo_transmission_level')||1),verified:localStorage.getItem('jemmo_verified')==='true'};
@@ -653,7 +680,15 @@
         const level=Math.max(1,Number(profile.level)||1);const fans=Number(stats.fans??stats.likes??0);const completion=profileCompletion();
         $('profileName').textContent=profile.name||defaultProfile.name;$('profileUsername').textContent=`@${safeUsername(profile.username||profile.name)}`;
         $('profileBio').textContent=profile.bio||defaultProfile.bio;$('profilePlace').textContent=`📍 ${[profile.country,profile.city].filter(Boolean).join(' · ')||'Sin ubicación'}`;
-        const extras=$('profileExtra');extras.replaceChildren();const extraValues=[];if(profile.age)extraValues.push(`🎂 ${profile.age} años`);[['Instagram',profile.instagram],['TikTok',profile.tiktok],['YouTube',profile.youtube],['Facebook',profile.facebook]].forEach(([label,value])=>{if(value)extraValues.push(`${label}: ${String(value).startsWith('@')?value:'@'+value}`)});extraValues.forEach(text=>{const chip=document.createElement('span');chip.textContent=text;extras.append(chip)});extras.hidden=!extraValues.length;
+        const extras=$('profileExtra');extras.replaceChildren();
+        if(profile.age){const age=document.createElement('span');age.className='profile-age';age.textContent=`🎂 ${profile.age}`;age.setAttribute('aria-label',`${profile.age} años`);extras.append(age)}
+        const socialWrap=document.createElement('div');socialWrap.className='social-buttons';
+        [['instagram','Instagram',profile.instagram],['tiktok','TikTok',profile.tiktok],['youtube','YouTube',profile.youtube],['facebook','Facebook',profile.facebook]].forEach(([network,label,value])=>{
+          const url=socialUrl(network,value),link=document.createElement('a');link.className=`social-link ${network}${url?'':' disabled'}`;link.innerHTML=socialIcons[network];link.setAttribute('aria-label',url?`Abrir ${label}`:`${label} no configurado`);link.title=url?`Abrir ${label}`:`Añade ${label} desde Editar perfil`;
+          if(url){link.href=url;link.target='_blank';link.rel='noopener noreferrer'}else{link.setAttribute('aria-disabled','true');link.tabIndex=-1;link.addEventListener('click',event=>event.preventDefault())}
+          socialWrap.append(link)
+        });
+        extras.append(socialWrap);extras.hidden=false;
         $('profileId').textContent=profile.id||makeId();$('levelNumber').textContent=level;$('levelName').textContent=levelName(level);$('verifiedBadge').hidden=!profile.verified;
         $('followersCount').textContent=format(stats.followers);$('followingCount').textContent=format(stats.following);$('fansCount').textContent=format(fans);$('friendsCount').textContent=format(stats.friends);
         $('coinBalance').textContent=format(stats.coins);$('liveCount').textContent=format(stats.liveCount);$('roomsCount').textContent=format(stats.rooms);$('photoCount').textContent=format(stats.photos);
@@ -684,7 +719,7 @@
       const finishCoverDrag=event=>{if(!coverDrag||event.pointerId!==coverDrag.pointerId)return;coverPreview.releasePointerCapture?.(event.pointerId);coverPreview.classList.remove('dragging');coverDrag=null};
       coverPreview?.addEventListener('pointerup',finishCoverDrag);
       coverPreview?.addEventListener('pointercancel',finishCoverDrag);
-      $('saveProfile')?.addEventListener('click',async()=>{const button=$('saveProfile'),name=$('editName').value.trim(),username=safeUsername($('editUsername').value),bio=limitWords($('editBio').value.trim(),15),country=$('editCountry').value.trim(),city=$('editCity').value.trim(),age=$('editAge').value.trim(),phone=$('editPhone').value.trim(),instagram=cleanSocial($('editInstagram').value),tiktok=cleanSocial($('editTiktok').value),youtube=$('editYoutube').value.trim().slice(0,70),facebook=$('editFacebook').value.trim().slice(0,70);if(name.length<2){toast('Escribe un nombre válido.');return}if(age&&(Number(age)<13||Number(age)>120)){toast('Revisa la edad indicada.');return}if(countWords(bio)>15){toast('La frase puede tener un máximo de 15 palabras.');return}button.disabled=true;button.textContent='GUARDANDO…';try{await Promise.all([mediaWrite(avatarMediaKey,pendingAvatar),mediaWrite(coverMediaKey,pendingCover)]);avatarData=pendingAvatar;coverData=pendingCover;coverPosition=normalizeCoverPosition(pendingCoverPosition);profile={...profile,name,username,bio:bio||defaultProfile.bio,country:country||'Sin país',city,age,phone,instagram,tiktok,youtube,facebook,avatar:avatarData?'indexeddb':'',cover:coverData?'indexeddb':'',coverPosition,id:profile.id||makeId(),updatedAt:Date.now()};localStorage.removeItem(KEY);localStorage.setItem(KEY,JSON.stringify(profile));render();closeEdit();toast('Datos personales y fotos guardados correctamente.')}catch(error){console.error('JEMMO profile save',error);toast('No se pudo guardar. Vuelve a intentarlo.')}finally{button.disabled=false;button.textContent='GUARDAR CAMBIOS'}});
+      $('saveProfile')?.addEventListener('click',async()=>{const button=$('saveProfile'),name=$('editName').value.trim(),username=safeUsername($('editUsername').value),bio=limitWords($('editBio').value.trim(),15),country=$('editCountry').value.trim(),city=$('editCity').value.trim(),age=$('editAge').value.trim(),phone=$('editPhone').value.trim(),instagram=cleanSocial($('editInstagram').value),tiktok=cleanSocial($('editTiktok').value),youtube=cleanSocial($('editYoutube').value),facebook=cleanSocial($('editFacebook').value);if(name.length<2){toast('Escribe un nombre válido.');return}if(age&&(Number(age)<13||Number(age)>120)){toast('Revisa la edad indicada.');return}if(countWords(bio)>15){toast('La frase puede tener un máximo de 15 palabras.');return}button.disabled=true;button.textContent='GUARDANDO…';try{await Promise.all([mediaWrite(avatarMediaKey,pendingAvatar),mediaWrite(coverMediaKey,pendingCover)]);avatarData=pendingAvatar;coverData=pendingCover;coverPosition=normalizeCoverPosition(pendingCoverPosition);profile={...profile,name,username,bio:bio||defaultProfile.bio,country:country||'Sin país',city,age,phone,instagram,tiktok,youtube,facebook,avatar:avatarData?'indexeddb':'',cover:coverData?'indexeddb':'',coverPosition,id:profile.id||makeId(),updatedAt:Date.now()};localStorage.removeItem(KEY);localStorage.setItem(KEY,JSON.stringify(profile));render();closeEdit();toast('Datos personales y fotos guardados correctamente.')}catch(error){console.error('JEMMO profile save',error);toast('No se pudo guardar. Vuelve a intentarlo.')}finally{button.disabled=false;button.textContent='GUARDAR CAMBIOS'}});
 
       $('copyId')?.addEventListener('click',async()=>{const text=$('profileId').textContent;try{await navigator.clipboard.writeText(text);toast('ID copiado.')}catch{toast(`Tu ID es ${text}`)}});
       const share=async()=>{const text=`${profile.name} · @${safeUsername(profile.username||profile.name)} · ${profile.id} en JEMMO LIVE`;try{if(navigator.share)await navigator.share({title:'Mi perfil JEMMO LIVE',text});else{await navigator.clipboard.writeText(text);toast('Datos del perfil copiados.')}}catch{}};
