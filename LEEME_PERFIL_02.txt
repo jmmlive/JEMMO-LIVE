@@ -1,0 +1,8 @@
+JEMMO LIVE V1 · PERFIL PRUEBA 02
+
+1. Extrae este ZIP.
+2. Sustituye únicamente el archivo yo.html del proyecto.
+3. Conserva el resto de archivos y carpetas sin cambios.
+4. Vuelve a publicar/instalar la aplicación y abre la pestaña Yo.
+
+Esta actualización corrige solo la distribución visual y funcional del Perfil.

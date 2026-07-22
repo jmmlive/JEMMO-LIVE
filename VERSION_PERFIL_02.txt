@@ -1,0 +1,16 @@
+JEMMO LIVE V1 · PERFIL PRUEBA 02
+Fecha: 22/07/2026
+Tipo: actualización incremental exclusiva del módulo Perfil (Yo)
+Archivo sustituido: yo.html
+No modifica: Acceso, Inicio, LIVE, Salas ni Mensajes
+
+Correcciones principales:
+- Eliminadas las secciones repetidas del perfil.
+- Monedero reducido a un acceso compacto dentro de la cabecera del perfil.
+- Monedero eliminado del menú lateral para evitar duplicidad.
+- Eliminada la sección repetida Cuenta y aplicación.
+- Mi espacio reorganizado como carrusel compacto.
+- Logros e insignias reunidos en una sola función.
+- Añadidas actividad semanal y momentos recientes.
+- Barra inferior y pez activo reducidos para no tapar contenido.
+- Conservados edición, foto, biografía, país, ID, compartir y cierre de sesión.
