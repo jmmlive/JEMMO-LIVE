@@ -1,15 +1,43 @@
-JEMMO LIVE V1 · SALAS PRUEBA 02
+JEMMO LIVE V1 · MONEDERO GLOBAL PRUEBA 01
 
-1. Conserva guardado JEMMO_LIVE_V1_SALAS_PRUEBA_01.zip como respaldo.
-2. Abre este ZIP.
-3. Sustituye únicamente salas.html por el archivo incluido.
-4. No borres ni reemplaces Acceso, Inicio, LIVE, Mensajes, Perfil ni los recursos existentes.
-5. Publica la aplicación y limpia la caché/actualiza la PWA antes de probar.
+ANTES DE INSTALAR
+1. Conserva una copia de seguridad de la versión que tienes instalada.
+2. Esta actualización es incremental. No borres el resto del proyecto.
 
-PRUEBAS EN MÓVIL
-- En Audio Room, toca la foto y después el botón Editar: ambos deben abrir la galería.
-- El pez activo de Salas debe verse circular, no cuadrado.
-- Durante preparación debe verse la navegación inferior.
-- Al entrar en la sala, la navegación debe desaparecer.
-- Abajo deben quedar únicamente chat, Afortunados, Regalos y Ajustes.
-- Comprueba la sala de 4, Audio Room 25 VIP, sala privada con contraseña y reporte Posible menor.
+ARCHIVOS QUE DEBES SUBIR O SUSTITUIR JUNTOS
+- yo.html
+- salas.html
+- sw.js
+- jemmo-wallet.js  (archivo nuevo)
+
+VERSION.txt y LEEME_INSTALACION.txt son solamente informativos.
+
+DESPUÉS DE SUBIRLOS
+1. Publica los cuatro archivos funcionales en la raíz del proyecto.
+2. Cierra completamente JEMMO LIVE.
+3. Ábrela otra vez y actualiza una vez. Si siguiera apareciendo la versión anterior, cierra y abre por segunda vez para renovar la caché de la PWA.
+
+PRUEBAS OBLIGATORIAS
+A. PERFIL
+- Entra en Monedero.
+- Haz una recarga ficticia de 5.000 monedas.
+- Comprueba que el saldo sube y queda en el historial.
+
+B. LIVE
+- Abre el menú lateral y pulsa Monedero.
+- Debe abrirse directamente el mismo monedero, sin entrar al Perfil.
+- Envía un regalo y comprueba que baja el saldo global.
+
+C. SALAS
+- En preparación, comprueba la franja Monedero global.
+- Entra en una sala, abre Regalos y envía uno.
+- Comprueba que el mismo saldo baja también en Perfil y LIVE.
+
+D. INICIO
+- Los saldos superiores deben mostrar Monedas, Diamantes y Ganancias del mismo monedero.
+- Al tocar cualquiera de ellos o el botón + debe abrir el monedero global.
+
+ALCANCE REAL DE ESTA PRUEBA
+- Los saldos se separan por UID de usuario y quedan persistentes en este dispositivo.
+- Las recargas, cambios y retiradas son ficticios.
+- Todavía no hay sincronización Firebase entre dos móviles. Esa será la siguiente integración para que las operaciones de Ruth en Cuba y las de Jesús se reflejen entre dispositivos.

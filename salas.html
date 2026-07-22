@@ -9,7 +9,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>JEMMO LIVE · SALAS PRUEBA 05</title>
+  <title>JEMMO LIVE · SALAS · MONEDERO GLOBAL</title>
   <style>
     :root{
       --bg:#070009;--panel:#15031e;--panel2:#22042d;--purple:#a928ff;--purple2:#6e168f;
@@ -122,13 +122,19 @@
       .jr-room[data-count="4"]{--seat-gap:9px}
       .jr-seats-wrap{padding-left:9px;padding-right:9px}.jr-controls{grid-template-columns:50px minmax(0,1fr) 54px;padding-left:8px;padding-right:8px;gap:6px}
     }
+
+    /* MONEDERO GLOBAL */
+    .jr-global-wallet{width:100%;min-height:50px;margin:0 0 13px;padding:8px 11px;border:1px solid #8b6721;border-radius:16px;background:linear-gradient(135deg,#3a2608,#1a0d04 55%,#2b0736);color:#fff;display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:9px;text-align:left;box-shadow:0 8px 22px #0005}
+    .jr-global-wallet>span:first-child{width:38px;height:38px;border-radius:13px;background:linear-gradient(145deg,#ffd34e,#ff9b3d);color:#2a1002;display:grid;place-items:center;font-size:21px;box-shadow:0 0 15px #ffd34e44}.jr-global-wallet b{display:block;color:#ffe38e;font-size:12px}.jr-global-wallet small{display:block;margin-top:2px;color:#c9b98f;font-size:8px}.jr-global-wallet i{font-style:normal;color:#ffe38e;font-size:20px}
+    .jr-wallet-row .jr-recharge{background:linear-gradient(135deg,#ffd34e,#d73bff);color:#24051e}
+
     @media(max-height:690px){
       .jr-room-head{padding-top:calc(7px + var(--safe-top));padding-bottom:6px}.jr-room-avatar{width:48px;height:48px}.jr-close{width:43px;height:43px}.jr-chat{height:112px}.jr-seats-wrap{padding-bottom:112px}.jr-controls{padding-top:6px;padding-bottom:calc(7px + var(--safe-bottom))}.jr-control-btn,.jr-compose{height:50px}
       .jr-room[data-count="4"]{--seat-w:min(31vw,132px);--seat-h:min(31vw,132px)}
     }
   </style>
 </head>
-<body>
+<body data-jemmo-wallet-native-gifts="true">
 <div class="jr-app" id="app">
   <section class="jr-prepare" id="prepareView" aria-label="Preparar sala">
     <header class="jr-prep-head">
@@ -136,6 +142,10 @@
       <div class="jr-prep-title"><strong>Crear sala</strong><span>Elige el tipo y adapta las plazas</span></div>
       <button class="jr-btn jr-help" type="button" id="helpButton" aria-label="Ayuda">?</button>
     </header>
+
+    <button class="jr-btn jr-global-wallet" id="globalWalletButton" type="button" data-open-wallet>
+      <span>🪙</span><span><b>Monedero global</b><small><strong id="globalWalletCoins">0</strong> monedas · mismo saldo en toda la app</small></span><i>›</i>
+    </button>
 
     <section class="jr-cover-row">
       <button class="jr-btn jr-cover" id="coverButton" type="button" aria-label="Elegir foto de portada">
@@ -228,8 +238,8 @@
 <section class="jr-sheet jr-hidden" id="giftsSheet" aria-label="Regalos">
   <header class="jr-sheet-head"><strong>Regalos</strong><button class="jr-sheet-close" data-close type="button">×</button></header>
   <div class="jr-wallet-row">
-    <div><b id="balanceLabel">Saldo de prueba: 100.000 monedas</b><small>Recarga sin salir de la sala</small></div>
-    <button class="jr-btn jr-recharge" id="rechargeButton" type="button">RECARGAR</button>
+    <div><b id="balanceLabel">Saldo: 0 monedas</b><small>Monedero único de esta cuenta</small></div>
+    <button class="jr-btn jr-recharge" id="rechargeButton" type="button" data-open-wallet>MONEDERO</button>
   </div>
   <div class="jr-recipient-title"><b>Enviar a</b><span id="recipientSummary">Todas las personas</span></div>
   <div class="jr-recipients" id="giftRecipients"></div>
@@ -250,6 +260,7 @@
 </section>
 <div class="jr-toast" id="toast" role="status"></div>
 
+<script src="jemmo-wallet.js"></script>
 <script>
 (()=>{
   'use strict';
@@ -265,7 +276,7 @@
     selectedRecipients:new Set(['all']),
     occupants:new Map(),
     giftQuantity:1,
-    giftBalance:100000,
+    giftBalance:0,
     giftTotals:new Map()
   };
   let toastTimer=0;
@@ -548,7 +559,10 @@
   function formatCoins(value){return Number(value).toLocaleString('es-ES')}
 
   function updateBalance(){
-    $('balanceLabel').textContent=`Saldo de prueba: ${formatCoins(state.giftBalance)} monedas`;
+    const wallet=window.JemmoWallet?.get?.();
+    state.giftBalance=Math.max(0,Number(wallet?.coins)||0);
+    $('balanceLabel').textContent=`Saldo: ${formatCoins(state.giftBalance)} monedas`;
+    if($('globalWalletCoins'))$('globalWalletCoins').textContent=formatCoins(state.giftBalance);
   }
 
   function updateGiftPanel(){
@@ -611,13 +625,20 @@
     const recipients=indexes.length;
     const totalGifts=recipients*state.giftQuantity;
     const totalCoins=totalGifts*unitPrice;
-    if(totalCoins>state.giftBalance){toast(`Saldo insuficiente: necesitas ${formatCoins(totalCoins)} monedas.`);return}
+    updateBalance();
+    if(totalCoins>state.giftBalance){
+      toast(`Saldo insuficiente: necesitas ${formatCoins(totalCoins)} monedas.`);
+      window.JemmoWallet?.open?.('recharge');
+      return;
+    }
     const target=recipientLabel();
     const question=`¿Seguro que quieres enviar ${state.giftQuantity} ${gift} a cada una de ${recipients} persona${recipients===1?'':'s'}?
 
 Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} monedas.`;
     if(!confirm(question))return;
-    state.giftBalance-=totalCoins;
+    const spent=window.JemmoWallet?.spendCoins?.(totalCoins,{title:'Regalo enviado en Sala',detail:`${gift} · ${target} · ×${state.giftQuantity}`,source:'salas-gift'});
+    if(!spent?.ok){toast('Saldo insuficiente. Abriendo el Monedero.');window.JemmoWallet?.open?.('recharge');return}
+    state.giftBalance=spent.wallet.coins;
     indexes.forEach(index=>state.giftTotals.set(index,(state.giftTotals.get(index)||0)+state.giftQuantity));
     updateGiftBadges();
     updateBalance();
@@ -705,11 +726,18 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} monedas.`;
 
   $('luckyGift').addEventListener('click',()=>sendGift($('luckyGift').dataset.gift,Number($('luckyGift').dataset.price)||0));
 
-  $('rechargeButton').addEventListener('click',()=>{
-    state.giftBalance+=10000;
-    updateBalance();
-    toast('Recarga de prueba: +10.000 monedas. La sala sigue visible.');
-  });
+  $('rechargeButton').addEventListener('click',event=>{
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    window.JemmoWallet?.open?.('recharge');
+  },true);
+  $('globalWalletButton')?.addEventListener('click',event=>{
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    window.JemmoWallet?.open?.('summary');
+  },true);
+  window.addEventListener('jemmo-wallet-change',updateBalance);
+  window.addEventListener('storage',event=>{if(event.key===window.JemmoWallet?.key?.())updateBalance()});
 
   document.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>{
     const action=btn.dataset.action;

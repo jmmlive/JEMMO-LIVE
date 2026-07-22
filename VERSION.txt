@@ -1,6 +1,19 @@
-JEMMO LIVE V1 · PERFIL PRUEBA 01
-Base requerida: JEMMO LIVE V1 · MENSAJES PRUEBA 01 / SALAS PRUEBA 05
-Fecha: 21/07/2026
-Tipo: actualización incremental exclusiva del módulo Perfil (Yo)
-Archivo sustituido: yo.html
-No modifica: Acceso, Inicio, LIVE, Salas ni Mensajes
+JEMMO LIVE V1 · MONEDERO GLOBAL PRUEBA 01
+Fecha: 22/07/2026
+
+Base requerida:
+- JEMMO LIVE V0.6.14 PRUEBAS INSTALABLE
+- LIVE V0.6.10 PRUEBAS
+- SALAS V1 actual
+- PERFIL PRUEBA 12
+
+Tipo: actualización incremental de integración económica
+
+Archivos funcionales:
+- jemmo-wallet.js
+- yo.html
+- salas.html
+- sw.js
+
+Objetivo:
+Unificar el mismo monedero por usuario en Perfil, Inicio, LIVE y Salas.

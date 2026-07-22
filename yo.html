@@ -355,7 +355,7 @@
 
 
     /* =========================================================
-       JEMMO LIVE V1 · PERFIL PRUEBA 12 · NIVEL RECOLOCADO
+       JEMMO LIVE V1 · PERFIL PRUEBA 13 · NIVEL RECOLOCADO
        Acceso de edición únicamente desde el botón inferior; nivel alineado arriba
        ========================================================= */
     .profile-top{grid-template-columns:88px minmax(0,1fr) 52px;align-items:start}
@@ -392,7 +392,7 @@
 
 
     /* =========================================================
-       JEMMO LIVE V1 · PERFIL PRUEBA 12 · MONEDERO FUNCIONAL
+       JEMMO LIVE V1 · PERFIL PRUEBA 13 · MONEDERO GLOBAL
        Economía local de pruebas separada por usuario
        ========================================================= */
     .wallet-backdrop{position:fixed;inset:0;z-index:150;background:#040006d9;backdrop-filter:blur(6px)}
@@ -512,7 +512,7 @@
       </div>
     </section>
 
-    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 11</p>
+    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 13 · MONEDERO GLOBAL</p>
   </main>
 
   <div class="menu-backdrop" id="menuBackdrop" hidden></div>
@@ -825,7 +825,7 @@
       const walletIcon=type=>({recharge:'🪙',exchange:'⇄',withdraw:'↗',method:'⚙️',adjustment:'✦'}[type]||'•');
       const walletSave=()=>{
         wallet.coins=Math.max(0,Math.floor(Number(wallet.coins)||0));wallet.diamonds=Math.max(0,Math.floor(Number(wallet.diamonds)||0));wallet.earnings=Math.max(0,Math.round((Number(wallet.earnings)||0)*100)/100);wallet.history=(wallet.history||[]).slice(0,100);wallet.updatedAt=Date.now();
-        localStorage.setItem(WALLET_KEY,JSON.stringify(wallet));stats.coins=wallet.coins;localStorage.setItem(statsKey,JSON.stringify(stats));render();renderWallet();
+        localStorage.setItem(WALLET_KEY,JSON.stringify(wallet));stats.coins=wallet.coins;localStorage.setItem(statsKey,JSON.stringify(stats));window.dispatchEvent(new CustomEvent('jemmo-wallet-change',{detail:{wallet:{...wallet},uid,source:'perfil'}}));render();renderWallet();
       };
       const walletMovement=(type,title,detail,amount,tone='neutral')=>{wallet.history.unshift({id:`W-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,type,title,detail,amount,tone,createdAt:Date.now()});walletSave()};
       const walletMovementNode=item=>{const row=document.createElement('article');row.className='wallet-movement';const date=new Date(Number(item.createdAt)||Date.now()).toLocaleString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}),icon=document.createElement('span'),copy=document.createElement('span'),title=document.createElement('b'),detail=document.createElement('small'),amount=document.createElement('span');icon.className='wallet-movement-icon';icon.textContent=walletIcon(item.type);copy.className='wallet-movement-copy';title.textContent=item.title||'Movimiento';detail.textContent=`${item.detail||''} · ${date}`;amount.className=`wallet-movement-amount ${item.tone||'neutral'}`;amount.textContent=item.amount||'';copy.append(title,detail);row.append(icon,copy,amount);return row};
@@ -881,5 +881,6 @@
       bootstrap();
     })();
   </script>
+  <script src="jemmo-wallet.js"></script>
 </body>
 </html>
