@@ -1,0 +1,7 @@
+JEMMO LIVE V1 · PERFIL PRUEBA 03
+
+1. Extrae este ZIP.
+2. Copia únicamente yo.html.
+3. Sustituye el yo.html anterior dentro del proyecto JEMMO LIVE.
+4. No cambies los demás archivos.
+5. Actualiza o vuelve a abrir la aplicación para revisar el Perfil.

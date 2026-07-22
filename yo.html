@@ -78,6 +78,50 @@
     .bottom-nav{position:fixed!important;z-index:60!important;left:50%!important;bottom:0!important;transform:translateX(-50%)!important;width:min(100%,520px)!important;min-height:68px!important;padding:5px 7px calc(5px + var(--safe-bottom))!important;display:grid!important;grid-template-columns:repeat(5,1fr)!important;background:linear-gradient(180deg,#100016f2,#070009)!important;border-top:1px solid #4d1c5e!important;box-shadow:0 -8px 24px #0009!important}.bottom-nav a{position:relative!important;color:#8f8394!important;text-decoration:none!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;gap:2px!important;font-size:9px!important;font-weight:850!important}.bottom-nav .nav-icon{font-size:19px!important}.bottom-nav a[data-tab="yo"]{color:#db58ff!important}.bottom-nav a[data-tab="yo"]::before{content:""!important;position:absolute!important;top:-15px!important;width:46px!important;height:46px!important;border:2px solid #bc39f2!important;border-radius:50%!important;background:#22052b url('jemmo-fish-nav.webp') center/cover no-repeat!important;box-shadow:0 0 15px #b933ef!important}.bottom-nav a[data-tab="yo"] .nav-icon{opacity:0!important}.bottom-nav a[data-tab="yo"] b{margin-top:22px!important}.bottom-nav .badge{position:absolute!important;top:0!important;right:22%!important;min-width:15px!important;height:15px!important;padding:0 4px!important;border-radius:99px!important;background:#e92d69!important;color:#fff!important;display:grid!important;place-items:center!important;font-size:7px!important}
 
     @media(max-width:380px){.profile-banner{height:132px}.profile-level{top:94px}.profile-top{grid-template-columns:92px minmax(0,1fr);gap:10px}.avatar-button{width:92px;height:92px}.identity h1{font-size:21px}.bio{margin-right:72px}.profile-action{font-size:9px}.activity-card{grid-template-columns:76px minmax(0,1fr) 48px;padding:11px}.activity-ring{width:70px;height:70px}.activity-fish{width:48px;height:48px}}
+
+
+    /* =========================================================
+       JEMMO LIVE V1 · PERFIL PRUEBA 03 · RETOQUES VISUALES
+       ========================================================= */
+    .yo-app{padding-bottom:calc(104px + var(--safe-bottom))}
+    .yo-topbar{height:56px}
+    .yo-round{border-color:#62237a}
+    .yo-logo{display:flex;justify-content:center;align-items:center;gap:6px;min-width:0;letter-spacing:.4px;white-space:nowrap}
+    .yo-logo .jemmo{font-size:21px;font-weight:1000;background:linear-gradient(90deg,#fff 0,#ecdcf2 34%,#dd48ff 68%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 18px #c034ff33}
+    .yo-logo .live{font-size:18px;font-weight:1000;color:var(--gold);text-shadow:0 0 14px #ffd34e4d}
+
+    .profile-card{margin-top:9px;border-radius:25px}
+    .profile-banner{height:148px;background:radial-gradient(circle at 70% 20%,#d341ff72,transparent 23%),linear-gradient(120deg,#21032d,#57086e 52%,#190322)}
+    .profile-banner::before{z-index:2;left:18px;top:31px;width:126px;font-size:21px;transform:rotate(-4deg)}
+    .profile-banner::after{background:linear-gradient(180deg,transparent 48%,#08000c),url('jemmo-fish-nav.webp') 76% 43%/158px auto no-repeat;opacity:.95}
+    .profile-level{z-index:5;right:14px;top:14px;width:62px;min-height:72px;padding:8px 5px 7px;filter:drop-shadow(0 0 10px #bb2dff70)}
+    .profile-level strong{font-size:21px}.profile-level span{font-size:8px;margin-top:3px}.profile-level small{font-size:7px}
+    .profile-body{padding:0 14px 16px;margin-top:-37px}
+    .profile-top{grid-template-columns:96px minmax(0,1fr);gap:13px;padding-right:0}
+    .avatar-button{width:96px;height:96px;box-shadow:0 0 0 5px #08000c,0 0 24px #c136ff62}
+    .identity{padding-bottom:4px}.identity-title{gap:6px}.identity h1{font-size:22px;line-height:1.08}.verified{flex:0 0 18px}
+    .username{font-size:11px}.id-line{margin-top:4px;font-size:9.5px;white-space:nowrap}.place{font-size:10.5px}
+    .bio{margin:10px 0 0;font-size:11.5px;line-height:1.43}
+    .profile-stats{gap:4px;margin-top:14px;padding-top:6px;border-top:1px solid #3f174e}.profile-stat span{font-size:8.5px}
+    .profile-actions{grid-template-columns:1fr 1fr 1.08fr;gap:7px;margin-top:10px}.profile-action{min-height:47px;font-size:9.5px}
+
+    .section{margin-top:18px}.section-head{padding-bottom:9px}.section-head h2{line-height:1.1}.section-head p{margin-top:4px}
+    .quick-scroll{gap:7px;padding:9px}.quick-tile{flex-basis:104px;min-height:108px;padding:9px 7px;border-radius:16px;gap:5px}.quick-tile .ico{width:42px;height:42px;border-radius:13px;font-size:22px}.quick-tile b{font-size:10.5px}.quick-tile small{font-size:7.8px}
+
+    .activity-card{position:relative;grid-template-columns:82px minmax(0,1fr);gap:13px;padding:14px;overflow:hidden}
+    .activity-ring{z-index:2;width:78px;height:78px}.activity-copy{position:relative;z-index:2;min-width:0}.activity-copy>small{margin-top:4px;max-width:235px;line-height:1.3}.activity-data{grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.activity-data small{font-size:6.8px;white-space:nowrap}
+    .activity-fish{position:absolute;z-index:1;right:-8px;top:4px;width:90px;height:90px;opacity:.13;transform:rotate(-8deg)}
+
+    .moments{padding-bottom:4px}.moment{flex-basis:148px;min-height:148px;border-radius:17px}.moment::before{background-position:78% 22%;background-size:96px auto;opacity:.52}.moment:nth-child(3)::before{background-position:center 24%;background-size:82px auto;opacity:.36}.moment-copy{padding:28px 10px 10px}.moment-copy small{line-height:1.25}.moment.add::before{font-size:44px}
+
+    .bottom-nav{min-height:64px!important;box-shadow:0 -7px 21px #0008!important}.bottom-nav .nav-icon{font-size:18px!important}.bottom-nav a[data-tab="yo"]::before{top:-11px!important;width:40px!important;height:40px!important;box-shadow:0 0 10px #b933ef!important}.bottom-nav a[data-tab="yo"] b{margin-top:18px!important}
+
+    @media(max-width:380px){
+      .profile-banner{height:140px}.profile-level{top:12px;right:11px;width:58px;min-height:68px}
+      .profile-top{grid-template-columns:88px minmax(0,1fr);gap:10px}.avatar-button{width:88px;height:88px}.identity h1{font-size:20px}
+      .profile-action{font-size:8.7px}.activity-card{grid-template-columns:72px minmax(0,1fr);padding:11px}.activity-ring{width:68px;height:68px}.activity-fish{width:76px;height:76px}.activity-data{gap:5px}.activity-data small{font-size:6.2px}
+    }
+
   </style>
   <script>
     document.documentElement.classList.add('jemmo-auth-pending');
@@ -92,7 +136,7 @@
   <main class="yo-app">
     <header class="yo-topbar">
       <button class="yo-round" id="menuOpen" type="button" aria-label="Abrir menú">☰</button>
-      <div class="yo-logo"><img src="jemmo-logo-header.webp" alt="JEMMO LIVE"></div>
+      <div class="yo-logo" aria-label="JEMMO LIVE"><span class="jemmo">JEMMO</span><span class="live">LIVE</span></div>
       <button class="yo-round" id="shareProfile" type="button" aria-label="Compartir perfil">↗</button>
     </header>
 
@@ -137,7 +181,6 @@
         <button class="quick-tile" type="button" data-action="Mis Salas"><span class="ico">⌂</span><b>Mis Salas</b><small><span id="roomsCount">0</span> salas creadas</small></button>
         <button class="quick-tile gold" type="button" data-action="Logros"><span class="ico">♛</span><b>Logros</b><small><span id="achievementCount">1</span>/36</small><span class="progress"><i id="achievementProgress" style="--p:3%"></i></span></button>
         <button class="quick-tile" type="button" data-action="Galería"><span class="ico">▧</span><b>Galería</b><small><span id="photoCount">0</span> fotos</small></button>
-        <button class="quick-tile gold" type="button" data-action="Mi Casa"><span class="ico">⌂</span><b>Mi Casa</b><small id="houseTileText">Sin Casa</small></button>
         <button class="quick-tile" type="button" data-action="Club de fans"><span class="ico">♕</span><b>Club de fans</b><small>Nivel <span id="fanClubLevel">1</span></small></button>
       </div>
     </section>
@@ -177,7 +220,7 @@
       </div>
     </section>
 
-    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 02</p>
+    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 03</p>
   </main>
 
   <div class="menu-backdrop" id="menuBackdrop" hidden></div>
@@ -271,7 +314,7 @@
         const achievements=Math.max(1,Number(stats.achievements||1));$('achievementCount').textContent=achievements;$('achievementProgress').style.setProperty('--p',`${Math.min(100,achievements/36*100)}%`);$('fanClubLevel').textContent=Math.max(1,Number(stats.fanClubLevel||1));
         $('profileProgress').textContent=`${completion}%`;$('activityRing').style.setProperty('--progress',`${completion}%`);$('progressMessage').textContent=completion>=100?'Perfil completo. Ya puedes centrarte en crecer.':'Completa tu perfil y empieza tu primer LIVE.';
         $('weekLives').textContent=format(stats.weekLives);$('weekHours').textContent=format(stats.weekHours);$('weekFans').textContent=`+${format(stats.weekFans)}`;
-        const house=localStorage.getItem('jemmo_house_name')||'';$('houseTileText').textContent=house||'Sin Casa';if(house){$('houseName').textContent=house;$('houseText').textContent='Tu comunidad oficial dentro de JEMMO LIVE.'}
+        const house=localStorage.getItem('jemmo_house_name')||'';if(house){$('houseName').textContent=house;$('houseText').textContent='Tu comunidad oficial dentro de JEMMO LIVE.'}
         setAvatar(profile.avatar||'');
       };
 

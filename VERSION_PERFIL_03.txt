@@ -1,0 +1,26 @@
+JEMMO LIVE V1 · PERFIL PRUEBA 03
+Fecha: 22/07/2026
+Tipo: actualización incremental exclusiva del módulo Perfil (Yo)
+Archivo que se sustituye: yo.html
+No modifica: Acceso, Inicio, LIVE, Salas ni Mensajes
+
+RETOQUES APLICADOS
+- Cabecera JEMMO LIVE nítida y centrada; se elimina el logotipo pequeño y borroso.
+- Insignia de nivel más compacta y colocada dentro del banner para no tapar el nombre, ID ni país.
+- Nombre, usuario, ID y biografía con más espacio y mejor adaptación a pantallas estrechas.
+- Foto de perfil ligeramente más compacta y mejor integrada con la portada.
+- Separación visual entre estadísticas y datos del perfil.
+- Botones Editar, Compartir y Monedero equilibrados.
+- Mi espacio más compacto y con cinco accesos principales.
+- Eliminado Mi Casa de Mi espacio para evitar duplicación; se conserva su sección completa inferior.
+- Tarjeta Actividad esta semana reequilibrada; el pez pasa a ser marca de agua y deja de comprimir las estadísticas.
+- Momentos recientes más anchos, legibles y con desplazamiento horizontal más limpio.
+- Barra inferior y pez activo reducidos para tapar menos contenido.
+- Mayor espacio inferior para que la navegación no cubra Mi Casa ni el final del perfil.
+
+FUNCIONES CONSERVADAS
+- Edición de foto, nombre, usuario, biografía, país y ciudad.
+- Persistencia local separada por usuario.
+- Copia del ID JEMMO.
+- Compartir perfil.
+- Cierre real de sesión.
