@@ -1,0 +1,12 @@
+JEMMO LIVE V1 · PERFIL PRUEBA 04
+Fecha: 22/07/2026
+Tipo: actualización incremental exclusiva del módulo Perfil (Yo)
+Archivo sustituido: yo.html
+
+Cambios:
+- Eliminado el texto “LIVE YOUR WAY”.
+- Foto de perfil, nombre, usuario, ID, país y nivel colocados en la zona superior.
+- Insignia de nivel reducida para no competir con la identidad del usuario.
+- Pez oficial trasladado debajo, dentro de un banner horizontal más rectangular.
+- Conservadas edición, guardado, compartir, monedero, estadísticas y navegación.
+- No modifica Acceso, Inicio, LIVE, Salas ni Mensajes.

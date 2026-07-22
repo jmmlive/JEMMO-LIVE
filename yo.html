@@ -81,7 +81,7 @@
 
 
     /* =========================================================
-       JEMMO LIVE V1 · PERFIL PRUEBA 03 · RETOQUES VISUALES
+       JEMMO LIVE V1 · PERFIL PRUEBA 04 · CABECERA REORDENADA
        ========================================================= */
     .yo-app{padding-bottom:calc(104px + var(--safe-bottom))}
     .yo-topbar{height:56px}
@@ -122,6 +122,41 @@
       .profile-action{font-size:8.7px}.activity-card{grid-template-columns:72px minmax(0,1fr);padding:11px}.activity-ring{width:68px;height:68px}.activity-fish{width:76px;height:76px}.activity-data{gap:5px}.activity-data small{font-size:6.2px}
     }
 
+
+    /* =========================================================
+       JEMMO LIVE V1 · PERFIL PRUEBA 04 · CABECERA REORDENADA
+       Foto, identidad y nivel arriba; pez en banner inferior
+       ========================================================= */
+    .profile-card{padding:0;background:linear-gradient(165deg,#16031d,#08000c 74%)}
+    .profile-body{margin-top:0;padding:15px 14px 16px}
+    .profile-top{display:grid;grid-template-columns:88px minmax(0,1fr) 50px;gap:12px;align-items:center;padding:0}
+    .avatar-button{width:88px;height:88px;box-shadow:0 0 0 4px #08000c,0 0 22px #c136ff5e}
+    .camera-badge{width:27px;height:27px;font-size:17px}
+    .identity{min-width:0;padding:0}
+    .identity-title{align-items:center;gap:6px}
+    .identity h1{font-size:21px;line-height:1.08;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .username{margin-top:5px;font-size:10.5px}
+    .id-line{margin-top:4px;font-size:8.8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .id-line button{font-size:8.8px}
+    .place{margin-top:6px;font-size:10px}
+    .profile-level{position:static;z-index:auto;right:auto;top:auto;width:50px;min-height:60px;padding:7px 4px 6px;filter:drop-shadow(0 0 8px #bb2dff60)}
+    .profile-level strong{font-size:18px}.profile-level span{font-size:7px;margin-top:3px}.profile-level small{font-size:6px;margin-top:2px}
+    .profile-banner{height:108px;margin-top:13px;border:1px solid #65267b;border-radius:18px;background:radial-gradient(circle at 70% 28%,#d341ff5e,transparent 28%),linear-gradient(105deg,#21032d,#57086e 48%,#17021f);box-shadow:inset 0 0 30px #b82cff1d;overflow:hidden}
+    .profile-banner::before{content:none!important}
+    .profile-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#08000c2b 0,#08000c00 36%,#08000c24 100%),url('jemmo-fish-nav.webp') 72% 52%/176px auto no-repeat;opacity:.98}
+    .bio{margin:12px 0 0;font-size:11.5px;line-height:1.43}
+    .profile-stats{margin-top:13px}
+
+    @media(max-width:380px){
+      .profile-body{padding:13px 11px 15px}
+      .profile-top{grid-template-columns:76px minmax(0,1fr) 44px;gap:9px}
+      .avatar-button{width:76px;height:76px}
+      .camera-badge{width:24px;height:24px;font-size:15px}
+      .identity h1{font-size:18px}.username{font-size:9.5px}.id-line{font-size:7.8px}.id-line button{font-size:7.8px}.place{font-size:9px}
+      .profile-level{width:44px;min-height:54px;padding:6px 3px 5px}.profile-level strong{font-size:16px}.profile-level span{font-size:6.4px}.profile-level small{font-size:5.5px}
+      .profile-banner{height:96px;margin-top:11px}.profile-banner::after{background-position:73% 52%;background-size:154px auto}
+    }
+
   </style>
   <script>
     document.documentElement.classList.add('jemmo-auth-pending');
@@ -141,8 +176,6 @@
     </header>
 
     <section class="profile-card" aria-label="Mi perfil">
-      <div class="profile-banner"></div>
-      <div class="profile-level"><strong id="levelNumber">1</strong><span>NIVEL</span><small id="levelName">INICIAL</small></div>
       <div class="profile-body">
         <div class="profile-top">
           <button class="avatar-button" id="avatarButton" type="button" aria-label="Cambiar foto de perfil">
@@ -156,7 +189,9 @@
             <p class="id-line">ID: <span id="profileId">JEMMO-000001</span><button id="copyId" type="button">Copiar</button></p>
             <p class="place" id="profilePlace">📍 España</p>
           </div>
+          <div class="profile-level"><strong id="levelNumber">1</strong><span>NIVEL</span><small id="levelName">INICIAL</small></div>
         </div>
+        <div class="profile-banner" aria-hidden="true"></div>
         <p class="bio" id="profileBio">Construyendo mi historia en JEMMO LIVE.</p>
 
         <div class="profile-stats">
@@ -220,7 +255,7 @@
       </div>
     </section>
 
-    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 03</p>
+    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 04</p>
   </main>
 
   <div class="menu-backdrop" id="menuBackdrop" hidden></div>

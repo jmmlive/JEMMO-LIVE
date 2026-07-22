@@ -1,0 +1,8 @@
+JEMMO LIVE V1 · PERFIL PRUEBA 04
+
+1. Extrae el ZIP.
+2. Copia únicamente yo.html.
+3. Sustituye el yo.html anterior en el proyecto.
+4. Guarda/commit y vuelve a cargar la aplicación.
+
+Los archivos de texto son solo informativos.
