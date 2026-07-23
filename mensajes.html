@@ -10,7 +10,7 @@
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <style>html.jemmo-auth-pending body{visibility:hidden}</style>
-  <title>JEMMO LIVE · MENSAJES</title>
+  <title>JEMMO LIVE · MENSAJES · CORRECCIÓN GLOBAL 02</title>
   <style>
     :root{
       --bg:#070009;--panel:#16031e;--panel2:#21042b;--purple:#a928ff;--purple2:#6f178f;
@@ -54,7 +54,7 @@
     @keyframes fishRoll{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-4px) rotate(5deg)}}
 
     /* VISTA DE CHAT */
-    .chat-view{position:absolute;z-index:55;inset:0;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:
+    .chat-view{position:absolute;z-index:55;inset:0 0 var(--keyboard,0px);display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:
       linear-gradient(#0a000ddd,#09000ff0),url('jemmo-fish-nav.webp') center/250px auto no-repeat,
       radial-gradient(circle at 50% 0,#4d0663,#16021e 40%,#08000b 78%)}
     .chat-head{padding:calc(10px + var(--safe-top)) 11px 9px;display:grid;grid-template-columns:44px 48px minmax(0,1fr) 44px;gap:8px;align-items:center;background:#0c0010e8;border-bottom:1px solid #5a2170;backdrop-filter:blur(13px)}
@@ -64,7 +64,7 @@
 
     /* HOJAS */
     .backdrop{position:absolute;z-index:70;inset:0;background:#0200038e;backdrop-filter:blur(3px)}
-    .sheet{position:absolute;z-index:75;left:0;right:0;bottom:0;max-height:80svh;overflow:auto;padding:15px 14px calc(17px + var(--safe-bottom));border:1px solid #773091;border-radius:25px 25px 0 0;background:linear-gradient(180deg,#270532,#0a000d);box-shadow:0 -20px 60px #000}
+    .sheet{position:absolute;z-index:75;left:0;right:0;bottom:var(--keyboard,0px);max-height:80svh;overflow:auto;padding:15px 14px calc(17px + var(--safe-bottom));border:1px solid #773091;border-radius:25px 25px 0 0;background:linear-gradient(180deg,#270532,#0a000d);box-shadow:0 -20px 60px #000}
     .sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.sheet-head strong{font-size:19px}.sheet-close{width:40px;height:40px;border-radius:13px;background:#3a0d45;font-size:24px}
     .sheet-action{width:100%;min-height:54px;margin-top:8px;padding:10px 12px;border-radius:16px;background:#16021d;border:1px solid #5e2274;color:#fff;display:flex;align-items:center;gap:10px;text-align:left}.sheet-action span{font-size:22px}.sheet-action b{flex:1}.sheet-action small{display:block;color:#c8b8cd;font-weight:500;margin-top:2px}.sheet-action.danger{border-color:#913346}
     .form-field{display:grid;gap:6px;margin-top:10px}.form-field span{color:#d9c8df;font-size:11px;font-weight:850}.form-field input{width:100%;height:48px;border:1px solid #633078;border-radius:15px;background:#0e0113;color:#fff;padding:0 12px;outline:none}.form-field input:focus{border-color:var(--gold);box-shadow:0 0 0 3px #ffd34e20}
@@ -167,6 +167,12 @@
   const SETTINGS=`jemmo_v1_mensajes_settings_02_${uid}`;
   const LEGACY_STORAGE='jemmo_v1_mensajes_prueba_01';
   const LEGACY_SETTINGS='jemmo_v1_mensajes_settings_01';
+  const LEGACY_OWNER='jemmo_v1_mensajes_legacy_owner_uid';
+  function legacyForCurrentUser(key){
+    let owner=localStorage.getItem(LEGACY_OWNER);
+    if(!owner&&localStorage.getItem(key)){owner=uid;localStorage.setItem(LEGACY_OWNER,uid)}
+    return owner===uid?localStorage.getItem(key):null;
+  }
   const people=[
     {id:'ruth',name:'Ruth',initial:'R',online:true,a1:'#a92d79',a2:'#3b0c48'},
     {id:'yandira',name:'Yandira',initial:'Y',online:true,a1:'#6d2fb4',a2:'#171654'},
@@ -202,7 +208,7 @@
 
   function loadState(){
     try{
-      const saved=JSON.parse(localStorage.getItem(STORAGE)||localStorage.getItem(LEGACY_STORAGE)||'null');
+      const saved=JSON.parse(localStorage.getItem(STORAGE)||legacyForCurrentUser(LEGACY_STORAGE)||'null');
       if(saved&&Array.isArray(saved.chats))return saved;
     }catch{}
     return {chats:JSON.parse(JSON.stringify(initialChats)),messages:JSON.parse(JSON.stringify(defaultMessages)),muted:[]};
@@ -267,13 +273,15 @@
   function now(){return new Intl.DateTimeFormat('es-ES',{hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date())}
 
   function openConversationOptions(id){selectedMenuChat=id;const chat=getChat(id);if(!chat)return;$('conversationSheetTitle').textContent=chat.name;$('pinAction').querySelector('b').firstChild.textContent=chat.pinned?'Desanclar':'Anclar arriba';openSheet('conversationSheet')}
-  function openSheet(id){$('backdrop').classList.remove('hidden');$(id).classList.remove('hidden');history.pushState({jemmoSheet:id},'',location.hash||'#mensajes')}
+  function openSheet(id){const already=!$(id).classList.contains('hidden');$('backdrop').classList.remove('hidden');document.querySelectorAll('.sheet').forEach(s=>s.classList.add('hidden'));$(id).classList.remove('hidden');if(!already){const next={...(history.state||{}),jemmoSheet:id};if(history.state?.jemmoSheet)history.replaceState(next,'',location.hash||'#mensajes');else history.pushState(next,'',location.hash||'#mensajes')}}
   function closeSheets(useHistory=true){$('backdrop').classList.add('hidden');document.querySelectorAll('.sheet').forEach(s=>s.classList.add('hidden'));if(useHistory&&history.state?.jemmoSheet){suppressNextPop=true;history.back()}}
   function fillMembers(){const box=$('memberList');box.innerHTML='';people.slice(0,5).forEach((p,index)=>{const label=document.createElement('label');label.className='member';label.innerHTML=`<i>${esc(p.initial)}</i><b>${esc(p.name)}</b><input type="checkbox" value="${p.id}" ${index<2?'checked':''}>`;box.append(label)})}
   function uniqueId(prefix){return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,6)}`}
-  function loadSettings(){let data={online:true,receipts:true,groups:true,followedOnly:false};try{data={...data,...JSON.parse(localStorage.getItem(SETTINGS)||localStorage.getItem(LEGACY_SETTINGS)||'{}')}}catch{}document.querySelectorAll('[data-setting]').forEach(btn=>btn.classList.toggle('on',!!data[btn.dataset.setting]));return data}
+  function loadSettings(){let data={online:true,receipts:true,groups:true,followedOnly:false};try{data={...data,...JSON.parse(localStorage.getItem(SETTINGS)||legacyForCurrentUser(LEGACY_SETTINGS)||'{}')}}catch{}document.querySelectorAll('[data-setting]').forEach(btn=>btn.classList.toggle('on',!!data[btn.dataset.setting]));return data}
   function saveSettings(){const data={};document.querySelectorAll('[data-setting]').forEach(btn=>data[btn.dataset.setting]=btn.classList.contains('on'));localStorage.setItem(SETTINGS,JSON.stringify(data))}
 
+  function keyboardOffset(){const viewport=window.visualViewport;const offset=viewport?Math.max(0,window.innerHeight-viewport.height-viewport.offsetTop):0;document.documentElement.style.setProperty('--keyboard',`${offset}px`)}
+  window.visualViewport?.addEventListener('resize',keyboardOffset);window.visualViewport?.addEventListener('scroll',keyboardOffset);keyboardOffset();
   renderOnline();fillMembers();loadSettings();renderLists();
 
   $('searchToggle').addEventListener('click',()=>{$('searchBar').classList.toggle('hidden');if(!$('searchBar').classList.contains('hidden'))$('searchInput').focus()});

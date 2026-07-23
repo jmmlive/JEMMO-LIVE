@@ -6,7 +6,7 @@
   'use strict';
   if (window.JemmoWallet?.version) return;
 
-  const VERSION = '4.0.0-test';
+  const VERSION = '4.1.0-global02-test';
   const byId = id => document.getElementById(id);
   const formatNumber = value => Math.max(0, Math.floor(Number(value) || 0)).toLocaleString('es-ES');
   const formatMoney = value => Math.max(0, Number(value) || 0).toLocaleString('es-ES', {
@@ -270,7 +270,7 @@
         <div class="jw-test">⚠ MODO DE PRUEBAS · SIN COBROS REALES</div>
         <div class="jw-balances">
           <article class="jw-balance coins"><small>🪙 JEMMOS</small><b id="jw-jemmos">0</b><em>Moneda amarilla recargable para regalos e interacción</em></article>
-          <article class="jw-balance diamonds"><small>💗 JEMS</small><b id="jw-jems">0</b><em>Ganancias rosadas por regalos y tareas; son retirables</em></article>
+          <article class="jw-balance diamonds"><small>💗 JEMS</small><b id="jw-jems">0</b><em id="jw-jems-detail">Confirmados: 0 · Pendientes: 0</em></article>
           <article class="jw-balance earnings"><small>💎 CRISTALES</small><b id="jw-crystals">0</b><em>Diamantes azules para juegos, ruletas y minijuegos</em></article>
         </div>
         <div class="jw-tabs" role="tablist"><button class="jw-tab active" data-jw-tab="summary">RESUMEN</button><button class="jw-tab" data-jw-tab="recharge">RECARGAR</button><button class="jw-tab" data-jw-tab="exchange">CAMBIAR</button><button class="jw-tab" data-jw-tab="withdraw">RETIRAR</button><button class="jw-tab" data-jw-tab="history">HISTORIAL</button></div>
@@ -385,6 +385,7 @@
     const wallet = getWallet();
     if (byId('jw-jemmos')) byId('jw-jemmos').textContent = formatNumber(wallet.jemmos);
     if (byId('jw-jems')) byId('jw-jems').textContent = formatNumber(wallet.jems);
+    if (byId('jw-jems-detail')) byId('jw-jems-detail').textContent = `Confirmados: ${formatNumber(wallet.jemsConfirmed)} · Pendientes: ${formatNumber(wallet.jemsPending)}`;
     if (byId('jw-crystals')) byId('jw-crystals').textContent = formatNumber(wallet.crystals);
     if (byId('jw-withdraw-available')) byId('jw-withdraw-available').textContent = formatNumber(wallet.jems);
     if (byId('jw-method-name')) byId('jw-method-name').textContent = wallet.methodType || 'Sin configurar';

@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#09000f"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/icon-192.png"><style>html.jemmo-auth-pending body{visibility:hidden}</style><script>document.documentElement.classList.add("jemmo-auth-pending");setTimeout(()=>{if(!document.documentElement.classList.contains("jemmo-auth-pending"))return;if(localStorage.getItem("jemmo_active_uid"))document.documentElement.classList.remove("jemmo-auth-pending");else location.replace("acceso.html?sesion=timeout")},5500)</script>
-  <title>JEMMO LIVE V1 · LIVE · CORRECCIÓN GLOBAL 01</title>
+  <meta name="theme-color" content="#09000f"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/icon-192.png"><style>html.jemmo-auth-pending body{visibility:hidden}</style><script>document.documentElement.classList.add('jemmo-auth-pending');</script>
+  <title>JEMMO LIVE V1 · LIVE · CORRECCIÓN GLOBAL 02</title>
   <style>
     :root{
       color-scheme:dark;
@@ -1081,7 +1081,7 @@
       <div class="jl-brand">
         <img id="brandLogo" src="jemmo-logo-header.webp" alt="JEMMO LIVE">
         <strong id="brandFallback">JEMMO LIVE</strong>
-        <small>PREPARACIÓN DE TRANSMISIÓN · V1<br>CORRECCIÓN GLOBAL 01</small>
+        <small>PREPARACIÓN DE TRANSMISIÓN · V1<br>CORRECCIÓN GLOBAL 02</small>
       </div>
       <button class="jl-round" id="helpButton" type="button" aria-label="Ayuda">?</button>
     </header>
@@ -1343,7 +1343,7 @@
       <button type="button"><span>?</span><span><b>Ayuda y soporte</b><small>Seguridad y asistencia</small></span><i>›</i></button>
       <a href="acceso.html" data-jemmo-logout><span>↪</span><span><b>Cerrar sesión</b></span><i>›</i></a>
     </nav>
-    <div class="jl-version">JEMMO LIVE V1 · CORRECCIÓN GLOBAL PRUEBA 01</div>
+    <div class="jl-version">JEMMO LIVE V1 · CORRECCIÓN GLOBAL PRUEBA 02</div>
   </aside>
 
   <div class="jl-toast" id="toast"></div>
@@ -2026,7 +2026,9 @@
     window.addEventListener("popstate",()=>{
       if(consumeNextPop){consumeNextPop=false;return}
       closingFromHistory=true;
-      if(activeSheet){
+      if($("sideMenu").classList.contains("open")){
+        $("sideMenu").classList.remove("open");$("sideMenu").setAttribute("aria-hidden","true");$("menuBackdrop").hidden=true;
+      }else if(activeSheet){
         hideSheetsOnly();
       }else if($("battleCard").classList.contains("expanded")){
         $("battleCard").classList.remove("expanded");
@@ -2322,8 +2324,10 @@
     $("roomControls").addEventListener("click",()=>openSheet("safetySheet"));
 
     const menu=$("sideMenu"),menuBackdrop=$("menuBackdrop");
-    function openMenu(){menu.classList.add("open");menu.setAttribute("aria-hidden","false");menuBackdrop.hidden=false}
-    function closeMenu(){menu.classList.remove("open");menu.setAttribute("aria-hidden","true");menuBackdrop.hidden=true}
+    function showMenu(){menu.classList.add("open");menu.setAttribute("aria-hidden","false");menuBackdrop.hidden=false}
+    function hideMenu(){menu.classList.remove("open");menu.setAttribute("aria-hidden","true");menuBackdrop.hidden=true}
+    function openMenu(){if(menu.classList.contains("open"))return;showMenu();history.pushState({...(history.state||{}),jemmoLiveMenu:true},"")}
+    function closeMenu(){if(!menu.classList.contains("open"))return;hideMenu();if(history.state?.jemmoLiveMenu){consumeNextPop=true;history.back()}}
     $("menuOpen").addEventListener("click",openMenu);
     $("menuClose").addEventListener("click",closeMenu);
     menuBackdrop.addEventListener("click",closeMenu);

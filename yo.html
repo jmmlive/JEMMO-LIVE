@@ -539,14 +539,8 @@
     .jf-finance-only-note b{display:block;color:#ffe18a;font-size:8px;letter-spacing:.05em}.jf-finance-only-note span{display:block;margin-top:5px;font-size:8px;line-height:1.45}
 
   </style>
-  <script>
-    document.documentElement.classList.add('jemmo-auth-pending');
-    setTimeout(()=>{
-      if(!document.documentElement.classList.contains('jemmo-auth-pending')) return;
-      if(localStorage.getItem('jemmo_active_uid')) document.documentElement.classList.remove('jemmo-auth-pending');
-      else location.replace('acceso.html?sesion=timeout');
-    },5500);
-  </script>
+  <script>document.documentElement.classList.add('jemmo-auth-pending');</script>
+<style id="jemmo-global-wallet-only">#jfWalletBackdrop,#jfWalletSheet{display:none!important}</style>
 </head>
 <body>
   <main class="yo-app">
@@ -767,7 +761,7 @@
   <!-- JEMMO LIVE · Monedero global vinculado -->
   <div class="jf-backdrop" id="jfWalletBackdrop" hidden></div>
   <section class="jf-sheet" id="jfWalletSheet" hidden role="dialog" aria-modal="true" aria-labelledby="jfWalletTitle">
-    <div class="jf-head"><div class="jf-head-copy"><small>JEMMO LIVE · ECONOMÍA</small><strong id="jfWalletTitle">Monedero y ganancias</strong><span>JEMMOS para consumir · JEMS para retirar</span><i class="jf-release">PRUEBA 05</i></div><button class="jf-close" id="jfWalletClose" type="button" aria-label="Cerrar">×</button></div>
+    <div class="jf-head"><div class="jf-head-copy"><small>JEMMO LIVE · ECONOMÍA</small><strong id="jfWalletTitle">Monedero y ganancias</strong><span>JEMMOS para consumir · JEMS para retirar</span><i class="jf-release">PRUEBA GLOBAL 02</i></div><button class="jf-close" id="jfWalletClose" type="button" aria-label="Cerrar">×</button></div>
     <div class="jf-sim"><span>🧪 <b>MODO SIMULACIÓN</b></span><span>Sin dinero real</span></div>
     <div class="jf-period"><div class="jf-period-copy"><small>FECHA Y CICLO ACTUAL</small><b id="jfWalletPeriodDate">—</b><span id="jfWalletPeriodText">Las operaciones de hoy se cerrarán automáticamente a medianoche.</span></div><div class="jf-period-clock"><b id="jfWalletClock">--:--</b><small>HORA LOCAL</small></div></div>
     <div class="jf-balances">
@@ -817,8 +811,8 @@
   <!-- Panel financiero privado -->
   <div class="jf-backdrop" id="jfFinanceBackdrop" hidden></div>
   <section class="jf-sheet jf-finance-sheet" id="jfFinanceSheet" hidden role="dialog" aria-modal="true" aria-labelledby="jfFinanceTitle">
-    <div class="jf-head"><div class="jf-head-copy"><small>CONTROL PRIVADO DEL PROPIETARIO</small><strong id="jfFinanceTitle">JEMMO Finanzas</strong><span>Ingresos · Pagos · Gastos · Beneficio</span><i class="jf-release">PRUEBA 05</i></div><button class="jf-close" id="jfFinanceClose" type="button" aria-label="Cerrar">×</button></div>
-    <div class="jf-sim"><span>🧪 <b>CONTABILIDAD DE PRUEBAS</b></span><button class="jf-secondary" id="jfFinanceLock" type="button" style="width:auto;min-height:29px;padding:0 9px">BLOQUEAR</button></div>
+    <div class="jf-head"><div class="jf-head-copy"><small>CONTROL PRIVADO DEL PROPIETARIO</small><strong id="jfFinanceTitle">JEMMO Finanzas</strong><span>Ingresos · Pagos · Gastos · Beneficio</span><i class="jf-release">PRUEBA GLOBAL 02</i></div><button class="jf-close" id="jfFinanceClose" type="button" aria-label="Cerrar">×</button></div>
+    <div class="jf-sim"><span>🧪 <b>MODO DE PRUEBAS · SIN COBROS REALES</b></span><button class="jf-secondary" id="jfFinanceLock" type="button" style="width:auto;min-height:29px;padding:0 9px">BLOQUEAR</button></div>
     <div class="jf-period"><div class="jf-period-copy"><small>PERIODO CONTABLE DE PRUEBAS</small><b id="jfFinancePeriodDate">—</b><span id="jfFinancePeriodText">Cierre automático local a las 00:00.</span></div><div class="jf-period-clock"><b id="jfFinanceClock">--:--</b><small>HORA LOCAL</small></div></div>
     <div class="jf-finance-hero"><article class="jf-profit" id="jfProfitCard"><small id="jfProfitLabel">BENEFICIO DISPONIBLE SIMULADO</small><b id="jfOwnerProfit">0,00 USD</b><span id="jfProfitCopy">Dinero recibido menos pagos, obligaciones, gastos y reservas visibles.</span></article><article class="jf-owner-state"><span>🛡️</span><b>PROPIETARIO VERIFICADO</b><small id="jfOwnerSessionText">Sesión protegida</small></article></div>
     <div class="jf-tabs" id="jfFinanceTabs"><button class="jf-tab active" type="button" data-jf-finance-tab="overview">RESUMEN</button><button class="jf-tab" type="button" data-jf-finance-tab="recharges">RECARGAS</button><button class="jf-tab" type="button" data-jf-finance-tab="gifts">REGALOS</button><button class="jf-tab" type="button" data-jf-finance-tab="tasks">TAREAS</button><button class="jf-tab" type="button" data-jf-finance-tab="payments">PAGOS</button><button class="jf-tab" type="button" data-jf-finance-tab="expenses">GASTOS</button><button class="jf-tab" type="button" data-jf-finance-tab="audit">AUDITORÍA</button><button class="jf-tab" type="button" data-jf-finance-tab="settings">AJUSTES</button></div>
@@ -1178,14 +1172,14 @@
     const suppressLegacyWallet=()=>{document.querySelectorAll('.wallet-backdrop,.wallet-sheet').forEach(element=>{if(!String(element.id||'').startsWith('jf')&&!String(element.id||'').startsWith('jw')){element.hidden=true;element.remove()}})};
     document.addEventListener('click',event=>{const trigger=event.target?.closest?.('[data-open-wallet],#openWallet');if(!trigger)return;event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();suppressLegacyWallet();const requested=String(trigger.dataset.openWallet||'summary').toLowerCase();const tab=requested==='earnings'?'summary':requested;window.JemmoWallet?.open?.(['summary','recharge','exchange','withdraw','history'].includes(tab)?tab:'summary')},true);
     const legacyObserver=new MutationObserver(()=>suppressLegacyWallet());legacyObserver.observe(document.body,{childList:true,subtree:true});suppressLegacyWallet();
-    window.JemmoProfileFinanceWallet={open:openWallet,openRecharge:()=>openWallet('recharge'),close:closeWallet,render:renderWallet,getState:()=>readWallet()};
+    window.JemmoProfileFinanceWallet={open:tab=>window.JemmoWallet?.open?.(tab||'summary'),openRecharge:()=>window.JemmoWallet?.open?.('recharge'),close:()=>window.JemmoWallet?.close?.(),render:()=>window.JemmoWallet?.render?.(),getState:()=>readWallet()};
     window.JemmoFinance={open:requestFinanceAccess,render:renderFinance,isUnlocked:ownerUnlocked,reconcile:reconcileFinanceBooks};
     window.JemmoEconomy={sendGift,simulateRecharge,awardTask,releasePending,readWallet,readFinance};
     window.addEventListener('jemmo-wallet-change',()=>{reconcileFinanceBooks();renderWallet();if(ownerUnlocked())renderFinance()});
     window.addEventListener('storage',event=>{if(event.key===walletKey(uid)||event.key===FINANCE_KEY){renderWallet();if(ownerUnlocked())renderFinance()}});
     setInterval(()=>{if(!$('jfFinanceSheet')?.hidden&&!ownerUnlocked()){closeFinance();requestFinanceAccess()}},30000);
     setInterval(()=>{const closed=ensureDailyClose();updatePeriodDisplay();if(closed){renderWallet();if(ownerUnlocked())renderFinance();toast('Se cerró automáticamente el día de pruebas y comenzó un ciclo nuevo.')}},60000);
-    releasePending(false);reconcileFinanceBooks();ensureDailyClose();renderWallet();updatePeriodDisplay();const walletRoute=new URLSearchParams(location.search);const requestedWallet=String(walletRoute.get('wallet')||walletRoute.get('monedero')||walletRoute.get('seccion')||'').toLowerCase();if(['recharge','recargar','recarga'].includes(requestedWallet))setTimeout(()=>openWallet('recharge'),0);
+    releasePending(false);reconcileFinanceBooks();ensureDailyClose();renderWallet();updatePeriodDisplay();const walletRoute=new URLSearchParams(location.search);const requestedWallet=String(walletRoute.get('wallet')||walletRoute.get('monedero')||walletRoute.get('seccion')||'').toLowerCase();if(['recharge','recargar','recarga'].includes(requestedWallet))setTimeout(()=>window.JemmoWallet?.open?.('recharge'),0);
   })();
   </script>
 
@@ -1507,5 +1501,42 @@
       bootstrap();
     })();
   </script>
+
+<script>
+(()=>{
+  'use strict';
+  const $=id=>document.getElementById(id);
+  let syncing=false;
+  const definitions=[
+    {name:'menu',visible:()=>Boolean($('sideMenu')?.classList.contains('open')),hide:()=>{$('sideMenu')?.classList.remove('open');$('sideMenu')?.setAttribute('aria-hidden','true');if($('menuBackdrop'))$('menuBackdrop').hidden=true}},
+    {name:'edit',visible:()=>Boolean($('editSheet')&&!$('editSheet').hidden),hide:()=>{if($('editSheet'))$('editSheet').hidden=true;if($('editBackdrop'))$('editBackdrop').hidden=true}},
+    {name:'destello-compose',visible:()=>Boolean($('destelloComposer')&&!$('destelloComposer').hidden),hide:()=>{if($('destelloComposer'))$('destelloComposer').hidden=true;if($('destelloBackdrop'))$('destelloBackdrop').hidden=true}},
+    {name:'destello-comments',visible:()=>Boolean($('destelloCommentsSheet')&&!$('destelloCommentsSheet').hidden),hide:()=>{if($('destelloCommentsSheet'))$('destelloCommentsSheet').hidden=true;if($('destelloCommentsBackdrop'))$('destelloCommentsBackdrop').hidden=true}},
+    {name:'destello-gift',visible:()=>Boolean($('destelloGiftSheet')&&!$('destelloGiftSheet').hidden),hide:()=>{if($('destelloGiftSheet'))$('destelloGiftSheet').hidden=true;if($('destelloGiftBackdrop'))$('destelloGiftBackdrop').hidden=true}},
+    {name:'finance',visible:()=>Boolean($('jfFinanceSheet')&&!$('jfFinanceSheet').hidden),hide:()=>{if($('jfFinanceSheet'))$('jfFinanceSheet').hidden=true;if($('jfFinanceBackdrop'))$('jfFinanceBackdrop').hidden=true}},
+    {name:'owner',visible:()=>Boolean($('jfOwnerAccess')&&!$('jfOwnerAccess').hidden),hide:()=>{if($('jfOwnerAccess'))$('jfOwnerAccess').hidden=true;if($('jfOwnerBackdrop'))$('jfOwnerBackdrop').hidden=true}},
+    {name:'profile-wallet',visible:()=>Boolean($('jfWalletSheet')&&!$('jfWalletSheet').hidden),hide:()=>{if($('jfWalletSheet'))$('jfWalletSheet').hidden=true;if($('jfWalletBackdrop'))$('jfWalletBackdrop').hidden=true}}
+  ];
+  const current=()=>definitions.find(item=>item.visible())||null;
+  const syncOpen=()=>{
+    if(syncing)return;
+    const item=current();
+    if(item&&history.state?.jemmoProfileOverlay!==item.name){history.pushState({...(history.state||{}),jemmoProfileOverlay:item.name},'')}
+    else if(!item&&history.state?.jemmoProfileOverlay){syncing=true;history.back();setTimeout(()=>syncing=false,0)}
+  };
+  document.addEventListener('click',()=>setTimeout(syncOpen,0));
+  const observer=new MutationObserver(()=>setTimeout(syncOpen,0));
+  definitions.forEach(item=>{
+    const ids=['sideMenu','editSheet','destelloComposer','destelloCommentsSheet','destelloGiftSheet','jfFinanceSheet','jfOwnerAccess','jfWalletSheet'];
+    ids.forEach(id=>{const node=$(id);if(node)observer.observe(node,{attributes:true,attributeFilter:['hidden','class','aria-hidden']})});
+  });
+  addEventListener('popstate',event=>{
+    const item=current();
+    if(!item)return;
+    syncing=true;item.hide();document.body.style.overflow='';event.stopImmediatePropagation();setTimeout(()=>syncing=false,0);
+  },true);
+})();
+</script>
+
 </body>
 </html>

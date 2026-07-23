@@ -9,7 +9,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>JEMMO LIVE · SALAS · CORRECCIÓN GLOBAL 01</title>
+  <title>JEMMO LIVE · SALAS · CORRECCIÓN GLOBAL 02</title>
   <style>html.jemmo-auth-pending body{visibility:hidden}</style>
   <style>
     :root{
@@ -61,7 +61,7 @@
     @keyframes jrFloat{50%{transform:translateY(-4px)}}
 
     /* SALA */
-    .jr-room{height:100svh;min-height:570px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:
+    .jr-room{height:calc(100svh - var(--keyboard,0px));min-height:570px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:
       radial-gradient(circle at 50% 8%,#57066d 0,#24032f 27%,#09000d 70%);overflow:hidden}
     .jr-room-head{padding:calc(11px + var(--safe-top)) 16px 9px;display:flex;align-items:center;gap:11px;border-bottom:1px solid #5d1a75aa;background:#0d0111aa;backdrop-filter:blur(12px)}
     .jr-room-avatar{width:58px;height:58px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow:0 0 17px #ffd34e44;background:#24052e}
@@ -105,7 +105,7 @@
     /* PANELES */
     .jr-backdrop{position:fixed;z-index:90;inset:0;background:#020003c9;backdrop-filter:blur(5px)}
     .jr-backdrop.gift-mode{background:linear-gradient(180deg,transparent 0,transparent 48%,#02000330 100%);backdrop-filter:none}
-    .jr-sheet{position:fixed;z-index:91;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,520px);max-height:78svh;overflow:auto;padding:16px 16px calc(18px + var(--safe-bottom));border:1px solid #773091;border-radius:25px 25px 0 0;background:linear-gradient(180deg,#25052ff5,#09000dfa);box-shadow:0 -20px 60px #000}
+    .jr-sheet{position:fixed;z-index:91;left:50%;bottom:var(--keyboard,0px);transform:translateX(-50%);width:min(100%,520px);max-height:78svh;overflow:auto;padding:16px 16px calc(18px + var(--safe-bottom));border:1px solid #773091;border-radius:25px 25px 0 0;background:linear-gradient(180deg,#25052ff5,#09000dfa);box-shadow:0 -20px 60px #000}
     #giftsSheet{max-height:56svh;box-shadow:0 -12px 34px #000b}
     .jr-sheet-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}.jr-sheet-head strong{font-size:20px}.jr-sheet-close{width:40px;height:40px;border-radius:13px;background:#3a0d45;border:0;color:#fff;font-size:24px}
     .jr-setting{width:100%;min-height:54px;margin-top:8px;padding:10px 12px;border-radius:16px;background:#16021d;border:1px solid #5e2274;color:#fff;display:flex;align-items:center;gap:10px;text-align:left}.jr-setting span{font-size:22px}.jr-setting b{flex:1}.jr-setting small{display:block;color:#c8b8cd;font-weight:500;margin-top:2px}.jr-setting.danger{border-color:#9b3046}
@@ -285,6 +285,7 @@
   };
   let toastTimer=0;
   let roomOpen=false;
+  let suppressNextPop=false;
 
   function toast(message){
     const el=$('toast');
@@ -550,7 +551,7 @@
   function closeSheets(useHistory=true){
     const hadSheet=Boolean(history.state?.jemmoRoomSheet||document.querySelector('.jr-sheet:not(.jr-hidden)'));
     hideSheets();
-    if(useHistory&&hadSheet&&history.state?.jemmoRoomSheet)history.back();
+    if(useHistory&&hadSheet&&history.state?.jemmoRoomSheet){suppressNextPop=true;history.back()}
   }
 
   function addChat(text,kind=''){
@@ -575,7 +576,11 @@
     return names.length?names.join(', '):'Selecciona una persona';
   }
 
-  function formatCoins(value){return Number(value).toLocaleString('es-ES')}
+  function formatCoins(value){return Math.max(0,Number(value)||0).toLocaleString('es-ES')}
+  function splitCoins(total,indexes){
+    const base=Math.floor(total/indexes.length),remainder=total%indexes.length;
+    return indexes.map((index,position)=>({index,amount:base+(position<remainder?1:0)}));
+  }
 
   function updateBalance(){
     const wallet=window.JemmoWallet?.get?.();
@@ -586,9 +591,8 @@
 
   function updateGiftPanel(){
     const recipients=selectedRecipientIndexes().length;
-    const totalGifts=recipients*state.giftQuantity;
     $('quantitySummary').textContent=`×${state.giftQuantity}`;
-    $('giftSummary').textContent=recipients?`${recipients} persona${recipients===1?'':'s'} × ${state.giftQuantity} = ${totalGifts} regalo${totalGifts===1?'':'s'} en total.`:'Selecciona al menos una persona.';
+    $('giftSummary').textContent=recipients?`${state.giftQuantity} regalo${state.giftQuantity===1?'':'s'} se repartirá${state.giftQuantity===1?'':'n'} entre ${recipients} persona${recipients===1?'':'s'}.`:'Selecciona al menos una persona.';
     document.querySelectorAll('.jr-quantity').forEach(btn=>btn.classList.toggle('active',Number(btn.dataset.quantity)===state.giftQuantity));
     updateBalance();
   }
@@ -642,8 +646,8 @@
     const indexes=selectedRecipientIndexes();
     if(!indexes.length){toast('Selecciona a quién enviar el regalo.');return}
     const recipients=indexes.length;
-    const totalGifts=recipients*state.giftQuantity;
-    const totalCoins=totalGifts*unitPrice;
+    const totalCoins=state.giftQuantity*unitPrice;
+    const shares=splitCoins(totalCoins,indexes);
     updateBalance();
     if(totalCoins>state.giftBalance){
       toast(`Saldo insuficiente: necesitas ${formatCoins(totalCoins)} JEMMOS.`);
@@ -651,20 +655,32 @@
       return;
     }
     const target=recipientLabel();
-    const question=`¿Seguro que quieres enviar ${state.giftQuantity} ${gift} a cada una de ${recipients} persona${recipients===1?'':'s'}?
+    const shareSummary=recipients===1?`${formatCoins(totalCoins)} JEMMOS para esa persona`:`${formatCoins(totalCoins)} JEMMOS repartidos entre ${recipients} personas`;
+    const question=`¿Seguro que quieres enviar ×${state.giftQuantity} ${gift} a ${target}?
 
-Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
+Total del paquete: ${formatCoins(totalCoins)} JEMMOS.
+Reparto: ${shareSummary}.`;
     if(!confirm(question))return;
-    const spent=window.JemmoWallet?.spendCoins?.(totalCoins,{title:'Regalo enviado en Sala',detail:`${gift} · ${target} · ×${state.giftQuantity}`,source:'salas-gift'});
+    const spent=window.JemmoWallet?.spendCoins?.(totalCoins,{title:'Regalo enviado en Sala',detail:`${gift} · ${target} · ×${state.giftQuantity} · reparto`,source:'salas-gift'});
     if(!spent?.ok){toast('Saldo insuficiente. Abriendo el Monedero.');window.JemmoWallet?.open?.('recharge');return}
     state.giftBalance=spent.wallet.jemmos;
-    indexes.forEach(index=>state.giftTotals.set(index,(state.giftTotals.get(index)||0)+state.giftQuantity));
+    shares.forEach(({index,amount})=>state.giftTotals.set(index,(state.giftTotals.get(index)||0)+amount));
     updateGiftBadges();
     updateBalance();
-    addChat(`Tú enviaste ${state.giftQuantity} ${gift} a ${target}. Total: ${totalGifts} regalos.`,'gift');
-    toast(`${totalGifts} regalos enviados correctamente.`);
+    addChat(`Tú enviaste ×${state.giftQuantity} ${gift} a ${target}. Total repartido: ${formatCoins(totalCoins)} JEMMOS.`,'gift');
+    toast(`Regalo repartido correctamente entre ${recipients} persona${recipients===1?'':'s'}.`);
     closeSheets();
   }
+
+
+  function keyboardOffset(){
+    const viewport=window.visualViewport;
+    const offset=viewport?Math.max(0,window.innerHeight-viewport.height-viewport.offsetTop):0;
+    document.documentElement.style.setProperty('--keyboard',`${offset}px`);
+  }
+  window.visualViewport?.addEventListener('resize',keyboardOffset);
+  window.visualViewport?.addEventListener('scroll',keyboardOffset);
+  keyboardOffset();
 
   restore();
   renderPreparation();
@@ -771,6 +787,7 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   }));
 
   window.addEventListener('popstate',()=>{
+    if(suppressNextPop){suppressNextPop=false;return}
     if(document.querySelector('.jr-sheet:not(.jr-hidden)')){hideSheets();return}
     if(roomOpen)leaveRoom(false,false);
   });
