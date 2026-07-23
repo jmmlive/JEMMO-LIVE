@@ -1,12 +1,12 @@
 /* =========================================================
-   JEMMO LIVE · MONEDERO GLOBAL PRUEBA 04
+   JEMMO LIVE · MONEDERO GLOBAL PRUEBA 05 · RECARGA VISIBLE
    Un solo saldo por usuario para Perfil, Inicio, LIVE y Salas
    ========================================================= */
 (() => {
   'use strict';
   if (window.JemmoWallet?.version) return;
 
-  const VERSION = '4.1.0-global02-test';
+  const VERSION = '5.0.0-test-recarga-visible';
   const byId = id => document.getElementById(id);
   const formatNumber = value => Math.max(0, Math.floor(Number(value) || 0)).toLocaleString('es-ES');
   const formatMoney = value => Math.max(0, Number(value) || 0).toLocaleString('es-ES', {
@@ -254,7 +254,7 @@
       .jw-head-copy{min-width:0;flex:1}.jw-head-copy small{display:block;color:var(--jw-gold);font-size:8px;font-weight:1000;letter-spacing:.14em}.jw-head-copy strong{display:block;margin-top:2px;font-size:21px}.jw-head-copy span{display:block;margin-top:2px;color:#bdafc2;font-size:9px}.jw-close{width:40px;height:40px;flex:0 0 40px;border:1px solid #74328a;border-radius:13px;background:#25062e;color:#fff;font-size:25px}
       .jw-test{display:inline-flex;align-items:center;gap:5px;margin-bottom:10px;padding:6px 9px;border:1px solid #9a7024;border-radius:999px;background:#2a1806;color:#ffe292;font-size:8px;font-weight:1000}.jw-balances{display:grid;grid-template-columns:1fr 1fr;gap:8px}.jw-balance{min-height:88px;padding:12px;border:1px solid #653078;border-radius:18px;background:linear-gradient(150deg,#260731,#100116);box-shadow:inset 0 0 24px #bb35ff12}.jw-balance.coins{border-color:#8d6b22;background:linear-gradient(150deg,#3c2808,#171006)}.jw-balance.earnings{grid-column:1/-1;min-height:76px;background:linear-gradient(150deg,#103125,#08150f);border-color:#276b4d}.jw-balance small{display:flex;align-items:center;gap:5px;color:#c9bacd;font-size:8px;font-weight:900}.jw-balance b{display:block;margin-top:7px;font-size:25px;line-height:1}.jw-balance.coins b{color:var(--jw-gold)}.jw-balance.diamonds b{color:#df7bff}.jw-balance.earnings b{color:#62e6a1}.jw-balance em{display:block;margin-top:6px;color:#9f91a5;font-size:8px;font-style:normal}
       .jw-tabs{display:flex;gap:7px;margin:12px -2px 10px;padding:2px;overflow-x:auto;scrollbar-width:none}.jw-tabs::-webkit-scrollbar{display:none}.jw-tab{flex:0 0 auto;min-height:36px;padding:0 12px;border:1px solid #572769;border-radius:999px;background:#14031b;color:#bfaec6;font-size:8px;font-weight:1000}.jw-tab.active{border-color:var(--jw-gold);background:linear-gradient(135deg,#5c3d08,#2a1204);color:#ffe28b;box-shadow:0 0 15px #ffd34e2a}.jw-view{display:grid;gap:10px}.jw-view[hidden]{display:none!important}.jw-card{padding:13px;border:1px solid #542267;border-radius:18px;background:#110117d9}.jw-card h3{margin:0;font-size:14px}.jw-card>p{margin:5px 0 0;color:#ad9eb3;font-size:9px;line-height:1.4}.jw-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.jw-shortcut{min-height:68px;padding:8px 5px;border:1px solid #643078;border-radius:15px;background:#1b0524;color:#fff;font-size:9px;font-weight:950}.jw-shortcut span{display:block;margin-bottom:4px;font-size:22px}.jw-shortcut.gold{border-color:#8b6721;background:#2d1d06;color:#ffe18a}
-      .jw-packages{display:grid;grid-template-columns:1fr 1fr;gap:9px}.jw-package{min-height:82px;padding:10px;border:1px solid #7b5b1e;border-radius:17px;background:radial-gradient(circle at 80% 10%,#ffcf4730,transparent 36%),linear-gradient(150deg,#3b2607,#170d03);color:#fff;text-align:left}.jw-package strong{display:block;color:var(--jw-gold);font-size:18px}.jw-package small{display:block;margin-top:5px;color:#d6c298;font-size:8px}.jw-package span{display:inline-block;margin-top:8px;padding:4px 7px;border-radius:999px;background:var(--jw-gold);color:#2b1703;font-size:7px;font-weight:1000}.jw-field{display:grid;gap:6px}.jw-field>span{color:#e6dbe9;font-size:9px;font-weight:900}.jw-field input,.jw-field select{width:100%;min-height:45px;border:1px solid #5c2a6d;border-radius:13px;background:#09000d;color:#fff;padding:0 12px;outline:none}.jw-field input:focus,.jw-field select:focus{border-color:var(--jw-gold);box-shadow:0 0 0 3px #ffd34e1d}.jw-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.jw-preview{padding:11px;border:1px dashed #6c377d;border-radius:14px;background:#0b010f;color:#bfaec5;font-size:9px;line-height:1.45}.jw-preview b{color:#ffe17c}.jw-primary{width:100%;min-height:47px;border:0;border-radius:14px;background:linear-gradient(90deg,var(--jw-gold),#d63aff);color:#1c031f;font-weight:1000}.jw-secondary{width:100%;min-height:42px;border:1px solid #673079;border-radius:13px;background:#210529;color:#fff;font-weight:900}.jw-note{padding:10px;border:1px solid #6e5320;border-radius:13px;background:#251706;color:#dbc991;font-size:8px;line-height:1.45}
+      .jw-packages{display:grid;grid-template-columns:1fr 1fr;gap:9px}.jw-package{min-height:82px;padding:10px;border:1px solid #7b5b1e;border-radius:17px;background:radial-gradient(circle at 80% 10%,#ffcf4730,transparent 36%),linear-gradient(150deg,#3b2607,#170d03);color:#fff;text-align:left}.jw-package strong{display:block;color:var(--jw-gold);font-size:18px}.jw-package small{display:block;margin-top:5px;color:#d6c298;font-size:8px}.jw-package span{display:inline-block;margin-top:8px;padding:4px 7px;border-radius:999px;background:var(--jw-gold);color:#2b1703;font-size:7px;font-weight:1000}.jw-field{display:grid;gap:6px}.jw-field>span{color:#e6dbe9;font-size:9px;font-weight:900}.jw-field input,.jw-field select{width:100%;min-height:45px;border:1px solid #5c2a6d;border-radius:13px;background:#09000d;color:#fff;padding:0 12px;outline:none}.jw-field input:focus,.jw-field select:focus{border-color:var(--jw-gold);box-shadow:0 0 0 3px #ffd34e1d}.jw-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.jw-preview{padding:11px;border:1px dashed #6c377d;border-radius:14px;background:#0b010f;color:#bfaec5;font-size:9px;line-height:1.45}.jw-preview b{color:#ffe17c}.jw-primary{width:100%;min-height:47px;border:0;border-radius:14px;background:linear-gradient(90deg,var(--jw-gold),#d63aff);color:#1c031f;font-weight:1000}.jw-secondary{width:100%;min-height:42px;border:1px solid #673079;border-radius:13px;background:#210529;color:#fff;font-weight:900}.jw-note{padding:10px;border:1px solid #6e5320;border-radius:13px;background:#251706;color:#dbc991;font-size:8px;line-height:1.45}.jw-live-status{display:flex;align-items:center;justify-content:center;gap:7px;padding:10px;border:1px solid #28754f;border-radius:14px;background:#08261a;color:#72efad;font-size:9px;font-weight:1000;text-align:center}.jw-live-status::before{content:"●";font-size:11px}.jw-receipt{padding:12px;border:1px solid #5dba84;border-radius:15px;background:linear-gradient(145deg,#0b2c1e,#07140e);color:#d8ffe9;font-size:9px;line-height:1.45}.jw-receipt b{display:block;color:#72efad;font-size:12px;margin-bottom:3px}.jw-receipt[hidden]{display:none!important}
       .jw-method{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:10px;padding:10px;border:1px solid #492057;border-radius:14px;background:#0b010f}.jw-method span{min-width:0}.jw-method b{display:block;font-size:10px}.jw-method small{display:block;margin-top:2px;color:#9f91a5;font-size:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.jw-method button{min-height:32px;padding:0 10px;border:1px solid #6b2c80;border-radius:10px;background:#270730;color:#fff;font-size:8px;font-weight:950}.jw-history{display:grid;gap:8px}.jw-empty{padding:24px 12px;border:1px dashed #50305a;border-radius:16px;color:#8f8095;text-align:center;font-size:9px}.jw-movement{display:grid;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;gap:9px;padding:10px;border:1px solid #482057;border-radius:14px;background:#0d0112}.jw-movement-icon{width:36px;height:36px;border-radius:12px;background:#2b0736;display:grid;place-items:center;font-size:18px}.jw-movement-copy{min-width:0}.jw-movement-copy b{display:block;font-size:9.5px}.jw-movement-copy small{display:block;margin-top:3px;color:#94869a;font-size:7.5px;line-height:1.3}.jw-movement-amount{text-align:right;font-size:9px;font-weight:1000;white-space:nowrap}.jw-movement-amount.positive{color:#62e6a1}.jw-movement-amount.negative{color:#ff8fa4}.jw-movement-amount.neutral{color:#ffe17b}.jw-rate{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;border:1px solid #51305d;border-radius:13px;background:#0b010f;color:#a898ae;font-size:8px}.jw-rate b{color:#ffe17b}
       .jw-toast{position:fixed;z-index:2147483647;left:50%;bottom:calc(86px + env(safe-area-inset-bottom,0px));transform:translate(-50%,18px);max-width:min(86vw,420px);padding:10px 14px;border:1px solid #8b3aa5;border-radius:14px;background:#19051ff2;color:#fff;font:800 11px/1.35 Inter,system-ui,sans-serif;text-align:center;opacity:0;pointer-events:none;transition:.18s}.jw-toast.show{opacity:1;transform:translate(-50%,0)}
       @media(max-width:380px){.jw-sheet{padding-left:11px;padding-right:11px}.jw-head{margin-left:-11px;margin-right:-11px;padding-left:11px;padding-right:11px}.jw-form-grid{grid-template-columns:1fr}.jw-actions{gap:6px}.jw-shortcut{font-size:8px}}
@@ -266,11 +266,11 @@
     return `
       <div class="jw-backdrop" id="jw-backdrop" hidden></div>
       <section class="jw-sheet" id="jw-sheet" hidden role="dialog" aria-modal="true" aria-labelledby="jw-title">
-        <div class="jw-head"><div class="jw-head-copy"><small>ECONOMÍA JEMMO</small><strong id="jw-title">Mi monedero</strong><span>El mismo saldo en Perfil, Inicio, LIVE y Salas</span></div><button class="jw-close" id="jw-close" type="button" aria-label="Cerrar">×</button></div>
-        <div class="jw-test">⚠ MODO DE PRUEBAS · SIN COBROS REALES</div>
+        <div class="jw-head"><div class="jw-head-copy"><small>ECONOMÍA JEMMO</small><strong id="jw-title">Mi monedero</strong><span>Saldo único verificado · recarga visible en toda la app</span></div><button class="jw-close" id="jw-close" type="button" aria-label="Cerrar">×</button></div>
+        <div class="jw-test">✅ RECARGA ACTIVA · MODO DE PRUEBAS · SIN COBROS REALES</div>
         <div class="jw-balances">
           <article class="jw-balance coins"><small>🪙 JEMMOS</small><b id="jw-jemmos">0</b><em>Moneda amarilla recargable para regalos e interacción</em></article>
-          <article class="jw-balance diamonds"><small>💗 JEMS</small><b id="jw-jems">0</b><em id="jw-jems-detail">Confirmados: 0 · Pendientes: 0</em></article>
+          <article class="jw-balance diamonds"><small>💗 JEMS</small><b id="jw-jems">0</b><em>Ganancias rosadas por regalos y tareas; son retirables</em></article>
           <article class="jw-balance earnings"><small>💎 CRISTALES</small><b id="jw-crystals">0</b><em>Diamantes azules para juegos, ruletas y minijuegos</em></article>
         </div>
         <div class="jw-tabs" role="tablist"><button class="jw-tab active" data-jw-tab="summary">RESUMEN</button><button class="jw-tab" data-jw-tab="recharge">RECARGAR</button><button class="jw-tab" data-jw-tab="exchange">CAMBIAR</button><button class="jw-tab" data-jw-tab="withdraw">RETIRAR</button><button class="jw-tab" data-jw-tab="history">HISTORIAL</button></div>
@@ -279,9 +279,11 @@
           <article class="jw-card"><h3>Últimos movimientos</h3><p>Las recargas, regalos, cambios y retiradas quedan registradas por cuenta.</p><div class="jw-history" id="jw-recent"></div></article>
         </div>
         <div class="jw-view" data-jw-view="recharge" hidden>
-          <article class="jw-card"><h3>Recargar JEMMOS de prueba</h3><p>Añade moneda amarilla ficticia para probar regalos e interacción.</p></article>
-          <div class="jw-packages"><button class="jw-package" data-jw-recharge="1000"><strong>1.000</strong><small>JEMMOS amarillos</small><span>AÑADIR</span></button><button class="jw-package" data-jw-recharge="5000"><strong>5.000</strong><small>JEMMOS amarillos</small><span>AÑADIR</span></button><button class="jw-package" data-jw-recharge="10000"><strong>10.000</strong><small>JEMMOS amarillos</small><span>AÑADIR</span></button><button class="jw-package" data-jw-recharge="50000"><strong>50.000</strong><small>JEMMOS amarillos</small><span>AÑADIR</span></button></div>
-          <p class="jw-note">La recarga es ficticia. Solo aumenta los JEMMOS de esta cuenta para realizar pruebas.</p>
+          <div class="jw-live-status">RECARGA DE PRUEBA OPERATIVA · TOCA UN PAQUETE</div>
+          <article class="jw-card"><h3>Recargar JEMMOS de prueba</h3><p>Al tocar AÑADIR, los JEMMOS se acreditan inmediatamente. No se abre ningún cobro real.</p></article>
+          <div class="jw-packages"><button class="jw-package" type="button" data-jw-recharge="1000"><strong>1.000</strong><small>JEMMOS amarillos</small><span>AÑADIR AHORA</span></button><button class="jw-package" type="button" data-jw-recharge="5000"><strong>5.000</strong><small>JEMMOS amarillos</small><span>AÑADIR AHORA</span></button><button class="jw-package" type="button" data-jw-recharge="10000"><strong>10.000</strong><small>JEMMOS amarillos</small><span>AÑADIR AHORA</span></button><button class="jw-package" type="button" data-jw-recharge="50000"><strong>50.000</strong><small>JEMMOS amarillos</small><span>AÑADIR AHORA</span></button></div>
+          <div class="jw-receipt" id="jw-recharge-receipt" role="status" aria-live="polite" hidden></div>
+          <p class="jw-note">Recarga ficticia para pruebas. El saldo queda guardado en esta cuenta y se comparte entre Inicio, LIVE, Salas, Mensajes y Perfil.</p>
         </div>
         <div class="jw-view" data-jw-view="exchange" hidden>
           <article class="jw-card"><h3>Intercambiar correctamente</h3><p>Los JEMMOS sí se cambian por CRISTALES para jugar. Los JEMS no se crean mediante cambios: se reciben por regalos y tareas.</p></article>
@@ -385,7 +387,6 @@
     const wallet = getWallet();
     if (byId('jw-jemmos')) byId('jw-jemmos').textContent = formatNumber(wallet.jemmos);
     if (byId('jw-jems')) byId('jw-jems').textContent = formatNumber(wallet.jems);
-    if (byId('jw-jems-detail')) byId('jw-jems-detail').textContent = `Confirmados: ${formatNumber(wallet.jemsConfirmed)} · Pendientes: ${formatNumber(wallet.jemsPending)}`;
     if (byId('jw-crystals')) byId('jw-crystals').textContent = formatNumber(wallet.crystals);
     if (byId('jw-withdraw-available')) byId('jw-withdraw-available').textContent = formatNumber(wallet.jems);
     if (byId('jw-method-name')) byId('jw-method-name').textContent = wallet.methodType || 'Sin configurar';
@@ -448,10 +449,19 @@
     document.querySelectorAll('[data-jw-go]').forEach(button => button.addEventListener('click', () => showTab(button.dataset.jwGo)));
     document.querySelectorAll('[data-jw-recharge]').forEach(button => button.addEventListener('click', () => {
       const amount = Number(button.dataset.jwRecharge) || 0;
-      if (!amount || !confirm(`¿Añadir ${formatNumber(amount)} JEMMOS de prueba a esta cuenta?`)) return;
-      addCoins(amount, { title: 'Recarga de prueba', detail: 'JEMMOS acreditados desde el Monedero global', source: 'wallet-panel' });
+      if (!amount || button.disabled) return;
+      button.disabled = true;
+      const wallet = addCoins(amount, { title: 'Recarga de prueba confirmada', detail: 'JEMMOS acreditados desde el Monedero global', source: 'wallet-panel' });
       render();
-      toast('Recarga de prueba añadida.');
+      const receipt = byId('jw-recharge-receipt');
+      if (receipt) {
+        const time = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+        receipt.innerHTML = `<b>✓ RECARGA AÑADIDA</b>${formatNumber(amount)} JEMMOS acreditados a las ${time}. Nuevo saldo: ${formatNumber(wallet.jemmos)} JEMMOS.`;
+        receipt.hidden = false;
+        receipt.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+      toast(`+${formatNumber(amount)} JEMMOS añadidos.`);
+      setTimeout(() => { button.disabled = false; }, 450);
     }));
     byId('jw-exchange-type')?.addEventListener('change', updateExchangePreview);
     byId('jw-exchange-amount')?.addEventListener('input', updateExchangePreview);
@@ -600,7 +610,9 @@
         event.preventDefault();
         event.stopImmediatePropagation();
         const label = element.textContent?.toLowerCase() || '';
-        const tab = label.includes('recarg') ? 'recharge' : label.includes('intercamb') || label.includes('cambiar') ? 'exchange' : label.includes('retir') ? 'withdraw' : label.includes('historial') ? 'history' : 'summary';
+        const requested = String(element.dataset.openWallet || element.dataset.walletTab || '').toLowerCase();
+        const explicit = ({ recargar: 'recharge', recarga: 'recharge', recharge: 'recharge', resumen: 'summary', summary: 'summary', cambiar: 'exchange', exchange: 'exchange', retirar: 'withdraw', withdraw: 'withdraw', historial: 'history', history: 'history' })[requested];
+        const tab = explicit || (label.includes('recarg') ? 'recharge' : label.includes('intercamb') || label.includes('cambiar') ? 'exchange' : label.includes('retir') ? 'withdraw' : label.includes('historial') ? 'history' : 'summary');
         open(tab);
       }, true);
     });
@@ -719,6 +731,10 @@
 
   function boot() {
     injectStyles();
+    document.body.dataset.jemmoWalletLoaded = VERSION;
+    localStorage.setItem('jemmo_wallet_code_version', VERSION);
+    const legacyInicioWallet = byId('walletSheet');
+    if (legacyInicioWallet) legacyInicioWallet.remove();
     syncVisibleBalances();
     bindOpeners();
     installLiveGiftBridge();
