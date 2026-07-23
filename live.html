@@ -1289,17 +1289,6 @@
         <div class="jl-module-content" id="moduleContent"></div>
       </section>
 
-      <section class="jl-sheet" id="rechargeSheet" hidden>
-        <div class="jl-sheet-head"><div><h3>Recargar JEMMOS</h3><p>Recarga rápida sin salir del LIVE</p></div><button class="jl-sheet-close" data-close-sheet>×</button></div>
-        <div class="jl-recharge-grid">
-          <button data-recharge="1000" type="button">+ 1.000</button>
-          <button data-recharge="5000" type="button">+ 5.000</button>
-          <button data-recharge="10000" type="button">+ 10.000</button>
-          <button data-recharge="25000" type="button">+ 25.000</button>
-        </div>
-        <div class="jl-recharge-status" id="rechargeNote">Recarga local de prueba. En producción se conectará al Monedero seguro.</div>
-      </section>
-
       <section class="jl-sheet" id="seatSheet" hidden>
         <div class="jl-sheet-head"><div><h3 id="seatTitle">Silla del LIVE</h3><p id="seatSubtitle">Gestión individual del participante</p></div><button class="jl-sheet-close" data-close-sheet>×</button></div>
         <div class="jl-person-card"><h4 id="seatPerson">Luna · Nivel 12</h4><p>Casa Tenerife · España<br>Perfil emergente sin abandonar la transmisión.</p></div>
@@ -1338,7 +1327,7 @@
     <div class="jl-menu-head"><div><small>MENÚ DE USUARIO</small><h2>JEMMO LIVE</h2></div><button class="jl-menu-close" id="menuClose">×</button></div>
     <nav class="jl-menu-list">
       <a href="yo.html"><span>👤</span><span><b>Mi perfil</b><small>Cuenta y apariencia</small></span><i>›</i></a>
-      <button type="button"><span>🪙</span><span><b>Monedero</b><small>Saldo, recargas y retiros</small></span><i>›</i></button>
+      <button type="button" data-open-wallet="summary"><span>🪙</span><span><b>Monedero</b><small>Saldo, recargas y retiros</small></span><i>›</i></button>
       <button type="button"><span>⚙️</span><span><b>Configuración</b><small>Idioma y permisos</small></span><i>›</i></button>
       <button type="button"><span>?</span><span><b>Ayuda y soporte</b><small>Seguridad y asistencia</small></span><i>›</i></button>
       <a href="acceso.html" data-jemmo-logout><span>↪</span><span><b>Cerrar sesión</b></span><i>›</i></a>
@@ -1368,6 +1357,7 @@
 
   <script type="module" src="jemmo-session.js"></script>
   <script src="pwa-register.js"></script>
+  <script src="jemmo-wallet.js?v=20260723-01"></script>
   <script>
   (() => {
     "use strict";
@@ -1389,7 +1379,7 @@
       taskIndex:0,
       taskElapsed:0,
       gifts:0,
-      balance:8590,
+      balance:0,
       scoreA:12500,
       scoreB:9800,
       activeSeat:null,
@@ -1995,7 +1985,7 @@
 
     document.querySelectorAll(".jl-sheet button").forEach(button=>button.type="button");
 
-    const sheets=["settingsSheet","safetySheet","stickersSheet","giftsSheet","functionsSheet","moduleSheet","rechargeSheet","seatSheet","battleSheet"];
+    const sheets=["settingsSheet","safetySheet","stickersSheet","giftsSheet","functionsSheet","moduleSheet","seatSheet","battleSheet"];
     let activeSheet=null;
     let closingFromHistory=false;
     let consumeNextPop=false;
@@ -2051,8 +2041,9 @@
     $("functionsButton").addEventListener("click",()=>openSheet("functionsSheet"));
     $("rechargeFromGifts").addEventListener("click",event=>{
       event.preventDefault();event.stopPropagation();
-      state.pendingGift=null;
-      openSheet("rechargeSheet");
+      state.pendingGift={returnToGifts:true};
+      closeSheets();
+      setTimeout(()=>window.JemmoWallet?.openRecharge?.(),40);
     });
     $("battleCard").addEventListener("click",()=>{
       const card=$("battleCard");
@@ -2103,20 +2094,15 @@
     });
 
     function updateBalanceUI(){
+      const wallet=window.JemmoWallet?.get?.();
+      state.balance=Math.max(0,Number(wallet?.jemmos??wallet?.coins)||0);
       $("giftBalance").textContent=`Saldo: ${state.balance.toLocaleString("es-ES")} JEMMOS`;
     }
-    document.querySelectorAll("[data-recharge]").forEach(button=>{
-      button.addEventListener("click",event=>{
-        event.preventDefault();event.stopPropagation();
-        const amount=Number(button.dataset.recharge||0);
-        state.balance+=amount;
-        updateBalanceUI();
-        $("rechargeNote").textContent=`Recarga de prueba completada: +${amount.toLocaleString("es-ES")} JEMMOS.`;
-        showEventTicker(`Saldo recargado: +${amount.toLocaleString("es-ES")} JEMMOS`,"🪙");
-        showToast("Recarga completada. Vuelves a los regalos.");
-        state.pendingGift=null;
-        setTimeout(()=>openSheet("giftsSheet"),350);
-      });
+    window.addEventListener('jemmo-wallet-change',updateBalanceUI);
+    window.addEventListener('storage',event=>{if(event.key===window.JemmoWallet?.key?.())updateBalanceUI()});
+    window.addEventListener('jemmo-wallet-closed',()=>{
+      updateBalanceUI();
+      if(state.pendingGift?.returnToGifts){state.pendingGift=null;setTimeout(()=>openSheet("giftsSheet"),60)}
     });
 
     document.querySelectorAll(".jl-stickers button").forEach(button=>{
@@ -2145,14 +2131,23 @@
         event.preventDefault();
         event.stopPropagation();
         const cost=Number(button.dataset.cost||0);
+        updateBalanceUI();
         if(state.balance<cost){
-          state.pendingGift={icon:button.dataset.gift,cost};
-          $("rechargeNote").textContent=`Te faltan ${(cost-state.balance).toLocaleString("es-ES")} JEMMOS para enviar ${button.dataset.gift}. Recarga y volverás al panel de regalos.`;
-          showToast("Saldo insuficiente. Abriendo recarga rápida.");
-          openSheet("rechargeSheet");
+          state.pendingGift={icon:button.dataset.gift,cost,returnToGifts:true};
+          showToast(`Te faltan ${(cost-state.balance).toLocaleString("es-ES")} JEMMOS. Abriendo la recarga oficial.`);
+          closeSheets();
+          setTimeout(()=>window.JemmoWallet?.openRecharge?.(),40);
           return;
         }
-        state.balance-=cost;
+        const giftResult=window.JemmoEconomy?.sendGift?.({amount:cost,context:'LIVE',recipientUid:'jemmo-demo-live-host',reference:'live-gift',giftName:`${button.dataset.gift} ${button.querySelector('b')?.textContent||'Regalo'}`})||window.JemmoWallet?.spendCoins?.(cost,{title:'Regalo enviado en LIVE',detail:button.dataset.gift,source:'live-gift'});
+        if(!giftResult?.ok){
+          state.pendingGift={icon:button.dataset.gift,cost,returnToGifts:true};
+          showToast('Saldo insuficiente. Abriendo la recarga oficial.');
+          closeSheets();
+          setTimeout(()=>window.JemmoWallet?.openRecharge?.(),40);
+          return;
+        }
+        state.balance=Math.max(0,Number(giftResult.wallet?.jemmos??window.JemmoWallet?.get?.()?.jemmos)||0);
         state.gifts+=cost;
         state.scoreA+=cost;
         $("giftCount").textContent=`🎁 ${state.gifts}`;
@@ -2328,7 +2323,7 @@
     $("menuClose").addEventListener("click",closeMenu);
     menuBackdrop.addEventListener("click",closeMenu);
     $("helpButton").addEventListener("click",()=>showToast("Activa cámara, revisa los datos guardados y pulsa iniciar LIVE.",3400));
-    document.querySelectorAll(".jl-menu-list button").forEach(button=>button.addEventListener("click",()=>showToast("Esta función se completa en su módulo correspondiente.")));
+    document.querySelectorAll(".jl-menu-list button:not([data-open-wallet])").forEach(button=>button.addEventListener("click",()=>showToast("Esta función se completa en su módulo correspondiente.")));
 
     document.addEventListener("click",event=>{
       const link=event.target.closest("a[href]");
