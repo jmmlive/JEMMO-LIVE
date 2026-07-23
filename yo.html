@@ -514,8 +514,8 @@
 
 
     /* =========================================================
-       JEMMO LIVE V1 · JEMMO FINANZAS PRUEBA 04
-       Recargas robustas + resumen de ciclo legible en móvil
+       JEMMO LIVE V1 · JEMMO FINANZAS PRUEBA 05
+       Recarga en Perfil/Monedero + Finanzas solo para consulta del propietario
        ========================================================= */
     .wallet-backdrop,.wallet-sheet{display:none!important}
     .jf-release{display:inline-flex;align-items:center;min-height:21px;margin-top:6px;padding:0 8px;border:1px solid #8b6923;border-radius:999px;background:#2b1905;color:#ffe28b;font-size:7px;font-weight:1000;letter-spacing:.08em}
@@ -529,6 +529,14 @@
     .jf-recharge-receipt{margin-top:10px;padding:11px;border:1px solid #2f7858;border-radius:15px;background:#071a12;color:#c8f4dd}.jf-recharge-receipt[hidden]{display:none!important}.jf-recharge-receipt small{display:block;color:#75dca8;font-size:7px;font-weight:1000}.jf-recharge-receipt b{display:block;margin-top:5px;font-size:13px}.jf-recharge-receipt span{display:block;margin-top:4px;color:#9bcbb2;font-size:8px;line-height:1.35}
     .jf-open-recharge{width:100%;min-height:46px;margin-bottom:11px;border:0;border-radius:14px;background:linear-gradient(90deg,#ffd34e,#d43cff);color:#1b031f;font-size:10px;font-weight:1000}
     @media(max-width:390px){.jf-period{grid-template-columns:minmax(0,1fr) 64px;padding:10px}.jf-daily-grid{gap:6px}.jf-daily-kpi{min-height:70px;padding:9px}.jf-daily-kpi b{font-size:15px}}
+
+    /* PERFIL PRUEBA 17 · acceso correcto a recarga */
+    .profile-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .profile-action.recharge{border-color:#9b7221;background:radial-gradient(circle at 82% 12%,#ffd34e30,transparent 35%),linear-gradient(145deg,#432b07,#1b0f03);color:#ffe291;box-shadow:0 0 18px #ffd34e16}
+    .profile-action.recharge .recharge-icon{width:27px;height:27px;flex:0 0 27px;border-radius:10px;background:linear-gradient(135deg,#ffd34e,#ff9a3d);color:#2a1603;display:grid;place-items:center;font-size:19px;font-weight:1000}
+    .profile-action.recharge strong{display:block;font-size:10px}.profile-action.recharge small{display:block;margin-top:2px;color:#d8c58f;font-size:7.5px}
+    .jf-finance-only-note{padding:11px;border:1px solid #6b5323;border-radius:15px;background:linear-gradient(145deg,#2a1906,#120a02);color:#d8c99e}
+    .jf-finance-only-note b{display:block;color:#ffe18a;font-size:8px;letter-spacing:.05em}.jf-finance-only-note span{display:block;margin-top:5px;font-size:8px;line-height:1.45}
 
   </style>
   <script>
@@ -584,7 +592,8 @@
         <div class="profile-actions">
           <button class="profile-action" id="editProfile" type="button">✎ Editar perfil</button>
           <button class="profile-action messages" id="openMessages" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5.4 4h13.2A3.4 3.4 0 0 1 22 7.4v7.2a3.4 3.4 0 0 1-3.4 3.4H10l-4.9 3.2c-.7.4-1.6-.1-1.6-.9V18A3.4 3.4 0 0 1 2 14.6V7.4A3.4 3.4 0 0 1 5.4 4Zm0 2A1.4 1.4 0 0 0 4 7.4v7.2A1.4 1.4 0 0 0 5.4 16h.1v2.5L9.4 16h9.2a1.4 1.4 0 0 0 1.4-1.4V7.4A1.4 1.4 0 0 0 18.6 6H5.4Z"/></svg><span>Mensajes</span></button>
-          <button class="profile-action wallet" id="openWallet" type="button" data-open-wallet><span>🪙</span><span><strong>Monedero</strong><small><b id="coinBalance" data-jemmo-jemmos>0</b> JEMMOS</small></span></button>
+          <button class="profile-action wallet" id="openWallet" type="button" data-open-wallet="summary"><span>🪙</span><span><strong>Monedero</strong><small><b id="coinBalance" data-jemmo-jemmos>0</b> JEMMOS</small></span></button>
+          <button class="profile-action recharge" id="openRechargeProfile" type="button" data-open-wallet="recharge"><span class="recharge-icon">＋</span><span><strong>Recargar</strong><small>Comprar JEMMOS</small></span></button>
         </div>
       </div>
     </section>
@@ -639,7 +648,7 @@
       </div>
     </section>
 
-    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 16 + DESTELLOS PRUEBA 04 + JEMMO FINANZAS PRUEBA 04</p>
+    <p class="version">JEMMO LIVE V1 · PERFIL PRUEBA 17 + DESTELLOS PRUEBA 04 + JEMMO FINANZAS PRUEBA 05</p>
   </main>
 
   <div class="menu-backdrop" id="menuBackdrop" hidden></div>
@@ -758,7 +767,7 @@
   <!-- JEMMO LIVE · Monedero global vinculado -->
   <div class="jf-backdrop" id="jfWalletBackdrop" hidden></div>
   <section class="jf-sheet" id="jfWalletSheet" hidden role="dialog" aria-modal="true" aria-labelledby="jfWalletTitle">
-    <div class="jf-head"><div class="jf-head-copy"><small>JEMMO LIVE · ECONOMÍA</small><strong id="jfWalletTitle">Monedero y ganancias</strong><span>JEMMOS para consumir · JEMS para retirar</span><i class="jf-release">PRUEBA 04</i></div><button class="jf-close" id="jfWalletClose" type="button" aria-label="Cerrar">×</button></div>
+    <div class="jf-head"><div class="jf-head-copy"><small>JEMMO LIVE · ECONOMÍA</small><strong id="jfWalletTitle">Monedero y ganancias</strong><span>JEMMOS para consumir · JEMS para retirar</span><i class="jf-release">PRUEBA 05</i></div><button class="jf-close" id="jfWalletClose" type="button" aria-label="Cerrar">×</button></div>
     <div class="jf-sim"><span>🧪 <b>MODO SIMULACIÓN</b></span><span>Sin dinero real</span></div>
     <div class="jf-period"><div class="jf-period-copy"><small>FECHA Y CICLO ACTUAL</small><b id="jfWalletPeriodDate">—</b><span id="jfWalletPeriodText">Las operaciones de hoy se cerrarán automáticamente a medianoche.</span></div><div class="jf-period-clock"><b id="jfWalletClock">--:--</b><small>HORA LOCAL</small></div></div>
     <div class="jf-balances">
@@ -808,13 +817,13 @@
   <!-- Panel financiero privado -->
   <div class="jf-backdrop" id="jfFinanceBackdrop" hidden></div>
   <section class="jf-sheet jf-finance-sheet" id="jfFinanceSheet" hidden role="dialog" aria-modal="true" aria-labelledby="jfFinanceTitle">
-    <div class="jf-head"><div class="jf-head-copy"><small>CONTROL PRIVADO DEL PROPIETARIO</small><strong id="jfFinanceTitle">JEMMO Finanzas</strong><span>Ingresos · Pagos · Gastos · Beneficio</span><i class="jf-release">PRUEBA 04</i></div><button class="jf-close" id="jfFinanceClose" type="button" aria-label="Cerrar">×</button></div>
+    <div class="jf-head"><div class="jf-head-copy"><small>CONTROL PRIVADO DEL PROPIETARIO</small><strong id="jfFinanceTitle">JEMMO Finanzas</strong><span>Ingresos · Pagos · Gastos · Beneficio</span><i class="jf-release">PRUEBA 05</i></div><button class="jf-close" id="jfFinanceClose" type="button" aria-label="Cerrar">×</button></div>
     <div class="jf-sim"><span>🧪 <b>CONTABILIDAD DE PRUEBAS</b></span><button class="jf-secondary" id="jfFinanceLock" type="button" style="width:auto;min-height:29px;padding:0 9px">BLOQUEAR</button></div>
     <div class="jf-period"><div class="jf-period-copy"><small>PERIODO CONTABLE DE PRUEBAS</small><b id="jfFinancePeriodDate">—</b><span id="jfFinancePeriodText">Cierre automático local a las 00:00.</span></div><div class="jf-period-clock"><b id="jfFinanceClock">--:--</b><small>HORA LOCAL</small></div></div>
     <div class="jf-finance-hero"><article class="jf-profit" id="jfProfitCard"><small id="jfProfitLabel">BENEFICIO DISPONIBLE SIMULADO</small><b id="jfOwnerProfit">0,00 USD</b><span id="jfProfitCopy">Dinero recibido menos pagos, obligaciones, gastos y reservas visibles.</span></article><article class="jf-owner-state"><span>🛡️</span><b>PROPIETARIO VERIFICADO</b><small id="jfOwnerSessionText">Sesión protegida</small></article></div>
     <div class="jf-tabs" id="jfFinanceTabs"><button class="jf-tab active" type="button" data-jf-finance-tab="overview">RESUMEN</button><button class="jf-tab" type="button" data-jf-finance-tab="recharges">RECARGAS</button><button class="jf-tab" type="button" data-jf-finance-tab="gifts">REGALOS</button><button class="jf-tab" type="button" data-jf-finance-tab="tasks">TAREAS</button><button class="jf-tab" type="button" data-jf-finance-tab="payments">PAGOS</button><button class="jf-tab" type="button" data-jf-finance-tab="expenses">GASTOS</button><button class="jf-tab" type="button" data-jf-finance-tab="audit">AUDITORÍA</button><button class="jf-tab" type="button" data-jf-finance-tab="settings">AJUSTES</button></div>
     <div class="jf-view" data-jf-finance-view="overview"><article class="jf-card"><h3>Estado general</h3><div class="jf-summary-grid" id="jfFinanceKpis"></div></article><article class="jf-card"><div class="jf-card-head"><div><h3>Actividad del ciclo actual</h3><p id="jfDailyPeriodCopy">Movimientos registrados desde el último cierre.</p></div><span class="jf-date-chip" id="jfTodayChip">HOY</span></div><div class="jf-daily-grid" id="jfDailyKpis"></div></article><article class="jf-card"><h3>Cierres anteriores</h3><p>Cada cierre conserva la fecha y el resumen. En pruebas, un día equivale a un periodo mensual simulado.</p><div class="jf-cycle-list" id="jfCycleHistory"></div></article><article class="jf-card"><h3>Reparto oficial de regalos</h3><div class="jf-rule"><span>Emisora con Casa</span><b>70 % emisora · 20 % JEMMO · 10 % Casa</b></div><div class="jf-rule"><span>Emisora independiente</span><b>70 % emisora · 30 % JEMMO</b></div><div class="jf-rule"><span>Retirada mínima</span><b>100.000 JEMS · 10 USD</b></div></article><article class="jf-card"><div class="jf-card-head"><div><h3>Liquidaciones pendientes</h3><p>Google Play, tarjeta y Epay se mantienen separados del dinero recibido.</p></div><button id="jfSettlePending" type="button">SIMULAR INGRESO</button></div><div class="jf-list" id="jfSettlementSummary"></div></article></div>
-    <div class="jf-view" data-jf-finance-view="recharges" hidden><button class="jf-open-recharge" id="jfOpenRechargeFromFinance" type="button">＋ HACER RECARGA DE PRUEBA</button><article class="jf-card"><h3>Recargas por método</h3><p>Cada registro conserva método, importe, JEMMOS, comisión, estado, fecha y hora.</p><div class="jf-list" id="jfFinanceRecharges"></div></article></div>
+    <div class="jf-view" data-jf-finance-view="recharges" hidden><div class="jf-finance-only-note"><b>📊 SOLO CONSULTA FINANCIERA</b><span>Las personas recargan desde Perfil → Recargar, Monedero, LIVE, Audio Room/Salas o Regalos. Aquí el propietario únicamente revisa los datos registrados.</span></div><article class="jf-card"><h3>Recargas por método</h3><p>Cada registro conserva método, importe, JEMMOS, comisión, neto, estado, fecha y hora.</p><div class="jf-list" id="jfFinanceRecharges"></div></article></div>
     <div class="jf-view" data-jf-finance-view="gifts" hidden><article class="jf-card"><div class="jf-card-head"><div><h3>Regalos y repartos</h3><p>Cada operación identifica origen, emisora, Casa y parte de JEMMO LIVE.</p></div><button id="jfToggleHouse" type="button">CAMBIAR CASA</button></div><div class="jf-rule"><span>Estado de la emisora de prueba</span><b id="jfHouseStatus">INDEPENDIENTE</b></div><div class="jf-list" id="jfFinanceGifts"></div></article></div>
     <div class="jf-view" data-jf-finance-view="tasks" hidden><article class="jf-card"><h3>Tareas de prueba vinculadas</h3><p>Los premios en JEMS son gasto de JEMMO LIVE. Los premios en JEMMOS no son retirables.</p><div class="jf-task-grid" id="jfTaskGrid"></div></article><article class="jf-card"><div class="jf-card-head"><div><h3>JEMS pendientes</h3><p>Libera únicamente las recompensas revisadas.</p></div><button id="jfConfirmAllPending" type="button">CONFIRMAR TODO</button></div><div class="jf-list" id="jfPendingCredits"></div></article></div>
     <div class="jf-view" data-jf-finance-view="payments" hidden><article class="jf-card"><h3>Pagos y obligaciones</h3><div class="jf-summary-grid" id="jfPaymentKpis"></div></article><article class="jf-card"><h3>Solicitudes de retirada</h3><div class="jf-list" id="jfFinancePayments"></div></article></div>
@@ -1155,7 +1164,6 @@
 
     $('jfWalletClose')?.addEventListener('click',closeWallet);$('jfWalletBackdrop')?.addEventListener('click',closeWallet);document.querySelectorAll('[data-jf-wallet-tab]').forEach(button=>button.addEventListener('click',()=>showWalletTab(button.dataset.jfWalletTab)));
     $('jfWalletSheet')?.addEventListener('click',event=>{const methodButton=event.target.closest?.('[data-jf-method]');if(methodButton&&!methodButton.disabled){rechargeMethod=methodButton.dataset.jfMethod;renderWallet();return}const packageButton=event.target.closest?.('[data-jf-package]');if(packageButton){const method=packageButton.dataset.jfPackageMethod||rechargeMethod,index=Number(packageButton.dataset.jfPackage),pack=(rechargePackages[method]||[])[index];if(pack)simulateRecharge({method,...pack});}});
-    $('jfOpenRechargeFromFinance')?.addEventListener('click',()=>openWallet('recharge'));
     $('jfCryptoAmount')?.addEventListener('input',updateCryptoPreview);$('jfCryptoNetwork')?.addEventListener('change',updateCryptoPreview);$('jfCryptoSubmit')?.addEventListener('click',()=>{const amount=Math.max(1,Number($('jfCryptoAmount').value)||0);simulateRecharge({method:rechargeMethod,usd:amount,jemmos:Math.floor(amount*9900),network:$('jfCryptoNetwork').value})});
     $('jfRefreshPending')?.addEventListener('click',()=>{const released=releasePending(false);renderWallet();toast(released?`${number(released)} JEMS confirmados.`:'Todavía no hay JEMS vencidos para confirmar.')});
     ['jfWithdrawJems','jfWithdrawMethod'].forEach(control=>$(control)?.addEventListener('input',renderWallet));$('jfWithdrawMethod')?.addEventListener('change',renderWallet);$('jfWithdrawSubmit')?.addEventListener('click',withdraw);
@@ -1165,16 +1173,16 @@
     document.querySelectorAll('[data-open-finance]').forEach(button=>button.addEventListener('click',event=>{event.preventDefault();requestFinanceAccess()}));
 
     const suppressLegacyWallet=()=>{document.querySelectorAll('.wallet-backdrop,.wallet-sheet').forEach(element=>{if(!String(element.id||'').startsWith('jf')){element.hidden=true;element.remove()}})};
-    document.addEventListener('click',event=>{const trigger=event.target?.closest?.('[data-open-wallet],#openWallet');if(!trigger)return;event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();suppressLegacyWallet();openWallet('summary')},true);
+    document.addEventListener('click',event=>{const trigger=event.target?.closest?.('[data-open-wallet],#openWallet');if(!trigger)return;event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();suppressLegacyWallet();const requested=String(trigger.dataset.openWallet||'summary').toLowerCase();openWallet(['summary','recharge','earnings','withdraw','history'].includes(requested)?requested:'summary')},true);
     const legacyObserver=new MutationObserver(()=>suppressLegacyWallet());legacyObserver.observe(document.body,{childList:true,subtree:true});suppressLegacyWallet();
-    window.JemmoWallet={open:openWallet,close:closeWallet,render:renderWallet,getState:()=>readWallet()};
+    window.JemmoWallet={open:openWallet,openRecharge:()=>openWallet('recharge'),close:closeWallet,render:renderWallet,getState:()=>readWallet()};
     window.JemmoFinance={open:requestFinanceAccess,render:renderFinance,isUnlocked:ownerUnlocked,reconcile:reconcileFinanceBooks};
     window.JemmoEconomy={sendGift,simulateRecharge,awardTask,releasePending,readWallet,readFinance};
     window.addEventListener('jemmo-wallet-change',()=>{reconcileFinanceBooks();renderWallet();if(ownerUnlocked())renderFinance()});
     window.addEventListener('storage',event=>{if(event.key===walletKey(uid)||event.key===FINANCE_KEY){renderWallet();if(ownerUnlocked())renderFinance()}});
     setInterval(()=>{if(!$('jfFinanceSheet')?.hidden&&!ownerUnlocked()){closeFinance();requestFinanceAccess()}},30000);
     setInterval(()=>{const closed=ensureDailyClose();updatePeriodDisplay();if(closed){renderWallet();if(ownerUnlocked())renderFinance();toast('Se cerró automáticamente el día de pruebas y comenzó un ciclo nuevo.')}},60000);
-    releasePending(false);reconcileFinanceBooks();ensureDailyClose();renderWallet();updatePeriodDisplay();
+    releasePending(false);reconcileFinanceBooks();ensureDailyClose();renderWallet();updatePeriodDisplay();const walletRoute=new URLSearchParams(location.search);const requestedWallet=String(walletRoute.get('wallet')||walletRoute.get('monedero')||walletRoute.get('seccion')||'').toLowerCase();if(['recharge','recargar','recarga'].includes(requestedWallet))setTimeout(()=>openWallet('recharge'),0);
   })();
   </script>
 
@@ -1431,7 +1439,7 @@
       $('closeDestelloGift')?.addEventListener('click',closeDestelloGift);
       $('destelloGiftBackdrop')?.addEventListener('click',closeDestelloGift);
       $('sendDestelloGift')?.addEventListener('click',sendSelectedDestelloGift);
-      $('rechargeDestelloGift')?.addEventListener('click',()=>{closeDestelloGift();if(window.JemmoWallet?.open)window.JemmoWallet.open('recharge');else toast('Abre el Monedero para recargar JEMMOS.')});
+      $('rechargeDestelloGift')?.addEventListener('click',()=>{closeDestelloGift();if(window.JemmoWallet?.openRecharge)window.JemmoWallet.openRecharge();else if(window.JemmoWallet?.open)window.JemmoWallet.open('recharge');else toast('Abre el Monedero para recargar JEMMOS.')});
 
       $('editProfile')?.addEventListener('click',openEdit);$('editClose')?.addEventListener('click',closeEdit);$('editBackdrop')?.addEventListener('click',closeEdit);
       $('editBio')?.addEventListener('input',event=>{if(countWords(event.target.value)>15)event.target.value=limitWords(event.target.value,15);updateBioWordCount()});
