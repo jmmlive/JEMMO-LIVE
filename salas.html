@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" class="jemmo-auth-pending">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -9,7 +9,8 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>JEMMO LIVE · SALAS · MONEDERO UNIFICADO</title>
+  <title>JEMMO LIVE · SALAS · CORRECCIÓN GLOBAL 01</title>
+  <style>html.jemmo-auth-pending body{visibility:hidden}</style>
   <style>
     :root{
       --bg:#070009;--panel:#15031e;--panel2:#22042d;--purple:#a928ff;--purple2:#6e168f;
@@ -138,12 +139,12 @@
 <div class="jr-app" id="app">
   <section class="jr-prepare" id="prepareView" aria-label="Preparar sala">
     <header class="jr-prep-head">
-      <button class="jr-btn jr-back" type="button" onclick="location.href='inicio.html'" aria-label="Volver">‹</button>
+      <button class="jr-btn jr-back" type="button" onclick="try{if(document.referrer&&new URL(document.referrer).origin===location.origin)history.back();else location.replace('inicio.html')}catch(e){location.replace('inicio.html')}" aria-label="Volver">‹</button>
       <div class="jr-prep-title"><strong>Crear sala</strong><span>Elige el tipo y adapta las plazas</span></div>
       <button class="jr-btn jr-help" type="button" id="helpButton" aria-label="Ayuda">?</button>
     </header>
 
-    <button class="jr-btn jr-global-wallet" id="globalWalletButton" type="button" data-open-wallet="summary">
+    <button class="jr-btn jr-global-wallet" id="globalWalletButton" type="button" data-open-wallet>
       <span>🪙</span><span><b>Monedero global</b><small><strong id="globalWalletCoins">0</strong> JEMMOS · mismo saldo en toda la app</small></span><i>›</i>
     </button>
 
@@ -239,7 +240,7 @@
   <header class="jr-sheet-head"><strong>Regalos</strong><button class="jr-sheet-close" data-close type="button">×</button></header>
   <div class="jr-wallet-row">
     <div><b id="balanceLabel">Saldo: 0 JEMMOS</b><small>Monedero único de esta cuenta</small></div>
-    <button class="jr-btn jr-recharge" id="rechargeButton" type="button" data-open-wallet="recharge">RECARGAR</button>
+    <button class="jr-btn jr-recharge" id="rechargeButton" type="button" data-open-wallet>MONEDERO</button>
   </div>
   <div class="jr-recipient-title"><b>Enviar a</b><span id="recipientSummary">Todas las personas</span></div>
   <div class="jr-recipients" id="giftRecipients"></div>
@@ -260,13 +261,16 @@
 </section>
 <div class="jr-toast" id="toast" role="status"></div>
 
-<script src="jemmo-wallet.js?v=20260723-01"></script>
+<script type="module" src="jemmo-session.js"></script>
+<script src="pwa-register.js"></script>
+<script src="jemmo-wallet.js"></script>
 <script>
 (()=>{
   'use strict';
   const $=id=>document.getElementById(id);
-  const storageKey='jemmo_v1_salas_prueba_05';
-  const previousStorageKey='jemmo_v1_salas_prueba_04';
+  const uid=localStorage.getItem('jemmo_active_uid')||'local-user';
+  const storageKey=`jemmo_v1_salas_prueba_06_${uid}`;
+  const previousStorageKeys=[`jemmo_v1_salas_prueba_05_${uid}`,'jemmo_v1_salas_prueba_05','jemmo_v1_salas_prueba_04'];
   const state={
     mode:'audio',
     count:4,
@@ -310,7 +314,7 @@
 
   function restore(){
     try{
-      const raw=localStorage.getItem(storageKey)||localStorage.getItem(previousStorageKey);
+      const raw=localStorage.getItem(storageKey)||previousStorageKeys.map(key=>localStorage.getItem(key)).find(Boolean);
       const data=JSON.parse(raw||'null');
       if(!data)return;
       state.mode=data.mode==='camera'?'camera':'audio';
@@ -505,33 +509,48 @@
     $('roomView').classList.remove('jr-hidden');
     document.body.style.overflow='hidden';
     roomOpen=true;
-    history.pushState({jemmoRoom:true},'');
+    if(!history.state?.jemmoRoom)history.pushState({...(history.state||{}),jemmoRoom:true},'');
     if(state.mode==='camera')startCamera();
   }
 
-  function leaveRoom(confirmExit=true){
+  function hideSheets(){
+    $('backdrop').classList.remove('gift-mode');
+    $('backdrop').classList.add('jr-hidden');
+    $('settingsSheet').classList.add('jr-hidden');
+    $('giftsSheet').classList.add('jr-hidden');
+  }
+
+  function leaveRoom(confirmExit=true,useHistory=true){
     if(confirmExit&&!confirm('¿Quieres salir de esta sala?'))return;
+    const steps=history.state?.jemmoRoomSheet?2:history.state?.jemmoRoom?1:0;
     stopCamera();
     roomOpen=false;
     $('roomView').classList.add('jr-hidden');
     $('prepareView').classList.remove('jr-hidden');
     $('prepareNav').classList.remove('jr-hidden');
     document.body.style.overflow='';
-    closeSheets();
+    hideSheets();
+    if(useHistory&&steps)history.go(-steps);
   }
 
   function openSheet(id){
+    const alreadyOpen=!$(id).classList.contains('jr-hidden');
+    hideSheets();
     $('backdrop').classList.toggle('gift-mode',id==='giftsSheet');
     $('backdrop').classList.remove('jr-hidden');
     $(id).classList.remove('jr-hidden');
     if(id==='giftsSheet'){renderGiftRecipients();updateGiftPanel()}
+    if(!alreadyOpen){
+      const next={...(history.state||{}),jemmoRoom:roomOpen,jemmoRoomSheet:id};
+      if(history.state?.jemmoRoomSheet)history.replaceState(next,'');
+      else history.pushState(next,'');
+    }
   }
 
-  function closeSheets(){
-    $('backdrop').classList.remove('gift-mode');
-    $('backdrop').classList.add('jr-hidden');
-    $('settingsSheet').classList.add('jr-hidden');
-    $('giftsSheet').classList.add('jr-hidden');
+  function closeSheets(useHistory=true){
+    const hadSheet=Boolean(history.state?.jemmoRoomSheet||document.querySelector('.jr-sheet:not(.jr-hidden)'));
+    hideSheets();
+    if(useHistory&&hadSheet&&history.state?.jemmoRoomSheet)history.back();
   }
 
   function addChat(text,kind=''){
@@ -636,9 +655,9 @@
 
 Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
     if(!confirm(question))return;
-    const spent=window.JemmoEconomy?.sendGift?.({amount:totalCoins,context:'Sala',recipientUid:'jemmo-demo-room-host',reference:`${target} · ×${state.giftQuantity}`,giftName:`${gift} Regalo de Sala`})||window.JemmoWallet?.spendCoins?.(totalCoins,{title:'Regalo enviado en Sala',detail:`${gift} · ${target} · ×${state.giftQuantity}`,source:'salas-gift'});
-    if(!spent?.ok){toast('Saldo insuficiente. Abriendo el Monedero oficial.');window.JemmoWallet?.open?.('recharge');return}
-    state.giftBalance=Math.max(0,Number(spent.wallet?.jemmos??window.JemmoWallet?.get?.()?.jemmos)||0);
+    const spent=window.JemmoWallet?.spendCoins?.(totalCoins,{title:'Regalo enviado en Sala',detail:`${gift} · ${target} · ×${state.giftQuantity}`,source:'salas-gift'});
+    if(!spent?.ok){toast('Saldo insuficiente. Abriendo el Monedero.');window.JemmoWallet?.open?.('recharge');return}
+    state.giftBalance=spent.wallet.jemmos;
     indexes.forEach(index=>state.giftTotals.set(index,(state.giftTotals.get(index)||0)+state.giftQuantity));
     updateGiftBadges();
     updateBalance();
@@ -697,8 +716,8 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   $('helpButton').addEventListener('click',()=>toast('Añade portada, título y descripción. El botón verde se activa al completar todo.'));
   $('settingsButton').addEventListener('click',()=>openSheet('settingsSheet'));
   $('giftsButton').addEventListener('click',()=>openSheet('giftsSheet'));
-  $('backdrop').addEventListener('click',closeSheets);
-  document.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',closeSheets));
+  $('backdrop').addEventListener('click',()=>closeSheets(true));
+  document.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',()=>closeSheets(true)));
 
   $('chatSend').addEventListener('pointerdown',event=>event.preventDefault());
   $('chatForm').addEventListener('submit',event=>{
@@ -737,7 +756,6 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
     window.JemmoWallet?.open?.('summary');
   },true);
   window.addEventListener('jemmo-wallet-change',updateBalance);
-  window.addEventListener('jemmo-wallet-closed',updateBalance);
   window.addEventListener('storage',event=>{if(event.key===window.JemmoWallet?.key?.())updateBalance()});
 
   document.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>{
@@ -753,7 +771,8 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   }));
 
   window.addEventListener('popstate',()=>{
-    if(roomOpen)leaveRoom(false);
+    if(document.querySelector('.jr-sheet:not(.jr-hidden)')){hideSheets();return}
+    if(roomOpen)leaveRoom(false,false);
   });
 
   document.addEventListener('visibilitychange',()=>{

@@ -1,11 +1,15 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" class="jemmo-auth-pending">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#09000f">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <style>html.jemmo-auth-pending body{visibility:hidden}</style>
   <title>JEMMO LIVE · MENSAJES</title>
   <style>
     :root{
@@ -151,12 +155,18 @@
   <div class="toast" id="toast" role="status"></div>
 </div>
 
+<script type="module" src="jemmo-session.js"></script>
+<script src="pwa-register.js"></script>
+<script src="jemmo-wallet.js"></script>
 <script>
 (()=>{
   'use strict';
   const $=id=>document.getElementById(id);
-  const STORAGE='jemmo_v1_mensajes_prueba_01';
-  const SETTINGS='jemmo_v1_mensajes_settings_01';
+  const uid=localStorage.getItem('jemmo_active_uid')||'local-user';
+  const STORAGE=`jemmo_v1_mensajes_prueba_02_${uid}`;
+  const SETTINGS=`jemmo_v1_mensajes_settings_02_${uid}`;
+  const LEGACY_STORAGE='jemmo_v1_mensajes_prueba_01';
+  const LEGACY_SETTINGS='jemmo_v1_mensajes_settings_01';
   const people=[
     {id:'ruth',name:'Ruth',initial:'R',online:true,a1:'#a92d79',a2:'#3b0c48'},
     {id:'yandira',name:'Yandira',initial:'Y',online:true,a1:'#6d2fb4',a2:'#171654'},
@@ -192,7 +202,7 @@
 
   function loadState(){
     try{
-      const saved=JSON.parse(localStorage.getItem(STORAGE)||'null');
+      const saved=JSON.parse(localStorage.getItem(STORAGE)||localStorage.getItem(LEGACY_STORAGE)||'null');
       if(saved&&Array.isArray(saved.chats))return saved;
     }catch{}
     return {chats:JSON.parse(JSON.stringify(initialChats)),messages:JSON.parse(JSON.stringify(defaultMessages)),muted:[]};
@@ -261,7 +271,7 @@
   function closeSheets(useHistory=true){$('backdrop').classList.add('hidden');document.querySelectorAll('.sheet').forEach(s=>s.classList.add('hidden'));if(useHistory&&history.state?.jemmoSheet){suppressNextPop=true;history.back()}}
   function fillMembers(){const box=$('memberList');box.innerHTML='';people.slice(0,5).forEach((p,index)=>{const label=document.createElement('label');label.className='member';label.innerHTML=`<i>${esc(p.initial)}</i><b>${esc(p.name)}</b><input type="checkbox" value="${p.id}" ${index<2?'checked':''}>`;box.append(label)})}
   function uniqueId(prefix){return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,6)}`}
-  function loadSettings(){let data={online:true,receipts:true,groups:true,followedOnly:false};try{data={...data,...JSON.parse(localStorage.getItem(SETTINGS)||'{}')}}catch{}document.querySelectorAll('[data-setting]').forEach(btn=>btn.classList.toggle('on',!!data[btn.dataset.setting]));return data}
+  function loadSettings(){let data={online:true,receipts:true,groups:true,followedOnly:false};try{data={...data,...JSON.parse(localStorage.getItem(SETTINGS)||localStorage.getItem(LEGACY_SETTINGS)||'{}')}}catch{}document.querySelectorAll('[data-setting]').forEach(btn=>btn.classList.toggle('on',!!data[btn.dataset.setting]));return data}
   function saveSettings(){const data={};document.querySelectorAll('[data-setting]').forEach(btn=>data[btn.dataset.setting]=btn.classList.contains('on'));localStorage.setItem(SETTINGS,JSON.stringify(data))}
 
   renderOnline();fillMembers();loadSettings();renderLists();

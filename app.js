@@ -1,6 +1,4 @@
 (()=>{
- import('./jemmo-session.js').catch(error=>console.error('JEMMO session:',error));
- import('./pwa-register.js').catch(error=>console.error('JEMMO PWA:',error));
  const qs=(s,r=document)=>r.querySelector(s),qsa=(s,r=document)=>[...r.querySelectorAll(s)];
  const menu=qs('#sideMenu'),backdrop=qs('#menuBackdrop'),sheet=qs('#walletSheet');
  const openMenu=()=>{menu?.classList.add('open');menu?.setAttribute('aria-hidden','false');if(backdrop)backdrop.hidden=false};

@@ -1,19 +1,22 @@
-JEMMO LIVE V1 · MONEDERO GLOBAL PRUEBA 01
-Fecha: 22/07/2026
+JEMMO LIVE V1 · CORRECCIÓN GLOBAL PRUEBA 01
+Fecha: 23/07/2026
 
-Base requerida:
-- JEMMO LIVE V0.6.14 PRUEBAS INSTALABLE
-- LIVE V0.6.10 PRUEBAS
-- SALAS V1 actual
-- PERFIL PRUEBA 12
+Base:
+- JEMMO-LIVE-main (4).zip
+- JEMMO LIVE V1 · MONEDERO GLOBAL PRUEBA 03
 
-Tipo: actualización incremental de integración económica
+Correcciones principales:
+- Monedero cargado directamente en Inicio, LIVE, Salas, Mensajes y Perfil.
+- Eliminada la dependencia del service worker para insertar el monedero.
+- Perfil conserva JEMMO Finanzas, pero abre el mismo Monedero global que el resto de la app.
+- Esquema económico compatible con JEMMOS, JEMS confirmados/pendientes, CRISTALES, lotes, historial y libro de movimientos.
+- LIVE deja de depender del saldo local fijo de 8.590 JEMMOS y usa el saldo global.
+- Monedero integrado en el historial: Atrás cierra primero el panel.
+- Salas integra historial para Regalos y Ajustes; Atrás cierra primero el panel y después la sala.
+- Salas y Mensajes verifican sesión Firebase.
+- Persistencia de Salas y Mensajes separada por UID.
+- Service worker actualizado sin modificación dinámica del HTML.
+- Iconos PWA restaurados y control de integridad regenerado.
 
-Archivos funcionales:
-- jemmo-wallet.js
-- yo.html
-- salas.html
-- sw.js
-
-Objetivo:
-Unificar el mismo monedero por usuario en Perfil, Inicio, LIVE y Salas.
+Estado:
+Entrega de prueba para instalar y validar los recorridos críticos en móvil.
