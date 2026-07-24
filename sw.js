@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · MENSAJES TIEMPO REAL PRUEBA 01 */
-const CACHE = 'jemmo-live-v1-mensajes-tiempo-real-01-20260724';
+/* JEMMO LIVE V1 · ACCESO Y MENSAJES PRUEBA 02 */
+const CACHE = 'jemmo-live-v1-acceso-mensajes-02-20260724';
 const APP_SHELL = [
   './',
   './index.html',
@@ -19,6 +19,7 @@ const APP_SHELL = [
   './jemmo-wallet.js',
   './salas-v1.css',
   './salas-v1.js',
+  './jemmo-access-recovery.js',
   './jemmo-unread-badge.js',
   './jemmo-messages-realtime.js',
   './manifest.webmanifest',
@@ -59,6 +60,7 @@ self.addEventListener('activate', event => {
 
 function normalizedPagePath(url) {
   const path = url.pathname.replace(/\/+$/, '') || '/';
+  if (path.endsWith('/acceso.html')) return '/acceso.html';
   for (const page of UNREAD_PAGES) {
     if (path.endsWith(page)) return page;
   }
@@ -80,16 +82,24 @@ async function injectJemmoScripts(response, url) {
   let html = await response.text();
   const page = normalizedPagePath(url);
 
+  if (page === '/acceso.html') {
+    html = injectBeforeBody(
+      html,
+      '<script src="./jemmo-access-recovery.js" data-jemmo-injected="acceso-mensajes-02"></script>'
+    );
+  }
+
   if (UNREAD_PAGES.has(page)) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="messages-realtime-01"></script>'
+      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="acceso-mensajes-02"></script>'
     );
   }
+
   if (page === '/mensajes.html') {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="messages-realtime-01"></script>'
+      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="acceso-mensajes-02"></script>'
     );
   }
 
@@ -97,7 +107,7 @@ async function injectJemmoScripts(response, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-version', 'mensajes-tiempo-real-01');
+  headers.set('x-jemmo-version', 'acceso-mensajes-02');
 
   return new Response(html, {
     status: response.status,
