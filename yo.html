@@ -1071,7 +1071,7 @@
     let walletTab='summary',financeTab='overview',rechargeMethod=isCuba()?'card':'google';
 
     const showWalletTab=tab=>{walletTab=tab;document.querySelectorAll('[data-jf-wallet-tab]').forEach(button=>button.classList.toggle('active',button.dataset.jfWalletTab===tab));document.querySelectorAll('[data-jf-wallet-view]').forEach(view=>view.hidden=view.dataset.jfWalletView!==tab);renderWallet()};
-    const openWallet=(tab='summary')=>{releasePending(false);if($('jfFinanceBackdrop'))$('jfFinanceBackdrop').hidden=true;if($('jfFinanceSheet'))$('jfFinanceSheet').hidden=true;if($('jfOwnerBackdrop'))$('jfOwnerBackdrop').hidden=true;if($('jfOwnerAccess'))$('jfOwnerAccess').hidden=true;window.JemmoWallet?.open?.(['summary','recharge','exchange','withdraw','history'].includes(tab)?tab:'summary')};
+    const openWallet=(tab='summary')=>{releasePending(false);if($('jfFinanceBackdrop'))$('jfFinanceBackdrop').hidden=true;if($('jfFinanceSheet'))$('jfFinanceSheet').hidden=true;if($('jfOwnerBackdrop'))$('jfOwnerBackdrop').hidden=true;if($('jfOwnerAccess'))$('jfOwnerAccess').hidden=true;$('jfWalletBackdrop').hidden=false;$('jfWalletSheet').hidden=false;document.body.style.overflow='hidden';showWalletTab(tab)};
     const closeWallet=()=>{$('jfWalletBackdrop').hidden=true;$('jfWalletSheet').hidden=true;document.body.style.overflow=''};
     const renderRechargeMethods=()=>{
       $('jfRechargeMethods').innerHTML=Object.entries(methodInfo).map(([key,info])=>`<button class="jf-method ${rechargeMethod===key?'active':''}" type="button" data-jf-method="${key}" ${key==='google'&&isCuba()?'disabled':''}><b>${info.icon} ${info.name}</b><small>${key==='google'&&isCuba()?'No disponible para Cuba':info.copy}</small></button>`).join('');
@@ -1178,7 +1178,7 @@
     const suppressLegacyWallet=()=>{document.querySelectorAll('.wallet-backdrop,.wallet-sheet').forEach(element=>{if(!String(element.id||'').startsWith('jf')&&!String(element.id||'').startsWith('jw')){element.hidden=true;element.remove()}})};
     document.addEventListener('click',event=>{const trigger=event.target?.closest?.('[data-open-wallet],#openWallet');if(!trigger)return;event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();suppressLegacyWallet();const requested=String(trigger.dataset.openWallet||'summary').toLowerCase();const tab=requested==='earnings'?'summary':requested;window.JemmoWallet?.open?.(['summary','recharge','exchange','withdraw','history'].includes(tab)?tab:'summary')},true);
     const legacyObserver=new MutationObserver(()=>suppressLegacyWallet());legacyObserver.observe(document.body,{childList:true,subtree:true});suppressLegacyWallet();
-    window.JemmoProfileFinanceWallet={open:openWallet,openRecharge:()=>openWallet('recharge'),close:()=>window.JemmoWallet?.close?.(),render:renderWallet,getState:()=>window.JemmoWallet?.get?.()||readWallet()};
+    window.JemmoProfileFinanceWallet={open:openWallet,openRecharge:()=>openWallet('recharge'),close:closeWallet,render:renderWallet,getState:()=>readWallet()};
     window.JemmoFinance={open:requestFinanceAccess,render:renderFinance,isUnlocked:ownerUnlocked,reconcile:reconcileFinanceBooks};
     window.JemmoEconomy={sendGift,simulateRecharge,awardTask,releasePending,readWallet,readFinance};
     window.addEventListener('jemmo-wallet-change',()=>{reconcileFinanceBooks();renderWallet();if(ownerUnlocked())renderFinance()});

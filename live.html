@@ -2018,8 +2018,8 @@
       document.body.classList.remove("seat-sheet-open");
       activeSheet=null;
     }
-    function closeSheets(useHistory=true){
-      const shouldReturn=Boolean(useHistory && activeSheet && history.state?.jemmoSheet && !closingFromHistory);
+    function closeSheets(){
+      const shouldReturn=Boolean(activeSheet && history.state?.jemmoSheet && !closingFromHistory);
       hideSheetsOnly();
       if(shouldReturn){consumeNextPop=true;history.back()}
     }
@@ -2053,7 +2053,8 @@
     $("rechargeFromGifts").addEventListener("click",event=>{
       event.preventDefault();event.stopImmediatePropagation();
       state.pendingGift=null;
-      if(window.JemmoWallet?.openRecharge)window.JemmoWallet.openRecharge();else window.JemmoWallet?.open?.('recharge');
+      closeSheets(false);
+      window.JemmoWallet?.open?.('recharge');
     },true);
     $("battleCard").addEventListener("click",()=>{
       const card=$("battleCard");
@@ -2111,7 +2112,8 @@
     document.querySelectorAll("[data-recharge]").forEach(button=>{
       button.addEventListener("click",event=>{
         event.preventDefault();event.stopImmediatePropagation();
-        if(window.JemmoWallet?.openRecharge)window.JemmoWallet.openRecharge();else window.JemmoWallet?.open?.('recharge');
+        closeSheets(false);
+        window.JemmoWallet?.open?.('recharge');
       },true);
     });
     window.addEventListener('jemmo-wallet-change',updateBalanceUI);

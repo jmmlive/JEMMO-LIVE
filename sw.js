@@ -1,4 +1,4 @@
-const CACHE = 'jemmo-live-v1-recarga-global-02-20260724';
+const CACHE = 'jemmo-live-v1-monedero-finanzas-06-20260724';
 const APP_SHELL = [
   './','./index.html','./acceso.html','./inicio.html','./live.html','./salas.html','./mensajes.html','./yo.html',
   './app.css','./inicio.css','./jemmo.css','./app.js','./jemmo-session.js','./pwa-register.js','./jemmo-wallet.js',
@@ -30,8 +30,7 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  const networkFirst = request.mode === 'navigate' || /\.(?:html|js|css|json|webmanifest)$/i.test(url.pathname);
-  if (networkFirst) {
+  if (request.mode === 'navigate') {
     event.respondWith((async () => {
       try {
         const response = await fetch(request, { cache: 'no-store' });
@@ -41,7 +40,7 @@ self.addEventListener('fetch', event => {
         }
         return response;
       } catch {
-        return await caches.match(request) || (request.mode === 'navigate' ? await caches.match('./offline.html') : Response.error());
+        return await caches.match(request) || await caches.match('./offline.html');
       }
     })());
     return;
