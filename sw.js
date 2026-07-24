@@ -1,35 +1,28 @@
-const CACHE = 'jemmo-live-v1-recarga-visible-03-20260723';
+const CACHE = 'jemmo-live-v1-monedero-finanzas-06-20260724';
 const APP_SHELL = [
   './','./index.html','./acceso.html','./inicio.html','./live.html','./salas.html','./mensajes.html','./yo.html',
   './app.css','./inicio.css','./jemmo.css','./app.js','./jemmo-session.js','./pwa-register.js','./jemmo-wallet.js',
-  './salas-v1.css','./salas-v1.js','./manifest.webmanifest','./jemmo-logo-header.webp','./jemmo-fish-nav.webp',
+  './salas-v1.css','./salas-v1.js',
+  './manifest.webmanifest','./jemmo-logo-header.webp','./jemmo-fish-nav.webp',
   './icons/icon-192.png','./icons/icon-512.png','./icons/icon-maskable-512.png','./offline.html'
 ];
 
+
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE).then(cache => Promise.all(APP_SHELL.map(path => cache.add(path).catch(() => null)))).then(() => self.skipWaiting()));
+  event.waitUntil(
+    caches.open(CACHE)
+      .then(cache => Promise.all(APP_SHELL.map(path => cache.add(path).catch(() => null))))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim()));
+  event.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(key => key !== CACHE).map(key => caches.delete(key))))
+      .then(() => self.clients.claim())
+  );
 });
-
-self.addEventListener('message', event => {
-  if (event.data === 'SKIP_WAITING' || event.data?.type === 'SKIP_WAITING') self.skipWaiting();
-});
-
-const networkFirst = async request => {
-  try {
-    const response = await fetch(request, { cache: 'no-store' });
-    if (response && response.ok) {
-      const copy = response.clone();
-      caches.open(CACHE).then(cache => cache.put(request, copy)).catch(() => {});
-    }
-    return response;
-  } catch {
-    return await caches.match(request) || (request.mode === 'navigate' ? await caches.match('./offline.html') : Response.error());
-  }
-};
 
 self.addEventListener('fetch', event => {
   const request = event.request;
@@ -37,17 +30,29 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  const critical = request.mode === 'navigate' || ['document','script','style','manifest'].includes(request.destination) || /\.(?:html|js|css|webmanifest)$/.test(url.pathname);
-  if (critical) {
-    event.respondWith(networkFirst(request));
+  if (request.mode === 'navigate') {
+    event.respondWith((async () => {
+      try {
+        const response = await fetch(request, { cache: 'no-store' });
+        if (response.ok) {
+          const copy = response.clone();
+          caches.open(CACHE).then(cache => cache.put(request, copy)).catch(() => {});
+        }
+        return response;
+      } catch {
+        return await caches.match(request) || await caches.match('./offline.html');
+      }
+    })());
     return;
   }
 
-  event.respondWith(caches.match(request).then(cached => cached || fetch(request).then(response => {
-    if (response && response.ok) {
-      const copy = response.clone();
-      caches.open(CACHE).then(cache => cache.put(request, copy)).catch(() => {});
-    }
-    return response;
-  }).catch(() => caches.match('./offline.html'))));
+  event.respondWith(
+    caches.match(request).then(cached => cached || fetch(request).then(response => {
+      if (response.ok) {
+        const copy = response.clone();
+        caches.open(CACHE).then(cache => cache.put(request, copy)).catch(() => {});
+      }
+      return response;
+    }))
+  );
 });

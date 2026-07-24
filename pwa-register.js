@@ -92,18 +92,9 @@
   });
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    let reloadingForWorker=false;
-    navigator.serviceWorker.addEventListener('controllerchange',()=>{
-      if(reloadingForWorker)return;
-      reloadingForWorker=true;
-      location.reload();
-    });
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js', { scope: './' })
-        .then(registration => {
-          registration.update().catch(()=>{});
-          window.setInterval(()=>registration.update().catch(()=>{}),60*60*1000);
-        })
+        .then(registration => registration.update())
         .catch(error => console.error('JEMMO service worker:', error));
     });
   }

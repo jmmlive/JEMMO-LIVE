@@ -1,11 +1,11 @@
 (()=>{
  const qs=(s,r=document)=>r.querySelector(s),qsa=(s,r=document)=>[...r.querySelectorAll(s)];
- const menu=qs('#sideMenu'),backdrop=qs('#menuBackdrop');
+ const menu=qs('#sideMenu'),backdrop=qs('#menuBackdrop'),sheet=qs('#walletSheet');
  const openMenu=()=>{menu?.classList.add('open');menu?.setAttribute('aria-hidden','false');if(backdrop)backdrop.hidden=false};
  const closeMenu=()=>{menu?.classList.remove('open');menu?.setAttribute('aria-hidden','true');if(backdrop)backdrop.hidden=true};
- const openWallet=(tab='summary')=>{closeMenu();if(window.JemmoWallet?.open){window.JemmoWallet.open(tab);return}location.reload()};
- const closeWallet=()=>window.JemmoWallet?.close?.();
- qs('#menuOpen')?.addEventListener('click',openMenu);qs('#menuClose')?.addEventListener('click',closeMenu);qs('#walletPlus')?.addEventListener('click',()=>openWallet('recharge'));qsa('.wallet-token').forEach(b=>b.addEventListener('click',()=>openWallet('summary')));
+ const openWallet=()=>{sheet?.classList.add('open');sheet?.setAttribute('aria-hidden','false');if(backdrop)backdrop.hidden=false};
+ const closeWallet=()=>{sheet?.classList.remove('open');sheet?.setAttribute('aria-hidden','true');if(!menu?.classList.contains('open')&&backdrop)backdrop.hidden=true};
+ qs('#menuOpen')?.addEventListener('click',openMenu);qs('#menuClose')?.addEventListener('click',closeMenu);qs('#walletClose')?.addEventListener('click',closeWallet);qs('#walletPlus')?.addEventListener('click',openWallet);qsa('.wallet-token').forEach(b=>b.addEventListener('click',openWallet));
  backdrop?.addEventListener('click',()=>{closeMenu();closeWallet()});
  const toast=t=>{const el=qs('#demoToast');if(!el)return;el.textContent=t;el.classList.add('show');clearTimeout(window.__jemmoToast);window.__jemmoToast=setTimeout(()=>el.classList.remove('show'),1800)};
  let audioContext;
@@ -13,11 +13,11 @@
  const navigate=url=>{playWaterDrop();setTimeout(()=>location.assign(url),135)};
  const functions=[
   {label:'Mi perfil',icon:'👤',terms:'perfil editar foto nombre biografia avatar apariencia',route:'yo.html'},
-  {label:'Monedero',icon:'🪙',terms:'monedero saldo dinero monedas jemmos jems cristales',action:'wallet',walletTab:'summary'},
-  {label:'Recargar JEMMOS',icon:'🟡',terms:'recargar comprar jemmos moneda amarilla',action:'wallet',walletTab:'recharge'},
-  {label:'Retirar JEMS',icon:'🟣',terms:'retirar ganancias jems moneda rosada',action:'wallet',walletTab:'withdraw'},
-  {label:'Intercambiar monedas',icon:'⇄',terms:'intercambiar convertir jemmos jems cristales',action:'wallet',walletTab:'exchange'},
-  {label:'Historial del monedero',icon:'📜',terms:'historial movimientos pagos monedero',action:'wallet',walletTab:'history'},
+  {label:'Monedero',icon:'🪙',terms:'monedero saldo dinero monedas jemmos jems cristales',action:'wallet'},
+  {label:'Recargar JEMMOS',icon:'🟡',terms:'recargar comprar jemmos moneda amarilla',action:'wallet'},
+  {label:'Retirar JEMS',icon:'🟣',terms:'retirar ganancias jems moneda rosada',action:'wallet'},
+  {label:'Intercambiar monedas',icon:'⇄',terms:'intercambiar convertir jemmos jems cristales',action:'wallet'},
+  {label:'Historial del monedero',icon:'📜',terms:'historial movimientos pagos monedero',action:'wallet'},
   {label:'Iniciar LIVE',icon:'📹',terms:'live directo transmitir camara',route:'live.html'},
   {label:'Salas de audio',icon:'🎙️',terms:'salas audio microfono',route:'salas.html'},
   {label:'Mensajes',icon:'💬',terms:'mensajes chats soporte avisos',route:'mensajes.html'},
@@ -27,13 +27,13 @@
  ];
  const recentKey='jemmo_recent_functions_v06';
  const getRecent=()=>{try{return JSON.parse(localStorage.getItem(recentKey)||'[]')}catch{return[]}};
- const saveRecent=item=>{const clean={label:item.label,icon:item.icon,route:item.route||'',action:item.action||'',walletTab:item.walletTab||'',demo:item.demo||''};localStorage.setItem(recentKey,JSON.stringify([clean,...getRecent().filter(x=>x.label!==item.label)].slice(0,5)))};
- const activate=item=>{saveRecent(item);if(item.route){navigate(item.route);return}if(item.action==='wallet'){openWallet(item.walletTab||'summary');return}toast(`${item.demo||item.label}: preparada para la siguiente fase`)};
+ const saveRecent=item=>{const clean={label:item.label,icon:item.icon,route:item.route||'',action:item.action||'',demo:item.demo||''};localStorage.setItem(recentKey,JSON.stringify([clean,...getRecent().filter(x=>x.label!==item.label)].slice(0,5)))};
+ const activate=item=>{saveRecent(item);if(item.route){navigate(item.route);return}if(item.action==='wallet'){closeMenu();openWallet();return}toast(`${item.demo||item.label}: preparada para la siguiente fase`)};
  const search=qs('#functionSearch'),menuList=qs('#menuList'),results=qs('#searchResults');
  const render=list=>{if(!results)return;results.innerHTML='';if(!list.length)return;const title=document.createElement('p');title.className='search-results-title';title.textContent=search?.value.trim()?'Resultados':'Accesos recientes';results.append(title);list.forEach(item=>{const b=document.createElement('button');b.innerHTML=`<span>${item.icon}</span><b>${item.label}</b><i>›</i>`;b.addEventListener('click',()=>activate(item));results.append(b)})};
  const renderDefault=()=>{if(menuList)menuList.hidden=false;render(getRecent())};
  search?.addEventListener('input',()=>{const term=search.value.trim().toLocaleLowerCase('es');if(!term){renderDefault();return}if(menuList)menuList.hidden=true;const found=functions.filter(x=>`${x.label} ${x.terms}`.toLocaleLowerCase('es').includes(term));if(found.length)render(found);else results.innerHTML='<div class="empty-search">No se encontró esa función.</div>'});
- qsa('[data-route]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.route)));qsa('[data-demo]').forEach(b=>b.addEventListener('click',()=>toast(`${b.dataset.demo}: preparada para la siguiente fase`)));qsa('[data-action="wallet"]').forEach(b=>b.addEventListener('click',()=>openWallet(b.dataset.walletTab||'summary')));
+ qsa('[data-route]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.route)));qsa('[data-demo]').forEach(b=>b.addEventListener('click',()=>toast(`${b.dataset.demo}: preparada para la siguiente fase`)));qsa('[data-action="wallet"]').forEach(b=>b.addEventListener('click',()=>{closeMenu();openWallet()}));
  // El cierre de sesión real lo gestiona jemmo-session.js.
 
  renderDefault();

@@ -10,11 +10,11 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>JEMMO LIVE</title>
+  <title>JEMMO LIVE</title><script>if(localStorage.getItem("jemmo_active_uid")){setTimeout(()=>location.replace("inicio.html?sesion=local"),80)}else{setTimeout(()=>{if(location.pathname.endsWith("index.html")||location.pathname.endsWith("/"))location.replace("acceso.html?sesion=timeout")},6000)}</script>
   <style>
     *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#050007;color:#fff;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
     body{min-height:100svh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 0,#3c0752,transparent 45%),#050007}
-    main{width:min(100%,430px);text-align:center}img{width:100%;max-height:160px;object-fit:contain;border-radius:22px}h1{margin:18px 0 6px;color:#ffd24c}p{color:#c9b7d0;line-height:1.45}.loader{width:54px;height:54px;margin:22px auto;border:5px solid #35113f;border-top-color:#d43cff;border-radius:50%;animation:spin .8s linear infinite}button{min-height:48px;padding:0 22px;border:1px solid #bd42de;border-radius:16px;background:#17051e;color:#fff;font-weight:900}button[hidden],.loader[hidden]{display:none}@keyframes spin{to{transform:rotate(360deg)}}
+    main{width:min(100%,430px);text-align:center}img{width:100%;max-height:160px;object-fit:contain;border-radius:22px}h1{margin:18px 0 6px;color:#ffd24c}p{color:#c9b7d0}.loader{width:54px;height:54px;margin:22px auto;border:5px solid #35113f;border-top-color:#d43cff;border-radius:50%;animation:spin .8s linear infinite}button{min-height:48px;padding:0 22px;border:1px solid #bd42de;border-radius:16px;background:#17051e;color:#fff;font-weight:900}button[hidden]{display:none}@keyframes spin{to{transform:rotate(360deg)}}
   </style>
 </head>
 <body>
@@ -27,29 +27,66 @@
   </main>
   <script src="pwa-register.js"></script>
   <script type="module">
-    const firebaseConfig={apiKey:'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',authDomain:'jemmo-live.firebaseapp.com',projectId:'jemmo-live',storageBucket:'jemmo-live.firebasestorage.app',messagingSenderId:'355540892255',appId:'1:355540892255:web:d15a8dd03b2915e31939ea'};
-    const SESSION_KEY='jemmo_session',ACTIVE_UID_KEY='jemmo_active_uid',SIGNED_OUT_KEY='jemmo_signed_out_at',TTL=30*24*60*60*1000;
-    const status=document.getElementById('status'),retry=document.getElementById('retry'),loader=document.getElementById('loader');
-    let routeToken=0;
-    function localSession(){try{const s=JSON.parse(localStorage.getItem(SESSION_KEY)||'null'),uid=localStorage.getItem(ACTIVE_UID_KEY)||'',signed=Number(localStorage.getItem(SIGNED_OUT_KEY)||0),verified=Number(s?.verifiedAt||0);return s?.version===2&&s.uid===uid&&verified&&Date.now()-verified<=TTL&&signed<verified?s:null}catch{return null}}
-    function remember(user){const verifiedAt=Date.now();localStorage.setItem(ACTIVE_UID_KEY,user.uid);localStorage.setItem(SESSION_KEY,JSON.stringify({version:2,uid:user.uid,verifiedAt}));localStorage.removeItem(SIGNED_OUT_KEY)}
-    function clearLocal(){localStorage.removeItem(ACTIVE_UID_KEY);localStorage.removeItem(SESSION_KEY)}
-    function showError(text,token){if(token!==routeToken)return;loader.hidden=true;status.textContent=text;retry.hidden=false}
-    async function route(){
-      const token=++routeToken;retry.hidden=true;loader.hidden=false;status.textContent='Comprobando tu sesión…';
-      const finish=target=>{if(token===routeToken)location.replace(target)};
-      const local=localSession();
-      if(navigator.onLine===false){if(local)finish('inicio.html?sesion=offline');else showError('Sin conexión y sin una sesión verificada disponible.',token);return}
-      let timeout=0;
-      try{
-        const [appModule,authModule]=await Promise.all([import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js'),import('https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js')]);
-        const app=appModule.getApps()[0]||appModule.initializeApp(firebaseConfig),auth=authModule.getAuth(app);
-        await authModule.setPersistence(auth,authModule.browserLocalPersistence);
-        timeout=setTimeout(()=>showError('La comprobación está tardando demasiado. Pulsa Reintentar.',token),8000);
-        authModule.onAuthStateChanged(auth,user=>{clearTimeout(timeout);if(user){remember(user);finish('inicio.html')}else{clearLocal();finish('acceso.html')}},error=>{console.error(error);clearTimeout(timeout);showError('No se pudo comprobar la sesión. Pulsa Reintentar.',token)});
-      }catch(error){console.error(error);clearTimeout(timeout);showError('No se pudo comprobar la sesión. Pulsa Reintentar.',token)}
+    import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
+    import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+    const firebaseConfig = {
+  apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
+  authDomain: 'jemmo-live.firebaseapp.com',
+  projectId: 'jemmo-live',
+  storageBucket: 'jemmo-live.firebasestorage.app',
+  messagingSenderId: '355540892255',
+  appId: '1:355540892255:web:d15a8dd03b2915e31939ea'
+};
+    const status = document.getElementById('status');
+    const retry = document.getElementById('retry');
+    const loader = document.getElementById('loader');
+    async function route() {
+      retry.hidden = true; loader.hidden = false; status.textContent = 'Comprobando tu sesión…';
+      let routed = false;
+      const finish = target => {
+        if (routed) return;
+        routed = true;
+        location.replace(target);
+      };
+      const fallback = window.setTimeout(() => {
+        const localSession = localStorage.getItem('jemmo_active_uid');
+        finish(localSession ? 'inicio.html?sesion=local' : 'acceso.html');
+      }, 4500);
+      try {
+        const app = getApps()[0] || initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        await setPersistence(auth, browserLocalPersistence);
+        onAuthStateChanged(auth, user => {
+          clearTimeout(fallback);
+          if (user) localStorage.setItem('jemmo_active_uid', user.uid);
+          else localStorage.removeItem('jemmo_active_uid');
+          finish(user ? 'inicio.html' : 'acceso.html');
+        }, error => {
+          console.error(error);
+          clearTimeout(fallback);
+          const localSession = localStorage.getItem('jemmo_active_uid');
+          if (localSession) finish('inicio.html?sesion=local');
+          else {
+            loader.hidden = true;
+            status.textContent = navigator.onLine ? 'No se pudo comprobar la sesión. Pulsa Reintentar.' : 'Sin conexión. Conéctate a internet y pulsa Reintentar.';
+            retry.hidden = false;
+          }
+        });
+      } catch (error) {
+        console.error(error);
+        clearTimeout(fallback);
+        const localSession = localStorage.getItem('jemmo_active_uid');
+        if (localSession) finish('inicio.html?sesion=local');
+        else {
+          loader.hidden = true;
+          status.textContent = navigator.onLine ? 'No se pudo comprobar la sesión. Pulsa Reintentar.' : 'Sin conexión. Conéctate a internet y pulsa Reintentar.';
+          retry.hidden = false;
+        }
+      }
     }
-    retry.addEventListener('click',route);window.addEventListener('online',route);route();
+    retry.addEventListener('click', route);
+    window.addEventListener('online', route, { once:true });
+    route();
   </script>
 </body>
 </html>

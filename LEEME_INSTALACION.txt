@@ -1,43 +1,27 @@
-JEMMO LIVE V1 · MONEDERO GLOBAL PRUEBA 01
+JEMMO LIVE · MONEDERO Y FINANZAS · PRUEBA 06
+Fecha: 24/07/2026
 
-ANTES DE INSTALAR
-1. Conserva una copia de seguridad de la versión que tienes instalada.
-2. Esta actualización es incremental. No borres el resto del proyecto.
+INSTALACIÓN FÁCIL
+1. Guarda una copia del proyecto que tienes ahora.
+2. Descomprime este ZIP.
+3. Copia todo el contenido de la carpeta JEMMO-LIVE-main sobre tu proyecto.
+4. Cuando pregunte, elige sustituir o sobrescribir los archivos.
+5. Cierra completamente JEMMO LIVE.
+6. Ábrela otra vez. Si aparece todavía la versión antigua, cierra y abre una segunda vez para renovar la caché.
 
-ARCHIVOS QUE DEBES SUBIR O SUSTITUIR JUNTOS
-- yo.html
-- salas.html
-- sw.js
-- jemmo-wallet.js  (archivo nuevo)
+PRUEBA RÁPIDA
+1. Abre Monedero y entra en RECARGAR.
+2. Selecciona USDT.
+3. Elige Binance Smart Chain · BEP20, TRON · TRC20 o Ethereum · ERC20.
+4. Simula una recarga y comprueba que suben los JEMMOS.
+5. Envía un regalo en LIVE y otro en Salas.
+6. En Perfil, abre JEMMO Finanzas y revisa RECARGAS y REGALOS.
 
-VERSION.txt y LEEME_INSTALACION.txt son solamente informativos.
+RESULTADO ESPERADO
+- Inicio, LIVE, Salas, Mensajes y Perfil muestran el mismo saldo.
+- La recarga registra método, red, importe, comisión, neto, fecha y hora.
+- Los regalos descuentan JEMMOS y registran el reparto financiero.
+- La pantalla JEMMO Finanzas sigue siendo privada del propietario.
 
-DESPUÉS DE SUBIRLOS
-1. Publica los cuatro archivos funcionales en la raíz del proyecto.
-2. Cierra completamente JEMMO LIVE.
-3. Ábrela otra vez y actualiza una vez. Si siguiera apareciendo la versión anterior, cierra y abre por segunda vez para renovar la caché de la PWA.
-
-PRUEBAS OBLIGATORIAS
-A. PERFIL
-- Entra en Monedero.
-- Haz una recarga ficticia de 5.000 monedas.
-- Comprueba que el saldo sube y queda en el historial.
-
-B. LIVE
-- Abre el menú lateral y pulsa Monedero.
-- Debe abrirse directamente el mismo monedero, sin entrar al Perfil.
-- Envía un regalo y comprueba que baja el saldo global.
-
-C. SALAS
-- En preparación, comprueba la franja Monedero global.
-- Entra en una sala, abre Regalos y envía uno.
-- Comprueba que el mismo saldo baja también en Perfil y LIVE.
-
-D. INICIO
-- Los saldos superiores deben mostrar Monedas, Diamantes y Ganancias del mismo monedero.
-- Al tocar cualquiera de ellos o el botón + debe abrir el monedero global.
-
-ALCANCE REAL DE ESTA PRUEBA
-- Los saldos se separan por UID de usuario y quedan persistentes en este dispositivo.
-- Las recargas, cambios y retiradas son ficticios.
-- Todavía no hay sincronización Firebase entre dos móviles. Esa será la siguiente integración para que las operaciones de Ruth en Cuba y las de Jesús se reflejen entre dispositivos.
+IMPORTANTE
+Todo funciona en modo de pruebas local. No mueve dinero real y todavía no sincroniza operaciones entre dos móviles mediante Firebase.

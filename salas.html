@@ -144,7 +144,7 @@
       <button class="jr-btn jr-help" type="button" id="helpButton" aria-label="Ayuda">?</button>
     </header>
 
-    <button class="jr-btn jr-global-wallet" id="globalWalletButton" type="button" data-open-wallet="summary">
+    <button class="jr-btn jr-global-wallet" id="globalWalletButton" type="button" data-open-wallet>
       <span>🪙</span><span><b>Monedero global</b><small><strong id="globalWalletCoins">0</strong> JEMMOS · mismo saldo en toda la app</small></span><i>›</i>
     </button>
 
@@ -240,7 +240,7 @@
   <header class="jr-sheet-head"><strong>Regalos</strong><button class="jr-sheet-close" data-close type="button">×</button></header>
   <div class="jr-wallet-row">
     <div><b id="balanceLabel">Saldo: 0 JEMMOS</b><small>Monedero único de esta cuenta</small></div>
-    <button class="jr-btn jr-recharge" id="rechargeButton" type="button" data-open-wallet="recharge">RECARGAR</button>
+    <button class="jr-btn jr-recharge" id="rechargeButton" type="button" data-open-wallet>MONEDERO</button>
   </div>
   <div class="jr-recipient-title"><b>Enviar a</b><span id="recipientSummary">Todas las personas</span></div>
   <div class="jr-recipients" id="giftRecipients"></div>
@@ -262,8 +262,8 @@
 <div class="jr-toast" id="toast" role="status"></div>
 
 <script type="module" src="jemmo-session.js"></script>
-<script src="pwa-register.js?v=20260723-recarga03"></script>
-<script src="jemmo-wallet.js?v=20260723-recarga03"></script>
+<script src="pwa-register.js"></script>
+<script src="jemmo-wallet.js"></script>
 <script>
 (()=>{
   'use strict';
@@ -655,7 +655,7 @@
 
 Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
     if(!confirm(question))return;
-    const spent=window.JemmoWallet?.spendCoins?.(totalCoins,{title:'Regalo enviado en Sala',detail:`${gift} · ${target} · ×${state.giftQuantity}`,source:'salas-gift'});
+    const spent=window.JemmoWallet?.spendCoins?.(totalCoins,{title:'Regalo enviado en Sala',giftName:gift,detail:`${gift} · ${target} · ×${state.giftQuantity}`,context:'Audio Room / Salas',source:'salas-gift'});
     if(!spent?.ok){toast('Saldo insuficiente. Abriendo el Monedero.');window.JemmoWallet?.open?.('recharge');return}
     state.giftBalance=spent.wallet.jemmos;
     indexes.forEach(index=>state.giftTotals.set(index,(state.giftTotals.get(index)||0)+state.giftQuantity));
