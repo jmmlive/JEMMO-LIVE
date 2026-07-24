@@ -13,6 +13,15 @@ const app = getApps()[0] || initializeApp(firebaseConfig);
 const auth = getAuth(app);
 let resolved = false;
 
+function storeActiveUid(uid) {
+  window.__jemmoAuthenticatedUid = String(uid || '');
+  try {
+    localStorage.setItem('jemmo_active_uid', window.__jemmoAuthenticatedUid);
+  } catch (error) {
+    console.warn('JEMMO active UID local backup:', error);
+  }
+}
+
 function reveal(mode = 'verified') {
   resolved = true;
   document.documentElement.classList.remove('jemmo-auth-pending');
@@ -45,7 +54,7 @@ onAuthStateChanged(auth, user => {
     location.replace('acceso.html?sesion=requerida');
     return;
   }
-  localStorage.setItem('jemmo_active_uid', user.uid);
+  storeActiveUid(user.uid);
   reveal('verified');
   window.dispatchEvent(new CustomEvent('jemmo-auth-ready', { detail: { uid: user.uid } }));
 }, error => {

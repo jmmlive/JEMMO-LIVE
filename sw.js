@@ -1,4 +1,4 @@
-const CACHE = 'jemmo-live-v1-recarga-global-02-20260724';
+const CACHE = 'jemmo-live-v1-recarga-persistente-03-20260724';
 const APP_SHELL = [
   './','./index.html','./acceso.html','./inicio.html','./live.html','./salas.html','./mensajes.html','./yo.html',
   './app.css','./inicio.css','./jemmo.css','./app.js','./jemmo-session.js','./pwa-register.js','./jemmo-wallet.js',

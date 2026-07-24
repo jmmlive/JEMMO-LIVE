@@ -1,19 +1,24 @@
-JEMMO LIVE V1 · MONEDERO Y FINANZAS PRUEBA 06
+JEMMO LIVE V1 · CORRECCIÓN RECARGA PERSISTENTE 03
 Fecha: 24/07/2026
 
-Base recibida:
-- jemmo live arreglo.zip
-- JEMMO LIVE V1 · CORRECCIÓN GLOBAL PRUEBA 01
+Base revisada:
+- jemmo-live-main(8).zip
+- JEMMO LIVE V1 · MONEDERO Y FINANZAS PRUEBA 06
 
-Estado de esta entrega:
-- Monedero único operativo en Inicio, LIVE, Audio Room/Salas, Mensajes y Perfil.
-- Recargas ficticias completas por Google Play, Tarjeta, Epay, USDT y USDC.
-- Redes cripto disponibles: Binance BEP20, TRON TRC20 y Ethereum ERC20 según moneda.
-- Recargas vinculadas con JEMMO Finanzas mediante método, red, importe, comisión, neto, estado, fecha y hora.
-- Regalos de LIVE y Salas vinculados con el reparto financiero 70/20/10 o 70/30.
-- JEMS confirmados y pendientes calculados según el origen del saldo utilizado.
-- Retirada mínima de 100.000 JEMS y registro financiero de la retirada.
-- Caché PWA renovada para cargar la corrección.
+Problema confirmado:
+- Un monedero antiguo sin el campo updatedAt recibía por error la hora actual al normalizarse.
+- Esa fecha falsa podía hacer que el saldo antiguo de localStorage pareciera más reciente que el respaldo correcto de IndexedDB.
+- Cuando localStorage estaba lleno, la recarga se guardaba en IndexedDB, pero al recargar la app podía reaparecer el saldo antiguo o cero.
+- Perfil y JEMMO Finanzas mantenían lecturas o escrituras directas que podían evitar el guardado duradero global.
+
+Correcciones:
+- jemmo-wallet.js actualizado a 7.1.1-test.
+- Los monederos sin updatedAt usan updatedAt: 0 y permiten restaurar el respaldo más reciente de IndexedDB.
+- El monedero vuelve a hidratarse al confirmarse el UID real de Firebase.
+- El UID autenticado se conserva también en memoria aunque localStorage esté sin espacio.
+- Perfil y Destellos leen el monedero global actual.
+- Las escrituras del usuario activo y el estado de JEMMO Finanzas pasan por el guardado duradero global.
+- Caché PWA renovada para instalar la corrección sin reutilizar archivos anteriores.
 
 Alcance:
-Prueba local funcional. El dinero y las operaciones son simulados. La sincronización multiusuario real requiere backend/Firebase y reglas de seguridad.
+Modo de pruebas. No se realizan cobros ni retiradas reales.
