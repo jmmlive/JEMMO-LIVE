@@ -1,24 +1,34 @@
-JEMMO LIVE V1 · CORRECCIÓN RECARGA PERSISTENTE 03
+JEMMO LIVE V1 · MENSAJES TIEMPO REAL PRUEBA 01
 Fecha: 24/07/2026
 
-Base revisada:
+Base de continuidad:
 - jemmo-live-main(8).zip
 - JEMMO LIVE V1 · MONEDERO Y FINANZAS PRUEBA 06
+- JEMMO LIVE V1 · CORRECCIÓN RECARGA PERSISTENTE 03
 
-Problema confirmado:
-- Un monedero antiguo sin el campo updatedAt recibía por error la hora actual al normalizarse.
-- Esa fecha falsa podía hacer que el saldo antiguo de localStorage pareciera más reciente que el respaldo correcto de IndexedDB.
-- Cuando localStorage estaba lleno, la recarga se guardaba en IndexedDB, pero al recargar la app podía reaparecer el saldo antiguo o cero.
-- Perfil y JEMMO Finanzas mantenían lecturas o escrituras directas que podían evitar el guardado duradero global.
+Alcance exclusivo:
+- Envío y recepción de mensajes directos mediante Firebase Authentication y Cloud Firestore.
+- Actualización inmediata de conversaciones y mensajes con onSnapshot.
+- Contador rojo real de mensajes no leídos, sin el número fijo de demostración.
+- Puesta a cero del contador al abrir una conversación.
+- Marcado global de conversaciones como leídas.
+- Búsqueda de usuarios por correo de acceso o UID.
+- Datos separados por UID autenticado.
+- Inyección controlada sobre la interfaz actual mediante el service worker.
 
-Correcciones:
-- jemmo-wallet.js actualizado a 7.1.1-test.
-- Los monederos sin updatedAt usan updatedAt: 0 y permiten restaurar el respaldo más reciente de IndexedDB.
-- El monedero vuelve a hidratarse al confirmarse el UID real de Firebase.
-- El UID autenticado se conserva también en memoria aunque localStorage esté sin espacio.
-- Perfil y Destellos leen el monedero global actual.
-- Las escrituras del usuario activo y el estado de JEMMO Finanzas pasan por el guardado duradero global.
-- Caché PWA renovada para instalar la corrección sin reutilizar archivos anteriores.
+Archivos funcionales de la entrega:
+- jemmo-messages-realtime.js
+- jemmo-unread-badge.js
+- sw.js
+- VERSION.txt
 
-Alcance:
-Modo de pruebas. No se realizan cobros ni retiradas reales.
+No modifica:
+- Acceso
+- Monedero y JEMMO Finanzas
+- LIVE
+- Salas/Audio Room
+- Perfil
+- Diseño visual principal de Mensajes
+
+Estado:
+PRUEBA TÉCNICA. Requiere publicar las reglas de Cloud Firestore entregadas por separado.
