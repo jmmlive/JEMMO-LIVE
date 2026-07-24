@@ -1,18 +1,17 @@
 /* =========================================================
-   JEMMO LIVE · CORRECCIÓN RECARGA PERSISTENTE 03
+   JEMMO LIVE · RECARGA GLOBAL Y RESPALDO PRUEBA 02
    Un solo saldo y un solo libro económico para toda la app
    ========================================================= */
 (() => {
   'use strict';
   if (window.JemmoWallet?.version) return;
 
-  const VERSION = '7.1.1-test';
+  const VERSION = '7.1.0-test';
   const FINANCE_KEY = 'jemmo_finance_v1';
   const STORAGE_DB = 'jemmo_live_durable_v1';
   const STORAGE_DB_VERSION = 1;
   const WALLET_STORE = 'wallets';
   const FINANCE_STORE = 'finance';
-  let authenticatedUid = '';
   const walletMemory = new Map();
   const walletSaveStatus = new Map();
   let financeMemory = null;
@@ -20,7 +19,7 @@
   let storageDbPromise = null;
   const byId = id => document.getElementById(id);
   const nowId = (prefix = 'op') => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-  const currentUid = () => String(window.__jemmoAuthenticatedUid || authenticatedUid || localStorage.getItem('jemmo_active_uid') || 'local-user');
+  const currentUid = () => localStorage.getItem('jemmo_active_uid') || 'local-user';
   const storageKeyFor = uid => `jemmo_wallet_v1_${uid}`;
   const storageKey = () => storageKeyFor(currentUid());
   const formatNumber = value => Math.max(0, Math.floor(Number(value) || 0)).toLocaleString('es-ES');
@@ -174,7 +173,7 @@
     pendingCredits: [],
     earningsHistory: [],
     withdrawals: [],
-    updatedAt: 0
+    updatedAt: Date.now()
   });
 
   function normalizeWallet(input) {
@@ -204,9 +203,7 @@
     wallet.pendingCredits = Array.isArray(raw.pendingCredits) ? raw.pendingCredits : [];
     wallet.earningsHistory = Array.isArray(raw.earningsHistory) ? raw.earningsHistory : [];
     wallet.withdrawals = Array.isArray(raw.withdrawals) ? raw.withdrawals : [];
-    wallet.updatedAt = Object.prototype.hasOwnProperty.call(raw, 'updatedAt')
-      ? Math.max(0, Number(raw.updatedAt) || 0)
-      : 0;
+    wallet.updatedAt = raw.updatedAt === 0 ? 0 : (Number(raw.updatedAt) || Date.now());
 
     let lotTotal = wallet.lots.reduce((sum, lot) => sum + lot.remaining, 0);
     if (wallet.jemmos > lotTotal) {
@@ -1556,15 +1553,6 @@
     }, true);
   }
 
-  function hydrateActiveState(uid = currentUid(), source = 'boot') {
-    return Promise.allSettled([hydrateWalletFromDb(uid), hydrateFinanceFromDb()]).then(() => {
-      releasePending(false);
-      syncVisibleBalances();
-      render();
-      return { uid, source };
-    });
-  }
-
   function boot() {
     injectStyles();
     try { removeSafeLegacyStorage(); } catch {}
@@ -1572,11 +1560,10 @@
     syncVisibleBalances();
     bindOpeners();
     installLiveGiftBridge();
-    hydrateActiveState(currentUid(), 'boot');
-    window.addEventListener('jemmo-auth-ready', event => {
-      const uid = String(event.detail?.uid || currentUid());
-      authenticatedUid = uid;
-      hydrateActiveState(uid, 'auth-ready');
+    Promise.allSettled([hydrateWalletFromDb(), hydrateFinanceFromDb()]).then(() => {
+      releasePending(false);
+      syncVisibleBalances();
+      render();
     });
     const observer = new MutationObserver(records => {
       for (const record of records) {
@@ -1618,8 +1605,6 @@
     recharge: registerRecharge,
     releasePending,
     getFinance: readFinance,
-    saveFinance: writeFinance,
-    rehydrate: uid => hydrateActiveState(String(uid || currentUid()), 'manual'),
     open,
     openRecharge: () => open('recharge'),
     close,

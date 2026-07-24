@@ -1,27 +1,19 @@
-JEMMO LIVE V1 · ACCESO REPARADO PRUEBA 05
+JEMMO LIVE V1 · MONEDERO Y FINANZAS PRUEBA 06
 Fecha: 24/07/2026
 
-Base revisada:
-- JEMMO-LIVE-main (9).zip
-- JEMMO LIVE V1 · ACCESO RESTAURADO Y MENSAJES PRUEBA 03
+Base recibida:
+- jemmo live arreglo.zip
+- JEMMO LIVE V1 · CORRECCIÓN GLOBAL PRUEBA 01
 
-Causa real corregida:
-- Firebase podía autenticar correctamente, pero localStorage.setItem('jemmo_active_uid', uid) podía lanzar QuotaExceededError cuando el almacenamiento local estaba lleno.
-- La excepción ocurría dentro del mismo try del acceso, por lo que un inicio de sesión válido se mostraba como fallo y no navegaba a Inicio.
+Estado de esta entrega:
+- Monedero único operativo en Inicio, LIVE, Audio Room/Salas, Mensajes y Perfil.
+- Recargas ficticias completas por Google Play, Tarjeta, Epay, USDT y USDC.
+- Redes cripto disponibles: Binance BEP20, TRON TRC20 y Ethereum ERC20 según moneda.
+- Recargas vinculadas con JEMMO Finanzas mediante método, red, importe, comisión, neto, estado, fecha y hora.
+- Regalos de LIVE y Salas vinculados con el reparto financiero 70/20/10 o 70/30.
+- JEMS confirmados y pendientes calculados según el origen del saldo utilizado.
+- Retirada mínima de 100.000 JEMS y registro financiero de la retirada.
+- Caché PWA renovada para cargar la corrección.
 
-Corrección mínima:
-- El UID se guarda en localStorage y, si esa escritura falla, se respalda en sessionStorage.
-- La navegación a Inicio continúa después de una autenticación válida aunque localStorage esté lleno.
-- jemmo-session.js reconoce el respaldo de sessionStorage durante la comprobación, el modo offline y el tiempo de espera.
-- Las operaciones auxiliares de almacenamiento del acceso quedan protegidas para que no bloqueen el formulario.
-- Se renueva la caché PWA sin modificar Mensajes, monedero, LIVE, Salas, Perfil ni el diseño.
-
-Archivos a sustituir:
-- acceso.html
-- jemmo-session.js
-- pwa-register.js
-- sw.js
-- VERSION.txt
-
-Estado:
-Entrega incremental preparada para instalar y validar en el móvil.
+Alcance:
+Prueba local funcional. El dinero y las operaciones son simulados. La sincronización multiusuario real requiere backend/Firebase y reglas de seguridad.
