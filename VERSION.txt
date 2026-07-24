@@ -1,13 +1,10 @@
-JEMMO LIVE V1 · ACCESO Y MENSAJES PRUEBA 02
+JEMMO LIVE V1 · ACCESO RESTAURADO Y MENSAJES PRUEBA 03
 Fecha: 24/07/2026
 
-Corrección inmediata:
-- El acceso deja de quedar bloqueado en CONECTANDO cuando localStorage está lleno.
-- El UID de Firebase usa respaldo temporal de sesión si el navegador rechaza la escritura local.
-- Un observador de Firebase abre Inicio en cuanto la autenticación queda confirmada.
-- Se conserva el motor de mensajes en tiempo real y el contador rojo de no leídos de Prueba 01.
-- No modifica el diseño, el monedero, JEMMO Finanzas, LIVE, Salas ni Perfil.
+Corrección urgente:
+- Retira por completo la inyección de jemmo-access-recovery.js en acceso.html.
+- Restaura el inicio de sesión original de la aplicación.
+- Conserva los scripts de Mensajes en tiempo real y el contador rojo.
+- Fuerza una caché nueva del service worker para eliminar la corrección defectuosa anterior.
 
-Pendiente de validación física:
-- Entrada con la cuenta habitual desde el móvil.
-- Publicación de las reglas de Firestore y prueba de mensajes con dos cuentas.
+Archivos a sustituir: VERSION.txt y sw.js.
