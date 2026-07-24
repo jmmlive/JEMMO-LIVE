@@ -3,9 +3,9 @@
  const menu=qs('#sideMenu'),backdrop=qs('#menuBackdrop'),sheet=qs('#walletSheet');
  const openMenu=()=>{menu?.classList.add('open');menu?.setAttribute('aria-hidden','false');if(backdrop)backdrop.hidden=false};
  const closeMenu=()=>{menu?.classList.remove('open');menu?.setAttribute('aria-hidden','true');if(backdrop)backdrop.hidden=true};
- const openWallet=()=>{sheet?.classList.add('open');sheet?.setAttribute('aria-hidden','false');if(backdrop)backdrop.hidden=false};
+ const openWallet=(tab='summary')=>{if(window.JemmoWallet?.open){window.JemmoWallet.open(tab);return}sheet?.classList.add('open');sheet?.setAttribute('aria-hidden','false');if(backdrop)backdrop.hidden=false};
  const closeWallet=()=>{sheet?.classList.remove('open');sheet?.setAttribute('aria-hidden','true');if(!menu?.classList.contains('open')&&backdrop)backdrop.hidden=true};
- qs('#menuOpen')?.addEventListener('click',openMenu);qs('#menuClose')?.addEventListener('click',closeMenu);qs('#walletClose')?.addEventListener('click',closeWallet);qs('#walletPlus')?.addEventListener('click',openWallet);qsa('.wallet-token').forEach(b=>b.addEventListener('click',openWallet));
+ qs('#menuOpen')?.addEventListener('click',openMenu);qs('#menuClose')?.addEventListener('click',closeMenu);qs('#walletClose')?.addEventListener('click',closeWallet);qs('#walletPlus')?.addEventListener('click',()=>openWallet('recharge'));qsa('.wallet-token').forEach(b=>b.addEventListener('click',()=>openWallet('summary')));
  backdrop?.addEventListener('click',()=>{closeMenu();closeWallet()});
  const toast=t=>{const el=qs('#demoToast');if(!el)return;el.textContent=t;el.classList.add('show');clearTimeout(window.__jemmoToast);window.__jemmoToast=setTimeout(()=>el.classList.remove('show'),1800)};
  let audioContext;
@@ -28,12 +28,12 @@
  const recentKey='jemmo_recent_functions_v06';
  const getRecent=()=>{try{return JSON.parse(localStorage.getItem(recentKey)||'[]')}catch{return[]}};
  const saveRecent=item=>{const clean={label:item.label,icon:item.icon,route:item.route||'',action:item.action||'',demo:item.demo||''};localStorage.setItem(recentKey,JSON.stringify([clean,...getRecent().filter(x=>x.label!==item.label)].slice(0,5)))};
- const activate=item=>{saveRecent(item);if(item.route){navigate(item.route);return}if(item.action==='wallet'){closeMenu();openWallet();return}toast(`${item.demo||item.label}: preparada para la siguiente fase`)};
+ const activate=item=>{saveRecent(item);if(item.route){navigate(item.route);return}if(item.action==='wallet'){closeMenu();openWallet(item.label.toLowerCase().includes('recarg')?'recharge':item.label.toLowerCase().includes('retir')?'withdraw':item.label.toLowerCase().includes('historial')?'history':'summary');return}toast(`${item.demo||item.label}: preparada para la siguiente fase`)};
  const search=qs('#functionSearch'),menuList=qs('#menuList'),results=qs('#searchResults');
  const render=list=>{if(!results)return;results.innerHTML='';if(!list.length)return;const title=document.createElement('p');title.className='search-results-title';title.textContent=search?.value.trim()?'Resultados':'Accesos recientes';results.append(title);list.forEach(item=>{const b=document.createElement('button');b.innerHTML=`<span>${item.icon}</span><b>${item.label}</b><i>›</i>`;b.addEventListener('click',()=>activate(item));results.append(b)})};
  const renderDefault=()=>{if(menuList)menuList.hidden=false;render(getRecent())};
  search?.addEventListener('input',()=>{const term=search.value.trim().toLocaleLowerCase('es');if(!term){renderDefault();return}if(menuList)menuList.hidden=true;const found=functions.filter(x=>`${x.label} ${x.terms}`.toLocaleLowerCase('es').includes(term));if(found.length)render(found);else results.innerHTML='<div class="empty-search">No se encontró esa función.</div>'});
- qsa('[data-route]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.route)));qsa('[data-demo]').forEach(b=>b.addEventListener('click',()=>toast(`${b.dataset.demo}: preparada para la siguiente fase`)));qsa('[data-action="wallet"]').forEach(b=>b.addEventListener('click',()=>{closeMenu();openWallet()}));
+ qsa('[data-route]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.route)));qsa('[data-demo]').forEach(b=>b.addEventListener('click',()=>toast(`${b.dataset.demo}: preparada para la siguiente fase`)));qsa('[data-action="wallet"]').forEach(b=>b.addEventListener('click',()=>{closeMenu();openWallet('summary')}));
  // El cierre de sesión real lo gestiona jemmo-session.js.
 
  renderDefault();

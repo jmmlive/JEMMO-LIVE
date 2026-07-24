@@ -92,6 +92,16 @@
   });
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+    const reloadKey = 'jemmo_sw_reloaded_acceso_reparado_05';
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      try {
+        if (sessionStorage.getItem(reloadKey) === '1') return;
+        sessionStorage.setItem(reloadKey, '1');
+      } catch (error) {
+        console.warn('JEMMO service worker reload state:', error);
+      }
+      location.reload();
+    });
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js', { scope: './' })
         .then(registration => registration.update())

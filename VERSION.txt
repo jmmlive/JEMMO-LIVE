@@ -1,19 +1,32 @@
-JEMMO LIVE V1 · MONEDERO Y FINANZAS PRUEBA 06
+JEMMO LIVE V1 · ACCESO REPARADO PRUEBA 05
 Fecha: 24/07/2026
 
-Base recibida:
-- jemmo live arreglo.zip
-- JEMMO LIVE V1 · CORRECCIÓN GLOBAL PRUEBA 01
+Base revisada:
+- JEMMO LIVE V1 · ACCESO RESTAURADO Y MENSAJES PRUEBA 03.
+- Archivo fuente: JEMMO-LIVE-main (9).zip.
 
-Estado de esta entrega:
-- Monedero único operativo en Inicio, LIVE, Audio Room/Salas, Mensajes y Perfil.
-- Recargas ficticias completas por Google Play, Tarjeta, Epay, USDT y USDC.
-- Redes cripto disponibles: Binance BEP20, TRON TRC20 y Ethereum ERC20 según moneda.
-- Recargas vinculadas con JEMMO Finanzas mediante método, red, importe, comisión, neto, estado, fecha y hora.
-- Regalos de LIVE y Salas vinculados con el reparto financiero 70/20/10 o 70/30.
-- JEMS confirmados y pendientes calculados según el origen del saldo utilizado.
-- Retirada mínima de 100.000 JEMS y registro financiero de la retirada.
-- Caché PWA renovada para cargar la corrección.
+Causa confirmada:
+- Firebase podía autenticar correctamente el correo y la contraseña.
+- Después del acceso, localStorage.setItem('jemmo_active_uid', uid) podía lanzar QuotaExceededError cuando el almacenamiento local estaba lleno.
+- La excepción ocurría dentro del mismo bloque try del acceso, por lo que una autenticación válida se mostraba como fallo y no navegaba a Inicio.
 
-Alcance:
-Prueba local funcional. El dinero y las operaciones son simulados. La sincronización multiusuario real requiere backend/Firebase y reglas de seguridad.
+Corrección aplicada:
+- El UID se intenta guardar en localStorage y, si esa escritura falla, se respalda en sessionStorage.
+- La navegación a Inicio continúa después de una autenticación válida aunque el almacenamiento auxiliar falle.
+- jemmo-session.js reconoce el respaldo de sessionStorage en la verificación offline y en el tiempo de espera.
+- Las operaciones auxiliares del formulario quedan protegidas para que un fallo de almacenamiento no bloquee el acceso.
+- Un fallo de persistencia local de Firebase ya no detiene la preparación de la pantalla.
+- Se renueva la caché PWA sin retirar Mensajes en tiempo real ni el contador rojo.
+
+Archivos modificados:
+- INTEGRIDAD_SHA256.txt
+- VERSION.txt
+- acceso.html
+- jemmo-session.js
+- pwa-register.js
+- sw.js
+- manifest.webmanifest
+
+Estado:
+- MODO DE PRUEBAS.
+- Pendiente de instalación y validación real en móvil.

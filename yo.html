@@ -888,8 +888,13 @@
       state.period={...base.period,...(raw?.period||{})};if(!Number(state.period.startedAt))state.period.startedAt=Date.now();if(!state.period.dayKey)state.period.dayKey=localDayKey(state.period.startedAt);if(!Number(state.period.cycle))state.period.cycle=1;
       return state;
     };
-    const readFinance=()=>normalizeFinance(readJSON(FINANCE_KEY,null));
-    const writeFinance=state=>saveJSON(FINANCE_KEY,normalizeFinance(state));
+    const readFinance=()=>normalizeFinance(window.JemmoWallet?.getFinance?.()||readJSON(FINANCE_KEY,null));
+    const writeFinance=state=>{
+      const clean=normalizeFinance(state);
+      if(window.JemmoWallet?.saveFinance)return window.JemmoWallet.saveFinance(clean);
+      saveJSON(FINANCE_KEY,clean);
+      return clean;
+    };
 
     const periodSummary=(state,startAt,endAt)=>{
       const inRange=item=>Number(item?.createdAt||item?.paidAt||0)>=startAt&&Number(item?.createdAt||item?.paidAt||0)<endAt;
@@ -925,8 +930,17 @@
       if(lotsTotal>wallet.jemmos){let difference=lotsTotal-wallet.jemmos;for(let i=wallet.lots.length-1;i>=0&&difference>0;i--){const cut=Math.min(difference,Math.max(0,Number(wallet.lots[i].remaining)||0));wallet.lots[i].remaining-=cut;difference-=cut}}
       return syncWallet(wallet);
     };
-    const readWallet=(idValue=uid)=>normalizeWallet(readJSON(walletKey(idValue),null));
-    const writeWallet=(wallet,idValue=uid)=>{const clean=syncWallet(wallet);saveJSON(walletKey(idValue),clean);return clean};
+    const readWallet=(idValue=uid)=>{
+      const targetUid=String(idValue||uid);
+      if(targetUid===uid&&window.JemmoWallet?.get)return normalizeWallet(window.JemmoWallet.get(targetUid));
+      return normalizeWallet(readJSON(walletKey(targetUid),null));
+    };
+    const writeWallet=(wallet,idValue=uid)=>{
+      const targetUid=String(idValue||uid),clean=syncWallet(wallet);
+      if(targetUid===uid&&window.JemmoWallet?.save)return normalizeWallet(window.JemmoWallet.save(clean,'profile-finance'));
+      saveJSON(walletKey(targetUid),clean);
+      return clean;
+    };
     const walletLedger=(wallet,type,label,data={})=>{wallet.ledger.unshift({id:id('mov'),type,label,...data,createdAt:Date.now(),simulation:true});wallet.ledger=wallet.ledger.slice(0,400)};
     const walletEntries=()=>{const entries=[];for(let index=0;index<localStorage.length;index++){const key=localStorage.key(index);if(!key||!key.startsWith('jemmo_wallet_v1_'))continue;const userId=key.slice('jemmo_wallet_v1_'.length);entries.push({userId,key,raw:readJSON(key,{})})}if(!entries.some(entry=>entry.userId===uid))entries.push({userId:uid,key:walletKey(uid),raw:readJSON(walletKey(uid),{})});return entries};
     const readAllWallets=()=>walletEntries().map(entry=>({userId:entry.userId,wallet:normalizeWallet(entry.raw)}));
@@ -1071,7 +1085,7 @@
     let walletTab='summary',financeTab='overview',rechargeMethod=isCuba()?'card':'google';
 
     const showWalletTab=tab=>{walletTab=tab;document.querySelectorAll('[data-jf-wallet-tab]').forEach(button=>button.classList.toggle('active',button.dataset.jfWalletTab===tab));document.querySelectorAll('[data-jf-wallet-view]').forEach(view=>view.hidden=view.dataset.jfWalletView!==tab);renderWallet()};
-    const openWallet=(tab='summary')=>{releasePending(false);if($('jfFinanceBackdrop'))$('jfFinanceBackdrop').hidden=true;if($('jfFinanceSheet'))$('jfFinanceSheet').hidden=true;if($('jfOwnerBackdrop'))$('jfOwnerBackdrop').hidden=true;if($('jfOwnerAccess'))$('jfOwnerAccess').hidden=true;$('jfWalletBackdrop').hidden=false;$('jfWalletSheet').hidden=false;document.body.style.overflow='hidden';showWalletTab(tab)};
+    const openWallet=(tab='summary')=>{releasePending(false);if($('jfFinanceBackdrop'))$('jfFinanceBackdrop').hidden=true;if($('jfFinanceSheet'))$('jfFinanceSheet').hidden=true;if($('jfOwnerBackdrop'))$('jfOwnerBackdrop').hidden=true;if($('jfOwnerAccess'))$('jfOwnerAccess').hidden=true;window.JemmoWallet?.open?.(['summary','recharge','exchange','withdraw','history'].includes(tab)?tab:'summary')};
     const closeWallet=()=>{$('jfWalletBackdrop').hidden=true;$('jfWalletSheet').hidden=true;document.body.style.overflow=''};
     const renderRechargeMethods=()=>{
       $('jfRechargeMethods').innerHTML=Object.entries(methodInfo).map(([key,info])=>`<button class="jf-method ${rechargeMethod===key?'active':''}" type="button" data-jf-method="${key}" ${key==='google'&&isCuba()?'disabled':''}><b>${info.icon} ${info.name}</b><small>${key==='google'&&isCuba()?'No disponible para Cuba':info.copy}</small></button>`).join('');
@@ -1178,7 +1192,7 @@
     const suppressLegacyWallet=()=>{document.querySelectorAll('.wallet-backdrop,.wallet-sheet').forEach(element=>{if(!String(element.id||'').startsWith('jf')&&!String(element.id||'').startsWith('jw')){element.hidden=true;element.remove()}})};
     document.addEventListener('click',event=>{const trigger=event.target?.closest?.('[data-open-wallet],#openWallet');if(!trigger)return;event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();suppressLegacyWallet();const requested=String(trigger.dataset.openWallet||'summary').toLowerCase();const tab=requested==='earnings'?'summary':requested;window.JemmoWallet?.open?.(['summary','recharge','exchange','withdraw','history'].includes(tab)?tab:'summary')},true);
     const legacyObserver=new MutationObserver(()=>suppressLegacyWallet());legacyObserver.observe(document.body,{childList:true,subtree:true});suppressLegacyWallet();
-    window.JemmoProfileFinanceWallet={open:openWallet,openRecharge:()=>openWallet('recharge'),close:closeWallet,render:renderWallet,getState:()=>readWallet()};
+    window.JemmoProfileFinanceWallet={open:openWallet,openRecharge:()=>openWallet('recharge'),close:()=>window.JemmoWallet?.close?.(),render:renderWallet,getState:()=>window.JemmoWallet?.get?.()||readWallet()};
     window.JemmoFinance={open:requestFinanceAccess,render:renderFinance,isUnlocked:ownerUnlocked,reconcile:reconcileFinanceBooks};
     window.JemmoEconomy={sendGift,simulateRecharge,awardTask,releasePending,readWallet,readFinance};
     window.addEventListener('jemmo-wallet-change',()=>{reconcileFinanceBooks();renderWallet();if(ownerUnlocked())renderFinance()});
@@ -1283,10 +1297,10 @@
         {key:'cohete',icon:'🚀',name:'Cohete LIVE',value:100},
         {key:'castillo',icon:'🏰',name:'Castillo JEMMO',value:250}
       ];
-      const readWalletState=()=>{try{const value=JSON.parse(localStorage.getItem(walletStorageKey)||'{}');return value&&typeof value==='object'?value:{}}catch{return{}}};
+      const readWalletState=()=>{if(window.JemmoWallet?.get)return window.JemmoWallet.get();try{const value=JSON.parse(localStorage.getItem(walletStorageKey)||'{}');return value&&typeof value==='object'?value:{}}catch{return{}}};
       const walletJemmos=wallet=>Math.max(0,Math.floor(Number(wallet?.jemmos??wallet?.coins)||0));
       const walletJems=wallet=>Math.max(0,Math.floor(Number(wallet?.jems??wallet?.earnings)||0));
-      const writeWalletState=wallet=>{localStorage.setItem(walletStorageKey,JSON.stringify(wallet));window.dispatchEvent(new CustomEvent('jemmo-wallet-change',{detail:{source:'destello-gift'}}))};
+      const writeWalletState=wallet=>{if(window.JemmoWallet?.save)return window.JemmoWallet.save(wallet,'destello-gift');localStorage.setItem(walletStorageKey,JSON.stringify(wallet));window.dispatchEvent(new CustomEvent('jemmo-wallet-change',{detail:{source:'destello-gift'}}));return wallet};
       const selectedGift=()=>giftCatalog.find(gift=>gift.key===selectedDestelloGiftKey)||giftCatalog[0];
 
 

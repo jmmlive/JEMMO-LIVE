@@ -13,6 +13,47 @@ const app = getApps()[0] || initializeApp(firebaseConfig);
 const auth = getAuth(app);
 let resolved = false;
 
+function readActiveUid() {
+  try {
+    const uid = localStorage.getItem('jemmo_active_uid');
+    if (uid) return uid;
+  } catch (error) {
+    console.warn('JEMMO active UID local read:', error);
+  }
+  try {
+    return sessionStorage.getItem('jemmo_active_uid') || '';
+  } catch (error) {
+    console.warn('JEMMO active UID session read:', error);
+    return '';
+  }
+}
+
+function storeActiveUid(uid) {
+  const value = String(uid || '');
+  window.__jemmoAuthenticatedUid = value;
+  if (!value) return false;
+  try {
+    localStorage.setItem('jemmo_active_uid', value);
+    try { sessionStorage.removeItem('jemmo_active_uid'); } catch {}
+    return true;
+  } catch (error) {
+    console.warn('JEMMO active UID local backup:', error);
+    try {
+      sessionStorage.setItem('jemmo_active_uid', value);
+      return true;
+    } catch (sessionError) {
+      console.warn('JEMMO active UID session backup:', sessionError);
+      return false;
+    }
+  }
+}
+
+function clearStoredSession() {
+  try { localStorage.removeItem('jemmo_active_uid'); } catch {}
+  try { localStorage.removeItem('jemmo_session'); } catch {}
+  try { sessionStorage.clear(); } catch {}
+}
+
 function reveal(mode = 'verified') {
   resolved = true;
   document.documentElement.classList.remove('jemmo-auth-pending');
@@ -30,9 +71,7 @@ async function closeSession(trigger) {
   } catch (error) {
     console.error('JEMMO logout:', error);
   } finally {
-    localStorage.removeItem('jemmo_active_uid');
-    localStorage.removeItem('jemmo_session');
-    sessionStorage.clear();
+    clearStoredSession();
     location.replace('acceso.html?sesion=cerrada');
   }
 }
@@ -41,16 +80,16 @@ setPersistence(auth, browserLocalPersistence).catch(error => console.error('JEMM
 
 onAuthStateChanged(auth, user => {
   if (!user) {
-    localStorage.removeItem('jemmo_active_uid');
+    clearStoredSession();
     location.replace('acceso.html?sesion=requerida');
     return;
   }
-  localStorage.setItem('jemmo_active_uid', user.uid);
+  storeActiveUid(user.uid);
   reveal('verified');
   window.dispatchEvent(new CustomEvent('jemmo-auth-ready', { detail: { uid: user.uid } }));
 }, error => {
   console.error('JEMMO auth state:', error);
-  const localUid = localStorage.getItem('jemmo_active_uid');
+  const localUid = readActiveUid();
   if (localUid) {
     reveal('offline-local');
     window.dispatchEvent(new CustomEvent('jemmo-auth-ready', { detail: { uid: localUid, offline: true } }));
@@ -69,7 +108,7 @@ document.addEventListener('click', event => {
 
 window.setTimeout(() => {
   if (resolved) return;
-  const localUid = localStorage.getItem('jemmo_active_uid');
+  const localUid = readActiveUid();
   if (localUid) reveal('local-timeout');
   else location.replace('acceso.html?sesion=timeout');
 }, 5000);
