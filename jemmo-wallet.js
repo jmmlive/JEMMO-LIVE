@@ -1,13 +1,22 @@
 /* =========================================================
-   JEMMO LIVE · RECARGA Y SALDO PRUEBA 01
+   JEMMO LIVE · RECARGA GLOBAL Y RESPALDO PRUEBA 02
    Un solo saldo y un solo libro económico para toda la app
    ========================================================= */
 (() => {
   'use strict';
   if (window.JemmoWallet?.version) return;
 
-  const VERSION = '7.0.0-test';
+  const VERSION = '7.1.0-test';
   const FINANCE_KEY = 'jemmo_finance_v1';
+  const STORAGE_DB = 'jemmo_live_durable_v1';
+  const STORAGE_DB_VERSION = 1;
+  const WALLET_STORE = 'wallets';
+  const FINANCE_STORE = 'finance';
+  const walletMemory = new Map();
+  const walletSaveStatus = new Map();
+  let financeMemory = null;
+  let financeSavePromise = null;
+  let storageDbPromise = null;
   const byId = id => document.getElementById(id);
   const nowId = (prefix = 'op') => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   const currentUid = () => localStorage.getItem('jemmo_active_uid') || 'local-user';
@@ -33,6 +42,60 @@
   };
   const saveJson = (key, value) => localStorage.setItem(key, JSON.stringify(value));
   const isQuotaError = error => Boolean(error && (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED' || error.code === 22 || error.code === 1014));
+
+  function openStorageDb() {
+    if (storageDbPromise) return storageDbPromise;
+    storageDbPromise = new Promise((resolve, reject) => {
+      if (!('indexedDB' in window)) {
+        reject(new Error('indexeddb-unavailable'));
+        return;
+      }
+      const request = indexedDB.open(STORAGE_DB, STORAGE_DB_VERSION);
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains(WALLET_STORE)) db.createObjectStore(WALLET_STORE, { keyPath: 'uid' });
+        if (!db.objectStoreNames.contains(FINANCE_STORE)) db.createObjectStore(FINANCE_STORE, { keyPath: 'key' });
+      };
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error || new Error('indexeddb-open-failed'));
+    });
+    return storageDbPromise;
+  }
+
+  async function idbGet(storeName, key) {
+    const db = await openStorageDb();
+    return await new Promise((resolve, reject) => {
+      const transaction = db.transaction(storeName, 'readonly');
+      const request = transaction.objectStore(storeName).get(key);
+      request.onsuccess = () => resolve(request.result || null);
+      request.onerror = () => reject(request.error || new Error('indexeddb-read-failed'));
+    });
+  }
+
+  async function idbPut(storeName, value) {
+    const db = await openStorageDb();
+    return await new Promise((resolve, reject) => {
+      const transaction = db.transaction(storeName, 'readwrite');
+      transaction.oncomplete = () => resolve(value);
+      transaction.onerror = () => reject(transaction.error || new Error('indexeddb-write-failed'));
+      transaction.onabort = () => reject(transaction.error || new Error('indexeddb-write-aborted'));
+      transaction.objectStore(storeName).put(value);
+    });
+  }
+
+  function removeSafeLegacyStorage() {
+    const removable = [];
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index) || '';
+      if (/^jemmo_wallet_(?:legacy|backup|old)/i.test(key)) removable.push(key);
+      if (/^jemmo_finance_(?:legacy|backup|old)/i.test(key)) removable.push(key);
+    }
+    removable.forEach(key => localStorage.removeItem(key));
+    try {
+      const archives = readJson('jemmo_finance_reset_archives_v1', []);
+      if (Array.isArray(archives) && archives.length > 3) saveJson('jemmo_finance_reset_archives_v1', archives.slice(0, 3));
+    } catch {}
+  }
 
   const DEFAULT_SETTINGS = {
     jemsPerUsd: 10000,
@@ -140,7 +203,7 @@
     wallet.pendingCredits = Array.isArray(raw.pendingCredits) ? raw.pendingCredits : [];
     wallet.earningsHistory = Array.isArray(raw.earningsHistory) ? raw.earningsHistory : [];
     wallet.withdrawals = Array.isArray(raw.withdrawals) ? raw.withdrawals : [];
-    wallet.updatedAt = Number(raw.updatedAt) || Date.now();
+    wallet.updatedAt = raw.updatedAt === 0 ? 0 : (Number(raw.updatedAt) || Date.now());
 
     let lotTotal = wallet.lots.reduce((sum, lot) => sum + lot.remaining, 0);
     if (wallet.jemmos > lotTotal) {
@@ -202,7 +265,30 @@
     return state;
   }
 
-  const readFinance = () => normalizeFinance(readJson(FINANCE_KEY, null));
+  function readFinance() {
+    const raw = readJson(FINANCE_KEY, null);
+    const localState = normalizeFinance(raw);
+    if (!raw) localState.updatedAt = 0;
+    if (financeMemory && Number(financeMemory.updatedAt || 0) >= Number(localState.updatedAt || 0)) return normalizeFinance(financeMemory);
+    financeMemory = localState;
+    return localState;
+  }
+
+  async function hydrateFinanceFromDb() {
+    try {
+      const record = await idbGet(FINANCE_STORE, FINANCE_KEY);
+      if (!record?.state) return readFinance();
+      const stored = normalizeFinance(record.state);
+      const current = readFinance();
+      if (Number(stored.updatedAt || 0) <= Number(current.updatedAt || 0)) return current;
+      financeMemory = stored;
+      try { saveJson(FINANCE_KEY, compactFinanceState(stored)); } catch {}
+      return stored;
+    } catch (error) {
+      console.warn('JEMMO IndexedDB finance restore', error);
+      return readFinance();
+    }
+  }
 
   function compactFinanceState(input) {
     const state = normalizeFinance(input);
@@ -230,18 +316,35 @@
   }
 
   const writeFinance = state => {
-    const clean = normalizeFinance(state);
+    let clean = normalizeFinance(state);
     clean.updatedAt = Date.now();
+    let localSaved = false;
     try {
       saveJson(FINANCE_KEY, clean);
-      return clean;
+      localSaved = true;
     } catch (error) {
       if (!isQuotaError(error)) throw error;
-      const compact = compactFinanceState(clean);
-      compact.updatedAt = Date.now();
-      saveJson(FINANCE_KEY, compact);
-      return compact;
+      try { removeSafeLegacyStorage(); } catch {}
+      clean = compactFinanceState(clean);
+      clean.updatedAt = Date.now();
+      try {
+        saveJson(FINANCE_KEY, clean);
+        localSaved = true;
+      } catch (retryError) {
+        if (!isQuotaError(retryError)) throw retryError;
+      }
     }
+    financeMemory = clean;
+    financeSavePromise = idbPut(FINANCE_STORE, { key: FINANCE_KEY, state: clean, updatedAt: clean.updatedAt })
+      .catch(error => {
+        if (localSaved) {
+          console.warn('JEMMO IndexedDB finance copy', error);
+          return false;
+        }
+        throw error;
+      });
+    financeSavePromise.catch(() => false);
+    return clean;
   };
 
   function auditFinance(state, type, label, details = {}) {
@@ -253,7 +356,34 @@
   }
 
   function getWallet(uid = currentUid()) {
-    return normalizeWallet(readJson(storageKeyFor(uid), null));
+    const raw = readJson(storageKeyFor(uid), null);
+    const localWallet = normalizeWallet(raw);
+    if (!raw) localWallet.updatedAt = 0;
+    const memoryWallet = walletMemory.get(uid);
+    if (memoryWallet && Number(memoryWallet.updatedAt || 0) >= Number(localWallet.updatedAt || 0)) return normalizeWallet(memoryWallet);
+    walletMemory.set(uid, localWallet);
+    return localWallet;
+  }
+
+  async function hydrateWalletFromDb(uid = currentUid()) {
+    try {
+      const record = await idbGet(WALLET_STORE, uid);
+      if (!record?.wallet) return getWallet(uid);
+      const stored = normalizeWallet(record.wallet);
+      const current = getWallet(uid);
+      if (Number(stored.updatedAt || 0) <= Number(current.updatedAt || 0)) return current;
+      walletMemory.set(uid, stored);
+      try {
+        saveJson(storageKeyFor(uid), compactWalletState(stored));
+      } catch (error) {
+        if (!isQuotaError(error)) console.warn('JEMMO local wallet restore', error);
+      }
+      emit(stored, 'indexeddb-restore');
+      return stored;
+    } catch (error) {
+      console.warn('JEMMO IndexedDB wallet restore', error);
+      return getWallet(uid);
+    }
   }
 
   function emit(wallet, source = 'global') {
@@ -274,19 +404,51 @@
   }
 
   function saveWalletFor(uid, next) {
-    const wallet = normalizeWallet(next);
+    let wallet = normalizeWallet(next);
     wallet.updatedAt = Date.now();
+    let localSaved = false;
+    let lastError = null;
     try {
       saveJson(storageKeyFor(uid), wallet);
-      return wallet;
+      localSaved = true;
     } catch (error) {
+      lastError = error;
       if (!isQuotaError(error)) throw error;
-      compactStoredFinance();
-      const compact = compactWalletState(wallet);
-      compact.updatedAt = Date.now();
-      saveJson(storageKeyFor(uid), compact);
-      return compact;
+      try { compactStoredFinance(); } catch {}
+      try { removeSafeLegacyStorage(); } catch {}
+      wallet = compactWalletState(wallet);
+      wallet.updatedAt = Date.now();
+      try {
+        saveJson(storageKeyFor(uid), wallet);
+        localSaved = true;
+      } catch (retryError) {
+        lastError = retryError;
+        if (!isQuotaError(retryError)) throw retryError;
+      }
     }
+    walletMemory.set(uid, wallet);
+    const durablePromise = idbPut(WALLET_STORE, { uid, wallet, updatedAt: wallet.updatedAt })
+      .then(() => true)
+      .catch(error => {
+        if (localSaved) {
+          console.warn('JEMMO IndexedDB wallet copy', error);
+          return false;
+        }
+        throw error;
+      });
+    walletSaveStatus.set(uid, { localSaved, durablePromise, error: lastError });
+    return wallet;
+  }
+
+  async function waitForWalletPersistence(uid = currentUid()) {
+    const status = walletSaveStatus.get(uid);
+    if (!status) return true;
+    if (status.localSaved) {
+      status.durablePromise.catch(() => false);
+      return true;
+    }
+    await status.durablePromise;
+    return true;
   }
 
   function saveWallet(next, source = 'global') {
@@ -457,14 +619,17 @@
     if (!info || !usd || !jemmos) return { ok: false, reason: 'invalid' };
     if (method === 'google' && isCuba()) return { ok: false, reason: 'country' };
 
-    const state = readFinance();
+    const uid = currentUid();
+    const previousWallet = getWallet(uid);
+    const previousFinance = readFinance();
+    const state = normalizeFinance(previousFinance);
     const settings = state.settings;
     const commission = usd * feePercent(settings, method) / 100;
     const net = Math.max(0, usd - commission);
     const operationId = nowId('recharge');
     const createdAt = Date.now();
     const settlement = info.risk === 'confirmed' ? 'received' : 'pending';
-    const wallet = getWallet();
+    const wallet = normalizeWallet(previousWallet);
 
     wallet.jemmos += jemmos;
     wallet.coins = wallet.jemmos;
@@ -518,7 +683,15 @@
       financeSaved = false;
       console.error('JEMMO recharge finance save', error);
     }
-    return { ok: true, wallet: saved, operationId, commission, net, settlement, financeSaved };
+    const persistence = waitForWalletPersistence(uid);
+    const rollback = () => {
+      const restoredWallet = normalizeWallet(previousWallet);
+      const restoredFinance = normalizeFinance(previousFinance);
+      walletMemory.set(uid, restoredWallet);
+      financeMemory = restoredFinance;
+      emit(restoredWallet, 'recharge-rollback');
+    };
+    return { ok: true, wallet: saved, operationId, commission, net, settlement, financeSaved, persistence, rollback };
   }
 
   function addCoins(amount, meta = {}) {
@@ -1050,7 +1223,7 @@
     byId('jw-confirm-dialog').hidden = false;
   }
 
-  function confirmPendingRecharge() {
+  async function confirmPendingRecharge() {
     if (!pendingRecharge || rechargeBusy) return;
     rechargeBusy = true;
     const button = byId('jw-confirm-accept');
@@ -1066,12 +1239,24 @@
         button.disabled = false;
         button.textContent = 'CONFIRMAR RECARGA';
       }
-      return toast(result.reason === 'storage' ? 'No hay espacio para guardar el saldo. Cierra y abre la app e inténtalo de nuevo.' : 'No se pudo registrar la recarga.');
+      return toast('No se pudo registrar la recarga.');
+    }
+    try {
+      await result.persistence;
+    } catch (error) {
+      console.error('JEMMO durable recharge save', error);
+      result.rollback?.();
+      rechargeBusy = false;
+      if (button) {
+        button.disabled = false;
+        button.textContent = 'REINTENTAR RECARGA';
+      }
+      return toast('No se pudo guardar el saldo ni en el respaldo seguro del móvil. Libera espacio del navegador y vuelve a intentarlo.');
     }
     closeRechargeConfirmation();
     render();
     const info = METHOD_INFO[data.method];
-    toast(result.financeSaved === false ? `${formatNumber(data.jemmos)} JEMMOS añadidos. El registro financiero se recuperará al liberar espacio.` : `${formatNumber(data.jemmos)} JEMMOS añadidos mediante ${info.name}.`);
+    toast(result.financeSaved === false ? `${formatNumber(data.jemmos)} JEMMOS añadidos. El saldo quedó protegido en el respaldo del móvil.` : `${formatNumber(data.jemmos)} JEMMOS añadidos mediante ${info.name}.`);
   }
 
   function renderRechargeReceipt() {
@@ -1370,10 +1555,16 @@
 
   function boot() {
     injectStyles();
+    try { removeSafeLegacyStorage(); } catch {}
     releasePending(false);
     syncVisibleBalances();
     bindOpeners();
     installLiveGiftBridge();
+    Promise.allSettled([hydrateWalletFromDb(), hydrateFinanceFromDb()]).then(() => {
+      releasePending(false);
+      syncVisibleBalances();
+      render();
+    });
     const observer = new MutationObserver(records => {
       for (const record of records) {
         record.addedNodes.forEach(node => { if (node.nodeType === 1) bindOpeners(node); });

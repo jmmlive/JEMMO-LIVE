@@ -93,8 +93,8 @@
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (sessionStorage.getItem('jemmo_sw_reloaded_v1') === '1') return;
-      sessionStorage.setItem('jemmo_sw_reloaded_v1', '1');
+      if (sessionStorage.getItem('jemmo_sw_reloaded_recarga_02') === '1') return;
+      sessionStorage.setItem('jemmo_sw_reloaded_recarga_02', '1');
       location.reload();
     });
     window.addEventListener('load', () => {

@@ -584,6 +584,13 @@
     if($('globalWalletCoins'))$('globalWalletCoins').textContent=formatCoins(state.giftBalance);
   }
 
+  function openRoomWallet(tab='recharge'){
+    const wallet=window.JemmoWallet;
+    if(!wallet){toast('El Monedero todavía se está cargando. Inténtalo otra vez.');return}
+    if(tab==='recharge'&&wallet.openRecharge){wallet.openRecharge();return}
+    wallet.open?.(tab);
+  }
+
   function updateGiftPanel(){
     const recipients=selectedRecipientIndexes().length;
     const totalGifts=recipients*state.giftQuantity;
@@ -647,7 +654,7 @@
     updateBalance();
     if(totalCoins>state.giftBalance){
       toast(`Saldo insuficiente: necesitas ${formatCoins(totalCoins)} JEMMOS.`);
-      window.JemmoWallet?.open?.('recharge');
+      openRoomWallet('recharge');
       return;
     }
     const target=recipientLabel();
@@ -656,7 +663,7 @@
 Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
     if(!confirm(question))return;
     const spent=window.JemmoWallet?.spendCoins?.(totalCoins,{title:'Regalo enviado en Sala',giftName:gift,detail:`${gift} · ${target} · ×${state.giftQuantity}`,context:'Audio Room / Salas',source:'salas-gift'});
-    if(!spent?.ok){toast('Saldo insuficiente. Abriendo el Monedero.');window.JemmoWallet?.open?.('recharge');return}
+    if(!spent?.ok){toast('Saldo insuficiente. Abriendo el Monedero.');openRoomWallet('recharge');return}
     state.giftBalance=spent.wallet.jemmos;
     indexes.forEach(index=>state.giftTotals.set(index,(state.giftTotals.get(index)||0)+state.giftQuantity));
     updateGiftBadges();
@@ -748,12 +755,12 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   $('rechargeButton').addEventListener('click',event=>{
     event.preventDefault();
     event.stopImmediatePropagation();
-    window.JemmoWallet?.open?.('recharge');
+    openRoomWallet('recharge');
   },true);
   $('globalWalletButton')?.addEventListener('click',event=>{
     event.preventDefault();
     event.stopImmediatePropagation();
-    window.JemmoWallet?.open?.('summary');
+    openRoomWallet('summary');
   },true);
   window.addEventListener('jemmo-wallet-change',updateBalance);
   window.addEventListener('storage',event=>{if(event.key===window.JemmoWallet?.key?.())updateBalance()});
