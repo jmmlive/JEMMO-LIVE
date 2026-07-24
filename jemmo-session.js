@@ -11,15 +11,53 @@ const firebaseConfig = {
 };
 const app = getApps()[0] || initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const UID_KEY = 'jemmo_active_uid';
 let resolved = false;
 
-function storeActiveUid(uid) {
-  window.__jemmoAuthenticatedUid = String(uid || '');
+function safeGet(storage, key) {
+  try { return storage.getItem(key) || ''; }
+  catch { return ''; }
+}
+
+function safeSet(storage, key, value) {
   try {
-    localStorage.setItem('jemmo_active_uid', window.__jemmoAuthenticatedUid);
-  } catch (error) {
-    console.warn('JEMMO active UID local backup:', error);
+    storage.setItem(key, value);
+    return true;
+  } catch {
+    return false;
   }
+}
+
+function safeRemove(storage, key) {
+  try { storage.removeItem(key); }
+  catch {}
+}
+
+function readActiveUid() {
+  return safeGet(localStorage, UID_KEY)
+    || safeGet(sessionStorage, UID_KEY)
+    || String(window.__jemmoAuthenticatedUid || '');
+}
+
+function storeActiveUid(uid) {
+  const value = String(uid || '');
+  window.__jemmoAuthenticatedUid = value;
+  if (!value) return;
+
+  if (safeSet(localStorage, UID_KEY, value)) {
+    safeRemove(sessionStorage, UID_KEY);
+    return;
+  }
+
+  if (!safeSet(sessionStorage, UID_KEY, value)) {
+    console.warn('JEMMO active UID no pudo persistirse; se mantiene en memoria durante esta carga.');
+  }
+}
+
+function clearActiveUid() {
+  window.__jemmoAuthenticatedUid = '';
+  safeRemove(localStorage, UID_KEY);
+  safeRemove(sessionStorage, UID_KEY);
 }
 
 function reveal(mode = 'verified') {
@@ -39,9 +77,9 @@ async function closeSession(trigger) {
   } catch (error) {
     console.error('JEMMO logout:', error);
   } finally {
-    localStorage.removeItem('jemmo_active_uid');
-    localStorage.removeItem('jemmo_session');
-    sessionStorage.clear();
+    clearActiveUid();
+    safeRemove(localStorage, 'jemmo_session');
+    try { sessionStorage.clear(); } catch {}
     location.replace('acceso.html?sesion=cerrada');
   }
 }
@@ -50,7 +88,7 @@ setPersistence(auth, browserLocalPersistence).catch(error => console.error('JEMM
 
 onAuthStateChanged(auth, user => {
   if (!user) {
-    localStorage.removeItem('jemmo_active_uid');
+    clearActiveUid();
     location.replace('acceso.html?sesion=requerida');
     return;
   }
@@ -59,7 +97,7 @@ onAuthStateChanged(auth, user => {
   window.dispatchEvent(new CustomEvent('jemmo-auth-ready', { detail: { uid: user.uid } }));
 }, error => {
   console.error('JEMMO auth state:', error);
-  const localUid = localStorage.getItem('jemmo_active_uid');
+  const localUid = readActiveUid();
   if (localUid) {
     reveal('offline-local');
     window.dispatchEvent(new CustomEvent('jemmo-auth-ready', { detail: { uid: localUid, offline: true } }));
@@ -78,9 +116,9 @@ document.addEventListener('click', event => {
 
 window.setTimeout(() => {
   if (resolved) return;
-  const localUid = localStorage.getItem('jemmo_active_uid');
+  const localUid = readActiveUid();
   if (localUid) reveal('local-timeout');
   else location.replace('acceso.html?sesion=timeout');
 }, 5000);
 
-window.JemmoSession = { auth, closeSession };
+window.JemmoSession = { auth, closeSession, readActiveUid };

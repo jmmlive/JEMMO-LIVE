@@ -93,14 +93,11 @@
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      let alreadyReloaded = false;
       try {
-        alreadyReloaded = sessionStorage.getItem('jemmo_sw_reloaded_acceso_estable_prueba_04') === '1';
-        if (!alreadyReloaded) sessionStorage.setItem('jemmo_sw_reloaded_acceso_estable_prueba_04', '1');
-      } catch (error) {
-        console.warn('JEMMO control de recarga PWA:', error);
-      }
-      if (!alreadyReloaded) location.reload();
+        if (sessionStorage.getItem('jemmo_sw_reloaded_acceso_reparado_05') === '1') return;
+        sessionStorage.setItem('jemmo_sw_reloaded_acceso_reparado_05', '1');
+      } catch {}
+      location.reload();
     });
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js', { scope: './' })

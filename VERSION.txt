@@ -1,13 +1,27 @@
-JEMMO LIVE V1 · ACCESO ESTABLE PRUEBA 04
+JEMMO LIVE V1 · ACCESO REPARADO PRUEBA 05
 Fecha: 24/07/2026
 
-Corrección limitada al acceso:
-- Evita que sessionStorage/localStorage deje el botón bloqueado en “CONECTANDO…”.
-- Toda operación de almacenamiento queda protegida contra cuota llena o almacenamiento bloqueado.
-- Firebase Auth tiene límite de espera y siempre devuelve el botón a ENTRAR si no responde.
-- La persistencia local usa una alternativa temporal si el navegador no permite guardarla.
-- El inicio por correo, registro, recuperación y Google conservan el diseño y la configuración existentes.
-- No se modifica Mensajes, monedero, recargas, Perfil, LIVE, Salas ni sus datos.
-- Se renueva únicamente la caché PWA necesaria para instalar esta corrección.
+Base revisada:
+- JEMMO-LIVE-main (9).zip
+- JEMMO LIVE V1 · ACCESO RESTAURADO Y MENSAJES PRUEBA 03
 
-Archivos a sustituir: acceso.html, pwa-register.js, sw.js y VERSION.txt.
+Causa real corregida:
+- Firebase podía autenticar correctamente, pero localStorage.setItem('jemmo_active_uid', uid) podía lanzar QuotaExceededError cuando el almacenamiento local estaba lleno.
+- La excepción ocurría dentro del mismo try del acceso, por lo que un inicio de sesión válido se mostraba como fallo y no navegaba a Inicio.
+
+Corrección mínima:
+- El UID se guarda en localStorage y, si esa escritura falla, se respalda en sessionStorage.
+- La navegación a Inicio continúa después de una autenticación válida aunque localStorage esté lleno.
+- jemmo-session.js reconoce el respaldo de sessionStorage durante la comprobación, el modo offline y el tiempo de espera.
+- Las operaciones auxiliares de almacenamiento del acceso quedan protegidas para que no bloqueen el formulario.
+- Se renueva la caché PWA sin modificar Mensajes, monedero, LIVE, Salas, Perfil ni el diseño.
+
+Archivos a sustituir:
+- acceso.html
+- jemmo-session.js
+- pwa-register.js
+- sw.js
+- VERSION.txt
+
+Estado:
+Entrega incremental preparada para instalar y validar en el móvil.
