@@ -1,10 +1,13 @@
-JEMMO LIVE V1 · ACCESO RESTAURADO Y MENSAJES PRUEBA 03
+JEMMO LIVE V1 · ACCESO ESTABLE PRUEBA 04
 Fecha: 24/07/2026
 
-Corrección urgente:
-- Retira por completo la inyección de jemmo-access-recovery.js en acceso.html.
-- Restaura el inicio de sesión original de la aplicación.
-- Conserva los scripts de Mensajes en tiempo real y el contador rojo.
-- Fuerza una caché nueva del service worker para eliminar la corrección defectuosa anterior.
+Corrección limitada al acceso:
+- Evita que sessionStorage/localStorage deje el botón bloqueado en “CONECTANDO…”.
+- Toda operación de almacenamiento queda protegida contra cuota llena o almacenamiento bloqueado.
+- Firebase Auth tiene límite de espera y siempre devuelve el botón a ENTRAR si no responde.
+- La persistencia local usa una alternativa temporal si el navegador no permite guardarla.
+- El inicio por correo, registro, recuperación y Google conservan el diseño y la configuración existentes.
+- No se modifica Mensajes, monedero, recargas, Perfil, LIVE, Salas ni sus datos.
+- Se renueva únicamente la caché PWA necesaria para instalar esta corrección.
 
-Archivos a sustituir: VERSION.txt y sw.js.
+Archivos a sustituir: acceso.html, pwa-register.js, sw.js y VERSION.txt.
