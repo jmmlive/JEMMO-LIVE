@@ -1,12 +1,12 @@
 /* =========================================================
-   JEMMO LIVE · MONEDERO GLOBAL + FINANZAS PRUEBA 06
+   JEMMO LIVE · RECARGA Y SALDO PRUEBA 01
    Un solo saldo y un solo libro económico para toda la app
    ========================================================= */
 (() => {
   'use strict';
   if (window.JemmoWallet?.version) return;
 
-  const VERSION = '6.0.0-test';
+  const VERSION = '7.0.0-test';
   const FINANCE_KEY = 'jemmo_finance_v1';
   const byId = id => document.getElementById(id);
   const nowId = (prefix = 'op') => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -32,6 +32,7 @@
     }
   };
   const saveJson = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+  const isQuotaError = error => Boolean(error && (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED' || error.code === 22 || error.code === 1014));
 
   const DEFAULT_SETTINGS = {
     jemsPerUsd: 10000,
@@ -202,11 +203,45 @@
   }
 
   const readFinance = () => normalizeFinance(readJson(FINANCE_KEY, null));
+
+  function compactFinanceState(input) {
+    const state = normalizeFinance(input);
+    state.recharges = state.recharges.slice(0, 160);
+    state.gifts = state.gifts.slice(0, 220);
+    state.tasks = state.tasks.slice(0, 160);
+    state.withdrawals = state.withdrawals.slice(0, 140);
+    state.expenses = state.expenses.slice(0, 140);
+    state.pendingSystem = state.pendingSystem.slice(0, 220);
+    state.audit = state.audit.slice(0, 240);
+    state.closures = state.closures.slice(0, 80);
+    state.resetLog = state.resetLog.slice(0, 30);
+    return state;
+  }
+
+  function compactStoredFinance() {
+    try {
+      const current = readFinance();
+      current.updatedAt = Date.now();
+      saveJson(FINANCE_KEY, compactFinanceState(current));
+      return true;
+    } catch {
+      return false;
+    }
+  }
+
   const writeFinance = state => {
     const clean = normalizeFinance(state);
     clean.updatedAt = Date.now();
-    saveJson(FINANCE_KEY, clean);
-    return clean;
+    try {
+      saveJson(FINANCE_KEY, clean);
+      return clean;
+    } catch (error) {
+      if (!isQuotaError(error)) throw error;
+      const compact = compactFinanceState(clean);
+      compact.updatedAt = Date.now();
+      saveJson(FINANCE_KEY, compact);
+      return compact;
+    }
   };
 
   function auditFinance(state, type, label, details = {}) {
@@ -228,11 +263,30 @@
     syncVisibleBalances(detail.wallet);
   }
 
+  function compactWalletState(input) {
+    const wallet = normalizeWallet(input);
+    wallet.history = wallet.history.slice(0, 120);
+    wallet.ledger = wallet.ledger.slice(0, 220);
+    wallet.pendingCredits = wallet.pendingCredits.slice(0, 160);
+    wallet.earningsHistory = wallet.earningsHistory.slice(0, 180);
+    wallet.withdrawals = wallet.withdrawals.slice(0, 100);
+    return wallet;
+  }
+
   function saveWalletFor(uid, next) {
     const wallet = normalizeWallet(next);
     wallet.updatedAt = Date.now();
-    saveJson(storageKeyFor(uid), wallet);
-    return wallet;
+    try {
+      saveJson(storageKeyFor(uid), wallet);
+      return wallet;
+    } catch (error) {
+      if (!isQuotaError(error)) throw error;
+      compactStoredFinance();
+      const compact = compactWalletState(wallet);
+      compact.updatedAt = Date.now();
+      saveJson(storageKeyFor(uid), compact);
+      return compact;
+    }
   }
 
   function saveWallet(next, source = 'global') {
@@ -448,9 +502,23 @@
       operationId, usd, jemmos, commission, net, network, settlement
     });
 
-    writeFinance(state);
-    const saved = saveWallet(wallet, 'recharge');
-    return { ok: true, wallet: saved, operationId, commission, net, settlement };
+    let saved;
+    try {
+      // El saldo se guarda primero. Un fallo de espacio en Finanzas ya no anula la recarga.
+      saved = saveWallet(wallet, 'recharge');
+    } catch (error) {
+      console.error('JEMMO recharge wallet save', error);
+      return { ok: false, reason: isQuotaError(error) ? 'storage' : 'save', error };
+    }
+
+    let financeSaved = true;
+    try {
+      writeFinance(state);
+    } catch (error) {
+      financeSaved = false;
+      console.error('JEMMO recharge finance save', error);
+    }
+    return { ok: true, wallet: saved, operationId, commission, net, settlement, financeSaved };
   }
 
   function addCoins(amount, meta = {}) {
@@ -807,6 +875,7 @@
       .jw-packages{display:grid;grid-template-columns:1fr 1fr;gap:9px}.jw-package{min-height:82px;padding:10px;border:1px solid #7b5b1e;border-radius:17px;background:radial-gradient(circle at 80% 10%,#ffcf4730,transparent 36%),linear-gradient(150deg,#3b2607,#170d03);color:#fff;text-align:left}.jw-package strong{display:block;color:var(--jw-gold);font-size:18px}.jw-package small{display:block;margin-top:5px;color:#d6c298;font-size:8px}.jw-package span{display:inline-block;margin-top:8px;padding:4px 7px;border-radius:999px;background:var(--jw-gold);color:#2b1703;font-size:7px;font-weight:1000}
       .jw-field{display:grid;gap:6px}.jw-field>span{color:#e6dbe9;font-size:9px;font-weight:900}.jw-field input,.jw-field select{width:100%;min-height:45px;border:1px solid #5c2a6d;border-radius:13px;background:#09000d;color:#fff;padding:0 12px;outline:none}.jw-field input:focus,.jw-field select:focus{border-color:var(--jw-gold);box-shadow:0 0 0 3px #ffd34e1d}.jw-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.jw-preview{padding:11px;border:1px dashed #6c377d;border-radius:14px;background:#0b010f;color:#bfaec5;font-size:9px;line-height:1.5}.jw-preview b{color:#ffe17c}.jw-primary{width:100%;min-height:47px;border:0;border-radius:14px;background:linear-gradient(90deg,var(--jw-gold),#d63aff);color:#1c031f;font-weight:1000}.jw-primary:disabled{opacity:.45}.jw-secondary{width:100%;min-height:42px;border:1px solid #673079;border-radius:13px;background:#210529;color:#fff;font-weight:900}.jw-note{padding:10px;border:1px solid #6e5320;border-radius:13px;background:#251706;color:#dbc991;font-size:8px;line-height:1.45}.jw-receipt{padding:11px;border:1px solid #2f7653;border-radius:14px;background:#0b291d}.jw-receipt[hidden]{display:none!important}.jw-receipt small{display:block;color:#8fd5ae;font-size:7px;font-weight:1000}.jw-receipt b{display:block;margin-top:5px;color:#65e8a2;font-size:11px}.jw-receipt span{display:block;margin-top:4px;color:#a5c9b5;font-size:8px;line-height:1.4}
       .jw-history{display:grid;gap:8px}.jw-empty{padding:24px 12px;border:1px dashed #50305a;border-radius:16px;color:#8f8095;text-align:center;font-size:9px}.jw-movement{display:grid;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;gap:9px;padding:10px;border:1px solid #482057;border-radius:14px;background:#0d0112}.jw-movement-icon{width:36px;height:36px;border-radius:12px;background:#2b0736;display:grid;place-items:center;font-size:18px}.jw-movement-copy{min-width:0}.jw-movement-copy b{display:block;font-size:9.5px}.jw-movement-copy small{display:block;margin-top:3px;color:#94869a;font-size:7.5px;line-height:1.35}.jw-movement-amount{text-align:right;font-size:9px;font-weight:1000;white-space:nowrap}.jw-movement-amount.positive{color:#62e6a1}.jw-movement-amount.negative{color:#ff8fa4}.jw-movement-amount.neutral{color:#ffe17b}.jw-rate{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;border:1px solid #482057;border-radius:13px;background:#0d0112;color:#a99bad;font-size:8px}.jw-rate b{color:#ffe17b}.jw-toast{position:fixed;z-index:2147483647;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);width:max-content;max-width:calc(100% - 32px);padding:10px 13px;border:1px solid #815f23;border-radius:999px;background:#1c1004;color:#ffe494;font:900 9px/1.35 Inter,system-ui,sans-serif;text-align:center;opacity:0;pointer-events:none;transition:.2s}.jw-toast.show{opacity:1;transform:translate(-50%,0)}
+      .jw-confirm-backdrop{position:fixed;inset:0;z-index:2147483002;background:#020003d9;backdrop-filter:blur(8px)}.jw-confirm-backdrop[hidden],.jw-confirm-dialog[hidden]{display:none!important}.jw-confirm-dialog{position:fixed;z-index:2147483003;left:50%;top:50%;transform:translate(-50%,-50%);width:min(calc(100% - 30px),390px);padding:18px;border:1px solid #9b7427;border-radius:22px;background:radial-gradient(circle at 80% 0,#5a3b0d 0,#210c05 28%,#0b010e 72%);color:#fff;box-shadow:0 24px 80px #000;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}.jw-confirm-dialog small{display:block;color:#ffd34e;font-size:8px;font-weight:1000;letter-spacing:.12em}.jw-confirm-dialog h3{margin:7px 0 0;font-size:20px}.jw-confirm-dialog p{margin:8px 0 0;color:#d2c4d6;font-size:10px;line-height:1.5}.jw-confirm-summary{display:grid;gap:7px;margin-top:13px;padding:12px;border:1px solid #634a1d;border-radius:15px;background:#120804}.jw-confirm-summary span{display:flex;justify-content:space-between;gap:12px;color:#b9a9bd;font-size:9px}.jw-confirm-summary b{color:#ffe28a;text-align:right}.jw-confirm-actions{display:grid;grid-template-columns:1fr 1.25fr;gap:8px;margin-top:14px}.jw-confirm-actions button{min-height:46px;border-radius:14px;font-weight:1000}.jw-confirm-cancel{border:1px solid #653078;background:#1d0525;color:#fff}.jw-confirm-accept{border:0;background:linear-gradient(90deg,#ffd34e,#d63aff);color:#1c031f}.jw-confirm-accept:disabled{opacity:.55}
       @media(max-width:380px){.jw-sheet{padding-left:11px;padding-right:11px}.jw-head{margin-left:-11px;margin-right:-11px;padding-left:11px;padding-right:11px}.jw-form-grid{grid-template-columns:1fr}.jw-actions{gap:6px}.jw-shortcut{font-size:8px}.jw-methods{gap:6px}}
     `;
     document.head.append(style);
@@ -854,6 +923,12 @@
           <p class="jw-note">Retirada ficticia: los JEMS bajan, el pago queda anotado y no sale dinero real.</p>
         </div>
         <div class="jw-view" data-jw-view="history" hidden><article class="jw-card"><h3>Historial completo</h3><p>Todos los movimientos de esta cuenta.</p></article><div class="jw-history" id="jw-history"></div></div>
+      </section>
+      <div class="jw-confirm-backdrop" id="jw-confirm-backdrop" hidden></div>
+      <section class="jw-confirm-dialog" id="jw-confirm-dialog" hidden role="dialog" aria-modal="true" aria-labelledby="jw-confirm-title">
+        <small>RECARGA DE PRUEBA</small><h3 id="jw-confirm-title">Confirmar recarga</h3><p>Comprueba los datos. Al confirmar, el saldo se actualizará inmediatamente en toda la aplicación.</p>
+        <div class="jw-confirm-summary"><span>Método <b id="jw-confirm-method">—</b></span><span>Importe <b id="jw-confirm-usd">—</b></span><span>Recibirás <b id="jw-confirm-jemmos">—</b></span><span id="jw-confirm-network-row" hidden>Red <b id="jw-confirm-network">—</b></span></div>
+        <div class="jw-confirm-actions"><button class="jw-confirm-cancel" id="jw-confirm-cancel" type="button">CANCELAR</button><button class="jw-confirm-accept" id="jw-confirm-accept" type="button">CONFIRMAR RECARGA</button></div>
       </section>`;
   }
 
@@ -941,6 +1016,64 @@
     }
   }
 
+  let pendingRecharge = null;
+  let rechargeBusy = false;
+
+  function closeRechargeConfirmation() {
+    pendingRecharge = null;
+    rechargeBusy = false;
+    if (byId('jw-confirm-backdrop')) byId('jw-confirm-backdrop').hidden = true;
+    if (byId('jw-confirm-dialog')) byId('jw-confirm-dialog').hidden = true;
+    if (byId('jw-confirm-accept')) {
+      byId('jw-confirm-accept').disabled = false;
+      byId('jw-confirm-accept').textContent = 'CONFIRMAR RECARGA';
+    }
+  }
+
+  function requestRechargeConfirmation(data) {
+    const info = METHOD_INFO[data?.method];
+    const usd = Math.max(0, Number(data?.usd) || 0);
+    const jemmos = Math.max(0, Math.floor(Number(data?.jemmos) || 0));
+    if (!info || !usd || !jemmos) return toast('No se pudo preparar esta recarga.');
+    if (data.method === 'google' && isCuba()) return toast('Google Play no está disponible para Cuba.');
+    ensureUi();
+    pendingRecharge = { method: data.method, usd, jemmos, bonus: Number(data.bonus) || 0, network: String(data.network || '') };
+    byId('jw-confirm-method').textContent = info.name;
+    const cryptoCode = data.method === 'usdt' ? 'USDT' : data.method === 'usdc' ? 'USDC' : '';
+    byId('jw-confirm-usd').textContent = cryptoCode
+      ? `${usd.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${cryptoCode}`
+      : formatMoney(usd);
+    byId('jw-confirm-jemmos').textContent = `${formatNumber(jemmos)} JEMMOS`;
+    byId('jw-confirm-network').textContent = pendingRecharge.network || '—';
+    byId('jw-confirm-network-row').hidden = !pendingRecharge.network;
+    byId('jw-confirm-backdrop').hidden = false;
+    byId('jw-confirm-dialog').hidden = false;
+  }
+
+  function confirmPendingRecharge() {
+    if (!pendingRecharge || rechargeBusy) return;
+    rechargeBusy = true;
+    const button = byId('jw-confirm-accept');
+    if (button) {
+      button.disabled = true;
+      button.textContent = 'REGISTRANDO…';
+    }
+    const data = { ...pendingRecharge };
+    const result = registerRecharge(data);
+    if (!result.ok) {
+      rechargeBusy = false;
+      if (button) {
+        button.disabled = false;
+        button.textContent = 'CONFIRMAR RECARGA';
+      }
+      return toast(result.reason === 'storage' ? 'No hay espacio para guardar el saldo. Cierra y abre la app e inténtalo de nuevo.' : 'No se pudo registrar la recarga.');
+    }
+    closeRechargeConfirmation();
+    render();
+    const info = METHOD_INFO[data.method];
+    toast(result.financeSaved === false ? `${formatNumber(data.jemmos)} JEMMOS añadidos. El registro financiero se recuperará al liberar espacio.` : `${formatNumber(data.jemmos)} JEMMOS añadidos mediante ${info.name}.`);
+  }
+
   function renderRechargeReceipt() {
     const item = readFinance().recharges?.[0];
     const box = byId('jw-recharge-receipt');
@@ -993,6 +1126,7 @@
 
   function hideWallet() {
     if (!byId('jw-sheet')) return;
+    closeRechargeConfirmation();
     byId('jw-backdrop').hidden = true;
     byId('jw-sheet').hidden = true;
     document.body.style.overflow = document.documentElement.dataset.jwOverflow || '';
@@ -1037,6 +1171,9 @@
   function bindUi() {
     byId('jw-close')?.addEventListener('click', close);
     byId('jw-backdrop')?.addEventListener('click', close);
+    byId('jw-confirm-cancel')?.addEventListener('click', closeRechargeConfirmation);
+    byId('jw-confirm-backdrop')?.addEventListener('click', closeRechargeConfirmation);
+    byId('jw-confirm-accept')?.addEventListener('click', confirmPendingRecharge);
     document.querySelectorAll('[data-jw-tab]').forEach(button => button.addEventListener('click', () => showTab(button.dataset.jwTab)));
     document.querySelectorAll('[data-jw-go]').forEach(button => button.addEventListener('click', () => showTab(button.dataset.jwGo)));
 
@@ -1052,11 +1189,7 @@
       const pack = (RECHARGE_PACKAGES[rechargeMethod] || [])[Number(button.dataset.jwPackage)];
       const info = METHOD_INFO[rechargeMethod];
       if (!pack || !info) return;
-      if (!confirm(`RECARGA SIMULADA\n\nMétodo: ${info.name}\nPagas: ${formatMoney(pack.usd)}\nRecibes: ${formatNumber(pack.jemmos)} JEMMOS\n\n¿Registrar esta recarga?`)) return;
-      const result = registerRecharge({ method: rechargeMethod, ...pack });
-      if (!result.ok) return toast(result.reason === 'country' ? 'Google Play no está disponible para Cuba.' : 'No se pudo registrar la recarga.');
-      render();
-      toast(`${formatNumber(pack.jemmos)} JEMMOS añadidos y registrados en JEMMO Finanzas.`);
+      requestRechargeConfirmation({ method: rechargeMethod, ...pack });
     });
     byId('jw-crypto-amount')?.addEventListener('input', updateCryptoPreview);
     byId('jw-crypto-network')?.addEventListener('change', updateCryptoPreview);
@@ -1065,11 +1198,8 @@
       const network = byId('jw-crypto-network').value;
       const jemmos = Math.floor(amount * 9900);
       const info = METHOD_INFO[rechargeMethod];
-      if (!confirm(`RECARGA CRIPTO SIMULADA\n\nMoneda: ${info.name}\nRed: ${network}\nEnvías: ${amount.toLocaleString('es-ES', { maximumFractionDigits: 2 })} ${info.name}\nRecibes: ${formatNumber(jemmos)} JEMMOS\n\n¿La red es correcta y deseas registrar la prueba?`)) return;
-      const result = registerRecharge({ method: rechargeMethod, usd: amount, jemmos, network });
-      if (!result.ok) return toast('No se pudo registrar la recarga cripto.');
-      render();
-      toast(`${formatNumber(jemmos)} JEMMOS añadidos por ${info.name} · ${network}.`);
+      if (!info) return toast('Selecciona USDT o USDC.');
+      requestRechargeConfirmation({ method: rechargeMethod, usd: amount, jemmos, network });
     });
 
     byId('jw-exchange-type')?.addEventListener('change', updateExchangePreview);
