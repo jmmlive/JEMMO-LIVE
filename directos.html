@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html class="jemmo-auth-pending" lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#09000f">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="favicon-64.png" type="image/png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <title>JEMMO LIVE · Personas en directo</title>
+  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="directos.css">
+  <script>document.documentElement.classList.add("jemmo-auth-pending");setTimeout(()=>{if(!document.documentElement.classList.contains("jemmo-auth-pending"))return;let uid="";try{uid=localStorage.getItem("jemmo_active_uid")||""}catch{}if(!uid)try{uid=sessionStorage.getItem("jemmo_active_uid")||""}catch{}if(uid)document.documentElement.classList.remove("jemmo-auth-pending");else location.replace("acceso.html?sesion=timeout")},5500)</script>
+</head>
+<body>
+  <main class="app-shell directos-shell">
+    <header class="directos-header">
+      <button class="directos-back" id="directosBack" type="button" aria-label="Volver a Inicio">‹</button>
+      <div class="directos-heading">
+        <small>JEMMO LIVE</small>
+        <h1>Personas en directo</h1>
+        <p>Descubre quién está transmitiendo ahora.</p>
+      </div>
+      <span class="directos-live-count" id="liveCount" aria-live="polite">0 LIVE</span>
+    </header>
+
+    <section class="directos-tools" aria-label="Buscar y filtrar directos">
+      <label class="directos-search">
+        <span aria-hidden="true">⌕</span>
+        <input id="liveSearch" type="search" autocomplete="off" placeholder="Buscar persona, país o tema..." aria-label="Buscar personas en directo">
+        <button id="clearSearch" type="button" aria-label="Limpiar búsqueda" hidden>×</button>
+      </label>
+      <div class="directos-filters" id="liveFilters" role="tablist" aria-label="Filtros de personas en directo">
+        <button class="active" type="button" role="tab" aria-selected="true" data-filter="all">Todos</button>
+        <button type="button" role="tab" aria-selected="false" data-filter="following">✓ Seguidos</button>
+        <button type="button" role="tab" aria-selected="false" data-filter="España">🇪🇸 España</button>
+        <button type="button" role="tab" aria-selected="false" data-filter="Cuba">🇨🇺 Cuba</button>
+        <button type="button" role="tab" aria-selected="false" data-filter="México">🇲🇽 México</button>
+        <button type="button" role="tab" aria-selected="false" data-filter="Colombia">🇨🇴 Colombia</button>
+        <button type="button" role="tab" aria-selected="false" data-filter="Venezuela">🇻🇪 Venezuela</button>
+        <button type="button" role="tab" aria-selected="false" data-filter="República Dominicana">🇩🇴 R. Dominicana</button>
+      </div>
+    </section>
+
+    <section class="directos-summary">
+      <div><span class="pulse-dot"></span><strong id="resultsTitle">Todos los directos</strong></div>
+      <small id="resultsSubtitle">Personas conectadas ahora</small>
+    </section>
+
+    <section class="directos-grid" id="directosGrid" aria-live="polite"></section>
+
+    <section class="directos-empty" id="directosEmpty" hidden>
+      <span>◌</span>
+      <h2>No hay directos en este filtro</h2>
+      <p>Prueba con otro país, consulta a las personas que sigues o limpia la búsqueda.</p>
+      <button id="resetFilters" type="button">VER TODOS</button>
+    </section>
+
+    <p class="directos-note">Los directos aparecerán aquí automáticamente cuando los usuarios comiencen a transmitir.</p>
+  </main>
+
+  <div class="directos-toast" id="directosToast" role="status"></div>
+
+  <nav class="bottom-nav" data-current="inicio">
+    <a data-tab="inicio" href="inicio.html"><span class="nav-icon">⌂</span><b>Inicio</b></a>
+    <a data-tab="live" href="live.html"><span class="nav-icon">▣</span><b>Live</b></a>
+    <a data-tab="salas" href="salas.html"><span class="nav-icon">🎙</span><b>Salas</b></a>
+    <a data-tab="mensajes" href="mensajes.html"><span class="badge">8</span><span class="nav-icon">◌</span><b>Mensajes</b></a>
+    <a data-tab="yo" href="yo.html"><span class="nav-icon">♙</span><b>Yo</b></a>
+  </nav>
+
+  <script src="jemmo-session.js" type="module"></script>
+  <script src="pwa-register.js"></script>
+  <script src="app.js"></script>
+  <script src="directos.js"></script>
+</body>
+</html>

@@ -1,37 +1,35 @@
-JEMMO LIVE V1 · INICIO BATALLA Y LIVE PRUEBA 06
+JEMMO LIVE V1 · DIRECTOS POR SEGUIDOS Y PAÍSES PRUEBA 07
 Fecha: 25/07/2026
 
 Base:
-- JEMMO LIVE V1 · PERFIL PÚBLICO NATURAL PRUEBA 05.
-- Continuación del diseño aprobado de la página Inicio.
+- JEMMO LIVE V1 · INICIO BATALLA Y LIVE PRUEBA 06.
 
-Objetivo:
-- Dar prioridad visual a la Batalla de Casas destacada.
-- Colocar las personas en directo inmediatamente debajo de la batalla.
-- Mantener el chat público compacto y unido al bloque de batalla.
-- Evitar que los LIVE vuelvan a ocupar la parte superior por encima de la batalla.
+Incidencia corregida:
+- El enlace “Ver todos” de PERSONAS EN DIRECTO abría `live.html`, que es la página destinada a preparar e iniciar una transmisión.
+- Navegar por personas que ya están transmitiendo debe mantenerse separado del botón inferior Live.
 
-Cambios en Inicio:
-- La Batalla oficial pasa a ser el primer módulo de contenido después de la cabecera y el monedero.
-- Se añade la etiqueta visual DESTACADA sin alterar el funcionamiento de la batalla.
-- El chat público permanece dentro del mismo módulo y reduce su altura visible para conservar una portada equilibrada.
-- El módulo PERSONAS EN DIRECTO se coloca justo debajo de la batalla.
-- Los LIVE se muestran en una fila horizontal de tarjetas compactas, cuadradas y desplazables.
-- El enlace Ver todos continúa abriendo la página LIVE.
-- Chili IA queda después del módulo de personas en directo.
+Cambios:
+- “Ver todos” abre la nueva página `directos.html`.
+- La página muestra un catálogo ampliado de personas transmitiendo.
+- Filtros horizontales: Todos, Seguidos, España, Cuba, México, Colombia, Venezuela y República Dominicana.
+- Buscador por persona, ciudad, país o tema.
+- Contador dinámico de resultados y estado vacío.
+- Tarjetas con nombre, verificación, espectadores, ciudad, país, nivel y marca SIGUIENDO.
+- La barra inferior mantiene Inicio como sección activa.
+- El botón inferior Live conserva su función exclusiva de preparar e iniciar una transmisión; no se convierte en catálogo.
 
-Alcance estricto:
-- Solo se reorganiza y ajusta la página Inicio.
-- No se modifica la lógica de LIVE, Salas, Perfil, Mensajes, regalos, monedero ni sesión.
-- No se eliminan módulos ni datos existentes.
+Alcance:
+- Se modifica `inicio.html` únicamente para corregir la ruta de “Ver todos”.
+- Se añaden `directos.html`, `directos.css` y `directos.js`.
+- No se modifica la preparación de LIVE, Salas, Perfil, Mensajes, regalos, monedero ni economía.
+- Los perfiles mostrados son datos de prueba hasta conectar el listado a transmisiones reales del servidor.
 
 Actualización PWA:
-- Nueva caché `jemmo-live-v1-inicio-batalla-live-06-20260725`.
-- La aplicación instalada recibe la actualización sin desinstalarse.
+- Nueva caché `jemmo-live-v1-directos-filtros-07-20260725`.
+- La aplicación instalada recibe la página nueva sin desinstalarse.
 
 Validación:
-- Orden DOM verificado: Batalla → Personas en directo → Chili IA.
-- HTML analizado sin identificadores duplicados.
-- Manifest válido.
-- Recursos del APP_SHELL presentes.
-- Vista móvil estática revisada a 393 × 852 px.
+- Enlace “Ver todos” apunta a `directos.html`.
+- Filtros y búsqueda comprobados en navegador móvil.
+- Manifest válido y recursos APP_SHELL presentes.
+- JavaScript externo e inline sin errores de sintaxis.

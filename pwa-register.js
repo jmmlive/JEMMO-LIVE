@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-inicio-batalla-live-06';
+  const VERSION = 'pwa-directos-filtros-07';
   let installPrompt = null;
 
   const isStandalone = () =>
