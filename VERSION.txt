@@ -1,48 +1,52 @@
-JEMMO LIVE V1 · ACCESO Y ARRANQUE REPARADOS PRUEBA 06
+JEMMO LIVE V1 · PERFILES Y MENSAJES REALES PRUEBA 07
 Fecha: 25/07/2026
 
-Base revisada:
-- JEMMO LIVE V1 · ACCESO REPARADO PRUEBA 05.
-- ZIP completo recibido y capturas reales de Firebase del 25/07/2026.
+Base vigente:
+- JEMMO LIVE V1 · ACCESO Y ARRANQUE REPARADOS PRUEBA 06.
+- Acceso validado correctamente en móvil mediante correo y contraseña.
 
-Diagnóstico confirmado:
-- Firebase Authentication sí acepta las credenciales: la consola muestra dos usuarios y un acceso registrado el 25/07/2026.
-- Correo electrónico/contraseña está habilitado.
-- El fallo ocurre después de autenticar, durante la persistencia y el arranque de la aplicación.
-- acceso.html forzaba browserLocalPersistence. Cuando el almacenamiento local estaba lleno, la sesión Firebase podía quedar sin persistencia duradera.
-- jemmo-session.js trataba user === null como cierre real, borraba el respaldo de sessionStorage y devolvía al acceso.
-- index.html todavía escribía y leía localStorage sin protección. Un QuotaExceededError podía detener el callback antes de navegar a Inicio.
-- Inicio, LIVE y Perfil comprobaban únicamente localStorage en su temporizador de seguridad y no reconocían sessionStorage.
+Incidencia confirmada:
+- La bandeja de Mensajes ya estaba conectada a Firestore, pero el directorio de búsqueda se creaba únicamente cuando cada persona abría Mensajes.
+- Ruth podía existir en Firebase Authentication y aun así no aparecer en la búsqueda.
+- La pantalla Yo guardaba el perfil, la foto y la portada principalmente en el almacenamiento local del móvil.
+- Los cambios del perfil no se publicaban automáticamente en Firestore ni podían consultarse desde otro usuario.
+- La búsqueda anterior solo aceptaba correo exacto o UID y no permitía abrir un perfil público real.
 
 Correcciones aplicadas:
-- Firebase Auth usa una jerarquía oficial de persistencia: IndexedDB, localStorage y sessionStorage.
-- El acceso ya no fuerza exclusivamente localStorage.
-- jemmo-session.js conserva y reconoce el respaldo de sesión cuando Firebase tarda o no puede restaurar la persistencia local.
-- index.html protege todas las lecturas, escrituras y borrados; usa sessionStorage como respaldo y no bloquea la navegación.
-- Inicio, LIVE y Perfil reconocen localStorage y sessionStorage de forma segura.
-- Se renueva la caché PWA para obligar a cargar los archivos corregidos.
-- Se añade mensaje claro para auth/unauthorized-domain.
+- Cada usuario autenticado registra o actualiza automáticamente su identidad en users/{uid} y directorioMensajes/{uid} desde cualquier pantalla protegida.
+- La búsqueda de Mensajes admite correo exacto, nombre de usuario, nombre público exacto o UID.
+- La búsqueda consulta directorioMensajes y usa users como respaldo para perfiles anteriores.
+- Se añade una ficha real con botones VER PERFIL y MENSAJE.
+- Se crea perfil-publico.html para consultar los datos públicos guardados en Firebase.
+- Desde el perfil público se puede crear o abrir la conversación directa real.
+- Las conversaciones y mensajes continúan actualizándose en tiempo real mediante Cloud Firestore.
+- El editor de Yo sincroniza nombre, usuario, biografía, país, ciudad, nivel, verificación, foto y portada comprimidas con Firestore.
+- El perfil guardado en Firestore puede recuperarse en otro dispositivo.
+- Se conserva la sesión reparada de PRUEBA 06 y el respaldo IndexedDB/localStorage/sessionStorage.
+- Se renueva la caché PWA y el arranque para cargar esta revisión.
 
-Hallazgos de Firebase que no causan el acceso por correo, pero quedan pendientes:
-- El proveedor Google no aparece habilitado aunque la app muestra el botón Continuar con Google.
-- Falta autorizar el dominio jmmlive.github.io para los flujos OAuth de Google.
-- Las reglas actuales de Firestore siguen en modo de prueba, son inseguras y tienen vencimiento temporal.
-- La plantilla de verificación de correo sigue con textos predeterminados en inglés.
+Condición necesaria para localizar a Ruth:
+- Ruth debe iniciar sesión una vez después de instalar PRUEBA 07. No es obligatorio que abra Mensajes: el registro del directorio se realiza desde cualquier pantalla protegida.
+- Para publicar sus datos personalizados, Ruth debe entrar en Yo, editar su perfil y pulsar GUARDAR CAMBIOS.
 
-Archivos modificados:
+Archivos modificados o añadidos:
 - INTEGRIDAD_SHA256.txt
 - VERSION.txt
-- acceso.html
-- index.html
-- inicio.html
-- live.html
-- yo.html
 - jemmo-session.js
+- jemmo-messages-realtime.js
+- jemmo-cloud-profile.js
+- perfil-publico.html
 - manifest.webmanifest
 - pwa-register.js
 - sw.js
 
+Límites de esta prueba:
+- Mensajes de texto y perfiles están conectados a Firestore.
+- Fotos y portadas se comprimen y guardan en Firestore durante la fase de pruebas. Antes de producción deben migrarse a Firebase Storage para optimizar coste, tamaño y seguridad.
+- Adjuntos, audio, llamadas, bloqueo, denuncias, grupos y clubes todavía no están conectados al servidor.
+- Las reglas actuales de Firestore siguen siendo temporales e inseguras. Deben reemplazarse por reglas autenticadas antes de producción.
+
 Estado:
 - MODO DE PRUEBAS.
-- Corrección preparada y verificada estáticamente.
-- Pendiente de instalación y validación real en el móvil.
+- Validación estática completada.
+- Pendiente de instalación y prueba cruzada real entre las cuentas de Jesús y Ruth.

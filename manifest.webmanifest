@@ -4,7 +4,7 @@
   "short_name": "JEMMO LIVE",
   "description": "JEMMO LIVE: transmisiones en directo, tareas, salas y comunidad.",
   "lang": "es",
-  "start_url": "./index.html?source=pwa-acceso-arranque-reparados-06",
+  "start_url": "./index.html?source=pwa-perfiles-mensajes-reales-07",
   "scope": "./",
   "display": "standalone",
   "display_override": [

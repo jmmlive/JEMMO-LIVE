@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · ACCESO Y ARRANQUE REPARADOS PRUEBA 06 */
-const CACHE = 'jemmo-live-v1-acceso-arranque-reparados-06-20260725';
+/* JEMMO LIVE V1 · PERFILES Y MENSAJES REALES PRUEBA 07 */
+const CACHE = 'jemmo-live-v1-perfiles-mensajes-reales-07-20260725';
 const APP_SHELL = [
   './',
   './index.html',
@@ -8,6 +8,7 @@ const APP_SHELL = [
   './live.html',
   './salas.html',
   './mensajes.html',
+  './perfil-publico.html',
   './yo.html',
   './offline.html',
   './app.css',
@@ -21,6 +22,7 @@ const APP_SHELL = [
   './salas-v1.js',
   './jemmo-unread-badge.js',
   './jemmo-messages-realtime.js',
+  './jemmo-cloud-profile.js',
   './manifest.webmanifest',
   './jemmo-logo-header.webp',
   './jemmo-fish-nav.webp',
@@ -83,13 +85,19 @@ async function injectJemmoScripts(response, url) {
   if (UNREAD_PAGES.has(page)) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="acceso-arranque-reparados-06"></script>'
+      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="perfiles-mensajes-reales-07"></script>'
     );
   }
   if (page === '/mensajes.html') {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="acceso-arranque-reparados-06"></script>'
+      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="perfiles-mensajes-reales-07"></script>'
+    );
+  }
+  if (page === '/yo.html') {
+    html = injectBeforeBody(
+      html,
+      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="perfiles-mensajes-reales-07"></script>'
     );
   }
 
@@ -97,7 +105,7 @@ async function injectJemmoScripts(response, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-version', 'acceso-arranque-reparados-06');
+  headers.set('x-jemmo-version', 'perfiles-mensajes-reales-07');
 
   return new Response(html, {
     status: response.status,
