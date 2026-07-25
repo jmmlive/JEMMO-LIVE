@@ -1,4 +1,4 @@
-JEMMO LIVE V1 · CHILI IA IMAGEN Y VÍDEOS PRUEBA 02
+JEMMO LIVE V1 · CHILI IA MULTIMEDIA MÓVIL PRUEBA 03
 Fecha: 25/07/2026
 
 Base:
@@ -27,7 +27,7 @@ PWA y rendimiento:
 - Fotografías convertidas a WebP y carteles de vídeo optimizados.
 - Fotografías y carteles incluidos en el app shell.
 - Archivos MP4 excluidos de la caché automática para evitar llenar el almacenamiento del móvil.
-- Nueva caché jemmo-live-v1-chili-ia-media-02-20260725.
+- Nueva caché jemmo-live-v1-chili-ia-media-mobile-03-20260725.
 - Nuevo start_url y nueva clave de recarga del service worker.
 
 Archivos actualizados:
@@ -41,17 +41,23 @@ Archivos actualizados:
 - VERSION.txt
 - INTEGRIDAD_SHA256.txt
 
-Recursos nuevos:
-- media/chili/chili-avatar.webp
-- media/chili/chili-hero.webp
-- media/chili/chili-galeria-retrato.webp
-- media/chili/chili-galeria-cuerpo.webp
-- media/chili/chili-galeria-estudio.webp
-- media/chili/chili-galeria-oficial.webp
-- media/chili/chili-presentacion-poster.webp
-- media/chili/chili-presentacion.mp4
-- media/chili/chili-primeros-pasos-poster.webp
-- media/chili/chili-primeros-pasos.mp4
+Recursos multimedia en la raíz para carga móvil:
+- chili-avatar.webp
+- chili-hero.webp
+- chili-galeria-retrato.webp
+- chili-galeria-cuerpo.webp
+- chili-galeria-estudio.webp
+- chili-galeria-oficial.webp
+- chili-presentacion-poster.webp
+- chili-presentacion.mp4
+- chili-primeros-pasos-poster.webp
+- chili-primeros-pasos.mp4
+
+Corrección de carga móvil:
+- Todos los archivos multimedia están ahora en la raíz del ZIP.
+- No existe ninguna carpeta media que el selector de Android pueda omitir.
+- Las 19 piezas se seleccionan y suben juntas desde el móvil.
+- Las rutas de HTML, JavaScript y service worker fueron actualizadas.
 
 Estado:
 - Código y recursos preparados.

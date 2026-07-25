@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · CHILI IA IMAGEN Y VÍDEOS PRUEBA 02 */
-const CACHE = 'jemmo-live-v1-chili-ia-media-02-20260725';
+/* JEMMO LIVE V1 · CHILI IA MULTIMEDIA MÓVIL PRUEBA 03 */
+const CACHE = 'jemmo-live-v1-chili-ia-media-mobile-03-20260725';
 const APP_SHELL = [
   './',
   './index.html',
@@ -26,14 +26,14 @@ const APP_SHELL = [
   './jemmo-chili.js',
   './jemmo-chili-knowledge.js',
   './chili-ia.css',
-  './media/chili/chili-avatar.webp',
-  './media/chili/chili-hero.webp',
-  './media/chili/chili-galeria-retrato.webp',
-  './media/chili/chili-galeria-cuerpo.webp',
-  './media/chili/chili-galeria-estudio.webp',
-  './media/chili/chili-galeria-oficial.webp',
-  './media/chili/chili-presentacion-poster.webp',
-  './media/chili/chili-primeros-pasos-poster.webp',
+  './chili-avatar.webp',
+  './chili-hero.webp',
+  './chili-galeria-retrato.webp',
+  './chili-galeria-cuerpo.webp',
+  './chili-galeria-estudio.webp',
+  './chili-galeria-oficial.webp',
+  './chili-presentacion-poster.webp',
+  './chili-primeros-pasos-poster.webp',
   './jemmo-cloud-profile.js',
   './jemmo-public-id.js',
   './manifest.webmanifest',
@@ -98,19 +98,19 @@ async function injectJemmoScripts(response, url) {
   if (UNREAD_PAGES.has(page)) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="chili-media-02"></script>'
+      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="chili-media-mobile-03"></script>'
     );
   }
   if (page === '/mensajes.html') {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="chili-media-02"></script>'
+      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="chili-media-mobile-03"></script>'
     );
   }
   if (page === '/yo.html') {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="chili-media-02"></script>'
+      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="chili-media-mobile-03"></script>'
     );
   }
 
@@ -118,7 +118,7 @@ async function injectJemmoScripts(response, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-version', 'chili-ia-media-02');
+  headers.set('x-jemmo-version', 'chili-ia-media-mobile-03');
 
   return new Response(html, {
     status: response.status,

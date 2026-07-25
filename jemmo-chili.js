@@ -11,8 +11,8 @@ const modal = $('#chiliModal');
 const videoModal = $('#videoModal');
 const videoPlayer = $('#chiliVideo');
 const MEDIA = {
-  presentacion:{title:'Conoce a Chili IA',text:'Presentación oficial de la asistente de JEMMO LIVE.',src:'media/chili/chili-presentacion.mp4',poster:'media/chili/chili-presentacion-poster.webp'},
-  'primeros-pasos':{title:'Chili presenta JEMMO LIVE',text:'Mensaje oficial de Chili desde su estudio dentro de JEMMO LIVE.',src:'media/chili/chili-primeros-pasos.mp4',poster:'media/chili/chili-primeros-pasos-poster.webp'}
+  presentacion:{title:'Conoce a Chili IA',text:'Presentación oficial de la asistente de JEMMO LIVE.',src:'chili-presentacion.mp4',poster:'chili-presentacion-poster.webp'},
+  'primeros-pasos':{title:'Chili presenta JEMMO LIVE',text:'Mensaje oficial de Chili desde su estudio dentro de JEMMO LIVE.',src:'chili-primeros-pasos.mp4',poster:'chili-primeros-pasos-poster.webp'}
 };
 const HISTORY_KEY = 'conversation-v1';
 let currentUid = 'guest';
@@ -97,7 +97,7 @@ function createMessage(role,text,options={}){
   const article=document.createElement('article'); article.className=`message ${role}`;
   if(role==='assistant'){
     const avatar=document.createElement('div'); avatar.className='message-avatar';
-    const image=document.createElement('img'); image.src='media/chili/chili-avatar.webp'; image.alt=''; avatar.append(image); article.append(avatar);
+    const image=document.createElement('img'); image.src='chili-avatar.webp'; image.alt=''; avatar.append(image); article.append(avatar);
   }
   const bubble=document.createElement('div'); bubble.className='bubble';
   const label=document.createElement('strong'); label.textContent=role==='assistant'?'Chili IA':'Tú'; bubble.append(label);
