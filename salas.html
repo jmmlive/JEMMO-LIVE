@@ -9,7 +9,7 @@
   <link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="favicon-64.png">
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <title>JEMMO LIVE · SALAS · ESPEJO Y REGALOS 02</title>
+  <title>JEMMO LIVE · SALAS · PRUEBA REAL CON RUTH 08</title>
   <style>html.jemmo-auth-pending body{visibility:hidden}</style>
   <style>
     :root{
@@ -66,9 +66,13 @@
     .jr-room-head{padding:calc(11px + var(--safe-top)) 16px 9px;display:flex;align-items:center;gap:11px;border-bottom:1px solid #5d1a75aa;background:#0d0111aa;backdrop-filter:blur(12px)}
     .jr-room-avatar{width:58px;height:58px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow:0 0 17px #ffd34e44;background:#24052e}
     .jr-room-meta{min-width:0;flex:1}.jr-room-meta small{display:block;color:var(--gold);font-weight:950;font-size:11px;letter-spacing:.05em}.jr-room-meta strong{display:block;font-size:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.jr-room-meta span{display:block;color:#c9b8ce;font-size:12px;margin-top:2px}
-    .jr-live-chip{padding:8px 10px;border-radius:99px;background:#8e1749;color:#ffb3ce;font-size:11px;font-weight:950;white-space:nowrap}
+    .jr-live-chip{min-height:38px;padding:7px 10px;border:1px solid #ff7cac;border-radius:99px;background:#8e1749;color:#ffe0eb;font-size:9px;font-weight:1000;white-space:nowrap;box-shadow:0 0 14px #f02b7240}.jr-live-chip.waiting{border-color:#ffd34e;background:#392507;color:#ffe782}.jr-live-chip.connected{border-color:#45e58f;background:#0b3a25;color:#caffdf}.jr-live-chip.warning{border-color:#ff9a3d;background:#49200a;color:#ffd5aa}
     .jr-close{width:48px;height:48px;border-radius:18px;background:#8e1630;border:1px solid #ff6c8c;color:#fff;font-size:31px;line-height:1}
 
+
+    .jr-seat.remote-waiting{border-style:dashed;opacity:.86}.jr-seat.remote-connected{border-color:#42e68f;box-shadow:inset 0 0 18px #42e68f22,0 0 16px #42e68f44}
+    .jr-room-audio{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+    .jr-invite-dialog{position:fixed;inset:0;z-index:10060;display:grid;place-items:center;padding:18px;background:#040006e8}.jr-invite-dialog[hidden]{display:none!important}.jr-invite-card{width:min(100%,410px);padding:20px;border:1px solid #d64cff;border-radius:25px;background:radial-gradient(circle at 50% 0,#5a0876 0,transparent 42%),linear-gradient(180deg,#18031f,#08000b);box-shadow:0 25px 80px #000}.jr-invite-card .fish{width:70px;height:70px;display:block;margin:0 auto 10px;border:2px solid var(--gold);border-radius:50%;object-fit:cover;box-shadow:0 0 22px #d144ff77}.jr-invite-card h2{margin:0;text-align:center;font-size:22px}.jr-invite-card p{margin:8px 0 0;color:#d6c6db;text-align:center;font-size:13px;line-height:1.45}.jr-invite-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:15px 0}.jr-invite-meta div{padding:10px;border:1px solid #63277a;border-radius:14px;background:#100116;text-align:center}.jr-invite-meta b{display:block;color:#ffe06d;font-size:12px}.jr-invite-meta span{display:block;margin-top:3px;color:#bdaec2;font-size:9px}.jr-invite-actions{display:grid;gap:8px}.jr-invite-join,.jr-invite-cancel{min-height:50px;border-radius:15px;font-weight:1000}.jr-invite-join{border:0;background:linear-gradient(90deg,#22c86a,#4ae28b);color:#061b0e}.jr-invite-cancel{border:1px solid #652879;background:#190320;color:#fff}
     .jr-stage{position:relative;min-height:0;overflow:hidden}
     .jr-stage::before{content:"";position:absolute;z-index:0;inset:0;background:url('jemmo-fish-nav.webp') center 42%/min(72vw,350px) auto no-repeat;opacity:.11;filter:saturate(1.15) drop-shadow(0 0 25px #b62cff66);pointer-events:none}
     .jr-seats-wrap{position:relative;z-index:1;height:100%;min-height:0;padding:8px 10px clamp(112px,17svh,148px);display:flex;align-items:stretch;justify-content:stretch;overflow:hidden}
@@ -211,7 +215,7 @@
     <header class="jr-room-head">
       <img class="jr-room-avatar" id="roomAvatar" src="jemmo-fish-nav.webp" alt="Portada">
       <div class="jr-room-meta"><small id="roomModeLabel">AUDIO ROOM</small><strong id="roomTitleLabel">Sala de Jesús</strong><span id="roomCapacityLabel">4 plazas</span></div>
-      <span class="jr-live-chip">● EN SALA</span>
+      <button class="jr-btn jr-live-chip" id="roomConnectionButton" type="button">INVITAR A RUTH</button>
       <button class="jr-btn jr-close" id="leaveRoom" type="button" aria-label="Salir">×</button>
     </header>
 
@@ -227,6 +231,23 @@
       <form class="jr-compose" id="chatForm"><input id="chatInput" maxlength="160" autocomplete="off" placeholder="Escribe un mensaje…" aria-label="Mensaje"><button class="jr-send" id="chatSend" type="submit" aria-label="Enviar">➤</button></form>
       <button class="jr-btn jr-control-btn gifts" id="giftsButton" type="button" aria-label="Regalos">🎁</button>
     </footer>
+  </section>
+  <audio class="jr-room-audio" id="remoteRoomAudio" autoplay playsinline></audio>
+</div>
+
+<div class="jr-invite-dialog" id="incomingInviteDialog" hidden>
+  <section class="jr-invite-card" role="dialog" aria-modal="true" aria-labelledby="incomingInviteTitle">
+    <img class="fish" src="jemmo-fish-nav.webp" alt="JEMMO">
+    <h2 id="incomingInviteTitle">Invitación a una sala</h2>
+    <p id="incomingInviteText">Cargando los datos de la sala…</p>
+    <div class="jr-invite-meta">
+      <div><b id="incomingInviteMode">AUDIO ROOM</b><span>Modalidad</span></div>
+      <div><b id="incomingInviteHost">Anfitrión</b><span>Te invita</span></div>
+    </div>
+    <div class="jr-invite-actions">
+      <button class="jr-btn jr-invite-join" id="acceptRoomInvite" type="button">ENTRAR CON RUTH</button>
+      <button class="jr-btn jr-invite-cancel" id="cancelRoomInvite" type="button">CANCELAR</button>
+    </div>
   </section>
 </div>
 
@@ -266,6 +287,7 @@
 <script src="pwa-register.js"></script>
 <script src="jemmo-wallet.js"></script>
 <script src="jemmo-prep-storage.js"></script>
+<script type="module" src="jemmo-room-realtime.js"></script>
 <script>
 (()=>{
   'use strict';
@@ -285,7 +307,19 @@
     giftBalance:0,
     giftTotals:new Map(),
     giftSending:false,
-    mirrorPreview:false
+    mirrorPreview:false,
+    realtimeSession:null,
+    remoteStream:null,
+    remoteName:'Ruth',
+    remotePhoto:'ruth-avatar-test.jpg',
+    remoteConnected:false,
+    ownName:'Jesús',
+    ownPhoto:'',
+    isGuest:false,
+    localSeat:1,
+    remoteSeat:2,
+    inviteMeta:null,
+    micEnabled:true
   };
   let toastTimer=0;
   let saveTimer=0;
@@ -403,14 +437,20 @@
   function defaultOccupants(){
     state.occupants.clear();
     state.giftTotals.clear();
+    const hostPerson=state.isGuest
+      ? {name:state.remoteName||'Jesús',role:state.remoteConnected?'Anfitrión conectado':'Anfitrión',photo:state.remotePhoto||'jemmo-fish-nav.webp',host:true,remote:true}
+      : {name:state.ownName||'Jesús',role:'Anfitrión',photo:state.cover||state.ownPhoto||'jemmo-fish-nav.webp',host:true,local:true};
+    const guestPerson=state.isGuest
+      ? {name:state.ownName||'Ruth',role:'Invitada',photo:state.ownPhoto||'ruth-avatar-test.jpg',host:false,local:true}
+      : {name:state.remoteName||'Ruth',role:state.remoteConnected?'Conectada en tiempo real':'Esperando invitación',photo:state.remotePhoto||'ruth-avatar-test.jpg',host:false,remote:true};
+    state.occupants.set(1,hostPerson);
+    if(state.count>=2)state.occupants.set(2,guestPerson);
     const demo=[
-      {name:'Anfitrión',role:'En sala',photo:state.cover||'jemmo-fish-nav.webp',host:true},
-      {name:'Ruth',role:'Administradora',photo:'jemmo-fish-nav.webp',host:false},
       {name:'Invitada 3',role:'En silla',photo:'jemmo-fish-nav.webp',host:false},
       {name:'Invitado 4',role:'En silla',photo:'jemmo-fish-nav.webp',host:false},
       {name:'Invitada 5',role:'En silla',photo:'jemmo-fish-nav.webp',host:false}
     ];
-    demo.slice(0,Math.min(state.count,5)).forEach((person,index)=>state.occupants.set(index+1,person));
+    demo.slice(0,Math.max(0,Math.min(state.count,5)-2)).forEach((person,index)=>state.occupants.set(index+3,person));
     state.selectedRecipients.clear();
     state.occupants.forEach((_,index)=>state.selectedRecipients.add(index));
   }
@@ -423,17 +463,42 @@
   }
 
   function seatMarkup(index,person){
-    if(state.mode==='camera'&&index===1){
+    if(state.mode==='camera'&&person?.local){
       return `<video class="jr-seat-video" id="hostCameraVideo" autoplay muted playsinline></video>
         <div class="jr-seat-overlay"><b>${person.name}</b><small>${person.role}</small></div>
         <span class="jr-mic">🎥</span><span class="jr-number">${index}</span>${giftBadge(index)}`;
     }
+    if(state.mode==='camera'&&person?.remote){
+      return `<video class="jr-seat-video" id="remoteRoomVideo" autoplay muted playsinline></video>
+        <div class="jr-seat-overlay"><b>${person.name}</b><small>${person.role}</small></div>
+        <span class="jr-mic">${state.remoteConnected?'🎥':'⌛'}</span><span class="jr-number">${index}</span>${giftBadge(index)}`;
+    }
     if(person){
       return `<span class="jr-seat-avatar"><img src="${person.photo}" alt=""></span>
         <b>${person.name}</b><small>${person.role}</small>
-        <span class="jr-mic">${person.host?'🎙':'🔊'}</span><span class="jr-number">${index}</span>${giftBadge(index)}`;
+        <span class="jr-mic">${person.remote&&!state.remoteConnected?'⌛':person.host?'🎙':'🔊'}</span><span class="jr-number">${index}</span>${giftBadge(index)}`;
     }
     return `<span class="jr-seat-avatar">+</span><b>Silla libre</b><small>Toca para subir</small><span class="jr-mic">＋</span><span class="jr-number">${index}</span>`;
+  }
+
+  function attachRoomStreams(){
+    const localVideo=$('hostCameraVideo');
+    if(localVideo&&state.stream){
+      applyRoomMirror();
+      if(localVideo.srcObject!==state.stream)localVideo.srcObject=state.stream;
+      localVideo.play().catch(()=>{});
+    }
+    const remoteVideo=$('remoteRoomVideo');
+    if(remoteVideo&&state.remoteStream){
+      remoteVideo.style.setProperty('--jemmo-camera-scale','1');
+      if(remoteVideo.srcObject!==state.remoteStream)remoteVideo.srcObject=state.remoteStream;
+      remoteVideo.play().catch(()=>{});
+    }
+    const remoteAudio=$('remoteRoomAudio');
+    if(remoteAudio&&state.remoteStream){
+      if(remoteAudio.srcObject!==state.remoteStream)remoteAudio.srcObject=state.remoteStream;
+      remoteAudio.play().catch(()=>{});
+    }
   }
 
   function renderSeats(){
@@ -446,7 +511,7 @@
       const person=occupantFor(i);
       const seat=document.createElement('button');
       seat.type='button';
-      seat.className=`jr-btn jr-seat ${state.mode} ${i===1?'host':''} ${person&&!person.host?'hot':''}`;
+      seat.className=`jr-btn jr-seat ${state.mode} ${person?.host?'host':''} ${person&&!person.host?'hot':''} ${person?.remote&&!state.remoteConnected?'remote-waiting':''} ${person?.remote&&state.remoteConnected?'remote-connected':''}`;
       seat.dataset.seat=String(i);
       seat.innerHTML=seatMarkup(i,person);
       seat.addEventListener('click',()=>{
@@ -466,6 +531,7 @@
       });
       grid.append(seat);
     }
+    attachRoomStreams();
   }
 
   function cameraError(message){
@@ -504,30 +570,28 @@
 
   async function startCamera(){
     stopCamera();
-    if(state.mode!=='camera'||!roomOpen)return;
+    if(!roomOpen)return null;
     if(!navigator.mediaDevices?.getUserMedia){
-      cameraError('Este móvil o navegador no permite activar la cámara.');
-      toast('Cámara no compatible en este dispositivo.');
-      return;
+      cameraError('Este móvil o navegador no permite activar el micrófono o la cámara.');
+      toast('Audio o cámara no compatible en este dispositivo.');
+      return null;
     }
     try{
       const stream=await navigator.mediaDevices.getUserMedia({
-        video:{facingMode:'user',width:{ideal:1280},height:{ideal:720}},
-        audio:true
+        video:state.mode==='camera'?{facingMode:'user',width:{ideal:1280},height:{ideal:720}}:false,
+        audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}
       });
       state.stream=stream;
-      const video=$('hostCameraVideo');
-      if(video){
-        applyRoomMirror();
-        video.srcObject=stream;
-        await video.play().catch(()=>{});
-      }
+      state.micEnabled=true;
+      attachRoomStreams();
+      return stream;
     }catch(error){
-      console.warn('Error de cámara:',error);
+      console.warn('Error de audio/cámara:',error);
       const denied=error?.name==='NotAllowedError'||error?.name==='SecurityError';
       const unavailable=error?.name==='NotFoundError'||error?.name==='OverconstrainedError';
-      cameraError(denied?'Permiso de cámara rechazado. Actívalo en los ajustes del móvil.':unavailable?'No se encontró una cámara compatible.':'No se pudo iniciar la cámara. Revisa la conexión o vuelve a intentarlo.');
-      toast(denied?'Debes permitir cámara y micrófono.':'No se pudo activar la cámara.');
+      if(state.mode==='camera')cameraError(denied?'Permiso de cámara rechazado. Actívalo en los ajustes del móvil.':unavailable?'No se encontró una cámara compatible.':'No se pudo iniciar la cámara. Revisa la conexión o vuelve a intentarlo.');
+      toast(denied?'Debes permitir micrófono y cámara.':'No se pudo activar el audio o la cámara.');
+      return null;
     }
   }
 
@@ -540,11 +604,108 @@
     if(video)video.srcObject=null;
   }
 
-  function enterRoom(){
+  function realtimeApi(){return window.JemmoRoomRealtime||null}
+  function waitRealtimeApi(timeout=10000){
+    if(realtimeApi())return Promise.resolve(realtimeApi());
+    return new Promise((resolve,reject)=>{
+      const timer=setTimeout(()=>{removeEventListener('jemmo-room-realtime-ready',ready);reject(new Error('No se cargó la conexión de sala.'))},timeout);
+      const ready=()=>{clearTimeout(timer);removeEventListener('jemmo-room-realtime-ready',ready);resolve(realtimeApi())};
+      addEventListener('jemmo-room-realtime-ready',ready);
+    });
+  }
+
+  function updateRoomConnection(status='waiting',text='INVITAR A RUTH'){
+    const button=$('roomConnectionButton');
+    if(!button)return;
+    button.classList.remove('waiting','connected','warning');
+    if(status==='connected')button.classList.add('connected');
+    else if(status==='warning')button.classList.add('warning');
+    else button.classList.add('waiting');
+    button.textContent=text;
+  }
+
+  function handleRemoteProfile(profile={}){
+    state.remoteName=String(profile.name||state.remoteName||'Ruth');
+    state.remotePhoto=String(profile.photo||state.remotePhoto||'ruth-avatar-test.jpg');
+    defaultOccupants();
+    renderSeats();
+    renderGiftRecipients();
+  }
+
+  function handleRemoteStream(stream){
+    state.remoteStream=stream;
+    state.remoteConnected=true;
+    defaultOccupants();
+    renderSeats();
+    renderGiftRecipients();
+    updateRoomConnection('connected',state.isGuest?'CONECTADA CON JESÚS':'RUTH CONECTADA');
+    addChat(`JEMMO: ${state.remoteName||'Ruth'} se conectó con audio${state.mode==='camera'?' y cámara':''}.`,'system');
+  }
+
+  function handleRealtimeStatus(detail={}){
+    if(detail.state==='connected'){
+      state.remoteConnected=true;
+      updateRoomConnection('connected',state.isGuest?'CONECTADA CON JESÚS':'RUTH CONECTADA');
+    }else if(detail.state==='warning'||detail.state==='closed'){
+      updateRoomConnection('warning',detail.state==='closed'?'SALA DESCONECTADA':'REVISAR CONEXIÓN');
+    }else{
+      updateRoomConnection('waiting',state.isGuest?'CONECTANDO…':'INVITAR A RUTH');
+    }
+  }
+
+  async function startRealtimeHost(){
+    if(state.realtimeSession)return state.realtimeSession;
+    const stream=state.stream||await startCamera();
+    if(!stream)throw new Error('No se pudo abrir el micrófono o la cámara.');
+    const api=await waitRealtimeApi();
+    state.realtimeSession=await api.createHostSession({
+      mode:state.mode,count:state.count,title:$('roomTitle').value.trim(),description:$('roomDescription').value.trim(),localStream:stream,
+      onRemoteStream:handleRemoteStream,onRemoteProfile:handleRemoteProfile,onLocalProfile:profile=>{state.ownName=profile.name||state.ownName;state.ownPhoto=profile.photo||state.ownPhoto},onStatus:handleRealtimeStatus
+    });
+    updateRoomConnection('waiting','INVITAR A RUTH');
+    return state.realtimeSession;
+  }
+
+  async function shareRoomInvite(){
+    try{
+      const session=await startRealtimeHost();
+      const text=`Únete a mi ${state.mode==='camera'?'Sala con cámara':'Audio Room'} en JEMMO LIVE`;
+      if(navigator.share){
+        await navigator.share({title:'Invitación JEMMO LIVE',text,url:session.inviteUrl});
+        toast('Invitación preparada para Ruth.');
+      }else if(navigator.clipboard?.writeText){
+        await navigator.clipboard.writeText(session.inviteUrl);
+        toast('Enlace copiado. Envíalo a Ruth.');
+      }else{
+        prompt('Copia este enlace y envíalo a Ruth:',session.inviteUrl);
+      }
+    }catch(error){
+      if(error?.name==='AbortError')return;
+      console.warn('Invitación de sala:',error);
+      toast(error?.message||'No se pudo preparar la invitación.');
+    }
+  }
+
+  async function closeRealtime(endRoom=true){
+    const session=state.realtimeSession;
+    state.realtimeSession=null;
+    state.remoteStream=null;
+    state.remoteConnected=false;
+    if(session)await session.close({endRoom}).catch(()=>{});
+    const audio=$('remoteRoomAudio');if(audio)audio.srcObject=null;
+  }
+
+  async function enterRoom(){
     if(!validation()){
       toast('Completa portada, título y descripción.');
       return;
     }
+    state.isGuest=false;
+    state.localSeat=1;
+    state.remoteSeat=2;
+    state.remoteName='Ruth';
+    state.remotePhoto='ruth-avatar-test.jpg';
+    state.remoteConnected=false;
     const title=$('roomTitle').value.trim();
     save();
     $('roomModeLabel').textContent=state.mode==='audio'?'AUDIO ROOM':'SALA CON CÁMARA';
@@ -559,7 +720,72 @@
     document.body.style.overflow='hidden';
     roomOpen=true;
     if(!history.state?.jemmoRoom)history.pushState({...(history.state||{}),jemmoRoom:true},'');
-    if(state.mode==='camera')startCamera();
+    updateRoomConnection('waiting','PREPARANDO INVITACIÓN');
+    const stream=await startCamera();
+    if(!stream){updateRoomConnection('warning','SIN AUDIO/CÁMARA');return}
+    try{
+      await startRealtimeHost();
+      addChat('JEMMO: Sala de prueba activada. Pulsa INVITAR A RUTH para compartir el enlace.','system');
+    }catch(error){
+      console.warn('Inicio de sala en tiempo real:',error);
+      updateRoomConnection('warning','PRUEBA LOCAL');
+      addChat('JEMMO: No se pudo abrir la conexión remota. La sala continúa en modo local de prueba.','system');
+    }
+  }
+
+  async function joinIncomingRoom(meta){
+    state.isGuest=true;
+    state.localSeat=2;
+    state.remoteSeat=1;
+    state.mode=meta.mode;
+    state.count=meta.mode==='camera'&&meta.count===25?15:meta.count;
+    state.remoteName=meta.hostName||'Jesús';
+    state.remotePhoto=meta.hostPhoto||'jemmo-fish-nav.webp';
+    state.remoteConnected=false;
+    $('incomingInviteDialog').hidden=true;
+    $('roomModeLabel').textContent=state.mode==='audio'?'AUDIO ROOM':'SALA CON CÁMARA';
+    $('roomTitleLabel').textContent=meta.title||'Sala de JEMMO';
+    $('roomCapacityLabel').textContent=`${state.count}${state.count===25?' VIP':''} plazas`;
+    $('prepareView').classList.add('jr-hidden');
+    $('prepareNav').classList.add('jr-hidden');
+    $('roomView').classList.remove('jr-hidden');
+    document.body.style.overflow='hidden';
+    roomOpen=true;
+    history.replaceState({...(history.state||{}),jemmoRoom:true},'',location.pathname+location.search);
+    defaultOccupants();renderSeats();renderGiftRecipients();
+    updateRoomConnection('waiting','CONECTANDO…');
+    const stream=await startCamera();
+    if(!stream){updateRoomConnection('warning','PERMISOS NECESARIOS');return}
+    try{
+      const api=await waitRealtimeApi();
+      state.realtimeSession=await api.joinGuestSession(meta.roomId,{mode:state.mode,localStream:stream,onRemoteStream:handleRemoteStream,onRemoteProfile:handleRemoteProfile,onLocalProfile:profile=>{state.ownName=profile.name||'Ruth';state.ownPhoto=profile.photo||'ruth-avatar-test.jpg';defaultOccupants();renderSeats()},onStatus:handleRealtimeStatus});
+      addChat(`JEMMO: Has entrado en la sala de ${meta.hostName||'Jesús'}.`,'system');
+    }catch(error){
+      console.warn('Unión a sala:',error);
+      updateRoomConnection('warning','NO SE PUDO CONECTAR');
+      toast(error?.message||'No se pudo entrar en la sala.');
+    }
+  }
+
+  async function prepareIncomingInvite(){
+    const code=new URLSearchParams(location.search).get('join');
+    if(!code)return;
+    const dialog=$('incomingInviteDialog');
+    dialog.hidden=false;
+    try{
+      const api=await waitRealtimeApi();
+      const meta=await api.getRoomPreview(code);
+      state.inviteMeta=meta;
+      $('incomingInviteTitle').textContent=`${meta.hostName} te invita`;
+      $('incomingInviteText').textContent=meta.title+(meta.description?` · ${meta.description}`:'');
+      $('incomingInviteMode').textContent=meta.mode==='camera'?'SALA CON CÁMARA':'AUDIO ROOM';
+      $('incomingInviteHost').textContent=meta.hostName;
+      $('acceptRoomInvite').textContent=`ENTRAR A ${meta.mode==='camera'?'CÁMARA':'AUDIO ROOM'}`;
+    }catch(error){
+      $('incomingInviteTitle').textContent='Invitación no disponible';
+      $('incomingInviteText').textContent=error?.message||'No se pudo abrir esta invitación.';
+      $('acceptRoomInvite').disabled=true;
+    }
   }
 
   function hideSheets(){
@@ -572,6 +798,7 @@
   function leaveRoom(confirmExit=true,useHistory=true){
     if(confirmExit&&!confirm('¿Quieres salir de esta sala?'))return;
     const steps=history.state?.jemmoRoomSheet?2:history.state?.jemmoRoom?1:0;
+    void closeRealtime(!state.isGuest);
     stopCamera();
     roomOpen=false;
     $('roomView').classList.add('jr-hidden');
@@ -753,7 +980,7 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   }
   renderRoomGiftCatalog();
   renderPreparation();
-  void restore().then(()=>{renderPreparation();updateRoomMirrorControl()});
+  void restore().then(()=>{renderPreparation();updateRoomMirrorControl();void prepareIncomingInvite()});
 
   document.querySelectorAll('.jr-mode').forEach(btn=>btn.addEventListener('click',()=>{
     state.mode=btn.dataset.mode;
@@ -799,7 +1026,7 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
 
   $('startRoom').addEventListener('click',enterRoom);
   $('leaveRoom').addEventListener('click',()=>leaveRoom(true));
-  $('helpButton').addEventListener('click',()=>toast('Añade portada, título y descripción. El botón verde se activa al completar todo.'));
+  $('helpButton').addEventListener('click',()=>toast('Completa los datos, entra y pulsa INVITAR A RUTH para probar audio o cámara en dos móviles.'));
   $('settingsButton').addEventListener('click',()=>openSheet('settingsSheet'));
   $('giftsButton').addEventListener('click',()=>openSheet('giftsSheet'));
   $('backdrop').addEventListener('click',()=>closeSheets(true));
@@ -853,6 +1080,13 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
     const action=btn.dataset.action;
     if(action==='mirror'){
       toggleRoomMirror();
+    }else if(action==='invite'){
+      closeSheets();
+      void shareRoomInvite();
+    }else if(action==='micro'){
+      state.micEnabled=!state.micEnabled;
+      state.stream?.getAudioTracks().forEach(track=>track.enabled=state.micEnabled);
+      toast(state.micEnabled?'Micrófono activado.':'Micrófono silenciado.');
     }else if(action==='minor'){
       toast('Posible menor: protección activada y caso preparado para revisión.');
     }else if(action==='close'){
@@ -862,6 +1096,13 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
       toast(`${btn.querySelector('b').childNodes[0].textContent.trim()} · función de prueba.`);
     }
   }));
+
+  $('roomConnectionButton').addEventListener('click',()=>{
+    if(state.isGuest){toast(state.remoteConnected?'Conexión con el anfitrión activa.':'Conectando con el anfitrión…');return}
+    void shareRoomInvite();
+  });
+  $('acceptRoomInvite').addEventListener('click',()=>{if(state.inviteMeta)void joinIncomingRoom(state.inviteMeta)});
+  $('cancelRoomInvite').addEventListener('click',()=>location.replace('salas.html'));
 
   window.addEventListener('popstate',()=>{
     if(suppressRoomLeaveOnSheetPop){
@@ -876,12 +1117,12 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   document.addEventListener('visibilitychange',()=>{
     if(document.hidden&&state.stream){
       addChat('JEMMO: La cámara quedó en pausa mientras la aplicación está en segundo plano.','system');
-    }else if(!document.hidden&&roomOpen&&state.mode==='camera'&&!state.stream){
+    }else if(!document.hidden&&roomOpen&&!state.stream){
       startCamera();
     }
   });
 
-  window.addEventListener('pagehide',()=>{void save();stopCamera()});
+  window.addEventListener('pagehide',()=>{void save();void closeRealtime(!state.isGuest);stopCamera()});
   window.addEventListener('beforeunload',stopCamera);
 })();
 </script>

@@ -521,6 +521,7 @@
       background:#091a15e8;
       box-shadow:0 0 14px #48e39d22;
       white-space:nowrap;
+      color:#fff;cursor:pointer;
     }
     .jl-task-card.complete{border-color:#ff9b43aa;background:#241207ed}
     .jl-task-dot{width:8px;height:8px;flex:0 0 8px;border-radius:50%;background:var(--green);box-shadow:0 0 9px var(--green)}
@@ -554,7 +555,7 @@
     }
     .jl-live-badge span{font-size:16px}
 
-    /* BATALLA V0.6.12: debajo de las sillas, encima de regalos, compacta y desplegable */
+    /* ACTIVIDAD V0.6.12: debajo de las sillas, encima de regalos, compacta y desplegable */
     .jl-battle-card{
       position:absolute;
       z-index:13;
@@ -669,7 +670,7 @@
     .jl-battle-track .a{width:58%;background:var(--gold)}
     .jl-battle-track .b{width:42%;background:var(--pink)}
 
-    /* SILLAS SEPARADAS DE LA BATALLA */
+    /* SILLAS SEPARADAS DE LA ACTIVIDAD */
     .jl-seat-stack{
       position:absolute;
       z-index:11;
@@ -1067,6 +1068,7 @@
   
     .jl-task-card.paused{border-color:#ffb62e;background:#241304;color:#ffe0a1}.jl-task-card.paused .jl-task-dot{background:#ffb62e;box-shadow:0 0 12px #ffb62e}
     .jl-sheet-grid button.is-off{border-color:#ff6f84;background:#2a0710;color:#ffb2bd}.jl-sheet-grid button.is-on{border-color:#69e6a4;background:#082116;color:#b8ffd7}
+    .jl-task-list{display:grid;gap:9px}.jl-task-row{padding:11px;border:1px solid #563068;border-radius:15px;background:#110216}.jl-task-row header{display:flex;justify-content:space-between;gap:8px;align-items:center}.jl-task-row b{font-size:12px}.jl-task-row span{color:#aeeecb;font-size:10px;font-weight:950}.jl-task-row p{margin:5px 0 8px;color:#cbbbd0;font-size:10px}.jl-task-progress{height:7px;overflow:hidden;border:1px solid #ffffff20;border-radius:999px;background:#08000b}.jl-task-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#22c96a,#f0d34f);transition:width .2s}.jl-task-reset{width:100%;min-height:48px;margin-top:12px;border:1px solid #8f39aa;border-radius:14px;background:#25052e;color:#fff;font-weight:950}
     .jl-policy-dialog{position:fixed;inset:0;z-index:10040;display:grid;place-items:center;padding:18px;background:#050008dc}.jl-policy-dialog[hidden]{display:none!important}
     .jl-policy-card{width:min(100%,390px);padding:22px 18px;border:1px solid #d13cff;border-radius:22px;background:linear-gradient(180deg,#21062c,#08000d);box-shadow:0 20px 70px #000;text-align:center}
     .jl-policy-icon{font-size:42px}.jl-policy-card h3{margin:8px 0;color:#ffd24c}.jl-policy-card p{color:#e6d9ea;line-height:1.45}.jl-policy-actions{display:grid;gap:9px;margin-top:16px}.jl-policy-actions button{min-height:48px;border:0;border-radius:14px;font-weight:950}.jl-policy-primary{background:linear-gradient(90deg,#ffd24c,#d92cff);color:#17031d}.jl-policy-secondary{background:#281130;color:#fff;border:1px solid #9d4eb1!important}
@@ -1193,7 +1195,7 @@
             <img class="jl-avatar" id="hostAvatar" src="jemmo-fish-nav.webp" alt="">
             <span><b>Jesús · JEMMO</b><small id="liveTimer">00:00 · 1 espectador</small></span>
           </div>
-          <div class="jl-task-card" id="taskCard"><span class="jl-task-dot"></span><b id="taskText">Tarea 1 en curso</b><time id="taskTime">00:00</time></div>
+          <button class="jl-task-card" id="taskCard" type="button"><span class="jl-task-dot"></span><b id="taskText">Tarea 1 en curso</b><time id="taskTime">00:00</time></button>
         </div>
         <div class="jl-live-top-right">
           <span class="jl-gift-count" id="giftCount">🎁 0</span>
@@ -1203,22 +1205,7 @@
 
       <div class="jl-event-ticker" id="eventTicker" aria-live="polite"><span>✨</span><b id="eventTickerText">Bienvenido al LIVE de JEMMO</b></div>
 
-      <button class="jl-battle-card" id="battleCard" type="button" aria-label="Abrir o cerrar batalla" aria-expanded="false">
-        <div class="jl-battle-compact">
-          <span>🏆</span>
-          <div><b>BATALLA</b><time id="battleClockMini">06:42</time></div>
-          <i>›</i>
-        </div>
-        <div class="jl-battle-details">
-          <div class="jl-battle-head"><b>BATALLA OFICIAL</b><time id="battleClock">06:42</time></div>
-          <div class="jl-battle-teams">
-            <div class="jl-battle-team"><strong>Casa Tenerife</strong><em id="scoreA">12,500</em></div>
-            <span class="jl-battle-vs">VS</span>
-            <div class="jl-battle-team"><strong>Casa Unicornio</strong><em id="scoreB">9,800</em></div>
-          </div>
-          <div class="jl-battle-track"><i class="a" id="barA"></i><i class="b" id="barB"></i></div>
-        </div>
-      </button>
+
 
       <aside class="jl-seat-stack" aria-label="Sillas del LIVE">
         <button class="jl-seat request" data-seat="1" type="button" aria-label="Silla 1"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/></svg><small>1</small></button>
@@ -1328,9 +1315,13 @@
         </div>
       </section>
 
-      <section class="jl-sheet" id="battleSheet" hidden>
-        <div class="jl-sheet-head"><div><h3>Batalla oficial</h3><p>Tarjeta de competición separada de las sillas</p></div><button class="jl-sheet-close" data-close-sheet>×</button></div>
-        <div class="jl-person-card"><h4>Casa Tenerife VS Casa Unicornio</h4><p>Los regalos enviados suman puntos al marcador de la batalla. Esta simulación es local.</p></div>
+      <section class="jl-sheet" id="taskSheet" hidden>
+        <div class="jl-sheet-head"><div><h3>Tareas del LIVE</h3><p>Seguimiento visible durante la transmisión</p></div><button class="jl-sheet-close" data-close-sheet>×</button></div>
+        <div class="jl-task-list">
+          <article class="jl-task-row"><header><b>Tarea 1 · Mantener el LIVE activo</b><span id="taskOneStatus">0 / 60 s</span></header><p>Cámara, conexión y actividad deben continuar disponibles.</p><div class="jl-task-progress"><i id="taskOneBar"></i></div></article>
+          <article class="jl-task-row"><header><b>Tarea 2 · Continuar la transmisión</b><span id="taskTwoStatus">Pendiente</span></header><p>La segunda tarea comienza al completar la primera.</p><div class="jl-task-progress"><i id="taskTwoBar"></i></div></article>
+        </div>
+        <button class="jl-task-reset" id="resetLiveTasks" type="button">REINICIAR TAREAS DE PRUEBA</button>
       </section>
 
       <div class="jl-gift-burst" id="giftBurst" hidden><span id="giftBurstIcon">🎁</span><b id="giftBurstText">Regalo enviado</b></div>
@@ -1360,7 +1351,7 @@
       <button type="button"><span>?</span><span><b>Ayuda y soporte</b><small>Seguridad y asistencia</small></span><i>›</i></button>
       <a href="acceso.html" data-jemmo-logout><span>↪</span><span><b>Cerrar sesión</b></span><i>›</i></a>
     </nav>
-    <div class="jl-version">JEMMO LIVE V1 · ESPEJO Y REGALOS PRUEBA 02</div>
+    <div class="jl-version">JEMMO LIVE V1 · SALAS RUTH Y TAREAS LIVE PRUEBA 08</div>
   </aside>
 
   <div class="jl-toast" id="toast"></div>
@@ -1435,7 +1426,7 @@
       liveHistoryGuard:false,
       pendingExitUrl:null
     };
-    const TASK_KEY = `jemmo_live_task_v0614:${localStorage.getItem("jemmo_active_uid")||"local"}`;
+    const TASK_KEY = `jemmo_live_task_v08:${localStorage.getItem("jemmo_active_uid")||sessionStorage.getItem("jemmo_active_uid")||"local"}:${new Date().toISOString().slice(0,10)}`;
     const TASK_WINDOW_MS = 24*60*60*1000;
     const MIC_GRACE_MS = 3*60*1000;
     const INACTIVITY_SOFT_MS = 2*60*1000;
@@ -1466,7 +1457,7 @@
 
     const tickerMessages=[
       "La sala está en directo · disfruta y participa con respeto",
-      "Los regalos suman puntos a la Batalla oficial",
+      "Los regalos apoyan directamente al creador",
       "JEMMO protege la transmisión mientras abres funciones",
       "Recarga JEMMOS sin abandonar el LIVE"
     ];
@@ -1602,15 +1593,33 @@
       const map={camera:"cámara pausada",microphone:"micrófono silenciado",inactivity:"inactividad",network:"sin conexión",background:"app en segundo plano",safety:"seguridad"};
       return [...state.pauseReasons].map(reason=>map[reason]||reason).join(" · ");
     }
+    function renderTaskSheet(){
+      const firstDone=state.taskIndex>0;
+      const secondDone=state.taskIndex>1;
+      const firstProgress=firstDone?60:(state.taskIndex===0?Math.min(60,state.taskElapsed):0);
+      const secondProgress=secondDone?60:(state.taskIndex===1?Math.min(60,state.taskElapsed):0);
+      if($("taskOneStatus"))$("taskOneStatus").textContent=firstDone?"COMPLETADA":`${firstProgress} / 60 s`;
+      if($("taskTwoStatus"))$("taskTwoStatus").textContent=secondDone?"COMPLETADA":state.taskIndex===1?`${secondProgress} / 60 s`:"PENDIENTE";
+      if($("taskOneBar"))$("taskOneBar").style.width=`${firstProgress/60*100}%`;
+      if($("taskTwoBar"))$("taskTwoBar").style.width=`${secondProgress/60*100}%`;
+    }
     function renderTaskStatus(){
       const card=$("taskCard");
-      if(state.taskIndex>=2){card.hidden=true;return}
       card.hidden=false;
+      if(state.taskIndex>=2){
+        card.classList.remove("paused");
+        card.classList.add("complete");
+        $("taskText").textContent="Tareas del LIVE completadas";
+        $("taskTime").textContent="LISTAS";
+        renderTaskSheet();
+        return;
+      }
       const paused=state.pauseReasons.size>0;
       card.classList.toggle("paused",paused);
       card.classList.remove("complete");
       $("taskText").textContent=paused?`Tarea ${state.taskIndex+1} pausada · ${taskPauseLabel()}`:`Tarea ${state.taskIndex+1} en curso`;
       $("taskTime").textContent=formatTime(state.taskElapsed);
+      renderTaskSheet();
     }
     function pauseTask(reason,message){
       const before=state.pauseReasons.size;
@@ -1627,11 +1636,12 @@
     }
     function updateTask(){
       const total=60;
-      if(state.taskIndex>=2||state.pauseReasons.size) return;
+      if(state.taskIndex>=2||state.pauseReasons.size){renderTaskSheet();return}
       state.taskElapsed++;
       const remaining=Math.max(0,total-state.taskElapsed);
       $("taskTime").textContent=formatTime(state.taskElapsed);
       $("taskText").textContent=`Tarea ${state.taskIndex+1} en curso`;
+      renderTaskSheet();
       saveTaskProgress();
       if(remaining===0){
         $("taskCard").classList.add("complete");
@@ -1642,6 +1652,7 @@
           state.taskElapsed=0;
           saveTaskProgress();
           renderTaskStatus();
+          if(state.taskIndex>=2)showEventTicker("Tareas del LIVE completadas. Puedes revisarlas tocando la tarjeta.","✓");
         },2600);
       }
     }
@@ -2086,7 +2097,7 @@
 
     document.querySelectorAll(".jl-sheet button").forEach(button=>button.type="button");
 
-    const sheets=["settingsSheet","safetySheet","stickersSheet","giftsSheet","functionsSheet","moduleSheet","rechargeSheet","seatSheet","battleSheet"];
+    const sheets=["settingsSheet","safetySheet","stickersSheet","giftsSheet","functionsSheet","moduleSheet","rechargeSheet","seatSheet","taskSheet"];
     let activeSheet=null;
     let closingFromHistory=false;
     let consumeNextPop=false;
@@ -2119,9 +2130,6 @@
       closingFromHistory=true;
       if(activeSheet){
         hideSheetsOnly();
-      }else if($("battleCard").classList.contains("expanded")){
-        $("battleCard").classList.remove("expanded");
-        $("battleCard").setAttribute("aria-expanded","false");
       }else if(state.live){
         requestEndBroadcast();
         history.pushState({jemmoLiveGuard:true},"");
@@ -2141,23 +2149,17 @@
     $("stickersButton").addEventListener("click",()=>openSheet("stickersSheet"));
     $("giftsButton").addEventListener("click",()=>openSheet("giftsSheet"));
     $("functionsButton").addEventListener("click",()=>openSheet("functionsSheet"));
+    $("taskCard").addEventListener("click",()=>{renderTaskSheet();openSheet("taskSheet")});
+    $("resetLiveTasks").addEventListener("click",()=>{
+      state.taskIndex=0;state.taskElapsed=0;state.taskExpiresAt=Date.now()+TASK_WINDOW_MS;state.pauseReasons.clear();
+      saveTaskProgress();renderTaskStatus();showToast("Tareas de prueba reiniciadas.");closeSheets();
+    });
     $("rechargeFromGifts").addEventListener("click",event=>{
       event.preventDefault();event.stopImmediatePropagation();
       state.pendingGift=null;
       if(window.JemmoWallet?.openRecharge)window.JemmoWallet.openRecharge();else window.JemmoWallet?.open?.('recharge');
     },true);
-    $("battleCard").addEventListener("click",()=>{
-      const card=$("battleCard");
-      const expanded=!card.classList.contains("expanded");
-      card.classList.toggle("expanded",expanded);
-      card.setAttribute("aria-expanded",String(expanded));
-      if(expanded && !history.state?.jemmoBattle){
-        history.pushState({jemmoBattle:true},"");
-      }else if(!expanded && history.state?.jemmoBattle){
-        consumeNextPop=true;
-        history.back();
-      }
-    });
+
 
     const moduleData={
       games:{
@@ -2170,11 +2172,11 @@
       },
       history:{
         title:"Historial",subtitle:"Actividad reciente de la sala",
-        html:`<h4>Últimos movimientos</h4><div class="jl-module-list"><div class="jl-module-row"><span>🎁</span><div><strong>Rosa enviada</strong><small>Regalo · ahora</small></div><b>10</b></div><div class="jl-module-row"><span>🏆</span><div><strong>Batalla oficial</strong><small>Puntos acumulados</small></div><b>${state.scoreA.toLocaleString("es-ES")}</b></div><div class="jl-module-row"><span>👤</span><div><strong>Solicitud de silla</strong><small>Luna</small></div><b>Pendiente</b></div></div>`
+        html:`<h4>Últimos movimientos</h4><div class="jl-module-list"><div class="jl-module-row"><span>🎁</span><div><strong>Rosa enviada</strong><small>Regalo · ahora</small></div><b>10</b></div><div class="jl-module-row"><span>✓</span><div><strong>Tarea del LIVE</strong><small>Progreso actual</small></div><b>${state.taskIndex+1}/2</b></div><div class="jl-module-row"><span>👤</span><div><strong>Solicitud de silla</strong><small>Luna</small></div><b>Pendiente</b></div></div>`
       },
       ranking:{
         title:"Ranking",subtitle:"Clasificación integrada en el LIVE",
-        html:`<h4>Clasificación de la sala</h4><div class="jl-module-list"><div class="jl-module-row"><span>🥇</span><div><strong>Casa Tenerife</strong><small>Batalla actual</small></div><b>${state.scoreA.toLocaleString("es-ES")}</b></div><div class="jl-module-row"><span>🥈</span><div><strong>Casa Unicornio</strong><small>Batalla actual</small></div><b>${state.scoreB.toLocaleString("es-ES")}</b></div><div class="jl-module-row"><span>🥉</span><div><strong>Comunidad JEMMO</strong><small>Actividad de prueba</small></div><b>7.450</b></div></div>`
+        html:`<h4>Actividad del LIVE</h4><div class="jl-module-list"><div class="jl-module-row"><span>👁</span><div><strong>Espectadores</strong><small>Conectados ahora</small></div><b>1</b></div><div class="jl-module-row"><span>🎁</span><div><strong>Regalos recibidos</strong><small>Actividad de prueba</small></div><b>${state.gifts.toLocaleString("es-ES")}</b></div><div class="jl-module-row"><span>💬</span><div><strong>Participación</strong><small>Chat y sillas</small></div><b>Activa</b></div></div>`
       }
     };
     document.querySelectorAll("[data-module]").forEach(button=>{
@@ -2220,15 +2222,9 @@
     });
 
     function updateBattle(){
-      if($("battleClockMini") && $("battleClock")) $("battleClockMini").textContent=$("battleClock").textContent;
-      $("scoreA").textContent=state.scoreA.toLocaleString("es-ES");
-      $("scoreB").textContent=state.scoreB.toLocaleString("es-ES");
-      const total=Math.max(1,state.scoreA+state.scoreB);
-      const a=Math.round(state.scoreA/total*100);
-      $("barA").style.width=`${a}%`;
-      $("barB").style.width=`${100-a}%`;
+      /* La batalla se gestiona desde Inicio. El LIVE personal no muestra estado de batalla. */
     }
-    const LIVE_GIFT_CATALOG=[{"icon":"👍","name":"Like","cost":1},{"icon":"🌹","name":"Rosa","cost":2},{"icon":"💜","name":"Corazón violeta","cost":3},{"icon":"⭐","name":"Estrella","cost":5},{"icon":"🔥","name":"Fuego","cost":8},{"icon":"🎈","name":"Globo","cost":10},{"icon":"🍀","name":"Trébol","cost":12},{"icon":"🌻","name":"Girasol","cost":15},{"icon":"🍓","name":"Fresa","cost":18},{"icon":"🍫","name":"Chocolate","cost":20},{"icon":"☕","name":"Café","cost":25},{"icon":"🎂","name":"Tarta","cost":30},{"icon":"🦋","name":"Mariposa","cost":35},{"icon":"🐬","name":"Delfín","cost":40},{"icon":"🐟","name":"Chicharro","cost":50},{"icon":"🦄","name":"Unicornio","cost":60},{"icon":"💎","name":"Diamante","cost":75},{"icon":"🎤","name":"Micrófono","cost":90},{"icon":"🚀","name":"Cohete","cost":100},{"icon":"👑","name":"Corona","cost":120},{"icon":"🏆","name":"Trofeo","cost":150},{"icon":"🌙","name":"Luna","cost":180},{"icon":"☀️","name":"Sol","cost":200},{"icon":"🌈","name":"Arcoíris","cost":220},{"icon":"🛥️","name":"Yate","cost":250},{"icon":"🏍️","name":"Moto","cost":280},{"icon":"🚗","name":"Coche","cost":300},{"icon":"✈️","name":"Avión","cost":350},{"icon":"🏝️","name":"Isla","cost":400},{"icon":"🗼","name":"Torre","cost":450},{"icon":"🏰","name":"Castillo","cost":500},{"icon":"🐉","name":"Dragón","cost":600},{"icon":"🦁","name":"León","cost":700},{"icon":"🐯","name":"Tigre","cost":800},{"icon":"🦅","name":"Águila","cost":900},{"icon":"🌊","name":"Ola JEMMO","cost":1000},{"icon":"⚡","name":"Rayo","cost":1200},{"icon":"🎆","name":"Fuegos","cost":1500},{"icon":"🌌","name":"Galaxia","cost":1800},{"icon":"🪐","name":"Planeta","cost":2000},{"icon":"🚁","name":"Helicóptero","cost":2500},{"icon":"⛵","name":"Velero","cost":3000},{"icon":"🏎️","name":"Supercoche","cost":3500},{"icon":"💍","name":"Anillo","cost":4000},{"icon":"🛸","name":"Nave espacial","cost":5000},{"icon":"🐳","name":"Ballena","cost":6000},{"icon":"🗿","name":"Guardián","cost":7000},{"icon":"🎡","name":"Parque","cost":8000},{"icon":"🌋","name":"Volcán","cost":9000},{"icon":"👸","name":"Reina JEMMO","cost":10000},{"icon":"🤴","name":"Rey JEMMO","cost":12000},{"icon":"🏯","name":"Palacio","cost":15000},{"icon":"🌍","name":"Mundo JEMMO","cost":20000},{"icon":"✨","name":"Universo","cost":25000}];
+
     function liveRecipientList(){
       const list=[{key:"host",name:"Emisor",photo:$("hostAvatar")?.src||"jemmo-fish-nav.webp"}];
       document.querySelectorAll(".jl-seat.occupied,.jl-seat.request").forEach(seat=>{
@@ -2331,7 +2327,7 @@
         else{showToast("Saldo insuficiente. Abriendo el Monedero.");window.JemmoWallet?.open?.("recharge")}
       }else{
         state.balance=spent.wallet.jemmos;
-        state.gifts+=totalGifts;state.scoreA+=totalCost;
+        state.gifts+=totalGifts;
         recipients.forEach(item=>state.giftTotals.set(item.key,(state.giftTotals.get(item.key)||0)+state.giftQuantity));
         $("giftCount").textContent=`🎁 ${state.gifts}`;
         updateLiveGiftBadges();updateBalanceUI();

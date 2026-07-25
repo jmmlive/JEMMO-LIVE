@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · DIRECTOS POR SEGUIDOS Y PAÍSES PRUEBA 07 */
-const CACHE = 'jemmo-live-v1-directos-filtros-07-20260725';
+/* JEMMO LIVE V1 · SALAS RUTH Y TAREAS LIVE PRUEBA 08 */
+const CACHE = 'jemmo-live-v1-salas-ruth-tareas-live-08-20260725';
 const APP_SHELL = [
   './',
   './index.html',
@@ -23,6 +23,7 @@ const APP_SHELL = [
   './pwa-register.js',
   './jemmo-wallet.js',
   './jemmo-prep-storage.js',
+  './jemmo-room-realtime.js',
   './salas-v1.css',
   './salas-v1.js',
   './jemmo-unread-badge.js',
@@ -44,6 +45,7 @@ const APP_SHELL = [
   './manifest.webmanifest',
   './jemmo-logo-header.webp',
   './jemmo-fish-nav.webp',
+  './ruth-avatar-test.jpg',
   './icon-192.png',
   './icon-512.png',
   './icon-maskable-512.png',
@@ -106,25 +108,25 @@ async function injectJemmoScripts(response, url) {
   if (UNREAD_PAGES.has(page)) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="directos-filtros-07"></script>'
+      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="salas-ruth-tareas-live-08"></script>'
     );
   }
   if (page === '/mensajes.html' && !html.includes('jemmo-messages-realtime.js')) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="directos-filtros-07"></script>'
+      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="salas-ruth-tareas-live-08"></script>'
     );
   }
   if (['/yo.html','/mensajes.html','/chili-ia.html'].includes(page) && !html.includes('jemmo-social.js')) {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="directos-filtros-07"></script>'
+      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="salas-ruth-tareas-live-08"></script>'
     );
   }
   if (page === '/yo.html') {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="directos-filtros-07"></script>'
+      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="salas-ruth-tareas-live-08"></script>'
     );
   }
 
@@ -132,7 +134,7 @@ async function injectJemmoScripts(response, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-version', 'directos-filtros-07');
+  headers.set('x-jemmo-version', 'salas-ruth-tareas-live-08');
 
   return new Response(html, {
     status: response.status,

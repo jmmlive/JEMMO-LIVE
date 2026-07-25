@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-directos-filtros-07';
+  const VERSION = 'pwa-salas-ruth-tareas-live-08';
   let installPrompt = null;
 
   const isStandalone = () =>
