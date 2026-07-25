@@ -538,7 +538,11 @@
     .jf-finance-only-note{padding:11px;border:1px solid #6b5323;border-radius:15px;background:linear-gradient(145deg,#2a1906,#120a02);color:#d8c99e}
     .jf-finance-only-note b{display:block;color:#ffe18a;font-size:8px;letter-spacing:.05em}.jf-finance-only-note span{display:block;margin-top:5px;font-size:8px;line-height:1.45}
 
-  </style>
+  
+    /* JEMMO LIVE V1 · INVITAR AMIGOS PRUEBA 11 */
+    .invite-friends-card{margin:14px 0 0;padding:14px;border:1px solid #7d317f;border-radius:21px;background:radial-gradient(circle at 86% 12%,#ffd34e24,transparent 28%),linear-gradient(155deg,#21052b,#0c010f 72%);box-shadow:0 12px 30px #0007,0 0 24px #bd32ff1c}
+    .invite-friends-head{display:flex;align-items:center;gap:11px}.invite-friends-icon{width:47px;height:47px;flex:0 0 47px;border:1px solid #ffd34e;border-radius:15px;background:linear-gradient(145deg,#4e154e,#19031e);display:grid;place-items:center;font-size:24px;box-shadow:0 0 18px #ffd34e2d}.invite-friends-copy{min-width:0}.invite-friends-copy h2{margin:0;color:#ffe270;font-size:16px}.invite-friends-copy p{margin:4px 0 0;color:#d6c7db;font-size:9.5px;line-height:1.4}.invite-friends-actions{display:grid;grid-template-columns:1fr 1.15fr;gap:8px;margin-top:11px}.invite-friends-actions button{min-height:46px;border:1px solid #6a2b7b;border-radius:14px;background:#15021c;color:#fff;font-size:9px;font-weight:1000}.invite-friends-actions .share{border:0;background:linear-gradient(90deg,#ffd34e,#ff9c42,#d23eff);color:#230219}.invite-friends-actions button:disabled{opacity:.55}
+</style>
   <script>
     document.documentElement.classList.add('jemmo-auth-pending');
     setTimeout(()=>{
@@ -601,6 +605,17 @@
       </div>
     </section>
 
+    <section class="invite-friends-card" aria-label="Invitar amigos a JEMMO LIVE">
+      <div class="invite-friends-head">
+        <span class="invite-friends-icon" aria-hidden="true">↗</span>
+        <div class="invite-friends-copy"><h2>Invitar amigos a JEMMO LIVE</h2><p>Comparte tu enlace personal. La persona entrará en Acceso para registrarse con tu invitación. No tiene coste.</p></div>
+      </div>
+      <div class="invite-friends-actions">
+        <button id="copyInviteLink" type="button">COPIAR ENLACE</button>
+        <button class="share" id="shareInviteLink" type="button">COMPARTIR INVITACIÓN</button>
+      </div>
+    </section>
+
     <section class="section">
       <div class="section-head"><div><h2>Mi espacio</h2><p>Contenido, comunidad y progreso</p></div></div>
       <div class="card quick-scroll">
@@ -651,7 +666,7 @@
       </div>
     </section>
 
-    <p class="version">JEMMO LIVE V1 · CORRECCIÓN GLOBAL 01 · PERFIL 17 + DESTELLOS 04 + FINANZAS 05</p>
+    <p class="version">JEMMO LIVE V1 · RECEPCIÓN INVITADA E INVITAR AMIGOS PRUEBA 11</p>
   </main>
 
   <div class="menu-backdrop" id="menuBackdrop" hidden></div>
@@ -725,12 +740,6 @@
     </div>
     <p class="privacy-note">En el perfil solo se muestran los cuatro botones. Los enlaces nunca aparecen escritos.</p>
 
-    <p class="edit-section-label">Invitaciones privadas del emisor</p>
-    <div class="field-grid">
-      <label class="field"><span>Tarifa por invitación</span><input id="editInvitationPrice" type="number" inputmode="numeric" min="1" step="1" placeholder="JEMMOS"><small>La persona verá y confirmará esta tarifa antes de invitarte.</small></label>
-      <label class="field"><span>Disponibilidad</span><select id="editInvitationsEnabled"><option value="false">No aceptar invitaciones</option><option value="true">Aceptar invitaciones</option></select><small>Solo se cobra cuando la persona confirma la invitación.</small></label>
-    </div>
-    <p class="privacy-note">Función en modo de pruebas. La tarifa la decide el emisor; JEMMO no asigna una cantidad automáticamente.</p>
     <button class="save" id="saveProfile" type="button">GUARDAR CAMBIOS</button>
   </section>
 
@@ -1272,7 +1281,7 @@
       };
       const clampPercent=value=>Math.max(0,Math.min(100,Number.isFinite(Number(value))?Number(value):50));
       const normalizeCoverPosition=value=>({x:clampPercent(value?.x),y:clampPercent(value?.y)});
-      const defaultProfile={name:'Usuario JEMMO',username:'usuariojemmo',bio:'Construyendo mi historia en JEMMO LIVE.',country:'España',city:'',age:'',phone:'',instagram:'',tiktok:'',youtube:'',facebook:'',invitationsEnabled:false,invitationPrice:0,avatar:'',cover:'',coverPosition:{x:50,y:50},id:makeId(),level:Number(localStorage.getItem('jemmo_transmission_level')||1),verified:localStorage.getItem('jemmo_verified')==='true'};
+      const defaultProfile={name:'Usuario JEMMO',username:'usuariojemmo',bio:'Construyendo mi historia en JEMMO LIVE.',country:'España',city:'',age:'',phone:'',instagram:'',tiktok:'',youtube:'',facebook:'',avatar:'',cover:'',coverPosition:{x:50,y:50},id:makeId(),level:Number(localStorage.getItem('jemmo_transmission_level')||1),verified:localStorage.getItem('jemmo_verified')==='true'};
       const readJSON=(key,fallback)=>{try{return {...fallback,...JSON.parse(localStorage.getItem(key)||'{}')}}catch{return {...fallback}}};
       let profile=readJSON(KEY,defaultProfile);
       coverPosition=normalizeCoverPosition(profile.coverPosition);
@@ -1380,7 +1389,7 @@
       };
 
       const updateBioWordCount=()=>{const count=countWords($('editBio').value);$('bioWordCount').textContent=`${count}/15`;};
-      const openEdit=()=>{pendingAvatar=avatarData;pendingCover=coverData;pendingCoverPosition={...coverPosition};$('editName').value=profile.name||'';$('editUsername').value=profile.username||safeUsername(profile.name);$('editBio').value=profile.bio||'';$('editCountry').value=profile.country||'';$('editCity').value=profile.city||'';$('editAge').value=profile.age||'';$('editPhone').value=profile.phone||'';$('editInstagram').value=profile.instagram||'';$('editTiktok').value=profile.tiktok||'';$('editYoutube').value=profile.youtube||'';$('editFacebook').value=profile.facebook||'';$('editInvitationPrice').value=Number(profile.invitationPrice)||'';$('editInvitationsEnabled').value=profile.invitationsEnabled?'true':'false';updateBioWordCount();setAvatar(pendingAvatar);setCover(pendingCover,pendingCoverPosition);$('editBackdrop').hidden=false;$('editSheet').hidden=false;document.body.style.overflow='hidden'};
+      const openEdit=()=>{pendingAvatar=avatarData;pendingCover=coverData;pendingCoverPosition={...coverPosition};$('editName').value=profile.name||'';$('editUsername').value=profile.username||safeUsername(profile.name);$('editBio').value=profile.bio||'';$('editCountry').value=profile.country||'';$('editCity').value=profile.city||'';$('editAge').value=profile.age||'';$('editPhone').value=profile.phone||'';$('editInstagram').value=profile.instagram||'';$('editTiktok').value=profile.tiktok||'';$('editYoutube').value=profile.youtube||'';$('editFacebook').value=profile.facebook||'';updateBioWordCount();setAvatar(pendingAvatar);setCover(pendingCover,pendingCoverPosition);$('editBackdrop').hidden=false;$('editSheet').hidden=false;document.body.style.overflow='hidden'};
       const closeEdit=()=>{$('editBackdrop').hidden=true;$('editSheet').hidden=true;document.body.style.overflow='';setAvatar(avatarData);setCover(coverData,coverPosition)};
       const compressImage=file=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=reject;reader.onload=()=>{const image=new Image();image.onerror=reject;image.onload=()=>{const side=Math.min(image.naturalWidth,image.naturalHeight),sx=(image.naturalWidth-side)/2,sy=(image.naturalHeight-side)/2,canvas=document.createElement('canvas');canvas.width=canvas.height=420;const context=canvas.getContext('2d',{alpha:false});context.drawImage(image,sx,sy,side,side,0,0,420,420);resolve(canvas.toDataURL('image/webp',.76))};image.src=reader.result};reader.readAsDataURL(file)});
       const compressCover=file=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=reject;reader.onload=()=>{const image=new Image();image.onerror=reject;image.onload=()=>{const maxWidth=1600,maxHeight=1200,scale=Math.min(1,maxWidth/image.naturalWidth,maxHeight/image.naturalHeight),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(image.naturalWidth*scale));canvas.height=Math.max(1,Math.round(image.naturalHeight*scale));const context=canvas.getContext('2d',{alpha:false});context.drawImage(image,0,0,canvas.width,canvas.height);resolve(canvas.toDataURL('image/webp',.72))};image.src=reader.result};reader.readAsDataURL(file)});
@@ -1483,7 +1492,11 @@
       const finishCoverDrag=event=>{if(!coverDrag||event.pointerId!==coverDrag.pointerId)return;coverPreview.releasePointerCapture?.(event.pointerId);coverPreview.classList.remove('dragging');coverDrag=null};
       coverPreview?.addEventListener('pointerup',finishCoverDrag);
       coverPreview?.addEventListener('pointercancel',finishCoverDrag);
-      $('saveProfile')?.addEventListener('click',async()=>{const button=$('saveProfile'),name=$('editName').value.trim(),username=safeUsername($('editUsername').value),bio=limitWords($('editBio').value.trim(),15),country=$('editCountry').value.trim(),city=$('editCity').value.trim(),age=$('editAge').value.trim(),phone=$('editPhone').value.trim(),instagram=cleanSocial($('editInstagram').value),tiktok=cleanSocial($('editTiktok').value),youtube=cleanSocial($('editYoutube').value),facebook=cleanSocial($('editFacebook').value),invitationsEnabled=$('editInvitationsEnabled').value==='true',invitationPrice=Math.max(0,Math.floor(Number($('editInvitationPrice').value)||0));if(name.length<2){toast('Escribe un nombre válido.');return}if(invitationsEnabled&&invitationPrice<1){toast('Indica la tarifa en JEMMOS para aceptar invitaciones.');return}if(age&&(Number(age)<13||Number(age)>120)){toast('Revisa la edad indicada.');return}if(countWords(bio)>15){toast('La frase puede tener un máximo de 15 palabras.');return}button.disabled=true;button.textContent='GUARDANDO…';try{await Promise.all([mediaWrite(avatarMediaKey,pendingAvatar),mediaWrite(coverMediaKey,pendingCover)]);avatarData=pendingAvatar;coverData=pendingCover;coverPosition=normalizeCoverPosition(pendingCoverPosition);profile={...profile,name,username,bio:bio||defaultProfile.bio,country:country||'Sin país',city,age,phone,instagram,tiktok,youtube,facebook,invitationsEnabled:invitationsEnabled&&invitationPrice>0,invitationPrice,avatar:avatarData?'indexeddb':'',cover:coverData?'indexeddb':'',coverPosition,id:profile.id||makeId(),updatedAt:Date.now()};localStorage.removeItem(KEY);localStorage.setItem(KEY,JSON.stringify(profile));render();closeEdit();toast('Datos personales y fotos guardados correctamente.')}catch(error){console.error('JEMMO profile save',error);toast('No se pudo guardar. Vuelve a intentarlo.')}finally{button.disabled=false;button.textContent='GUARDAR CAMBIOS'}});
+      $('saveProfile')?.addEventListener('click',async()=>{const button=$('saveProfile'),name=$('editName').value.trim(),username=safeUsername($('editUsername').value),bio=limitWords($('editBio').value.trim(),15),country=$('editCountry').value.trim(),city=$('editCity').value.trim(),age=$('editAge').value.trim(),phone=$('editPhone').value.trim(),instagram=cleanSocial($('editInstagram').value),tiktok=cleanSocial($('editTiktok').value),youtube=cleanSocial($('editYoutube').value),facebook=cleanSocial($('editFacebook').value);if(name.length<2){toast('Escribe un nombre válido.');return}if(age&&(Number(age)<13||Number(age)>120)){toast('Revisa la edad indicada.');return}if(countWords(bio)>15){toast('La frase puede tener un máximo de 15 palabras.');return}button.disabled=true;button.textContent='GUARDANDO…';try{await Promise.all([mediaWrite(avatarMediaKey,pendingAvatar),mediaWrite(coverMediaKey,pendingCover)]);avatarData=pendingAvatar;coverData=pendingCover;coverPosition=normalizeCoverPosition(pendingCoverPosition);profile={...profile,name,username,bio:bio||defaultProfile.bio,country:country||'Sin país',city,age,phone,instagram,tiktok,youtube,facebook,avatar:avatarData?'indexeddb':'',cover:coverData?'indexeddb':'',coverPosition,id:profile.id||makeId(),updatedAt:Date.now()};localStorage.removeItem(KEY);localStorage.setItem(KEY,JSON.stringify(profile));render();closeEdit();toast('Datos personales y fotos guardados correctamente.')}catch(error){console.error('JEMMO profile save',error);toast('No se pudo guardar. Vuelve a intentarlo.')}finally{button.disabled=false;button.textContent='GUARDAR CAMBIOS'}});
+
+      const runFriendInvite=async action=>{const copyButton=$('copyInviteLink'),shareButton=$('shareInviteLink');copyButton.disabled=true;shareButton.disabled=true;try{const referrals=await import('./jemmo-referrals.js');if(action==='copy'){const result=await referrals.copyMyInvite();toast(result.copied?'Enlace personal copiado.':'No se pudo copiar el enlace.')}else{const result=await referrals.shareMyInvite(profile.name);if(result.cancelled)return;toast(result.shared?'Invitación compartida.':result.copied?'Enlace copiado para compartir.':'No se pudo compartir la invitación.')}}catch(error){console.warn('Invitar amigos:',error);toast('No se pudo preparar tu enlace de invitación.')}finally{copyButton.disabled=false;shareButton.disabled=false}};
+      $('copyInviteLink')?.addEventListener('click',()=>void runFriendInvite('copy'));
+      $('shareInviteLink')?.addEventListener('click',()=>void runFriendInvite('share'));
 
       $('copyId')?.addEventListener('click',async()=>{const text=$('profileId').textContent;try{await navigator.clipboard.writeText(text);toast('ID copiado.')}catch{toast(`Tu ID es ${text}`)}});
       const openPersonalMessages=()=>{location.href='mensajes.html?seccion=personales'};

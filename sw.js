@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · CONEXIÓN BIDIRECCIONAL E INVITACIONES DE EMISOR PRUEBA 10 */
-const CACHE = 'jemmo-live-v1-bidirectional-invites-10-20260725';
+/* JEMMO LIVE V1 · RECEPCIÓN INVITADA E INVITAR AMIGOS PRUEBA 11 */
+const CACHE = 'jemmo-live-v1-guest-receive-referrals-11-20260725';
 const APP_SHELL = [
   './',
   './index.html',
@@ -41,6 +41,7 @@ const APP_SHELL = [
   './chili-primeros-pasos-poster.webp',
   './jemmo-cloud-profile.js',
   './jemmo-public-id.js',
+  './jemmo-referrals.js',
   './jemmo-social.js',
   './manifest.webmanifest',
   './jemmo-logo-header.webp',
@@ -108,25 +109,25 @@ async function injectJemmoScripts(response, url) {
   if (UNREAD_PAGES.has(page)) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="bidirectional-invites-10"></script>'
+      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="guest-receive-referrals-11"></script>'
     );
   }
   if (page === '/mensajes.html' && !html.includes('jemmo-messages-realtime.js')) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="bidirectional-invites-10"></script>'
+      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="guest-receive-referrals-11"></script>'
     );
   }
   if (['/yo.html','/mensajes.html','/chili-ia.html'].includes(page) && !html.includes('jemmo-social.js')) {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="bidirectional-invites-10"></script>'
+      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="guest-receive-referrals-11"></script>'
     );
   }
   if (page === '/yo.html') {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="bidirectional-invites-10"></script>'
+      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="guest-receive-referrals-11"></script>'
     );
   }
 
@@ -134,7 +135,7 @@ async function injectJemmoScripts(response, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-version', 'bidirectional-invites-10');
+  headers.set('x-jemmo-version', 'guest-receive-referrals-11');
 
   return new Response(html, {
     status: response.status,

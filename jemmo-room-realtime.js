@@ -1,5 +1,6 @@
-/* JEMMO LIVE V1 · AUDIO/VÍDEO BIDIRECCIONAL E INVITACIONES PRUEBA 10
-   Señalización WebRTC y chat de prueba mediante Firestore. No es infraestructura de producción. */
+/* JEMMO LIVE V1 · RECEPCIÓN DE INVITADA PRUEBA 11
+   Señalización WebRTC y chat de prueba mediante Firestore. No es infraestructura de producción.
+   La invitada enlaza sus pistas a los transceptores ofrecidos por el anfitrión antes de responder. */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
 import {
@@ -73,10 +74,31 @@ function addLocalTracks(peer, stream) {
   });
 }
 
+async function bindLocalTracksToRemoteOffer(peer, stream) {
+  if (!(stream instanceof MediaStream)) return;
+  const tracksByKind = new Map(stream.getTracks().map(track => [track.kind, track]));
+  for (const kind of ['audio', 'video']) {
+    const track = tracksByKind.get(kind);
+    if (!track) continue;
+    track.enabled = true;
+    try { if (kind === 'audio') track.contentHint = 'speech'; } catch {}
+    let transceiver = peer.getTransceivers().find(item => !item.stopped && item.receiver?.track?.kind === kind && !item.sender?.track);
+    if (!transceiver) transceiver = peer.getTransceivers().find(item => !item.stopped && item.receiver?.track?.kind === kind);
+    if (transceiver) {
+      try { transceiver.direction = 'sendrecv'; } catch {}
+      await transceiver.sender.replaceTrack(track);
+      try { transceiver.sender.setStreams?.(stream); } catch {}
+    } else {
+      transceiver = peer.addTransceiver(track, { direction: 'sendrecv', streams: [stream] });
+      try { transceiver.direction = 'sendrecv'; } catch {}
+    }
+  }
+}
+
 function expectedRemoteMedia(stream, expectVideo) {
   if (!(stream instanceof MediaStream)) return false;
-  const hasAudio = stream.getAudioTracks().some(track => track.readyState === 'live');
-  const hasVideo = !expectVideo || stream.getVideoTracks().some(track => track.readyState === 'live');
+  const hasAudio = stream.getAudioTracks().some(track => track.readyState === 'live' && !track.muted);
+  const hasVideo = !expectVideo || stream.getVideoTracks().some(track => track.readyState === 'live' && !track.muted);
   return hasAudio && hasVideo;
 }
 
@@ -208,16 +230,21 @@ function makeSession({ role, roomId, roomRef, peer, remoteStream, unsubs, onStat
       for (const track of stream.getTracks()) {
         track.enabled = true;
         try { if (track.kind === 'audio') track.contentHint = 'speech'; } catch {}
-        const sender = peer.getSenders().find(item => item.track?.kind === track.kind);
+        const transceiver = peer.getTransceivers().find(item => !item.stopped && (
+          item.sender?.track?.kind === track.kind || item.receiver?.track?.kind === track.kind
+        ));
+        const sender = transceiver?.sender || peer.getSenders().find(item => item.track?.kind === track.kind);
         if (sender) {
           await sender.replaceTrack(track);
-          const transceiver = peer.getTransceivers().find(item => item.sender === sender);
+          try { sender.setStreams?.(stream); } catch {}
           if (transceiver) {
             try { transceiver.direction = 'sendrecv'; } catch {}
           }
-        } else {
+        } else if (role === 'host') {
           peer.addTransceiver(track, { direction: 'sendrecv', streams: [stream] });
           addedTrack = true;
+        } else {
+          console.warn(`JEMMO Room: no existe transceptor remoto para ${track.kind}.`);
         }
       }
       for (const sender of peer.getSenders()) {
@@ -244,13 +271,13 @@ function configurePeer({ peer, roomRef, ownCandidates, remoteCandidates, remoteS
   };
   peer.addEventListener('track', event => {
     const streams = event.streams || [];
-    if (streams[0]) {
-      streams[0].getTracks().forEach(track => {
-        if (!remoteStream.getTracks().some(existing => existing.id === track.id)) remoteStream.addTrack(track);
-      });
-    } else if (event.track && !remoteStream.getTracks().some(existing => existing.id === event.track.id)) {
-      remoteStream.addTrack(event.track);
-    }
+    const incomingTracks = streams[0]?.getTracks?.().length ? streams[0].getTracks() : (event.track ? [event.track] : []);
+    incomingTracks.forEach(track => {
+      if (!remoteStream.getTracks().some(existing => existing.id === track.id)) remoteStream.addTrack(track);
+      const publish = () => onRemoteStream?.(remoteStream);
+      track.addEventListener('unmute', publish);
+      track.addEventListener('ended', publish);
+    });
     onRemoteStream?.(remoteStream);
   });
   peer.addEventListener('icecandidate', event => {
@@ -331,6 +358,7 @@ async function createHostSession(options = {}) {
   let offerRevision = 1;
   let answerRevisionApplied = 0;
   let guestRequestSeen = 0;
+  let guestMediaRetryCount = 0;
   let negotiationBusy = false;
   let repeatOfferSent = false;
   let pendingReason = '';
@@ -357,12 +385,17 @@ async function createHostSession(options = {}) {
       });
       await peer.setLocalDescription(offer);
       offerRevision += 1;
-      await updateDoc(roomRef, {
+      const update = {
         offer: serializeDescription(peer.localDescription),
         offerRevision,
         offerReason: clean(reason, 60),
         updatedAt: serverTimestamp()
-      });
+      };
+      if (reason === 'anfitrion-no-recibe-invitada') {
+        update.hostNeedsGuestMediaAt = Date.now();
+        update.hostNeedsGuestMediaReason = 'sin-audio-o-video-invitada';
+      }
+      await updateDoc(roomRef, update);
       options.onStatus?.({ state: 'connecting', text: 'Reactivando audio y cámara…' });
     } catch (error) {
       console.warn('JEMMO Room renegotiation:', error);
@@ -407,23 +440,8 @@ async function createHostSession(options = {}) {
     answerRevision: 0,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-    inviteRequestId: clean(options.inviteRequestId, 128),
-    invitedTargetUid: clean(options.invitedTargetUid, 128),
     expiresAtMs: Date.now() + 2 * 60 * 60 * 1000
   });
-  if (clean(options.inviteRequestId, 128)) {
-    try {
-      await updateDoc(doc(db, 'invitacionesEmisor', clean(options.inviteRequestId, 128)), {
-        status: 'room_ready',
-        roomId: id,
-        inviteUrl: new URL(`salas.html?join=${encodeURIComponent(id)}`, location.href).href,
-        updatedAt: serverTimestamp()
-      });
-    } catch (error) {
-      console.warn('JEMMO paid invitation link:', error);
-    }
-  }
-
   unsubs.push(onSnapshot(roomRef, snapshot => {
     if (!snapshot.exists()) return;
     const data = snapshot.data() || {};
@@ -439,8 +457,21 @@ async function createHostSession(options = {}) {
           await peer.__jemmoFlushCandidates?.();
           if (!repeatOfferSent) {
             repeatOfferSent = true;
-            setTimeout(() => refreshOutgoingMedia('confirmar-envio-anfitrion'), 900);
+            setTimeout(() => publishOffer('confirmar-recepcion-invitada'), 900);
           }
+          setTimeout(() => {
+            if (expectedRemoteMedia(remoteStream, options.mode === 'camera')) {
+              guestMediaRetryCount = 0;
+              return;
+            }
+            if (guestMediaRetryCount < 2) {
+              guestMediaRetryCount += 1;
+              options.onStatus?.({ state: 'connecting', text: 'Solicitando audio y cámara de la invitada…' });
+              void publishOffer('anfitrion-no-recibe-invitada');
+            } else {
+              options.onStatus?.({ state: 'warning', text: 'La invitada no está enviando audio o cámara' });
+            }
+          }, 4200);
         } catch (error) {
           answerRevisionApplied = Math.max(0, answerRevisionApplied - 1);
           console.warn('JEMMO Room answer:', error);
@@ -483,7 +514,6 @@ async function joinGuestSession(code, options = {}) {
   const unsubs = [];
   const localStream = options.localStream;
   if (!(localStream instanceof MediaStream)) throw new Error('No se pudo abrir el micrófono o la cámara.');
-  addLocalTracks(peer, localStream);
   configurePeer({
     peer,
     roomRef,
@@ -498,6 +528,7 @@ async function joinGuestSession(code, options = {}) {
   let appliedOfferRevision = 0;
   let applyingOffer = false;
   let queuedOffer = null;
+  let hostRequestSeen = 0;
   async function applyOffer(offerData, revision) {
     if (!offerData || revision <= appliedOfferRevision) return;
     if (applyingOffer) {
@@ -511,6 +542,7 @@ async function joinGuestSession(code, options = {}) {
       if (peer.signalingState !== 'stable') { queuedOffer = { offerData, revision }; return; }
       await peer.setRemoteDescription(new RTCSessionDescription(offerData));
       await peer.__jemmoFlushCandidates?.();
+      await bindLocalTracksToRemoteOffer(peer, localStream);
       const answer = await peer.createAnswer();
       await peer.setLocalDescription(answer);
       appliedOfferRevision = revision;
@@ -545,7 +577,8 @@ async function joinGuestSession(code, options = {}) {
         guestNeedsRenegotiationReason: clean(reason, 80),
         updatedAt: serverTimestamp()
       });
-      options.onStatus?.({ state: 'connecting', text: 'Solicitando audio y cámara de Jesús…' });
+      const republishingGuest = String(reason).includes('anfitrion-solicita');
+      options.onStatus?.({ state: 'connecting', text: republishingGuest ? 'Reenviando tu audio y cámara al anfitrión…' : 'Solicitando audio y cámara de Jesús…' });
     } catch (error) {
       console.warn('JEMMO Room request renegotiation:', error);
     }
@@ -553,25 +586,17 @@ async function joinGuestSession(code, options = {}) {
 
   const initialRevision = Math.max(1, Number(data.offerRevision) || 1);
   await applyOffer(data.offer, initialRevision);
-  if (clean(data.inviteRequestId, 128)) {
-    try {
-      await updateDoc(doc(db, 'invitacionesEmisor', clean(data.inviteRequestId, 128)), {
-        status: 'accepted',
-        acceptedByUid: user.uid,
-        acceptedAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      });
-    } catch (error) {
-      console.warn('JEMMO paid invitation accepted:', error);
-    }
-  }
-
   unsubs.push(onSnapshot(roomRef, roomSnapshot => {
     if (!roomSnapshot.exists()) return;
     const room = roomSnapshot.data() || {};
     if (room.status === 'ended') options.onStatus?.({ state: 'closed', text: 'El anfitrión finalizó la sala' });
     const revision = Math.max(1, Number(room.offerRevision) || (room.offer ? 1 : 0));
     if (room.offer && revision > appliedOfferRevision) void applyOffer(room.offer, revision);
+    const hostRequest = Number(room.hostNeedsGuestMediaAt) || 0;
+    if (hostRequest > hostRequestSeen) {
+      hostRequestSeen = hostRequest;
+      void requestRenegotiation('anfitrion-solicita-medios-invitada');
+    }
   }, error => console.warn('JEMMO Room guest snapshot:', error)));
 
   const verifyTimer = setTimeout(() => {
@@ -595,7 +620,7 @@ async function joinGuestSession(code, options = {}) {
 }
 
 window.JemmoRoomRealtime = Object.freeze({
-  version: '1.2.0-test',
+  version: '1.3.0-test',
   getRoomPreview,
   createHostSession,
   joinGuestSession

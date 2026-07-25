@@ -1,62 +1,93 @@
-JEMMO LIVE V1 · CONEXIÓN BIDIRECCIONAL E INVITACIONES DE EMISOR PRUEBA 10
+JEMMO LIVE V1 · RECEPCIÓN INVITADA, INVITAR AMIGOS Y CAMBIO 1:1 PRUEBA 11
 Fecha: 25/07/2026
 
-Base:
-- JEMMO LIVE V1 · CHAT Y AUDIO SALAS RUTH PRUEBA 09.
+Base verificada:
+- `jemmo(11).zip`.
+- Versión detectada: JEMMO LIVE V1 · CONEXIÓN BIDIRECCIONAL E INVITACIONES DE EMISOR PRUEBA 10.
+- SHA-256 de la base recibida: 53d26aabe7d19f1dba7f3154fe252622b6d12f90d234829a070c56e0de6a46a9.
 
-Incidencia confirmada en la prueba real:
-- Jesús podía ver y escuchar a Ruth correctamente.
-- Ruth aparecía conectada, pero no recibía la cámara ni el micrófono de Jesús.
-- La conexión WebRTC era unidireccional después de compartir la invitación y regresar a JEMMO.
-- Faltaba la función de invitación pagada desde el perfil público del emisor.
+Estado real corregido de la prueba WebRTC:
+- Ruth SÍ veía y escuchaba a Jesús.
+- Jesús NO veía ni escuchaba a Ruth.
+- Funcionaba anfitrión/Jesús → invitada/Ruth.
+- Fallaba invitada/Ruth → anfitrión/Jesús.
 
-Corrección de audio y vídeo en ambos sentidos:
-- El anfitrión y la invitada usan transceptores WebRTC `sendrecv` explícitos.
-- Después de la primera respuesta se realiza una segunda negociación para confirmar que las pistas activas del anfitrión llegan al móvil invitado.
-- La invitada comprueba si recibió audio y, en Sala con cámara, también vídeo.
-- Si falta alguna pista, solicita automáticamente una renegociación al anfitrión.
-- El anfitrión recupera micrófono y cámara al regresar desde Compartir, WhatsApp u otra aplicación y reemplaza las pistas dentro de la conexión activa.
-- Se reintenta también con `visibilitychange`, `focus`, `pageshow` y mediante el botón superior de conexión.
-- La invitada puede tocar el botón superior para pedir manualmente de nuevo el audio y la cámara del anfitrión.
-- Se conservan el chat compartido, el botón TOCA PARA ESCUCHAR, regalos, sillas, espejo y tareas LIVE.
+Corrección WebRTC para recibir a la invitada:
+- El anfitrión mantiene sus transceptores `sendrecv` y crea la oferta inicial.
+- La invitada ya no crea transceptores propios antes de aplicar la oferta del anfitrión.
+- Después de recibir la oferta, la invitada enlaza su micrófono y cámara a los transceptores de audio y vídeo ya negociados.
+- Solo después de enlazar sus pistas genera y publica la respuesta WebRTC.
+- El anfitrión verifica si realmente recibió audio y, en Sala con cámara, también vídeo de la invitada.
+- Si faltan pistas, solicita una nueva negociación específica para recuperar invitada → anfitrión.
+- Los reintentos automáticos están limitados para evitar bucles permanentes.
+- El botón superior del anfitrión solicita de nuevo el audio y la cámara de la invitada.
+- Los eventos `track`, `unmute` y `ended` vuelven a publicar el flujo remoto en la interfaz.
+- Se conservan chat compartido, regalos, sillas, espejo, tareas y el botón TOCA PARA ESCUCHAR.
 
-Invitaciones desde el perfil del emisor:
-- En Editar perfil se añade la opción Aceptar invitaciones y un campo de tarifa en JEMMOS.
-- JEMMO no inventa una tarifa: cada emisor configura la suya.
-- Cuando la tarifa está activa, el perfil público completo muestra un botón compacto INVITAR A UNA SALA con el precio.
-- La persona elige Audio Room o Sala con cámara y confirma el coste antes de continuar.
-- El importe se descuenta una sola vez mediante JemmoWallet y queda registrado como Invitación de emisor en modo de pruebas.
-- Se crea un registro en Firestore `invitacionesEmisor` y se abre Salas con el emisor, modalidad y solicitud ya preparados.
-- Si Firestore no puede registrar la invitación, los JEMMOS se devuelven automáticamente.
-- La sala relaciona el código WebRTC con la solicitud pagada y marca la invitación como aceptada cuando la persona invitada entra.
+Eliminación de invitaciones privadas de pago:
+- Eliminada de Editar perfil la sección “INVITACIONES PRIVADAS DEL EMISOR”.
+- Eliminados Tarifa por invitación, campo JEMMOS, Disponibilidad y cualquier cobro asociado.
+- Eliminado el botón de invitación pagada del perfil público.
+- Eliminada la hoja de selección Audio Room/Sala con cámara vinculada a una tarifa.
+- Eliminados los registros nuevos en Firestore `invitacionesEmisor` y su relación con Salas.
+- La sincronización del perfil borra de Firestore los campos antiguos `invitationsEnabled`, `invitationPrice` y `acceptsInvitations`.
 
-Archivos modificados:
+Nueva función correcta “Invitar amigos a JEMMO LIVE”:
+- Cada usuario dispone en Yo de una tarjeta propia para copiar o compartir su enlace personal.
+- El enlace usa la ID pública permanente JEMMO del usuario, no el UID técnico.
+- El enlace abre `acceso.html` y activa directamente el modo Registro.
+- La invitación pendiente se conserva durante un máximo de 30 días en almacenamiento local y de sesión.
+- Al crear una cuenta nueva por correo o Google, Firestore vincula una sola vez al invitador y al nuevo usuario.
+- Se crea un documento determinista en `referidos/{uidDelNuevoUsuario}` para impedir dobles atribuciones.
+- El contador `referralCount` del invitador aumenta una sola vez.
+- El sistema impide auto-invitaciones y no sobrescribe una referencia ya asignada.
+- Compartir la invitación no cuesta JEMMOS.
+
+Consistencia económica corregida:
+- El monedero ya mostraba y calculaba JEMMOS → CRISTALES a razón de 1:1 sin comisión.
+- Se corrigió el indicador visual heredado que todavía decía 10 = 1.
+- Chili IA ahora explica también la relación oficial 1 JEMMO = 1 CRISTAL.
+
+Archivos modificados o añadidos:
+- acceso.html
+- yo.html
+- perfil-publico.html
 - salas.html
 - jemmo-room-realtime.js
-- perfil-publico.html
-- yo.html
+- jemmo-referrals.js (nuevo)
 - jemmo-cloud-profile.js
+- jemmo-wallet.js
+- jemmo-chili-knowledge.js
 - sw.js
-- manifest.webmanifest
 - pwa-register.js
+- manifest.webmanifest
 - VERSION.txt
 - INTEGRIDAD_SHA256.txt
 
 Actualización PWA:
-- Caché: `jemmo-live-v1-bidirectional-invites-10-20260725`.
-- La aplicación instalada se actualiza sin desinstalarla.
+- Caché: `jemmo-live-v1-guest-receive-referrals-11-20260725`.
+- Versión de registro: `pwa-guest-receive-referrals-11`.
+- La aplicación instalada debe actualizarse sin desinstalarla.
 
-Prueba móvil obligatoria:
-1. Ruth abre Yo > Editar perfil, activa Aceptar invitaciones, establece una tarifa de prueba y guarda.
-2. Jesús abre el perfil completo de Ruth y comprueba el botón INVITAR A UNA SALA con la tarifa.
-3. Jesús elige Audio Room o Sala con cámara, confirma el cobro y prepara la invitación.
-4. Ruth entra desde el enlace y concede permisos.
-5. Ambos deben verse y escucharse en las dos direcciones.
-6. Si un lado no recibe medios, toca el botón superior de conexión para forzar la recuperación.
-7. Verificar que la tarifa se descuenta una sola vez.
+Prueba móvil obligatoria WebRTC:
+1. Jesús crea Audio Room o Sala con cámara y comparte el enlace con Ruth.
+2. Ruth abre el enlace, concede micrófono y cámara y entra.
+3. Confirmar que Ruth continúa viendo y escuchando a Jesús.
+4. Confirmar especialmente que Jesús ve y escucha a Ruth.
+5. En Sala con cámara, comprobar vídeo y audio en ambas direcciones.
+6. Si Jesús no recibe a Ruth, tocar el botón superior para solicitar de nuevo sus medios.
+7. Probar también después de volver desde WhatsApp o desde el menú Compartir.
+
+Prueba móvil obligatoria Invitar amigos:
+1. Abrir Yo y localizar “Invitar amigos a JEMMO LIVE”.
+2. Probar COPIAR ENLACE y COMPARTIR INVITACIÓN.
+3. Abrir el enlace en un navegador o cuenta nueva.
+4. Confirmar que Acceso abre Registro y muestra el aviso de invitación personal.
+5. Crear una cuenta nueva y verificar en Firestore `users`, `referidos` y el contador del invitador.
+6. Reabrir el mismo enlace con la misma cuenta y confirmar que no duplica la atribución.
 
 Límites técnicos:
+- WebRTC sigue siendo conexión directa entre dos móviles y algunas redes pueden requerir un servidor TURN.
+- El sistema de referidos registra atribución básica; premios, campañas y prevención antifraude avanzada deberán ejecutarse en servidor antes de producción.
 - La economía continúa en MODO DE PRUEBAS.
-- WebRTC sigue siendo una conexión directa entre dos móviles; ciertas redes pueden requerir un servidor TURN.
-- La tarifa de invitación se procesa con el monedero local de pruebas y no sustituye la futura economía atómica en servidor.
-- No es todavía la infraestructura de producción para salas masivas.
+- Las reglas temporales de Firestore deben sustituirse antes de publicar JEMMO LIVE en producción.

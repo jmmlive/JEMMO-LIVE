@@ -6,7 +6,7 @@
   'use strict';
   if (window.JemmoWallet?.version) return;
 
-  const VERSION = '7.2.0-test';
+  const VERSION = '7.2.1-test';
   const FINANCE_KEY = 'jemmo_finance_v1';
   const STORAGE_DB = 'jemmo_live_durable_v1';
   const STORAGE_DB_VERSION = 1;
@@ -1092,7 +1092,7 @@
           <label class="jw-field"><span id="jw-exchange-label">Cantidad de JEMMOS</span><input id="jw-exchange-amount" type="number" min="1" inputmode="numeric" placeholder="Escribe la cantidad"></label>
           <div class="jw-preview" id="jw-exchange-preview">Escribe una cantidad para calcular el resultado.</div>
           <button class="jw-primary" id="jw-exchange-confirm" type="button" disabled>CONFIRMAR CAMBIO</button>
-          <div class="jw-rate"><span>JEMMOS ↔ CRISTALES</span><b>10 = 1</b></div><div class="jw-rate"><span>JEMS → JEMMOS</span><b>1 = 10</b></div>
+          <div class="jw-rate"><span>JEMMOS → CRISTALES</span><b>1 = 1</b></div><div class="jw-rate"><span>JEMS → JEMMOS</span><b>1 = 10</b></div>
         </div>
         <div class="jw-view" data-jw-view="withdraw" hidden>
           <article class="jw-card"><h3>Retirar JEMS de prueba</h3><p>Solo se usan JEMS confirmados. La retirada queda registrada en el monedero y en JEMMO Finanzas.</p></article>

@@ -297,16 +297,6 @@
   const activeUid=()=>{try{return String(window.__jemmoAuthenticatedUid||localStorage.getItem('jemmo_active_uid')||sessionStorage.getItem('jemmo_active_uid')||'local-user')}catch{return 'local-user'}};
   const storageKey=()=>`salas:${activeUid()}`;
   const previousStorageKeys=()=>[`jemmo_v1_salas_prueba_06_${activeUid()}`,`jemmo_v1_salas_prueba_05_${activeUid()}`,'jemmo_v1_salas_prueba_05','jemmo_v1_salas_prueba_04'];
-  const launchParams=new URLSearchParams(location.search);
-  const paidInvite={
-    targetUid:String(launchParams.get('inviteTarget')||''),
-    targetName:String(launchParams.get('inviteName')||'').trim(),
-    mode:launchParams.get('inviteMode')==='camera'?'camera':'audio',
-    requestId:String(launchParams.get('inviteRequest')||''),
-    operationId:String(launchParams.get('inviteOperation')||'')
-  };
-  const hasPaidInvite=Boolean(paidInvite.targetUid&&paidInvite.requestId);
-
   const state={
     mode:'audio',
     count:4,
@@ -322,7 +312,7 @@
     mirrorPreview:false,
     realtimeSession:null,
     remoteStream:null,
-    remoteName:paidInvite.targetName||'Ruth',
+    remoteName:'Ruth',
     remotePhoto:'ruth-avatar-test.jpg',
     remoteConnected:false,
     ownName:'Jesús',
@@ -331,9 +321,6 @@
     localSeat:1,
     remoteSeat:2,
     inviteMeta:null,
-    paidInviteTargetUid:paidInvite.targetUid,
-    paidInviteRequestId:paidInvite.requestId,
-    paidInviteOperationId:paidInvite.operationId,
     micEnabled:true,
     remoteAudioBlocked:false,
     remoteAudioPlaying:false,
@@ -409,16 +396,6 @@
         $('roomAvatar').src=state.cover;
       }
     }catch(e){console.warn('No se pudo recuperar la configuración.',e)}
-  }
-
-  function applyPaidInvitePreset(){
-    if(!hasPaidInvite)return;
-    state.mode=paidInvite.mode;
-    if(state.mode==='camera'&&state.count===25)state.count=15;
-    state.remoteName=paidInvite.targetName||state.remoteName||'Emisor';
-    if(!$('roomTitle').value.trim())$('roomTitle').value=`Sala con ${state.remoteName}`;
-    if(!$('roomDescription').value.trim())$('roomDescription').value=`Invitación privada para ${state.remoteName} desde su perfil de emisor.`;
-    updateRoomConnection('waiting',`INVITAR A ${state.remoteName.toUpperCase()}`);
   }
 
   function setValidity(id,ok){
@@ -749,7 +726,6 @@
     const api=await waitRealtimeApi();
     state.realtimeSession=await api.createHostSession({
       mode:state.mode,count:state.count,title:$('roomTitle').value.trim(),description:$('roomDescription').value.trim(),localStream:stream,
-      inviteRequestId:state.paidInviteRequestId,invitedTargetUid:state.paidInviteTargetUid,
       onOutgoingMediaNeeded:()=>recoverLocalMedia(true),
       onRemoteStream:handleRemoteStream,onRemoteProfile:handleRemoteProfile,onLocalProfile:profile=>{state.ownName=profile.name||state.ownName;state.ownPhoto=profile.photo||state.ownPhoto},onStatus:handleRealtimeStatus,onMessage:handleRoomMessage
     });
@@ -797,7 +773,7 @@
     state.isGuest=false;
     state.localSeat=1;
     state.remoteSeat=2;
-    state.remoteName=paidInvite.targetName||state.remoteName||'Ruth';
+    state.remoteName=state.remoteName||'Ruth';
     state.remotePhoto=state.remotePhoto||'ruth-avatar-test.jpg';
     state.remoteConnected=false;
     const title=$('roomTitle').value.trim();
@@ -1074,7 +1050,7 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   }
   renderRoomGiftCatalog();
   renderPreparation();
-  void restore().then(()=>{applyPaidInvitePreset();renderPreparation();updateRoomMirrorControl();void prepareIncomingInvite()});
+  void restore().then(()=>{renderPreparation();updateRoomMirrorControl();void prepareIncomingInvite()});
 
   document.querySelectorAll('.jr-mode').forEach(btn=>btn.addEventListener('click',()=>{
     state.mode=btn.dataset.mode;
@@ -1231,11 +1207,28 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   }
 
   $('roomConnectionButton').addEventListener('click',()=>{
-    if(state.remoteConnected){void recoverLocalMedia(true);void playRemoteAudio(true);return}
+    if(state.remoteConnected){
+      void playRemoteAudio(true);
+      if(state.isGuest){
+        void recoverLocalMedia(true);
+        void state.realtimeSession?.requestRenegotiation?.('toque-manual-invitada');
+        toast('Reenviando tu audio y cámara y solicitando al anfitrión…');
+      }else{
+        void state.realtimeSession?.renegotiate?.('anfitrion-no-recibe-invitada');
+        toast('Solicitando de nuevo el audio y la cámara de la invitada…');
+      }
+      return;
+    }
     if(state.isGuest){
       void recoverLocalMedia(true);
       void state.realtimeSession?.requestRenegotiation?.('toque-manual-invitada');
       toast('Solicitando de nuevo el audio y la cámara del anfitrión…');
+      return;
+    }
+    const peerState=state.realtimeSession?.peer?.connectionState||'new';
+    if(state.realtimeSession&&peerState!=='new'){
+      void state.realtimeSession.renegotiate?.('anfitrion-no-recibe-invitada');
+      toast('Solicitando de nuevo el audio y la cámara de la invitada…');
       return;
     }
     void shareRoomInvite();

@@ -26,7 +26,7 @@ const TOPICS = [
   {
     id: 'wallet',
     keywords: ['monedero','jemmos','jems','cristales','recargar','retirar','cambio','intercambiar','dinero','regalo'],
-    answer: `JEMMO utiliza tres saldos: **JEMMOS** para recargas y regalos, **JEMS** para ganancias confirmadas y **CRISTALES** para juegos internos. En la fase actual toda la economía permanece en **modo de pruebas, sin cobros ni retiros reales**.\n\nEl cambio de prueba JEMMOS → CRISTALES usa la relación mostrada por el monedero: 10 JEMMOS producen 1 CRISTAL.`,
+    answer: `JEMMO utiliza tres saldos: **JEMMOS** para recargas y regalos, **JEMS** para ganancias confirmadas y **CRISTALES** para juegos internos. En la fase actual toda la economía permanece en **modo de pruebas, sin cobros ni retiros reales**.\n\nEl cambio de prueba JEMMOS → CRISTALES es 1:1 y sin comisión: 1 JEMMO produce 1 CRISTAL.`,
     actions: [{label:'Abrir Perfil y Finanzas',route:'yo.html'}]
   },
   {

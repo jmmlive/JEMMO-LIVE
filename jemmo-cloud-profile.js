@@ -1,7 +1,6 @@
 import { ensurePublicId } from './jemmo-public-id.js';
-/* JEMMO LIVE V1 · AUDIO/VÍDEO BIDIRECCIONAL E INVITACIONES PRUEBA 10
-   Sincroniza el perfil editable de Yo, incluida la información social pública,
-   con Firestore y el directorio de Mensajes.
+/* JEMMO LIVE V1 · PERFIL SIN INVITACIONES PRIVADAS PRUEBA 11
+   Sincroniza el perfil editable de Yo y elimina los campos antiguos de tarifa privada.
 */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
 import { getAuth, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
@@ -28,7 +27,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const MEDIA_DB = 'jemmo-profile-media-v1';
 const MEDIA_STORE = 'media';
-const RELOAD_KEY = 'jemmo_profile_cloud_hydrated_10';
+const RELOAD_KEY = 'jemmo_profile_cloud_hydrated_11';
 let user = null;
 let syncing = false;
 
@@ -194,8 +193,6 @@ function profilePayload(currentUser, local, media, assigned) {
   const youtube = clean(local.youtube || '', 160);
   const facebook = clean(local.facebook || '', 160);
   const website = clean(local.website || local.web || '', 220);
-  const invitationPrice = Math.max(0, Math.floor(Number(local.invitationPrice) || 0));
-  const invitationsEnabled = Boolean(local.invitationsEnabled) && invitationPrice > 0;
   const profileUpdatedAtClient = Math.max(0, Number(local.updatedAt) || 0);
   return {
     uid: currentUser.uid,
@@ -216,8 +213,6 @@ function profilePayload(currentUser, local, media, assigned) {
     youtube,
     facebook,
     website,
-    invitationsEnabled,
-    invitationPrice,
     publicId: assigned.publicId,
     publicIdLower: assigned.publicId.toLocaleLowerCase('es'),
     publicIdNumber: assigned.publicIdNumber,
@@ -252,6 +247,9 @@ async function syncLocalProfile() {
     await Promise.all([
       setDoc(doc(db, 'users', user.uid), {
         ...payload,
+        invitationsEnabled: deleteField(),
+        invitationPrice: deleteField(),
+        acceptsInvitations: deleteField(),
         updatedAt: serverTimestamp()
       }, { merge: true }),
       setDoc(doc(db, 'directorioMensajes', user.uid), {
@@ -277,8 +275,9 @@ async function syncLocalProfile() {
         youtube: payload.youtube,
         facebook: payload.facebook,
         website: payload.website,
-        invitationsEnabled: payload.invitationsEnabled,
-        invitationPrice: payload.invitationPrice,
+        invitationsEnabled: deleteField(),
+        invitationPrice: deleteField(),
+        acceptsInvitations: deleteField(),
         verified: payload.verified,
         level: payload.level,
         avatarData: payload.avatarData,
@@ -327,8 +326,6 @@ async function hydrateFromCloud() {
       youtube: clean(cloud.youtube || local.youtube, 160),
       facebook: clean(cloud.facebook || local.facebook, 160),
       website: clean(cloud.website || local.website || local.web, 220),
-      invitationsEnabled: Boolean(cloud.invitationsEnabled),
-      invitationPrice: Math.max(0, Math.floor(Number(cloud.invitationPrice) || Number(local.invitationPrice) || 0)),
       id: clean(cloud.publicId || cloud.profileId || local.publicId || local.id, 40),
       publicId: clean(cloud.publicId || cloud.profileId || local.publicId || local.id, 40),
       verified: Boolean(cloud.verified),
@@ -338,6 +335,9 @@ async function hydrateFromCloud() {
       cover: cloud.coverData ? 'indexeddb' : (local.cover || ''),
       updatedAt: cloudUpdated
     };
+    delete merged.invitationsEnabled;
+    delete merged.invitationPrice;
+    delete merged.acceptsInvitations;
 
     await Promise.all([
       cloud.avatarData ? mediaWrite(`${user.uid}:avatar`, cloud.avatarData) : Promise.resolve(),

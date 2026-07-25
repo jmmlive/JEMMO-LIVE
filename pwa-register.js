@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-bidirectional-invites-10';
+  const VERSION = 'pwa-guest-receive-referrals-11';
   let installPrompt = null;
 
   const isStandalone = () =>
