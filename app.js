@@ -21,9 +21,10 @@
   {label:'Iniciar LIVE',icon:'📹',terms:'live directo transmitir camara',route:'live.html'},
   {label:'Salas de audio',icon:'🎙️',terms:'salas audio microfono',route:'salas.html'},
   {label:'Mensajes',icon:'💬',terms:'mensajes chats soporte avisos',route:'mensajes.html'},
+  {label:'Chili IA',icon:'✦',terms:'chili ia ayuda soporte academia videos asistente problemas',route:'chili-ia.html'},
   {label:'Idioma',icon:'🌍',terms:'idioma lengua configuracion',demo:'Idioma'},
   {label:'Seguridad y privacidad',icon:'🔒',terms:'seguridad privacidad bloquear cuenta ayuda',demo:'Seguridad y privacidad'},
-  {label:'Ayuda y soporte',icon:'❓',terms:'ayuda soporte problemas contacto',demo:'Ayuda y soporte'}
+  {label:'Ayuda y soporte',icon:'❓',terms:'ayuda soporte problemas contacto',route:'chili-ia.html'}
  ];
  const recentKey='jemmo_recent_functions_v06';
  const getRecent=()=>{try{return JSON.parse(localStorage.getItem(recentKey)||'[]')}catch{return[]}};

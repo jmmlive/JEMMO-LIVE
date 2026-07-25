@@ -1,91 +1,72 @@
-JEMMO LIVE V1 · ID PÚBLICA Y SEGURIDAD PRUEBA 08
+JEMMO LIVE V1 · CHILI IA FUNDACIÓN PRUEBA 01
 Fecha: 25/07/2026
 
-Base vigente:
-- JEMMO LIVE V1 · PERFILES Y MENSAJES REALES PRUEBA 07.
-- PRUEBA 07 validada entre Jesús y Ruth: perfil editable, búsqueda y mensajes bidireccionales reales.
+Base técnica:
+- JEMMO LIVE V1 · ID PÚBLICA Y SEGURIDAD PRUEBA 08.
+- PRUEBA 08 permanece pendiente de validación completa con Ruth; esta entrega no modifica su lógica de identidad, mensajes ni reglas Firestore.
 
-Objetivo de esta entrega:
-- Cerrar la base de identidad y mensajería antes de comenzar el módulo Chili IA.
-- Sustituir el correo público por una ID JEMMO única, permanente y copiable.
-- Proteger perfiles, conversaciones y mensajes mediante reglas autenticadas de Cloud Firestore.
+Objetivo:
+- Crear la página propia de Chili IA e integrarla desde Inicio antes de que el proyecto crezca y resulte más costoso añadirla a toda la navegación.
+- Establecer una arquitectura visual, funcional y segura para convertirla en el centro oficial de ayuda, formación, incidencias y asistencia inteligente de JEMMO LIVE.
 
-ID pública JEMMO:
-- Cada cuenta recibe automáticamente una ID con formato JEMMO-1000001, JEMMO-1000002, etc.
-- La asignación utiliza una transacción Firestore con contador y reserva única para evitar duplicados.
-- La ID pública es distinta del UID técnico de Firebase.
-- La ID no cambia aunque se modifique el correo, el nombre, el dispositivo o la foto.
-- Las cuentas existentes reciben su ID al iniciar sesión con esta revisión.
-- El perfil propio sustituye la antigua ID local derivada del UID por la nueva ID pública.
-- La ID aparece con acciones para copiar y compartir desde el perfil.
+Página Chili IA:
+- Nueva ruta chili-ia.html.
+- Cuenta oficial verificada y estado visible.
+- Cabecera, presentación, chat, accesos rápidos, academia, vídeos, estado de conocimiento, ayuda gratuita/VIP y regalos de prueba.
+- Diseño móvil premium coherente con JEMMO LIVE.
+- Navegación inferior conservada y regreso directo a Inicio.
 
-Privacidad y búsqueda:
-- El correo queda reservado para acceso, verificación y recuperación de cuenta.
-- El correo se elimina del directorio público de Mensajes durante la migración.
-- La búsqueda pública admite ID JEMMO, nombre de usuario o nombre público exacto.
-- Se elimina la búsqueda por correo y por UID técnico de Firebase.
-- Los perfiles públicos ya no muestran el correo de acceso.
+Conocimiento inicial:
+- Nueva biblioteca jemmo-chili-knowledge.js con información revisada sobre LIVE, Salas, perfiles, ID JEMMO, mensajes, monedero, Casas, acceso, seguridad, roles y límites de Chili.
+- Búsqueda local por intención y palabras clave.
+- Respuestas con botones directos a las pantallas relacionadas.
+- La biblioteca no aprende automáticamente de conversaciones privadas.
+- Las preguntas sin respuesta se reconocen como pendientes de revisión, sin inventar información.
 
-Mensajería:
-- Las conversaciones directas utilizan un ID determinista formado por los dos UID ordenados, evitando duplicados.
-- Se conserva el contador real de mensajes no leídos y el marcado como leído.
-- La lista mantiene último mensaje, hora y orden por actividad.
-- Los perfiles guardados dentro de una conversación ya no contienen correos.
-- Solo se actualiza la copia del perfil correspondiente al usuario autenticado.
+Chat funcional:
+- Preguntas escritas y accesos rápidos.
+- Dictado por voz cuando el navegador lo admite.
+- Historial por usuario almacenado primero en IndexedDB y con respaldo de sesión.
+- Limpieza del historial local.
+- Valoración útil/no útil para preparar futuras revisiones.
+- Alturas automáticas, teclado móvil y controles accesibles.
 
-Seguridad entre usuarios:
-- Se añade bloqueo y desbloqueo desde las opciones de una conversación.
-- Un bloqueo impide enviar mensajes en ambos sentidos cuando se publican las reglas de PRUEBA 08.
-- Se añade denuncia por spam, acoso, suplantación o posible menor.
-- El perfil público permite bloquear, desbloquear o denunciar.
-- Las denuncias se guardan en Firestore con estado pendiente para futura revisión administrativa.
+Multimedia:
+- Tres espacios preparados para la fotografía y los vídeos oficiales de Chili.
+- Los medios se incorporarán cuando Jesús entregue los archivos, sin rehacer la página.
 
-Reglas Firestore:
-- Archivo separado: JEMMO_LIVE_V1_PRUEBA_08_FIRESTORE.rules.
-- Cada usuario solo puede leer y modificar su documento privado users/{uid}.
-- El directorio público no admite campos email ni emailLower.
-- Solo los participantes pueden leer una conversación y sus mensajes.
-- Solo el remitente autenticado puede crear un mensaje con su propio UID.
-- Los mensajes no pueden modificarse ni borrarse desde el cliente.
-- Las IDs públicas se reservan de forma atómica y no pueden modificarse después.
-- Los bloqueos solo pueden ser administrados por la persona que bloquea.
-- Las denuncias solo pueden ser creadas por el usuario autenticado.
-- Las colecciones antiguas de prueba quedan bloqueadas para escritura.
+Integración en Inicio:
+- Tarjeta premium “Habla con Chili IA” después de Batalla Oficial.
+- Acceso Chili IA dentro del menú lateral.
+- Ayuda y soporte dirige a Chili IA.
+- El buscador de funciones reconoce Chili, IA, ayuda, academia, vídeos y soporte.
+
+Seguridad y arquitectura futura:
+- Esta entrega no expone ninguna clave de proveedor de IA en el navegador.
+- El chat actual usa conocimiento local revisado.
+- La conexión generativa futura deberá pasar por un servicio seguro con autenticación, límites, App Check, control de costes, registro de errores y fuentes revisadas.
+- La ayuda esencial, seguridad, normas y recuperación de cuenta seguirán siendo gratuitas.
+
+PWA:
+- Nueva caché jemmo-live-v1-chili-ia-fundacion-01-20260725.
+- chili-ia.html, chili-ia.css, jemmo-chili.js y jemmo-chili-knowledge.js añadidos al app shell.
+- Nuevo start_url para forzar actualización de la instalación.
 
 Archivos del ZIP incremental:
 - INTEGRIDAD_SHA256.txt
 - VERSION.txt
-- jemmo-session.js
-- jemmo-public-id.js
-- jemmo-cloud-profile.js
-- jemmo-messages-realtime.js
-- jemmo-unread-badge.js
-- perfil-publico.html
+- chili-ia.html
+- chili-ia.css
+- jemmo-chili.js
+- jemmo-chili-knowledge.js
+- inicio.html
+- app.js
 - manifest.webmanifest
 - pwa-register.js
 - sw.js
 
-Archivo externo obligatorio:
-- JEMMO_LIVE_V1_PRUEBA_08_FIRESTORE.rules debe publicarse en Firebase Console > Firestore Database > Reglas.
-- No se incluye dentro del ZIP de Comby porque no es un archivo de la aplicación web.
-
-Prueba cruzada requerida:
-1. Publicar los archivos del ZIP y las reglas Firestore.
-2. Jesús inicia sesión y comprueba su nueva ID JEMMO.
-3. Ruth inicia sesión y comprueba su nueva ID JEMMO.
-4. Copiar y compartir ambas IDs.
-5. Buscar por ID y por nombre de usuario, nunca por correo.
-6. Enviar mensajes en ambos sentidos y verificar los contadores.
-7. Bloquear, comprobar que el envío se rechaza y después desbloquear.
-8. Enviar una denuncia de prueba y comprobar la colección denuncias.
-9. Cerrar y abrir la aplicación para verificar persistencia.
-
-Límites conservados:
-- Continúa en MODO DE PRUEBAS.
-- Fotos y portadas siguen comprimidas dentro de Firestore durante pruebas; antes de producción deben migrarse a Firebase Storage.
-- Adjuntos, notas de voz, llamadas, grupos, clubes de fans y panel administrativo de denuncias siguen pendientes.
-- La seguridad de roles para agencias, agentes y emisoras deberá ampliarse cuando esos módulos se conecten a producción.
-
 Estado:
 - Código preparado y validado estáticamente.
-- Pendiente de publicación de reglas e instalación para validación real entre Jesús y Ruth.
+- Pendiente de instalación y prueba visual real en móvil.
+- Fotografía y vídeos oficiales pendientes de entrega por Jesús.
+- Motor generativo remoto pendiente de diseño y conexión segura.

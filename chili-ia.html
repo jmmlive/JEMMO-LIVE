@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="es" class="jemmo-auth-pending">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#09000f">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <title>Chili IA · JEMMO LIVE</title>
+  <link rel="stylesheet" href="chili-ia.css">
+  <style>html.jemmo-auth-pending body{visibility:hidden}</style>
+  <script>
+    document.documentElement.classList.add('jemmo-auth-pending');
+    setTimeout(()=>{
+      if(!document.documentElement.classList.contains('jemmo-auth-pending'))return;
+      let uid='';
+      try{uid=localStorage.getItem('jemmo_active_uid')||''}catch{}
+      if(!uid)try{uid=sessionStorage.getItem('jemmo_active_uid')||''}catch{}
+      if(uid)document.documentElement.classList.remove('jemmo-auth-pending');
+      else location.replace('acceso.html?sesion=timeout');
+    },5500);
+  </script>
+</head>
+<body>
+  <div class="chili-bg" aria-hidden="true"><i></i><i></i><i></i></div>
+
+  <header class="chili-topbar">
+    <button class="icon-button" id="chiliBack" type="button" aria-label="Volver a Inicio">‹</button>
+    <div class="top-identity">
+      <span class="mini-avatar"><img src="jemmo-fish-nav.webp" alt=""></span>
+      <div><strong>Chili IA <b class="verified">✓</b></strong><small><i></i> Asistente oficial JEMMO</small></div>
+    </div>
+    <button class="icon-button" id="chiliShare" type="button" aria-label="Compartir Chili IA">↗</button>
+  </header>
+
+  <main class="chili-shell">
+    <section class="hero-card" aria-labelledby="chiliTitle">
+      <div class="hero-glow" aria-hidden="true"></div>
+      <div class="hero-avatar" role="img" aria-label="Avatar provisional de Chili IA">
+        <img src="jemmo-fish-nav.webp" alt="Chili IA, asistente oficial de JEMMO LIVE">
+        <span class="online-dot"></span>
+      </div>
+      <div class="hero-copy">
+        <p class="eyebrow">CUENTA OFICIAL · VERIFICADA</p>
+        <h1 id="chiliTitle">Hola, soy <span>Chili IA</span></h1>
+        <p>Tu guía dentro de JEMMO LIVE. Te ayudo a encontrar funciones, resolver problemas y aprender a usar la aplicación con seguridad.</p>
+        <div class="trust-row" aria-label="Características de Chili IA">
+          <span>✓ Ayuda esencial gratis</span><span>✓ Privacidad protegida</span><span>PRUEBAS</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="chat-card" aria-labelledby="chatTitle">
+      <div class="section-heading">
+        <div><p class="eyebrow">CENTRO DE AYUDA INTELIGENTE</p><h2 id="chatTitle">Pregúntale a Chili</h2></div>
+        <button class="subtle-button" id="clearChat" type="button">Limpiar</button>
+      </div>
+
+      <div class="capability-banner" id="capabilityBanner">
+        <span>✦</span>
+        <div><strong>Conocimiento JEMMO activo</strong><small>Esta primera base responde con información revisada de la aplicación. La conexión al motor de IA se añadirá mediante un servidor seguro.</small></div>
+      </div>
+
+      <div class="chat-log" id="chiliChatLog" role="log" aria-live="polite" aria-relevant="additions">
+        <article class="message assistant welcome-message">
+          <div class="message-avatar"><img src="jemmo-fish-nav.webp" alt=""></div>
+          <div class="bubble">
+            <strong>Chili IA</strong>
+            <p id="welcomeText">Estoy preparada para ayudarte. Elige una opción o escribe tu pregunta.</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="quick-prompts" id="quickPrompts" aria-label="Preguntas rápidas">
+        <button type="button" data-prompt="¿Cómo inicio un LIVE?">Iniciar LIVE</button>
+        <button type="button" data-prompt="¿Cómo funcionan las salas?">Salas</button>
+        <button type="button" data-prompt="¿Cómo encuentro a una persona por su ID JEMMO?">Buscar persona</button>
+        <button type="button" data-prompt="Tengo un problema para entrar en la app">Problemas de acceso</button>
+      </div>
+
+      <form class="composer" id="chiliForm">
+        <button class="composer-tool" id="voiceButton" type="button" aria-label="Hablar con Chili">🎙</button>
+        <label class="composer-input"><span class="sr-only">Pregunta para Chili IA</span><textarea id="chiliInput" rows="1" maxlength="700" placeholder="Escribe tu pregunta…" enterkeyhint="send"></textarea></label>
+        <button class="send-button" id="sendButton" type="submit" aria-label="Enviar pregunta">➤</button>
+      </form>
+      <p class="ai-note">Chili puede equivocarse. Para seguridad, pagos o recuperación de cuenta, muestra siempre los pasos oficiales y permite pedir ayuda humana.</p>
+    </section>
+
+    <section class="help-section" aria-labelledby="helpTitle">
+      <div class="section-heading"><div><p class="eyebrow">ACCESOS DIRECTOS</p><h2 id="helpTitle">Hoy puedo ayudarte con</h2></div></div>
+      <div class="help-grid">
+        <button class="help-tile violet" data-prompt="Explícame cómo preparar y comenzar un LIVE"><span>📹</span><strong>LIVE</strong><small>Preparación, cámara y tareas</small></button>
+        <button class="help-tile blue" data-prompt="Explícame todas las modalidades de Salas"><span>🎙️</span><strong>Salas</strong><small>Audio Room y cámara</small></button>
+        <button class="help-tile gold" data-prompt="Explícame el monedero y las monedas de JEMMO"><span>🪙</span><strong>Monedero</strong><small>JEMMOS, JEMS y cristales</small></button>
+        <button class="help-tile pink" data-prompt="¿Cómo funcionan las Casas y las batallas?"><span>🏆</span><strong>Casas</strong><small>Agentes, puntos y batallas</small></button>
+        <button class="help-tile cyan" data-prompt="¿Cómo funcionan los perfiles, IDs y mensajes?"><span>💬</span><strong>Personas</strong><small>ID JEMMO, perfil y mensajes</small></button>
+        <button class="help-tile red" data-prompt="¿Cómo denuncio, bloqueo o reporto un posible menor?"><span>🛡️</span><strong>Seguridad</strong><small>Bloqueo, denuncia y menores</small></button>
+      </div>
+    </section>
+
+    <section class="media-section" aria-labelledby="mediaTitle">
+      <div class="section-heading"><div><p class="eyebrow">ACADEMIA Y VÍDEOS</p><h2 id="mediaTitle">Centro Chili</h2></div><span class="pending-pill">MEDIOS PENDIENTES</span></div>
+      <div class="media-rail" id="mediaRail">
+        <button class="video-card featured" type="button" data-media-slot="presentacion">
+          <div class="video-art"><span class="play">▶</span><i>01</i></div>
+          <strong>Conoce a Chili IA</strong><small>Vídeo oficial de presentación</small>
+        </button>
+        <button class="video-card" type="button" data-media-slot="primeros-pasos">
+          <div class="video-art alt"><span class="play">▶</span><i>02</i></div>
+          <strong>Primeros pasos</strong><small>Cuenta, perfil e ID JEMMO</small>
+        </button>
+        <button class="video-card" type="button" data-media-slot="live-seguro">
+          <div class="video-art warm"><span class="play">▶</span><i>03</i></div>
+          <strong>Transmitir con seguridad</strong><small>LIVE, salas y normas</small>
+        </button>
+      </div>
+      <p class="media-note">Los espacios están preparados para incorporar la fotografía y los vídeos oficiales de Chili sin rehacer la página.</p>
+    </section>
+
+    <section class="status-card" aria-labelledby="statusTitle">
+      <div class="status-icon">◉</div>
+      <div><p class="eyebrow">ESTADO DE CONOCIMIENTO</p><h2 id="statusTitle">Base revisada, no aprendizaje automático privado</h2><p>Chili no incorpora automáticamente conversaciones privadas ni datos personales. Las nuevas soluciones se revisan antes de publicarse en su biblioteca.</p></div>
+      <button type="button" data-prompt="¿Qué puede hacer Chili y cuáles son sus límites?">Ver límites</button>
+    </section>
+
+    <section class="plans-section" aria-labelledby="plansTitle">
+      <div class="section-heading"><div><p class="eyebrow">ACCESO PARA TODOS</p><h2 id="plansTitle">Ayuda básica siempre disponible</h2></div></div>
+      <div class="plans-grid">
+        <article><span>GRATIS</span><h3>Ayuda esencial</h3><p>Funciones, seguridad, normas, recuperación y problemas conocidos.</p></article>
+        <article class="vip"><span>VIP · FUTURO</span><h3>Atención prioritaria</h3><p>Formación avanzada y prioridad, sin bloquear ayuda esencial.</p></article>
+      </div>
+    </section>
+
+    <section class="gift-card">
+      <div><p class="eyebrow">APOYO VOLUNTARIO</p><h2>Regalos para Chili</h2><p>Los regalos permanecerán en modo de pruebas y no generan ingresos reales hasta autorización expresa.</p></div>
+      <button id="giftButton" type="button">🎁 ENVIAR REGALO DE PRUEBA</button>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Navegación principal">
+    <a data-tab="inicio" href="inicio.html"><span class="nav-icon">⌂</span><b>Inicio</b></a>
+    <a data-tab="live" href="live.html"><span class="nav-icon">▣</span><b>Live</b></a>
+    <a data-tab="salas" href="salas.html"><span class="nav-icon">🎙</span><b>Salas</b></a>
+    <a data-tab="mensajes" href="mensajes.html"><span class="nav-icon">◌</span><b>Mensajes</b></a>
+    <a data-tab="yo" href="yo.html"><span class="nav-icon">♙</span><b>Yo</b></a>
+  </nav>
+
+  <div class="chili-modal" id="chiliModal" hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" id="modalClose" type="button" aria-label="Cerrar">×</button>
+      <div class="modal-symbol" id="modalSymbol">✦</div>
+      <h2 id="modalTitle">Contenido preparado</h2>
+      <p id="modalText"></p>
+      <button class="modal-ok" id="modalOk" type="button">ENTENDIDO</button>
+    </div>
+  </div>
+
+  <div class="toast" id="chiliToast" role="status" aria-live="polite"></div>
+
+  <script type="module" src="jemmo-session.js"></script>
+  <script src="pwa-register.js"></script>
+  <script type="module" src="jemmo-chili.js"></script>
+</body>
+</html>

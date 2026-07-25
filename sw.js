@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · ID PÚBLICA Y SEGURIDAD PRUEBA 08 */
-const CACHE = 'jemmo-live-v1-id-seguridad-08-20260725';
+/* JEMMO LIVE V1 · CHILI IA FUNDACIÓN PRUEBA 01 */
+const CACHE = 'jemmo-live-v1-chili-ia-fundacion-01-20260725';
 const APP_SHELL = [
   './',
   './index.html',
@@ -8,6 +8,7 @@ const APP_SHELL = [
   './live.html',
   './salas.html',
   './mensajes.html',
+  './chili-ia.html',
   './perfil-publico.html',
   './yo.html',
   './offline.html',
@@ -22,6 +23,9 @@ const APP_SHELL = [
   './salas-v1.js',
   './jemmo-unread-badge.js',
   './jemmo-messages-realtime.js',
+  './jemmo-chili.js',
+  './jemmo-chili-knowledge.js',
+  './chili-ia.css',
   './jemmo-cloud-profile.js',
   './jemmo-public-id.js',
   './manifest.webmanifest',
@@ -86,19 +90,19 @@ async function injectJemmoScripts(response, url) {
   if (UNREAD_PAGES.has(page)) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="id-seguridad-08"></script>'
+      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="chili-ia-01"></script>'
     );
   }
   if (page === '/mensajes.html') {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="id-seguridad-08"></script>'
+      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="chili-ia-01"></script>'
     );
   }
   if (page === '/yo.html') {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="id-seguridad-08"></script>'
+      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="chili-ia-01"></script>'
     );
   }
 
@@ -106,7 +110,7 @@ async function injectJemmoScripts(response, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-version', 'id-seguridad-08');
+  headers.set('x-jemmo-version', 'chili-ia-fundacion-01');
 
   return new Response(html, {
     status: response.status,
