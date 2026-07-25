@@ -1,42 +1,43 @@
-JEMMO LIVE V1 · PERFIL COMPLETO Y REGALOS EN MENSAJES PRUEBA 04
+JEMMO LIVE V1 · PERFIL PÚBLICO NATURAL PRUEBA 05
 Fecha: 25/07/2026
 
 Base:
-- JEMMO LIVE V1 · CORRECCIÓN ENVÍO REGALOS AUDIO ROOM PRUEBA 03.
-- Validada en móvil por Jesús: Audio Room permanece abierto después de enviar regalos.
+- JEMMO LIVE V1 · PERFIL COMPLETO Y REGALOS EN MENSAJES PRUEBA 04.
+- Validación móvil de Jesús: regalos en Mensajes funcionan, pero la presentación del perfil público anterior resultaba recargada y poco natural.
 
-Objetivo de esta entrega:
-- Convertir el perfil público básico en una vista rápida con acceso a un perfil completo.
-- Añadir regalos dentro de las conversaciones privadas de Mensajes.
-- Retirar de la interfaz referencias técnicas a Firebase o a la base de datos.
+Objetivo:
+- Mostrar primero una vista rápida, pequeña y limpia del usuario.
+- Abrir el perfil completo como una pantalla independiente, no desplegarlo hacia abajo dentro de la misma tarjeta.
+- Hacer que el perfil público tenga la misma identidad visual que el perfil propio de Yo.
+- Mantener los regalos dentro de Mensajes sin convertirlos en un botón grande y llamativo dentro del perfil.
 
-Perfil público:
-- La tarjeta principal se conserva como presentación rápida.
-- Nuevo botón VER PERFIL COMPLETO con Vídeos, Fotos, Publicaciones e Información.
-- Se muestran redes vinculadas, incluida Instagram, únicamente cuando existen.
-- Las fotos de perfil y portada se incorporan a la galería pública cuando están disponibles.
-- Los vídeos, fotos y publicaciones futuros se leen desde campos públicos del perfil.
-- Ruth/Ru aparece con check azul de verificación durante esta fase de pruebas.
-- La verificación real deberá validarse en servidor antes de producción.
-- Se elimina “Perfil verificado por Firebase” y cualquier texto técnico equivalente.
-- Nuevo acceso ENVIAR REGALO desde el perfil, que abre la conversación y su caja de regalos.
+Vista rápida:
+- Foto, nombre, check azul, usuario, ubicación, biografía, seguidores y seguidos.
+- Botones discretos Seguir y Mensaje.
+- La foto y el botón VER PERFIL COMPLETO abren una pantalla independiente mediante `view=full`.
+- Se eliminan de la vista principal los botones grandes Enviar regalo y Bloquear o denunciar.
 
-Mensajes y regalos:
-- Nuevo botón 🎁 junto al cuadro de escritura.
-- Catálogo de 54 regalos, desde Like hasta Universo.
-- Cantidades ×1, ×10, ×15 y ×100.
-- Confirmación previa con destinatario y coste total.
-- El regalo utiliza el mismo JemmoWallet, descuenta JEMMOS y conserva idempotencia.
-- El mensaje de regalo se registra en la conversación en tiempo real con icono, nombre, cantidad y coste.
-- El destinatario recibe el aviso dentro de la conversación.
-- Doble toque bloqueado y botón desactivado mientras se registra.
-- Si la escritura de la conversación falla, se ejecuta una devolución compensatoria de JEMMOS.
-- Botón RECARGAR disponible desde la caja.
-- La economía continúa en MODO DE PRUEBAS y no representa dinero real.
+Perfil completo:
+- Diseño equivalente al perfil propio: avatar lateral, nombre, usuario, ID, ubicación, nivel, presencia, portada, biografía y estadísticas.
+- Instagram, TikTok, YouTube y Facebook aparecen junto a la identidad, como en Yo; solo se abren cuando están vinculados.
+- `jemmo-cloud-profile.js` sincroniza ahora esas redes desde el perfil propio hacia Firestore para que otras personas puedan verlas.
+- Vídeos, fotos y publicaciones se mantienen como contenido público en una sección separada y ordenada.
+- El regalo se mantiene como un icono pequeño que abre Mensajes con la caja de regalos.
+- Bloquear, denunciar, copiar ID y compartir se trasladan al menú de tres puntos.
+- Se elimina el bloque Asistente oficial del perfil de otros usuarios para evitar ruido visual.
+
+Seguridad y funcionalidad:
+- Seguir/dejar de seguir continúa usando la colección `seguimientos`.
+- Mensaje y regalo continúan creando o reutilizando la conversación privada.
+- Bloquear y denunciar conservan su lógica, pero quedan dentro del menú secundario.
+- Ruth/Ru conserva el check azul de prueba.
+- No se muestran textos técnicos sobre Firebase.
+- Economía y regalos continúan en MODO DE PRUEBAS.
 
 Actualización PWA:
-- Nueva caché para actualizar la aplicación instalada sin desinstalarla.
-- Mensajes incluye directamente jemmo-messages-realtime.js y el service worker evita duplicarlo.
+- Nueva caché `jemmo-live-v1-public-profile-natural-05-20260725`.
+- La aplicación instalada se actualiza sin desinstalarse.
+- `perfil-publico.html` gestiona directamente su seguimiento y estadísticas; el service worker ya no inyecta `jemmo-social.js` en esa pantalla.
 
 Archivos del ZIP incremental:
 - INTEGRIDAD_SHA256.txt
@@ -45,6 +46,5 @@ Archivos del ZIP incremental:
 - pwa-register.js
 - sw.js
 - perfil-publico.html
-- mensajes.html
-- jemmo-messages-realtime.js
 - jemmo-social.js
+- jemmo-cloud-profile.js

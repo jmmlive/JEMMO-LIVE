@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · PERFIL COMPLETO Y REGALOS EN MENSAJES PRUEBA 04
+/* JEMMO LIVE V1 · PERFIL PÚBLICO NATURAL PRUEBA 05
    Relaciones sociales reales en Firestore: seguir, dejar de seguir, seguidores,
    seguidos y presencia institucional de Chili IA como asistente oficial.
 */
@@ -440,14 +440,7 @@ function startForUser(user) {
   ensureSocialModal();
   const page = pageName();
   if (page === 'yo.html') injectOwnProfile(user);
-  if (page === 'perfil-publico.html') {
-    const targetUid = new URLSearchParams(location.search).get('uid') || '';
-    ensurePublicProfileSocial(user, targetUid);
-    const observer = new MutationObserver(() => ensurePublicProfileSocial(user, targetUid));
-    const actions = document.getElementById('actions');
-    if (actions) observer.observe(actions, { childList: true, subtree: false });
-    setTimeout(() => observer.disconnect(), 12000);
-  }
+  // perfil-publico.html administra su propio diseño, seguimiento y estadísticas.
   if (page === 'mensajes.html') injectMessagesChili();
   if (page === 'chili-ia.html') injectChiliFollow(user);
 }

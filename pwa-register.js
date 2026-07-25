@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-profile-messages-gifts-04';
+  const VERSION = 'pwa-public-profile-natural-05';
   let installPrompt = null;
 
   const isStandalone = () =>

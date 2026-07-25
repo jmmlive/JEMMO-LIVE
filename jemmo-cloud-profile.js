@@ -1,6 +1,7 @@
 import { ensurePublicId } from './jemmo-public-id.js';
-/* JEMMO LIVE V1 · ID PÚBLICA Y SEGURIDAD PRUEBA 08
-   Sincroniza el perfil editable de Yo con Firestore y el directorio de Mensajes.
+/* JEMMO LIVE V1 · PERFIL PÚBLICO NATURAL PRUEBA 05
+   Sincroniza el perfil editable de Yo, incluida la información social pública,
+   con Firestore y el directorio de Mensajes.
 */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
 import { getAuth, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
@@ -188,6 +189,11 @@ function profilePayload(currentUser, local, media, assigned) {
   const country = clean(local.country || '', 40);
   const city = clean(local.city || '', 40);
   const bio = clean(local.bio || '', 160);
+  const instagram = clean(local.instagram || '', 160);
+  const tiktok = clean(local.tiktok || '', 160);
+  const youtube = clean(local.youtube || '', 160);
+  const facebook = clean(local.facebook || '', 160);
+  const website = clean(local.website || local.web || '', 220);
   const profileUpdatedAtClient = Math.max(0, Number(local.updatedAt) || 0);
   return {
     uid: currentUser.uid,
@@ -203,6 +209,11 @@ function profilePayload(currentUser, local, media, assigned) {
     bio,
     country,
     city,
+    instagram,
+    tiktok,
+    youtube,
+    facebook,
+    website,
     publicId: assigned.publicId,
     publicIdLower: assigned.publicId.toLocaleLowerCase('es'),
     publicIdNumber: assigned.publicIdNumber,
@@ -257,6 +268,11 @@ async function syncLocalProfile() {
         bio: payload.bio,
         country: payload.country,
         city: payload.city,
+        instagram: payload.instagram,
+        tiktok: payload.tiktok,
+        youtube: payload.youtube,
+        facebook: payload.facebook,
+        website: payload.website,
         verified: payload.verified,
         level: payload.level,
         avatarData: payload.avatarData,
@@ -300,6 +316,11 @@ async function hydrateFromCloud() {
       bio: clean(cloud.bio || local.bio, 160),
       country: clean(cloud.country || local.country, 40),
       city: clean(cloud.city || local.city, 40),
+      instagram: clean(cloud.instagram || local.instagram, 160),
+      tiktok: clean(cloud.tiktok || local.tiktok, 160),
+      youtube: clean(cloud.youtube || local.youtube, 160),
+      facebook: clean(cloud.facebook || local.facebook, 160),
+      website: clean(cloud.website || local.website || local.web, 220),
       id: clean(cloud.publicId || cloud.profileId || local.publicId || local.id, 40),
       publicId: clean(cloud.publicId || cloud.profileId || local.publicId || local.id, 40),
       verified: Boolean(cloud.verified),
