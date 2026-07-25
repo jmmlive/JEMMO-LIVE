@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · CHILI IA MULTIMEDIA MÓVIL PRUEBA 03 */
-const CACHE = 'jemmo-live-v1-chili-ia-media-mobile-03-20260725';
+/* JEMMO LIVE V1 · SEGUIDORES Y CHILI OFICIAL PRUEBA 04 */
+const CACHE = 'jemmo-live-v1-social-chili-04-20260725';
 const APP_SHELL = [
   './',
   './index.html',
@@ -36,6 +36,7 @@ const APP_SHELL = [
   './chili-primeros-pasos-poster.webp',
   './jemmo-cloud-profile.js',
   './jemmo-public-id.js',
+  './jemmo-social.js',
   './manifest.webmanifest',
   './jemmo-logo-header.webp',
   './jemmo-fish-nav.webp',
@@ -98,19 +99,25 @@ async function injectJemmoScripts(response, url) {
   if (UNREAD_PAGES.has(page)) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="chili-media-mobile-03"></script>'
+      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="social-chili-04"></script>'
     );
   }
   if (page === '/mensajes.html') {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="chili-media-mobile-03"></script>'
+      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="social-chili-04"></script>'
+    );
+  }
+  if (['/yo.html','/perfil-publico.html','/mensajes.html','/chili-ia.html'].includes(page) && !html.includes('jemmo-social.js')) {
+    html = injectBeforeBody(
+      html,
+      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="social-chili-04"></script>'
     );
   }
   if (page === '/yo.html') {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="chili-media-mobile-03"></script>'
+      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="social-chili-04"></script>'
     );
   }
 
@@ -118,7 +125,7 @@ async function injectJemmoScripts(response, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-version', 'chili-ia-media-mobile-03');
+  headers.set('x-jemmo-version', 'social-chili-04');
 
   return new Response(html, {
     status: response.status,

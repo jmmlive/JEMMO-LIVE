@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · ID PÚBLICA Y SEGURIDAD PRUEBA 08
+/* JEMMO LIVE V1 · SEGUIDORES Y CHILI OFICIAL PRUEBA 04
    Mensajería directa con Firebase Authentication + Cloud Firestore.
    Mantiene la interfaz visual existente y sustituye únicamente el motor local de Mensajes.
 */
@@ -17,7 +17,7 @@
     appId: '1:355540892255:web:d15a8dd03b2915e31939ea'
   };
 
-  const VERSION = 'JEMMO LIVE V1 · ID PÚBLICA Y SEGURIDAD PRUEBA 08';
+  const VERSION = 'JEMMO LIVE V1 · SEGUIDORES Y CHILI OFICIAL PRUEBA 04';
   const $ = id => document.getElementById(id);
   const state = {
     sdk: null,
@@ -36,7 +36,10 @@
     ready: false,
     publicIdApi: null,
     currentPeer: null,
-    blockedByMe: false
+    blockedByMe: false,
+    socialApi: null,
+    followingProfiles: [],
+    followingStop: null
   };
 
   let toastTimer = 0;
@@ -205,30 +208,34 @@
     return Math.max(0, Number(conversation?.data?.unreadBy?.[state.user?.uid]) || 0);
   }
 
-  function renderOnlinePeople(conversations) {
+  function renderOnlinePeople() {
     const onlineList = $('onlineList');
     const headStrong = document.querySelector('.online-block .section-head strong');
     const headSpan = document.querySelector('.online-block .section-head span');
-    if (headStrong) headStrong.textContent = 'Conversaciones recientes';
-    if (headSpan) headSpan.textContent = 'Perfiles y mensajes desde Firebase';
+    if (headStrong) headStrong.textContent = 'Personas que sigues';
+    if (headSpan) headSpan.textContent = 'Perfiles reales de tu comunidad';
     if (!onlineList) return;
 
     onlineList.innerHTML = '';
-    conversations.slice(0, 8).forEach(conversation => {
-      const peer = peerData(conversation);
+    const profiles = state.followingProfiles || [];
+    profiles.slice(0, 10).forEach(profile => {
       const button = document.createElement('button');
       button.className = 'btn online-person';
       button.type = 'button';
-      const avatar = peer.avatarData
-        ? `<img class="jemmo-rt-avatar-img" src="${esc(peer.avatarData)}" alt="">`
-        : esc(peer.initial);
-      button.innerHTML = `<span class="avatar-wrap"><span class="avatar" style="--a1:#6f2290;--a2:#190322">${avatar}</span></span><b>${esc(peer.name)}</b>`;
-      button.addEventListener('click', () => openConversation(conversation.id));
+      const avatar = profile.avatarData
+        ? `<img class="jemmo-rt-avatar-img" src="${esc(profile.avatarData)}" alt="">`
+        : esc(initials(profile.name));
+      const dot = profile.uid === state.socialApi?.CHILI_UID ? '<span class="online-dot"></span>' : '';
+      button.innerHTML = `<span class="avatar-wrap"><span class="avatar" style="--a1:#6f2290;--a2:#190322">${avatar}</span>${dot}</span><b>${esc(profile.name)}</b>`;
+      button.addEventListener('click', () => {
+        if (profile.uid === state.socialApi?.CHILI_UID) location.href = 'chili-ia.html';
+        else location.href = `perfil-publico.html?uid=${encodeURIComponent(profile.uid)}`;
+      });
       onlineList.appendChild(button);
     });
 
-    if (!conversations.length) {
-      onlineList.innerHTML = '<div class="jemmo-rt-help" style="width:100%">Pulsa ＋ para buscar un perfil real e iniciar una conversación.</div>';
+    if (!profiles.length) {
+      onlineList.innerHTML = '<div class="jemmo-rt-help" style="width:100%">Todavía no sigues a nadie. Abre un perfil y pulsa SEGUIR, o comienza siguiendo a Chili IA.</div>';
     }
   }
 
@@ -273,7 +280,7 @@
       visible.forEach(conversation => allList.appendChild(conversationRow(conversation)));
     }
 
-    renderOnlinePeople(state.conversations);
+    renderOnlinePeople();
   }
 
   function renderMessages(messageDocuments) {
@@ -943,6 +950,19 @@
     });
   }
 
+  function listenFollowingPeople() {
+    if (!state.socialApi || !state.user) return;
+    if (state.followingStop) state.followingStop();
+    state.followingStop = state.socialApi.subscribeFollowing(state.user.uid, result => {
+      state.followingProfiles = result.profiles || [];
+      renderOnlinePeople();
+    }, error => {
+      console.warn('[JEMMO social] No se pudo leer la lista de seguidos.', error);
+      state.followingProfiles = [];
+      renderOnlinePeople();
+    });
+  }
+
   function listenConversations() {
     if (state.conversationStop) state.conversationStop();
     const { collection, query, where, onSnapshot } = state.sdk.firestore;
@@ -992,6 +1012,7 @@
     try {
       await ensureCurrentUserDocument();
       listenConversations();
+      listenFollowingPeople();
     } catch (error) {
       console.warn('[JEMMO mensajes] No se pudo preparar el usuario.', error);
       setStatus(firebaseErrorMessage(error), 'error');
@@ -1012,15 +1033,17 @@
     if (allList) allList.innerHTML = '<div class="empty"><b>Espera un momento</b>Verificando tu sesión de JEMMO LIVE.</div>';
 
     try {
-      const [appSdk, authSdk, firestoreSdk, publicIdApi] = await Promise.all([
+      const [appSdk, authSdk, firestoreSdk, publicIdApi, socialApi] = await Promise.all([
         import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js'),
         import('https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js'),
         import('https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js'),
-        import('./jemmo-public-id.js')
+        import('./jemmo-public-id.js'),
+        import('./jemmo-social.js')
       ]);
       const app = appSdk.getApps()[0] || appSdk.initializeApp(FIREBASE_CONFIG);
       state.sdk = { app: appSdk, auth: authSdk, firestore: firestoreSdk };
       state.publicIdApi = publicIdApi;
+      state.socialApi = socialApi;
       state.auth = authSdk.getAuth(app);
       state.db = firestoreSdk.getFirestore(app);
 
@@ -1033,10 +1056,15 @@
           state.messagesStop();
           state.messagesStop = null;
         }
+        if (state.followingStop) {
+          state.followingStop();
+          state.followingStop = null;
+        }
         state.user = null;
         state.profile = null;
         state.conversations = [];
         state.currentConversationId = '';
+        state.followingProfiles = [];
 
         if (!user) {
           setStatus('No existe una sesión Firebase activa.', 'error');

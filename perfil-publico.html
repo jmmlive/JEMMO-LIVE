@@ -54,6 +54,7 @@
 </main>
 
 <script type="module" src="jemmo-session.js"></script>
+<script type="module" src="jemmo-social.js"></script>
 <script src="pwa-register.js"></script>
 <script type="module">
   import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
@@ -93,7 +94,7 @@
     if(!targetUid){status('Falta identificar el perfil que quieres abrir.',true);$('messageButton').disabled=true;return}
     try{
       const snapshot=await getDoc(doc(db,'directorioMensajes',targetUid));
-      if(!snapshot.exists()){status('Ese perfil todavía no está publicado. La persona debe iniciar sesión con PRUEBA 08.',true);$('messageButton').disabled=true;return}
+      if(!snapshot.exists()){status('Ese perfil todavía no está publicado. La persona debe iniciar sesión con PRUEBA 04 social.',true);$('messageButton').disabled=true;return}
       render(normalized(snapshot.id,snapshot.data()||{}));
       await refreshBlock();
     }catch(error){console.warn(error);status(error?.code==='permission-denied'?'Firebase rechazó la lectura. Publica las reglas de PRUEBA 08.':'No se pudo cargar el perfil. Comprueba Internet.',true);$('messageButton').disabled=true}

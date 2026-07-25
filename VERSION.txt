@@ -1,65 +1,60 @@
-JEMMO LIVE V1 · CHILI IA MULTIMEDIA MÓVIL PRUEBA 03
+JEMMO LIVE V1 · SEGUIDORES Y CHILI OFICIAL PRUEBA 04
 Fecha: 25/07/2026
 
 Base:
-- JEMMO LIVE V1 · CHILI IA FUNDACIÓN PRUEBA 01 instalada y visible en móvil.
-- Mantiene la arquitectura de ID pública y seguridad de PRUEBA 08 sin modificar sus reglas Firestore.
+- JEMMO LIVE V1 · CHILI IA MULTIMEDIA MÓVIL PRUEBA 03.
+- Mantiene ID pública, perfiles y mensajería de PRUEBA 08.
 
 Objetivo:
-- Sustituir la identidad visual provisional de Chili por las fotografías oficiales entregadas por Jesús.
-- Integrar los tres vídeos oficiales dentro de la propia página, con reproducción móvil y carga bajo demanda.
+- Crear relaciones sociales reales entre cuentas.
+- Mostrar seguidores y seguidos en los perfiles.
+- Mantener a Chili IA como asistente oficial disponible para todos, sin obligar a seguirla.
 
-Identidad visual:
-- Avatar oficial de Chili en la barra superior, cabecera, chat y tarjeta de Inicio.
-- Cabecera panorámica premium con fotografía oficial, nombre, cuenta verificada, estado en línea y acceso directo a la presentación.
-- Galería oficial con cuatro fotografías optimizadas para móvil.
-- La mascota JEMMO continúa como identidad general de la aplicación, pero deja de representar visualmente a Chili.
+Seguidores y seguidos:
+- Botón SEGUIR / SIGUIENDO en perfiles públicos.
+- Cada relación se guarda en Firestore con ID determinista followerUid__targetUid.
+- No se permiten auto-seguimientos ni relaciones duplicadas.
+- El usuario puede dejar de seguir libremente.
+- Contadores y listas se actualizan desde Firestore.
+- En Mi perfil aparece una sección “Tu comunidad” con las personas seguidas.
+- Si Jesús sigue a Ruth, Ruth aparece en “Personas que sigues” con foto, usuario e ID JEMMO.
+- Al pulsar Seguidores o Seguidos se abre la lista real correspondiente.
 
-Vídeos:
-- Presentación principal: Conoce a Chili IA.
-- Segundo vídeo: Chili presenta JEMMO LIVE.
-- De los tres archivos MP4 recibidos, dos eran copias binarias idénticas. La copia repetida no se muestra dos veces para evitar contenido duplicado.
-- Los vídeos se reproducen en un visor propio dentro de JEMMO LIVE.
-- Se cargan únicamente después de pulsar reproducir; no forman parte de la precarga del service worker.
-- Formato MP4 H.264/AAC, 1280 × 720, duración aproximada de 10 segundos cada uno y optimización fast-start.
+Chili IA:
+- Chili aparece en todos los perfiles como “Asistente oficial”.
+- Aparece también como contacto fijo dentro de Mensajes.
+- La ayuda esencial sigue disponible aunque el usuario no siga a Chili.
+- Seguir a Chili es voluntario y activa su presencia en la lista de seguidos.
+- La página de Chili muestra botón SEGUIR A CHILI y contador real de seguidores.
 
-PWA y rendimiento:
-- Fotografías convertidas a WebP y carteles de vídeo optimizados.
-- Fotografías y carteles incluidos en el app shell.
-- Archivos MP4 excluidos de la caché automática para evitar llenar el almacenamiento del móvil.
-- Nueva caché jemmo-live-v1-chili-ia-media-mobile-03-20260725.
-- Nuevo start_url y nueva clave de recarga del service worker.
+Mensajes:
+- La franja superior “Personas que sigues” muestra perfiles sociales reales.
+- Chili se abre directamente desde su tarjeta oficial.
+- Las personas seguidas abren su perfil público para poder escribirles.
 
-Archivos actualizados:
+Seguridad:
+- Nueva colección Firestore seguimientos.
+- Solo el propietario del seguimiento puede crearlo o eliminarlo.
+- El objetivo debe ser un perfil público existente o la cuenta oficial virtual de Chili.
+- Las relaciones son visibles para usuarios autenticados porque seguidores y seguidos son datos públicos del perfil.
+
+Archivos del ZIP incremental:
+- INTEGRIDAD_SHA256.txt
+- VERSION.txt
+- jemmo-social.js
+- jemmo-messages-realtime.js
+- yo.html
+- perfil-publico.html
+- mensajes.html
 - chili-ia.html
-- chili-ia.css
-- jemmo-chili.js
-- inicio.html
 - manifest.webmanifest
 - pwa-register.js
 - sw.js
-- VERSION.txt
-- INTEGRIDAD_SHA256.txt
 
-Recursos multimedia en la raíz para carga móvil:
-- chili-avatar.webp
-- chili-hero.webp
-- chili-galeria-retrato.webp
-- chili-galeria-cuerpo.webp
-- chili-galeria-estudio.webp
-- chili-galeria-oficial.webp
-- chili-presentacion-poster.webp
-- chili-presentacion.mp4
-- chili-primeros-pasos-poster.webp
-- chili-primeros-pasos.mp4
-
-Corrección de carga móvil:
-- Todos los archivos multimedia están ahora en la raíz del ZIP.
-- No existe ninguna carpeta media que el selector de Android pueda omitir.
-- Las 19 piezas se seleccionan y suben juntas desde el móvil.
-- Las rutas de HTML, JavaScript y service worker fueron actualizadas.
+Archivo externo:
+- JEMMO_LIVE_V1_PRUEBA_04_SOCIAL_FIRESTORE.rules
 
 Estado:
-- Código y recursos preparados.
-- Pendiente de instalar en Comby y validar visualmente en el móvil de Jesús.
-- La inteligencia generativa remota todavía no está conectada; se mantiene la base de conocimiento local revisada.
+- Validación estática completada.
+- Pendiente de instalación, publicación de reglas y prueba real entre Jesús y Ruth.
+- PRUEBA 03 continúa siendo la última base validada hasta superar la prueba cruzada social.
