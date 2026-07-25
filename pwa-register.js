@@ -92,7 +92,7 @@
   });
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    const reloadKey = 'jemmo_sw_reloaded_acceso_reparado_05';
+    const reloadKey = 'jemmo_sw_reloaded_acceso_arranque_reparados_06';
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       try {
         if (sessionStorage.getItem(reloadKey) === '1') return;

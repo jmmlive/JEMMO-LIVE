@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · ACCESO REPARADO PRUEBA 05 */
-const CACHE = 'jemmo-live-v1-acceso-reparado-05-20260724';
+/* JEMMO LIVE V1 · ACCESO Y ARRANQUE REPARADOS PRUEBA 06 */
+const CACHE = 'jemmo-live-v1-acceso-arranque-reparados-06-20260725';
 const APP_SHELL = [
   './',
   './index.html',
@@ -83,13 +83,13 @@ async function injectJemmoScripts(response, url) {
   if (UNREAD_PAGES.has(page)) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="acceso-reparado-05"></script>'
+      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="acceso-arranque-reparados-06"></script>'
     );
   }
   if (page === '/mensajes.html') {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="acceso-reparado-05"></script>'
+      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="acceso-arranque-reparados-06"></script>'
     );
   }
 
@@ -97,7 +97,7 @@ async function injectJemmoScripts(response, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-version', 'acceso-reparado-05');
+  headers.set('x-jemmo-version', 'acceso-arranque-reparados-06');
 
   return new Response(html, {
     status: response.status,

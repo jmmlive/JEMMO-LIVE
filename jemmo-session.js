@@ -1,5 +1,5 @@
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
-import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+import { initializeAuth, getAuth, indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
 
 const firebaseConfig = {
   apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
@@ -10,7 +10,15 @@ const firebaseConfig = {
   appId: '1:355540892255:web:d15a8dd03b2915e31939ea'
 };
 const app = getApps()[0] || initializeApp(firebaseConfig);
-const auth = getAuth(app);
+let auth;
+try {
+  auth = initializeAuth(app, {
+    persistence: [indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence]
+  });
+} catch (error) {
+  auth = getAuth(app);
+  console.warn('JEMMO Auth ya inicializado:', error?.code || error);
+}
 let resolved = false;
 
 function readActiveUid() {
@@ -76,10 +84,16 @@ async function closeSession(trigger) {
   }
 }
 
-setPersistence(auth, browserLocalPersistence).catch(error => console.error('JEMMO persistence:', error));
-
 onAuthStateChanged(auth, user => {
   if (!user) {
+    const backupUid = readActiveUid();
+    if (backupUid) {
+      reveal(navigator.onLine ? 'session-backup' : 'offline-local');
+      window.dispatchEvent(new CustomEvent('jemmo-auth-ready', {
+        detail: { uid: backupUid, backup: true, offline: !navigator.onLine }
+      }));
+      return;
+    }
     clearStoredSession();
     location.replace('acceso.html?sesion=requerida');
     return;

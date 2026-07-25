@@ -543,7 +543,10 @@
     document.documentElement.classList.add('jemmo-auth-pending');
     setTimeout(()=>{
       if(!document.documentElement.classList.contains('jemmo-auth-pending')) return;
-      if(localStorage.getItem('jemmo_active_uid')) document.documentElement.classList.remove('jemmo-auth-pending');
+      let uid='';
+      try{uid=localStorage.getItem('jemmo_active_uid')||''}catch{}
+      if(!uid) try{uid=sessionStorage.getItem('jemmo_active_uid')||''}catch{}
+      if(uid) document.documentElement.classList.remove('jemmo-auth-pending');
       else location.replace('acceso.html?sesion=timeout');
     },5500);
   </script>

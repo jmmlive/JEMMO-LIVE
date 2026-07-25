@@ -1,32 +1,48 @@
-JEMMO LIVE V1 · ACCESO REPARADO PRUEBA 05
-Fecha: 24/07/2026
+JEMMO LIVE V1 · ACCESO Y ARRANQUE REPARADOS PRUEBA 06
+Fecha: 25/07/2026
 
 Base revisada:
-- JEMMO LIVE V1 · ACCESO RESTAURADO Y MENSAJES PRUEBA 03.
-- Archivo fuente: JEMMO-LIVE-main (9).zip.
+- JEMMO LIVE V1 · ACCESO REPARADO PRUEBA 05.
+- ZIP completo recibido y capturas reales de Firebase del 25/07/2026.
 
-Causa confirmada:
-- Firebase podía autenticar correctamente el correo y la contraseña.
-- Después del acceso, localStorage.setItem('jemmo_active_uid', uid) podía lanzar QuotaExceededError cuando el almacenamiento local estaba lleno.
-- La excepción ocurría dentro del mismo bloque try del acceso, por lo que una autenticación válida se mostraba como fallo y no navegaba a Inicio.
+Diagnóstico confirmado:
+- Firebase Authentication sí acepta las credenciales: la consola muestra dos usuarios y un acceso registrado el 25/07/2026.
+- Correo electrónico/contraseña está habilitado.
+- El fallo ocurre después de autenticar, durante la persistencia y el arranque de la aplicación.
+- acceso.html forzaba browserLocalPersistence. Cuando el almacenamiento local estaba lleno, la sesión Firebase podía quedar sin persistencia duradera.
+- jemmo-session.js trataba user === null como cierre real, borraba el respaldo de sessionStorage y devolvía al acceso.
+- index.html todavía escribía y leía localStorage sin protección. Un QuotaExceededError podía detener el callback antes de navegar a Inicio.
+- Inicio, LIVE y Perfil comprobaban únicamente localStorage en su temporizador de seguridad y no reconocían sessionStorage.
 
-Corrección aplicada:
-- El UID se intenta guardar en localStorage y, si esa escritura falla, se respalda en sessionStorage.
-- La navegación a Inicio continúa después de una autenticación válida aunque el almacenamiento auxiliar falle.
-- jemmo-session.js reconoce el respaldo de sessionStorage en la verificación offline y en el tiempo de espera.
-- Las operaciones auxiliares del formulario quedan protegidas para que un fallo de almacenamiento no bloquee el acceso.
-- Un fallo de persistencia local de Firebase ya no detiene la preparación de la pantalla.
-- Se renueva la caché PWA sin retirar Mensajes en tiempo real ni el contador rojo.
+Correcciones aplicadas:
+- Firebase Auth usa una jerarquía oficial de persistencia: IndexedDB, localStorage y sessionStorage.
+- El acceso ya no fuerza exclusivamente localStorage.
+- jemmo-session.js conserva y reconoce el respaldo de sesión cuando Firebase tarda o no puede restaurar la persistencia local.
+- index.html protege todas las lecturas, escrituras y borrados; usa sessionStorage como respaldo y no bloquea la navegación.
+- Inicio, LIVE y Perfil reconocen localStorage y sessionStorage de forma segura.
+- Se renueva la caché PWA para obligar a cargar los archivos corregidos.
+- Se añade mensaje claro para auth/unauthorized-domain.
+
+Hallazgos de Firebase que no causan el acceso por correo, pero quedan pendientes:
+- El proveedor Google no aparece habilitado aunque la app muestra el botón Continuar con Google.
+- Falta autorizar el dominio jmmlive.github.io para los flujos OAuth de Google.
+- Las reglas actuales de Firestore siguen en modo de prueba, son inseguras y tienen vencimiento temporal.
+- La plantilla de verificación de correo sigue con textos predeterminados en inglés.
 
 Archivos modificados:
 - INTEGRIDAD_SHA256.txt
 - VERSION.txt
 - acceso.html
+- index.html
+- inicio.html
+- live.html
+- yo.html
 - jemmo-session.js
+- manifest.webmanifest
 - pwa-register.js
 - sw.js
-- manifest.webmanifest
 
 Estado:
 - MODO DE PRUEBAS.
-- Pendiente de instalación y validación real en móvil.
+- Corrección preparada y verificada estáticamente.
+- Pendiente de instalación y validación real en el móvil.

@@ -10,7 +10,7 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
-  <title>JEMMO LIVE</title><script>if(localStorage.getItem("jemmo_active_uid")){setTimeout(()=>location.replace("inicio.html?sesion=local"),80)}else{setTimeout(()=>{if(location.pathname.endsWith("index.html")||location.pathname.endsWith("/"))location.replace("acceso.html?sesion=timeout")},6000)}</script>
+  <title>JEMMO LIVE</title><script>window.JemmoBootStorage=(()=>{const read=()=>{try{const uid=localStorage.getItem("jemmo_active_uid");if(uid)return uid}catch{}try{return sessionStorage.getItem("jemmo_active_uid")||""}catch{return""}};const write=uid=>{const value=String(uid||"");if(!value)return false;try{localStorage.setItem("jemmo_active_uid",value);try{sessionStorage.removeItem("jemmo_active_uid")}catch{}return true}catch{}try{sessionStorage.setItem("jemmo_active_uid",value);return true}catch{return false}};const clear=()=>{try{localStorage.removeItem("jemmo_active_uid")}catch{}try{sessionStorage.removeItem("jemmo_active_uid")}catch{}};return{read,write,clear}})();if(window.JemmoBootStorage.read()){setTimeout(()=>location.replace("inicio.html?sesion=local"),80)}else{setTimeout(()=>{if(location.pathname.endsWith("index.html")||location.pathname.endsWith("/"))location.replace("acceso.html?sesion=timeout")},6000)}</script>
   <style>
     *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#050007;color:#fff;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
     body{min-height:100svh;display:grid;place-items:center;padding:24px;background:radial-gradient(circle at 50% 0,#3c0752,transparent 45%),#050007}
@@ -28,7 +28,7 @@
   <script src="pwa-register.js"></script>
   <script type="module">
     import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
-    import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+    import { initializeAuth, getAuth, indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
     const firebaseConfig = {
   apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
   authDomain: 'jemmo-live.firebaseapp.com',
@@ -49,22 +49,29 @@
         location.replace(target);
       };
       const fallback = window.setTimeout(() => {
-        const localSession = localStorage.getItem('jemmo_active_uid');
+        const localSession = window.JemmoBootStorage.read();
         finish(localSession ? 'inicio.html?sesion=local' : 'acceso.html');
       }, 4500);
       try {
         const app = getApps()[0] || initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        await setPersistence(auth, browserLocalPersistence);
+        let auth;
+        try {
+          auth = initializeAuth(app, {
+            persistence: [indexedDBLocalPersistence, browserLocalPersistence, browserSessionPersistence]
+          });
+        } catch (error) {
+          auth = getAuth(app);
+          console.warn('JEMMO Auth ya inicializado:', error?.code || error);
+        }
         onAuthStateChanged(auth, user => {
           clearTimeout(fallback);
-          if (user) localStorage.setItem('jemmo_active_uid', user.uid);
-          else localStorage.removeItem('jemmo_active_uid');
+          if (user) window.JemmoBootStorage.write(user.uid);
+          else window.JemmoBootStorage.clear();
           finish(user ? 'inicio.html' : 'acceso.html');
         }, error => {
           console.error(error);
           clearTimeout(fallback);
-          const localSession = localStorage.getItem('jemmo_active_uid');
+          const localSession = window.JemmoBootStorage.read();
           if (localSession) finish('inicio.html?sesion=local');
           else {
             loader.hidden = true;
@@ -75,7 +82,7 @@
       } catch (error) {
         console.error(error);
         clearTimeout(fallback);
-        const localSession = localStorage.getItem('jemmo_active_uid');
+        const localSession = window.JemmoBootStorage.read();
         if (localSession) finish('inicio.html?sesion=local');
         else {
           loader.hidden = true;
