@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-audio-room-gifts-03';
+  const VERSION = 'pwa-profile-messages-gifts-04';
   let installPrompt = null;
 
   const isStandalone = () =>

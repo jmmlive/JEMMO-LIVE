@@ -5,19 +5,28 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#09000f">
   <meta name="mobile-web-app-capable" content="yes">
-  <link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="favicon-64.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="favicon-64.png">
   <link rel="icon" href="icon-192.png">
   <style>html.jemmo-auth-pending body{visibility:hidden}</style>
-  <title>JEMMO LIVE · Perfil</title>
+  <title>JEMMO LIVE · Perfil público</title>
   <style>
-    :root{--bg:#070009;--panel:#16031e;--purple:#b82cff;--gold:#ffd34e;--text:#fff;--muted:#c8b8ce;--line:#65277c;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color-scheme:dark}
-    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text)}body{background:radial-gradient(circle at 50% 0,#51066a,#17021f 38%,#070009 78%)}button,a{font:inherit}.app{width:min(100%,520px);min-height:100svh;margin:auto;padding-bottom:calc(28px + var(--safe-bottom));background:linear-gradient(#09000cc9,#09000cf4),url('jemmo-fish-nav.webp') center 48%/280px no-repeat}
-    .head{position:sticky;top:0;z-index:20;padding:calc(10px + var(--safe-top)) 12px 10px;display:grid;grid-template-columns:46px minmax(0,1fr) 46px;gap:9px;align-items:center;background:#0b000ee8;border-bottom:1px solid #55206c;backdrop-filter:blur(14px)}.head button,.head a{width:46px;height:46px;border:1px solid #6b2a85;border-radius:15px;background:#190321;color:#fff;display:grid;place-items:center;text-decoration:none;font-size:24px}.head div{min-width:0}.head small{display:block;color:var(--gold);font-weight:950;letter-spacing:.09em}.head strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:18px}
-    .cover{height:190px;position:relative;background:linear-gradient(135deg,#41105c,#13021a);overflow:hidden}.cover img{width:100%;height:100%;object-fit:cover;display:none}.cover.has img{display:block}.cover::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,#09000cea)}
-    .card{position:relative;margin:-58px 13px 0;padding:0 15px 17px;border:1px solid #72308a;border-radius:25px;background:linear-gradient(180deg,#22052bdc,#100116f5);box-shadow:0 18px 55px #000b;backdrop-filter:blur(15px)}.avatar{position:relative;z-index:2;width:112px;height:112px;margin:-56px auto 0;border:3px solid var(--gold);border-radius:50%;background:#25052f url('jemmo-fish-nav.webp') center/cover no-repeat;box-shadow:0 0 0 6px #100116,0 0 26px #ffd34e66;overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover;display:none}.avatar.has img{display:block}
-    .identity{text-align:center;padding-top:10px}.identity h1{margin:0;font-size:26px}.verified{color:#4aa2ff}.username{margin:4px 0 0;color:#d7c6dd}.public-id{width:max-content;max-width:100%;margin:8px auto 0;padding:7px 10px;border:1px solid #6d2e84;border-radius:999px;background:#120218;display:flex;align-items:center;gap:8px;color:var(--gold);font-size:11px;font-weight:950}.public-id button{width:28px;height:28px;border:0;border-radius:50%;background:#3a0d45;color:#fff;font-weight:1000}.place{margin:7px 0 0;color:#b9a9c0;font-size:12px}.bio{margin:13px auto 0;max-width:390px;color:#eee2f1;text-align:center;line-height:1.48;font-size:14px}.chips{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:13px}.chip{padding:7px 10px;border:1px solid #603078;border-radius:99px;background:#120218;color:#ddcfe2;font-size:11px;font-weight:850}
-    .actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:17px}.actions button,.actions a{min-height:50px;border-radius:16px;display:grid;place-items:center;text-decoration:none;font-weight:1000}.message{border:0;background:linear-gradient(90deg,var(--gold),#ff9447,var(--purple));color:#23041b}.secondary{border:1px solid #73308c;background:#24062e;color:#fff}.danger{border:1px solid #a83b55;background:#390814;color:#ffd6dc}.actions .full{grid-column:1/-1}.message:disabled{opacity:.55}
-    .status{margin:14px 13px 0;padding:13px;border:1px solid #643078;border-radius:16px;background:#120218;color:#d7c7dc;text-align:center;font-size:12px;line-height:1.45}.status.error{border-color:#a33d54;color:#ffd0d7;background:#25050d}.details{margin:13px;padding:15px;border:1px solid #56216b;border-radius:21px;background:#100115cc}.details h2{margin:0 0 10px;font-size:14px;color:var(--gold)}.row{display:grid;grid-template-columns:110px minmax(0,1fr);gap:9px;padding:9px 0;border-top:1px solid #3b1748;font-size:12px}.row:first-of-type{border-top:0}.row span{color:#9f8da7}.row b{overflow-wrap:anywhere}
+    :root{--bg:#070009;--panel:#16031e;--panel2:#21042b;--purple:#b82cff;--gold:#ffd34e;--blue:#4b9cff;--green:#27df80;--text:#fff;--muted:#c8b8ce;--line:#65277c;--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color-scheme:dark}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text)}body{background:radial-gradient(circle at 50% 0,#51066a,#17021f 38%,#070009 78%)}button,a{font:inherit}.hidden{display:none!important}.app{width:min(100%,520px);min-height:100svh;margin:auto;padding-bottom:calc(30px + var(--safe-bottom));background:linear-gradient(#09000cc9,#09000cf4),url('jemmo-fish-nav.webp') center 46%/280px no-repeat}
+    .head{position:sticky;top:0;z-index:30;padding:calc(10px + var(--safe-top)) 12px 10px;display:grid;grid-template-columns:46px minmax(0,1fr) 46px;gap:9px;align-items:center;background:#0b000ee8;border-bottom:1px solid #55206c;backdrop-filter:blur(14px)}.head button,.head a{width:46px;height:46px;border:1px solid #6b2a85;border-radius:15px;background:#190321;color:#fff;display:grid;place-items:center;text-decoration:none;font-size:24px}.head div{min-width:0}.head small{display:block;color:var(--gold);font-weight:950;letter-spacing:.09em}.head strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:18px}
+    .cover{height:205px;position:relative;background:linear-gradient(135deg,#41105c,#13021a);overflow:hidden}.cover img{width:100%;height:100%;object-fit:cover;display:none}.cover.has img{display:block}.cover::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 35%,#09000cf4)}
+    .card{position:relative;margin:-62px 13px 0;padding:0 15px 17px;border:1px solid #72308a;border-radius:26px;background:linear-gradient(180deg,#22052be8,#100116f8);box-shadow:0 18px 55px #000b;backdrop-filter:blur(15px)}.avatar{position:relative;z-index:2;width:116px;height:116px;margin:-58px auto 0;border:3px solid var(--gold);border-radius:50%;background:#25052f url('jemmo-fish-nav.webp') center/cover no-repeat;box-shadow:0 0 0 6px #100116,0 0 26px #ffd34e66;overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover;display:none}.avatar.has img{display:block}
+    .identity{text-align:center;padding-top:10px}.identity h1{margin:0;font-size:27px;line-height:1.1}.verified{display:inline-grid;place-items:center;width:22px;height:22px;margin-left:4px;border-radius:50%;background:linear-gradient(145deg,#66b9ff,#2078ee);color:#fff;font:1000 14px/1 sans-serif;vertical-align:3px;box-shadow:0 0 12px #3b9cff88}.username{margin:5px 0 0;color:#d7c6dd}.public-id{width:max-content;max-width:100%;margin:8px auto 0;padding:7px 10px;border:1px solid #6d2e84;border-radius:999px;background:#120218;display:flex;align-items:center;gap:8px;color:var(--gold);font-size:11px;font-weight:950}.public-id button{width:28px;height:28px;border:0;border-radius:50%;background:#3a0d45;color:#fff;font-weight:1000}.place{margin:7px 0 0;color:#b9a9c0;font-size:12px}.bio{margin:13px auto 0;max-width:410px;color:#eee2f1;text-align:center;line-height:1.48;font-size:14px}.chips{display:flex;justify-content:center;flex-wrap:wrap;gap:7px;margin-top:13px}.chip{padding:7px 10px;border:1px solid #603078;border-radius:99px;background:#120218;color:#ddcfe2;font-size:11px;font-weight:850}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:17px}.actions button,.actions a{min-height:50px;border-radius:16px;display:grid;place-items:center;text-decoration:none;font-weight:1000;text-align:center}.message{border:0;background:linear-gradient(90deg,var(--gold),#ff9447,var(--purple));color:#23041b}.gift{border:1px solid #9f7422;background:linear-gradient(135deg,#3c2608,#231106);color:#ffe288}.secondary{border:1px solid #73308c;background:#24062e;color:#fff}.full-profile-toggle{grid-column:1/-1;border:1px solid #5587d8!important;background:linear-gradient(135deg,#132f5c,#24103b)!important;color:#ddecff!important}.danger{grid-column:1/-1;border:1px solid #a83b55;background:#390814;color:#ffd6dc}.actions .full{grid-column:1/-1}.message:disabled,.gift:disabled{opacity:.55}
+    .status{margin:14px 13px 0;padding:13px;border:1px solid #643078;border-radius:16px;background:#120218;color:#d7c7dc;text-align:center;font-size:12px;line-height:1.45}.status.error{border-color:#a33d54;color:#ffd0d7;background:#25050d}
+    .full-profile{margin:14px 13px 0;border:1px solid #6d2a84;border-radius:25px;background:linear-gradient(180deg,#1b0324f5,#0d0111f8);overflow:hidden;box-shadow:0 16px 45px #0008}.full-profile-head{padding:17px 15px 13px;background:radial-gradient(circle at 100% 0,#a92cff33,transparent 42%),linear-gradient(135deg,#260630,#130219)}.full-profile-head small{color:var(--gold);font-size:9px;font-weight:1000;letter-spacing:.12em}.full-profile-head h2{margin:4px 0 0;font-size:20px}.full-profile-head p{margin:6px 0 0;color:#c9b8ce;font-size:11px;line-height:1.45}
+    .content-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;padding:12px 12px 0}.summary-card{min-height:64px;padding:9px 5px;border:1px solid #58216c;border-radius:15px;background:#130219;text-align:center}.summary-card b{display:block;color:#fff;font-size:18px}.summary-card span{display:block;margin-top:4px;color:#a997b0;font-size:9px;font-weight:800}
+    .tabs{position:sticky;top:67px;z-index:8;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:12px;padding:7px;background:#0d0112e8;border-top:1px solid #431651;border-bottom:1px solid #431651;backdrop-filter:blur(12px)}.tab{min-height:39px;border:1px solid transparent;border-radius:12px;background:transparent;color:#ae9bb5;font-size:9px;font-weight:1000}.tab.active{border-color:#70408a;background:#2a0834;color:#fff;box-shadow:inset 0 -2px var(--gold)}
+    .tab-panel{padding:13px}.media-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.media-card{position:relative;aspect-ratio:3/4;border:1px solid #5f2674;border-radius:14px;background:linear-gradient(145deg,#2a0835,#100116);overflow:hidden;color:#fff;padding:0}.media-card img,.media-card video{width:100%;height:100%;object-fit:cover}.media-card .media-fallback{position:absolute;inset:0;display:grid;place-items:center;font-size:32px}.media-card .play{position:absolute;left:7px;bottom:7px;width:29px;height:29px;border-radius:50%;display:grid;place-items:center;background:#08000bbb;border:1px solid #fff8}.media-card .media-label{position:absolute;left:0;right:0;bottom:0;padding:22px 7px 6px;background:linear-gradient(transparent,#070009e8);font-size:8px;font-weight:850;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .empty-content{grid-column:1/-1;min-height:126px;padding:19px;border:1px dashed #5a276c;border-radius:18px;background:#100116aa;display:grid;place-items:center;text-align:center;color:#b9a8c0}.empty-content b{display:block;color:#fff;margin-bottom:6px}.empty-content span{font-size:11px;line-height:1.45}.posts{display:grid;gap:9px}.post{padding:13px;border:1px solid #57226b;border-radius:17px;background:#130219}.post-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.post-head b{font-size:12px}.post-head time{color:#9e8ba6;font-size:9px}.post p{margin:8px 0 0;color:#e4d8e8;font-size:12px;line-height:1.5}.post-media{width:100%;max-height:300px;margin-top:10px;border-radius:14px;object-fit:cover}
+    .info-grid{display:grid;gap:8px}.info-row{display:grid;grid-template-columns:105px minmax(0,1fr);gap:10px;padding:11px;border:1px solid #4e1d60;border-radius:15px;background:#120218;font-size:11px}.info-row span{color:#a998b0}.info-row b{overflow-wrap:anywhere}.social-links{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:2px}.social-link{min-height:49px;padding:9px 10px;border:1px solid #5e2772;border-radius:15px;background:#17031f;color:#fff;text-decoration:none;display:flex;align-items:center;gap:9px;font-size:11px;font-weight:900}.social-link i{width:31px;height:31px;border-radius:10px;background:#3a0d45;display:grid;place-items:center;font-style:normal;font-size:17px}.social-link.disabled{opacity:.55;pointer-events:none}.medals{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.medal{padding:8px 10px;border:1px solid #86672b;border-radius:13px;background:#2b1c08;color:#ffe7a1;font-size:10px;font-weight:900}
+    .viewer{position:fixed;z-index:200;inset:0;padding:18px;display:grid;place-items:center;background:#020003ed;backdrop-filter:blur(7px)}.viewer[hidden]{display:none}.viewer-card{position:relative;width:min(100%,470px);max-height:calc(100svh - 36px);padding:12px;border:1px solid #8438a0;border-radius:22px;background:#100116;overflow:auto}.viewer-close{position:absolute;right:16px;top:16px;z-index:2;width:42px;height:42px;border:0;border-radius:50%;background:#26062fcc;color:#fff;font-size:26px}.viewer-media img,.viewer-media video{display:block;width:100%;max-height:78svh;border-radius:16px;object-fit:contain;background:#000}.viewer-title{padding:10px 5px 2px;font-weight:900}
+    @media(max-width:370px){.card{margin-left:9px;margin-right:9px}.full-profile{margin-left:9px;margin-right:9px}.actions{grid-template-columns:1fr}.actions>*{grid-column:1!important}.media-grid{gap:5px}.social-links{grid-template-columns:1fr}.tabs{top:65px}}
   </style>
 </head>
 <body>
@@ -41,17 +50,46 @@
     </div>
     <div class="actions" id="actions">
       <button class="message" id="messageButton" type="button">ENVIAR MENSAJE</button>
+      <button class="gift" id="giftProfileButton" type="button">🎁 ENVIAR REGALO</button>
       <button class="secondary" id="copyProfileId" type="button">COPIAR ID</button>
-      <button class="danger full" id="securityButton" type="button">BLOQUEAR O DENUNCIAR</button>
+      <button class="full-profile-toggle" id="fullProfileButton" type="button">VER PERFIL COMPLETO</button>
+      <button class="danger" id="securityButton" type="button">BLOQUEAR O DENUNCIAR</button>
     </div>
   </section>
-  <div class="status" id="status">Buscando el perfil real en Firebase…</div>
-  <section class="details" id="details" hidden>
-    <h2>Información pública</h2>
-    <div class="row"><span>ID JEMMO</span><b id="detailsId">—</b></div>
-    <div class="row"><span>Usuario</span><b id="detailsUsername">—</b></div>
+
+  <section class="full-profile hidden" id="fullProfile" aria-label="Perfil completo">
+    <header class="full-profile-head"><small>PERFIL COMPLETO</small><h2 id="fullProfileTitle">Contenido y actividad</h2><p>Vídeos, fotos, publicaciones, información y redes que la persona haya decidido hacer públicas.</p></header>
+    <div class="content-summary">
+      <div class="summary-card"><b id="videoCount">0</b><span>VÍDEOS</span></div>
+      <div class="summary-card"><b id="photoCount">0</b><span>FOTOS</span></div>
+      <div class="summary-card"><b id="postCount">0</b><span>PUBLICACIONES</span></div>
+    </div>
+    <nav class="tabs" aria-label="Secciones del perfil">
+      <button class="tab active" data-profile-tab="videos" type="button">VÍDEOS</button>
+      <button class="tab" data-profile-tab="photos" type="button">FOTOS</button>
+      <button class="tab" data-profile-tab="posts" type="button">PUBLICACIONES</button>
+      <button class="tab" data-profile-tab="info" type="button">INFORMACIÓN</button>
+    </nav>
+    <section class="tab-panel" data-profile-panel="videos"><div class="media-grid" id="videosGrid"></div></section>
+    <section class="tab-panel hidden" data-profile-panel="photos"><div class="media-grid" id="photosGrid"></div></section>
+    <section class="tab-panel hidden" data-profile-panel="posts"><div class="posts" id="postsList"></div></section>
+    <section class="tab-panel hidden" data-profile-panel="info">
+      <div class="info-grid" id="publicInfo"></div>
+      <div class="social-links" id="socialLinks"></div>
+      <div class="medals" id="medals"></div>
+    </section>
   </section>
+
+  <div class="status" id="status">Cargando perfil público…</div>
 </main>
+
+<div class="viewer" id="mediaViewer" hidden>
+  <section class="viewer-card" role="dialog" aria-modal="true" aria-label="Contenido del perfil">
+    <button class="viewer-close" id="viewerClose" type="button" aria-label="Cerrar">×</button>
+    <div class="viewer-media" id="viewerMedia"></div>
+    <div class="viewer-title" id="viewerTitle"></div>
+  </section>
+</div>
 
 <script type="module" src="jemmo-session.js"></script>
 <script type="module" src="jemmo-social.js"></script>
@@ -65,76 +103,72 @@
   const config={apiKey:'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',authDomain:'jemmo-live.firebaseapp.com',projectId:'jemmo-live',storageBucket:'jemmo-live.firebasestorage.app',messagingSenderId:'355540892255',appId:'1:355540892255:web:d15a8dd03b2915e31939ea'};
   const app=getApps()[0]||initializeApp(config),auth=getAuth(app),db=getFirestore(app);
   const $=id=>document.getElementById(id);
-  const targetUid=new URLSearchParams(location.search).get('uid')||'';
-  let currentUser=null,target=null,blockedByMe=false;
-  const clean=value=>String(value||'').trim();
-  const status=(text,error=false)=>{$('status').textContent=text;$('status').classList.toggle('error',error)};
-  const normalized=(uid,data)=>({uid,name:clean(data.displayName||data.nombre||data.name||'Usuario JEMMO'),publicId:clean(data.publicId||data.profileId),username:clean(data.username),bio:clean(data.bio),country:clean(data.country),city:clean(data.city),avatarData:clean(data.avatarData),coverData:clean(data.coverData),coverPosition:data.coverPosition||{x:50,y:50},verified:Boolean(data.verified),level:Math.max(1,Number(data.level)||1)});
+  const params=new URLSearchParams(location.search),targetUid=params.get('uid')||'';
+  let currentUser=null,target=null,blockedByMe=false,fullOpen=params.get('full')==='1';
+  const clean=value=>String(value??'').trim();
+  const esc=value=>clean(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   const blockId=(owner,targetId)=>`${owner}__${targetId}`;
+  const toArray=value=>Array.isArray(value)?value:[];
+  const unique=(items,key='url')=>{const seen=new Set();return items.filter(item=>{const value=clean(item?.[key]);if(!value||seen.has(value))return false;seen.add(value);return true})};
+  const safeMediaUrl=value=>{const url=clean(value);return /^(https:\/\/|blob:|data:image\/|data:video\/)/i.test(url)?url:''};
+  const safeWebUrl=value=>{let raw=clean(value);if(!raw)return'';if(!/^https?:\/\//i.test(raw))raw=`https://${raw}`;try{const url=new URL(raw);return url.protocol==='https:'?url.href:''}catch{return''}};
+  const normalizedMedia=(value,type)=>toArray(value).map((item,index)=>{
+    if(typeof item==='string')return{type,url:safeMediaUrl(item),title:`${type==='video'?'Vídeo':'Foto'} ${index+1}`};
+    return{type,url:safeMediaUrl(item?.url||item?.src||item?.data),poster:safeMediaUrl(item?.poster||item?.thumbnail),title:clean(item?.title||item?.caption||`${type==='video'?'Vídeo':'Foto'} ${index+1}`),createdAt:item?.createdAt||item?.date||0};
+  }).filter(item=>item.url);
+  const normalizedPosts=value=>toArray(value).map((item,index)=>typeof item==='string'?{text:clean(item),title:'Publicación',createdAt:0}:{text:clean(item?.text||item?.body||item?.caption),title:clean(item?.title||'Publicación'),image:safeMediaUrl(item?.image||item?.photo),createdAt:item?.createdAt||item?.date||0}).filter(item=>item.text||item.image);
+  const ruthTestVerified=data=>{const name=clean(data.displayName||data.nombre||data.name).toLocaleLowerCase('es');const username=clean(data.username).replace(/^@/,'').toLocaleLowerCase('es');return ['ruth','ru'].includes(name)||username==='ruth'};
+  const normalized=(uid,data)=>{
+    const avatarData=safeMediaUrl(data.avatarData||data.avatar||data.photoURL),coverData=safeMediaUrl(data.coverData||data.cover);
+    const photos=normalizedMedia(data.photos||data.fotos||data.publicPhotos,'photo');
+    if(avatarData)photos.push({type:'photo',url:avatarData,title:'Foto de perfil'});
+    if(coverData)photos.push({type:'photo',url:coverData,title:'Portada del perfil'});
+    return{uid,name:clean(data.displayName||data.nombre||data.name||'Usuario JEMMO'),publicId:clean(data.publicId||data.profileId),username:clean(data.username),bio:clean(data.bio),country:clean(data.country||data.pais),city:clean(data.city||data.ciudad),avatarData,coverData,coverPosition:data.coverPosition||{x:50,y:50},verified:Boolean(data.verified||data.isVerified||data.verificationStatus==='verified'||ruthTestVerified(data)),level:Math.max(1,Number(data.level)||1),videos:unique(normalizedMedia(data.videos||data.publicVideos,'video')),photos:unique(photos),posts:normalizedPosts(data.posts||data.publications||data.publicaciones),houseName:clean(data.houseName||data.casa||data.agencyName||data.agencia),role:clean(data.role||data.rol),joinedAt:data.joinedAt||data.createdAt||data.fechaRegistro||0,instagram:clean(data.instagram||data.socials?.instagram),tiktok:clean(data.tiktok||data.socials?.tiktok),youtube:clean(data.youtube||data.socials?.youtube),website:clean(data.website||data.web||data.socials?.website),medals:toArray(data.medals||data.medallas).map(clean).filter(Boolean),achievements:toArray(data.achievements||data.logros).map(clean).filter(Boolean)};
+  };
+
+  function setStatus(text,error=false,visible=true){const node=$('status');node.textContent=text;node.classList.toggle('error',error);node.classList.toggle('hidden',!visible)}
+  function formatDate(value){let ms=0;if(value?.toMillis)ms=value.toMillis();else if(typeof value?.seconds==='number')ms=value.seconds*1000;else ms=Number(value)||Date.parse(value)||0;return ms?new Date(ms).toLocaleDateString('es-ES',{day:'2-digit',month:'long',year:'numeric'}):'No indicada'}
+  function emptyContent(title,copy){return `<div class="empty-content"><div><b>${esc(title)}</b><span>${esc(copy)}</span></div></div>`}
+
+  function openViewer(item){const url=safeMediaUrl(item.url);if(!url)return;const box=$('viewerMedia');box.innerHTML='';const media=document.createElement(item.type==='video'?'video':'img');media.src=url;if(item.type==='video'){media.controls=true;media.autoplay=true;media.playsInline=true;if(item.poster)media.poster=item.poster}media.alt=item.title||'Contenido público';box.append(media);$('viewerTitle').textContent=item.title||'';$('mediaViewer').hidden=false}
+  function closeViewer(){$('mediaViewer').hidden=true;$('viewerMedia').innerHTML=''}
+
+  function renderMedia(containerId,items,type){const box=$(containerId);box.innerHTML='';if(!items.length){box.innerHTML=emptyContent(type==='video'?'Todavía no hay vídeos públicos':'Todavía no hay fotos públicas',type==='video'?'Cuando esta persona publique un vídeo, aparecerá aquí.':'Las fotos que decida compartir aparecerán en esta sección.');return}items.forEach(item=>{const button=document.createElement('button');button.type='button';button.className='media-card';if(type==='video'){if(item.poster){const img=document.createElement('img');img.src=item.poster;img.alt='';button.append(img)}else{const fallback=document.createElement('span');fallback.className='media-fallback';fallback.textContent='🎬';button.append(fallback)}const play=document.createElement('span');play.className='play';play.textContent='▶';button.append(play)}else{const img=document.createElement('img');img.src=item.url;img.alt=item.title||'Foto pública';button.append(img)}const label=document.createElement('span');label.className='media-label';label.textContent=item.title||'';button.append(label);button.addEventListener('click',()=>openViewer(item));box.append(button)})}
+  function renderPosts(profile){const box=$('postsList');box.innerHTML='';if(!profile.posts.length){box.innerHTML=emptyContent('Todavía no hay publicaciones','Las novedades, textos y fotos públicas de esta persona aparecerán aquí.');return}profile.posts.forEach(post=>{const article=document.createElement('article');article.className='post';article.innerHTML=`<div class="post-head"><b>${esc(post.title||'Publicación')}</b><time>${esc(formatDate(post.createdAt))}</time></div>${post.text?`<p>${esc(post.text)}</p>`:''}${post.image?`<img class="post-media" src="${esc(post.image)}" alt="">`:''}`;box.append(article)})}
+  function socialHref(type,value){const raw=clean(value);if(!raw)return'';if(type==='instagram')return safeWebUrl(raw.includes('.')||raw.includes('/')?raw:`instagram.com/${raw.replace(/^@/,'')}`);if(type==='tiktok')return safeWebUrl(raw.includes('.')||raw.includes('/')?raw:`tiktok.com/@${raw.replace(/^@/,'')}`);if(type==='youtube')return safeWebUrl(raw.includes('.')||raw.includes('/')?raw:`youtube.com/@${raw.replace(/^@/,'')}`);return safeWebUrl(raw)}
+  function renderInfo(profile){const location=[profile.country,profile.city].filter(Boolean).join(' · ')||'No indicada';const rows=[['ID JEMMO',profile.publicId||'Pendiente'],['Usuario',profile.username?`@${profile.username.replace(/^@/,'')}`:'No configurado'],['Ubicación',location],['Nivel',String(profile.level)],['Casa o agencia',profile.houseName||'No indicada'],['Rol público',profile.role||'Usuario'],['En JEMMO desde',formatDate(profile.joinedAt)]];$('publicInfo').innerHTML=rows.map(([label,value])=>`<div class="info-row"><span>${esc(label)}</span><b>${esc(value)}</b></div>`).join('');const socials=[['Instagram','◎',socialHref('instagram',profile.instagram)],['TikTok','♪',socialHref('tiktok',profile.tiktok)],['YouTube','▶',socialHref('youtube',profile.youtube)],['Web','↗',socialHref('website',profile.website)]];$('socialLinks').innerHTML=socials.map(([label,icon,href])=>href?`<a class="social-link" href="${esc(href)}" target="_blank" rel="noopener"><i>${icon}</i>${esc(label)}</a>`:`<span class="social-link disabled"><i>${icon}</i>${esc(label)} no vinculado</span>`).join('');const medals=[...profile.medals,...profile.achievements];$('medals').innerHTML=medals.length?medals.map(item=>`<span class="medal">🏅 ${esc(item)}</span>`).join(''):'<span class="medal">🏅 Logros pendientes</span>'}
+
+  function setFullProfile(open,scroll=false){fullOpen=Boolean(open);$('fullProfile').classList.toggle('hidden',!fullOpen);$('fullProfileButton').textContent=fullOpen?'OCULTAR PERFIL COMPLETO':'VER PERFIL COMPLETO';if(fullOpen&&scroll)setTimeout(()=>$('fullProfile').scrollIntoView({behavior:'smooth',block:'start'}),40)}
+  function switchTab(name){document.querySelectorAll('[data-profile-tab]').forEach(button=>button.classList.toggle('active',button.dataset.profileTab===name));document.querySelectorAll('[data-profile-panel]').forEach(panel=>panel.classList.toggle('hidden',panel.dataset.profilePanel!==name))}
 
   function render(profile){
-    target=profile;$('headName').textContent=profile.name;$('profileName').innerHTML=`${profile.name}${profile.verified?' <span class="verified">✓</span>':''}`;
-    $('profileUsername').textContent=profile.username?`@${profile.username}`:'Sin nombre de usuario';
-    $('profilePlace').textContent=[profile.country,profile.city].filter(Boolean).join(' · ');
-    $('profileBio').textContent=profile.bio||'Este perfil todavía no ha añadido una frase pública.';
-    $('profileChips').innerHTML=`<span class="chip">Nivel ${profile.level}</span><span class="chip">Perfil verificado por Firebase</span>`;
-    $('profileId').textContent=profile.publicId||'ID pendiente';$('detailsId').textContent=profile.publicId||'ID pendiente';$('detailsUsername').textContent=profile.username?`@${profile.username}`:'No configurado';$('publicIdLine').hidden=!profile.publicId;$('details').hidden=false;
+    target=profile;$('headName').textContent=profile.name;$('profileName').innerHTML=`${esc(profile.name)}${profile.verified?' <span class="verified" aria-label="Cuenta verificada">✓</span>':''}`;
+    $('profileUsername').textContent=profile.username?`@${profile.username.replace(/^@/,'')}`:'Sin nombre de usuario';$('profilePlace').textContent=[profile.country,profile.city].filter(Boolean).join(' · ');$('profileBio').textContent=profile.bio||'Este perfil todavía no ha añadido una presentación pública.';
+    $('profileChips').innerHTML=`<span class="chip">Nivel ${profile.level}</span>${profile.houseName?`<span class="chip">${esc(profile.houseName)}</span>`:''}`;
+    $('profileId').textContent=profile.publicId||'ID pendiente';$('publicIdLine').hidden=!profile.publicId;
     if(profile.avatarData){$('avatarImage').src=profile.avatarData;$('avatar').classList.add('has')}
     if(profile.coverData){$('coverImage').src=profile.coverData;$('cover').classList.add('has');const x=Math.max(0,Math.min(100,Number(profile.coverPosition?.x)||50)),y=Math.max(0,Math.min(100,Number(profile.coverPosition?.y)||50));$('coverImage').style.objectPosition=`${x}% ${y}%`}
-    if(currentUser?.uid===profile.uid){$('actions').innerHTML='<a class="message full" href="yo.html">EDITAR MI PERFIL</a>';status('Este es tu perfil público. Tu correo permanece privado.');}
-    else status('Perfil público real. Puedes copiar su ID o iniciar una conversación privada.');
+    $('fullProfileTitle').textContent=`Contenido de ${profile.name}`;$('videoCount').textContent=String(profile.videos.length);$('photoCount').textContent=String(profile.photos.length);$('postCount').textContent=String(profile.posts.length);renderMedia('videosGrid',profile.videos,'video');renderMedia('photosGrid',profile.photos,'photo');renderPosts(profile);renderInfo(profile);setFullProfile(fullOpen,false);setStatus('',false,false);
+    if(currentUser?.uid===profile.uid){$('messageButton').classList.add('hidden');$('giftProfileButton').classList.add('hidden');$('securityButton').classList.add('hidden');$('copyProfileId').insertAdjacentHTML('afterend','<a class="message" href="yo.html">EDITAR MI PERFIL</a>')}
   }
 
-  async function refreshBlock(){
-    if(!currentUser||!target)return;
-    try{const snap=await getDoc(doc(db,'bloqueos',blockId(currentUser.uid,target.uid)));blockedByMe=snap.exists()&&snap.data()?.active!==false;$('securityButton').textContent=blockedByMe?'DESBLOQUEAR O DENUNCIAR':'BLOQUEAR O DENUNCIAR';$('messageButton').disabled=blockedByMe}catch{blockedByMe=false}
-  }
+  async function refreshBlock(){if(!currentUser||!target||currentUser.uid===target.uid)return;try{const snap=await getDoc(doc(db,'bloqueos',blockId(currentUser.uid,target.uid)));blockedByMe=snap.exists()&&snap.data()?.active!==false;$('securityButton').textContent=blockedByMe?'DESBLOQUEAR O DENUNCIAR':'BLOQUEAR O DENUNCIAR';$('messageButton').disabled=blockedByMe;$('giftProfileButton').disabled=blockedByMe}catch{blockedByMe=false}}
 
+  async function safeRead(collectionName){try{const snapshot=await getDoc(doc(db,collectionName,targetUid));return snapshot.exists()?snapshot.data()||{}:{}}catch{return{}}}
   async function loadProfile(){
-    if(!targetUid){status('Falta identificar el perfil que quieres abrir.',true);$('messageButton').disabled=true;return}
-    try{
-      const snapshot=await getDoc(doc(db,'directorioMensajes',targetUid));
-      if(!snapshot.exists()){status('Ese perfil todavía no está publicado. La persona debe iniciar sesión con PRUEBA 04 social.',true);$('messageButton').disabled=true;return}
-      render(normalized(snapshot.id,snapshot.data()||{}));
-      await refreshBlock();
-    }catch(error){console.warn(error);status(error?.code==='permission-denied'?'Firebase rechazó la lectura. Publica las reglas de PRUEBA 08.':'No se pudo cargar el perfil. Comprueba Internet.',true);$('messageButton').disabled=true}
+    if(!targetUid){setStatus('Falta identificar el perfil que quieres abrir.',true,true);$('messageButton').disabled=true;$('giftProfileButton').disabled=true;return}
+    try{const [userData,directoryData,publicData]=await Promise.all([safeRead('users'),safeRead('directorioMensajes'),safeRead('perfilesPublicos')]);const merged={...userData,...directoryData,...publicData};if(!Object.keys(merged).length){setStatus('Este perfil todavía no está publicado.',true,true);$('messageButton').disabled=true;$('giftProfileButton').disabled=true;return}render(normalized(targetUid,merged));await refreshBlock()}catch(error){console.warn(error);setStatus('No se pudo cargar el perfil. Comprueba la conexión y vuelve a intentarlo.',true,true);$('messageButton').disabled=true;$('giftProfileButton').disabled=true}
   }
 
-  async function startMessage(){
-    if(!currentUser||!target||currentUser.uid===target.uid||blockedByMe)return;
-    const button=$('messageButton');button.disabled=true;button.textContent='ABRIENDO…';
-    try{
-      const ownSnapshot=await getDoc(doc(db,'directorioMensajes',currentUser.uid));
-      const own=normalized(currentUser.uid,ownSnapshot.exists()?ownSnapshot.data():{displayName:currentUser.displayName});
-      const participants=[currentUser.uid,target.uid].sort(),conversationId=participants.join('__');
-      const conversationRef=doc(db,'conversaciones',conversationId),conversationSnapshot=await getDoc(conversationRef);
-      const participantProfiles={
-        [own.uid]:{name:own.name,publicId:own.publicId,username:own.username,avatarData:own.avatarData,country:own.country,city:own.city,bio:own.bio},
-        [target.uid]:{name:target.name,publicId:target.publicId,username:target.username,avatarData:target.avatarData,country:target.country,city:target.city,bio:target.bio}
-      };
-      if(conversationSnapshot.exists())await updateDoc(conversationRef,new FieldPath('participantProfiles',own.uid),participantProfiles[own.uid],'updatedAt',serverTimestamp(),'version',3);
-      else await setDoc(conversationRef,{type:'direct',participants,participantProfiles,unreadBy:{[own.uid]:0,[target.uid]:0},lastMessage:'',lastSenderId:'',createdBy:currentUser.uid,createdAt:serverTimestamp(),updatedAt:serverTimestamp(),version:3});
-      location.href=`mensajes.html?chat=${encodeURIComponent(conversationId)}`;
-    }catch(error){console.warn(error);status(error?.code==='permission-denied'?'La conversación fue bloqueada por seguridad. Puede existir un bloqueo entre las cuentas.':'No se pudo abrir la conversación.',true);button.disabled=false;button.textContent='ENVIAR MENSAJE'}
+  async function startMessage(openGift=false){
+    if(!currentUser||!target||currentUser.uid===target.uid||blockedByMe)return;const button=openGift?$('giftProfileButton'):$('messageButton');button.disabled=true;const previous=button.textContent;button.textContent='ABRIENDO…';
+    try{const ownSnapshot=await getDoc(doc(db,'directorioMensajes',currentUser.uid));const own=normalized(currentUser.uid,ownSnapshot.exists()?ownSnapshot.data():{displayName:currentUser.displayName});const participants=[currentUser.uid,target.uid].sort(),conversationId=participants.join('__');const conversationRef=doc(db,'conversaciones',conversationId),conversationSnapshot=await getDoc(conversationRef);const participantProfiles={[own.uid]:{name:own.name,publicId:own.publicId,username:own.username,avatarData:own.avatarData,country:own.country,city:own.city,bio:own.bio,verified:own.verified},[target.uid]:{name:target.name,publicId:target.publicId,username:target.username,avatarData:target.avatarData,country:target.country,city:target.city,bio:target.bio,verified:target.verified}};if(conversationSnapshot.exists())await updateDoc(conversationRef,new FieldPath('participantProfiles',own.uid),participantProfiles[own.uid],new FieldPath('participantProfiles',target.uid),participantProfiles[target.uid],'updatedAt',serverTimestamp(),'version',4);else await setDoc(conversationRef,{type:'direct',participants,participantProfiles,unreadBy:{[own.uid]:0,[target.uid]:0},lastMessage:'',lastSenderId:'',createdBy:currentUser.uid,createdAt:serverTimestamp(),updatedAt:serverTimestamp(),version:4});location.href=`mensajes.html?chat=${encodeURIComponent(conversationId)}${openGift?'&gift=1':''}`}
+    catch(error){console.warn(error);setStatus('No se pudo abrir la conversación.',true,true);button.disabled=false;button.textContent=previous}
   }
 
-  async function securityAction(){
-    if(!currentUser||!target)return;
-    const action=prompt(`${blockedByMe?'Escribe DESBLOQUEAR para permitir mensajes.':'Escribe BLOQUEAR para impedir mensajes.'}\nTambién puedes escribir DENUNCIAR.`,'');
-    const value=clean(action).toUpperCase();
-    try{
-      if(value==='BLOQUEAR'&&!blockedByMe){await setDoc(doc(db,'bloqueos',blockId(currentUser.uid,target.uid)),{ownerUid:currentUser.uid,blockedUid:target.uid,active:true,createdAt:serverTimestamp(),updatedAt:serverTimestamp(),version:1});blockedByMe=true;status('Usuario bloqueado. No podéis intercambiar mensajes.');await refreshBlock()}
-      else if(value==='DESBLOQUEAR'&&blockedByMe){await deleteDoc(doc(db,'bloqueos',blockId(currentUser.uid,target.uid)));blockedByMe=false;status('Usuario desbloqueado.');await refreshBlock()}
-      else if(value==='DENUNCIAR'){const reason=clean(prompt('Motivo: spam, acoso, suplantación, posible menor u otro.','otro')).slice(0,40)||'otro';await addDoc(collection(db,'denuncias'),{reporterUid:currentUser.uid,targetUid:target.uid,conversationId:'',reason,status:'pending',createdAt:serverTimestamp(),version:1});status('Denuncia enviada para revisión.')}
-    }catch(error){status(error?.code==='permission-denied'?'Firebase bloqueó la operación. Publica las reglas de PRUEBA 08.':'No se pudo completar la operación.',true)}
-  }
+  async function securityAction(){if(!currentUser||!target)return;const action=prompt(`${blockedByMe?'Escribe DESBLOQUEAR para permitir mensajes.':'Escribe BLOQUEAR para impedir mensajes.'}\nTambién puedes escribir DENUNCIAR.`,'');const value=clean(action).toUpperCase();try{if(value==='BLOQUEAR'&&!blockedByMe){await setDoc(doc(db,'bloqueos',blockId(currentUser.uid,target.uid)),{ownerUid:currentUser.uid,blockedUid:target.uid,active:true,createdAt:serverTimestamp(),updatedAt:serverTimestamp(),version:1});blockedByMe=true;setStatus('Usuario bloqueado. No podéis intercambiar mensajes.',false,true);await refreshBlock()}else if(value==='DESBLOQUEAR'&&blockedByMe){await deleteDoc(doc(db,'bloqueos',blockId(currentUser.uid,target.uid)));blockedByMe=false;setStatus('Usuario desbloqueado.',false,true);await refreshBlock()}else if(value==='DENUNCIAR'){const reason=clean(prompt('Motivo: spam, acoso, suplantación, posible menor u otro.','otro')).slice(0,40)||'otro';await addDoc(collection(db,'denuncias'),{reporterUid:currentUser.uid,targetUid:target.uid,conversationId:'',reason,status:'pending',createdAt:serverTimestamp(),version:1});setStatus('Denuncia enviada para revisión.',false,true)}}catch{setStatus('No se pudo completar la operación.',true,true)}}
 
-  $('backButton').addEventListener('click',()=>{if(history.length>1)history.back();else location.href='mensajes.html'});
-  $('messageButton').addEventListener('click',startMessage);
-  $('copyId').addEventListener('click',()=>target?.publicId&&copyPublicId(target.publicId));
-  $('copyProfileId').addEventListener('click',()=>target?.publicId&&copyPublicId(target.publicId));
-  $('shareId').addEventListener('click',()=>target?.publicId&&sharePublicId(target.publicId,target.name));
-  $('securityButton').addEventListener('click',securityAction);
+  $('backButton').addEventListener('click',()=>{if(history.length>1)history.back();else location.href='mensajes.html'});$('messageButton').addEventListener('click',()=>startMessage(false));$('giftProfileButton').addEventListener('click',()=>startMessage(true));$('fullProfileButton').addEventListener('click',()=>setFullProfile(!fullOpen,true));$('copyId').addEventListener('click',()=>target?.publicId&&copyPublicId(target.publicId));$('copyProfileId').addEventListener('click',()=>target?.publicId&&copyPublicId(target.publicId));$('shareId').addEventListener('click',()=>target?.publicId&&sharePublicId(target.publicId,target.name));$('securityButton').addEventListener('click',securityAction);document.querySelectorAll('[data-profile-tab]').forEach(button=>button.addEventListener('click',()=>switchTab(button.dataset.profileTab)));$('viewerClose').addEventListener('click',closeViewer);$('mediaViewer').addEventListener('click',event=>{if(event.target===$('mediaViewer'))closeViewer()});addEventListener('keydown',event=>{if(event.key==='Escape')closeViewer()});
   onAuthStateChanged(auth,user=>{if(!user)return;currentUser=user;loadProfile()});
 </script>
 </body>

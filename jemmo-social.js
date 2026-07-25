@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · SEGUIDORES Y CHILI OFICIAL PRUEBA 04
+/* JEMMO LIVE V1 · PERFIL COMPLETO Y REGALOS EN MENSAJES PRUEBA 04
    Relaciones sociales reales en Firestore: seguir, dejar de seguir, seguidores,
    seguidos y presencia institucional de Chili IA como asistente oficial.
 */
@@ -242,8 +242,8 @@ function renderModal(title, profiles, { ownFollowing = false } = {}) {
 
 function socialError(error) {
   const code = clean(error?.code || error?.message, 120);
-  if (code.includes('permission-denied')) return 'Firebase bloqueó la relación. Publica las reglas sociales de PRUEBA 04.';
-  if (code.includes('unavailable')) return 'No hay conexión con Firebase. Vuelve a intentarlo.';
+  if (code.includes('permission-denied')) return 'La relación fue bloqueada por seguridad.';
+  if (code.includes('unavailable')) return 'No hay conexión con JEMMO LIVE. Vuelve a intentarlo.';
   if (code.includes('self-follow')) return 'No puedes seguir tu propia cuenta.';
   return 'No se pudo completar la acción social.';
 }
@@ -288,7 +288,7 @@ function injectOwnProfile(user) {
   const panel = document.createElement('section');
   panel.className = 'jemmo-social-panel';
   panel.id = 'jemmoOwnSocial';
-  panel.innerHTML = `<header class="jemmo-social-panel-head"><div><h2>Tu comunidad</h2><p>Seguidores y personas que sigues, sincronizados con Firebase.</p></div><button id="jemmoViewFollowing" type="button">VER TODOS</button></header><div id="jemmoOwnOfficial"></div><div class="jemmo-following-title"><b>Personas que sigues</b><span id="jemmoFollowingLabel">Cargando…</span></div><div class="jemmo-following-preview" id="jemmoFollowingPreview"><div class="jemmo-social-empty">Conectando tu comunidad…</div></div>`;
+  panel.innerHTML = `<header class="jemmo-social-panel-head"><div><h2>Tu comunidad</h2><p>Seguidores y personas que sigues dentro de JEMMO LIVE.</p></div><button id="jemmoViewFollowing" type="button">VER TODOS</button></header><div id="jemmoOwnOfficial"></div><div class="jemmo-following-title"><b>Personas que sigues</b><span id="jemmoFollowingLabel">Cargando…</span></div><div class="jemmo-following-preview" id="jemmoFollowingPreview"><div class="jemmo-social-empty">Conectando tu comunidad…</div></div>`;
   card.insertAdjacentElement('afterend', panel);
   panel.querySelector('#jemmoOwnOfficial').appendChild(officialCard());
 

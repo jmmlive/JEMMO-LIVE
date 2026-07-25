@@ -1,6 +1,6 @@
-/* JEMMO LIVE V1 · SEGUIDORES Y CHILI OFICIAL PRUEBA 04
-   Mensajería directa con Firebase Authentication + Cloud Firestore.
-   Mantiene la interfaz visual existente y sustituye únicamente el motor local de Mensajes.
+/* JEMMO LIVE V1 · PERFIL COMPLETO Y REGALOS EN MENSAJES PRUEBA 04
+   Mensajería directa con conversación privada, perfiles públicos y regalos de prueba.
+   La economía continúa siendo una simulación local hasta la autorización de producción.
 */
 (() => {
   'use strict';
@@ -17,7 +17,7 @@
     appId: '1:355540892255:web:d15a8dd03b2915e31939ea'
   };
 
-  const VERSION = 'JEMMO LIVE V1 · SEGUIDORES Y CHILI OFICIAL PRUEBA 04';
+  const VERSION = 'JEMMO LIVE V1 · PERFIL COMPLETO Y REGALOS EN MENSAJES PRUEBA 04';
   const $ = id => document.getElementById(id);
   const state = {
     sdk: null,
@@ -39,10 +39,19 @@
     blockedByMe: false,
     socialApi: null,
     followingProfiles: [],
-    followingStop: null
+    followingStop: null,
+    pendingGiftFromUrl: new URLSearchParams(location.search).get('gift') === '1',
+    giftUrlConsumed: false,
+    giftBusy: false,
+    giftSelection: 0,
+    giftQuantity: 1,
+    giftHistoryOpen: false,
+    ignoreGiftPop: false
   };
 
   let toastTimer = 0;
+  const MESSAGE_GIFT_CATALOG = Object.freeze([{"icon":"👍","name":"Like","cost":1},{"icon":"🌹","name":"Rosa","cost":2},{"icon":"💜","name":"Corazón violeta","cost":3},{"icon":"⭐","name":"Estrella","cost":5},{"icon":"🔥","name":"Fuego","cost":8},{"icon":"🎈","name":"Globo","cost":10},{"icon":"🍀","name":"Trébol","cost":12},{"icon":"🌻","name":"Girasol","cost":15},{"icon":"🍓","name":"Fresa","cost":18},{"icon":"🍫","name":"Chocolate","cost":20},{"icon":"☕","name":"Café","cost":25},{"icon":"🎂","name":"Tarta","cost":30},{"icon":"🦋","name":"Mariposa","cost":35},{"icon":"🐬","name":"Delfín","cost":40},{"icon":"🐟","name":"Chicharro","cost":50},{"icon":"🦄","name":"Unicornio","cost":60},{"icon":"💎","name":"Diamante","cost":75},{"icon":"🎤","name":"Micrófono","cost":90},{"icon":"🚀","name":"Cohete","cost":100},{"icon":"👑","name":"Corona","cost":120},{"icon":"🏆","name":"Trofeo","cost":150},{"icon":"🌙","name":"Luna","cost":180},{"icon":"☀️","name":"Sol","cost":200},{"icon":"🌈","name":"Arcoíris","cost":220},{"icon":"🛥️","name":"Yate","cost":250},{"icon":"🏍️","name":"Moto","cost":280},{"icon":"🚗","name":"Coche","cost":300},{"icon":"✈️","name":"Avión","cost":350},{"icon":"🏝️","name":"Isla","cost":400},{"icon":"🗼","name":"Torre","cost":450},{"icon":"🏰","name":"Castillo","cost":500},{"icon":"🐉","name":"Dragón","cost":600},{"icon":"🦁","name":"León","cost":700},{"icon":"🐯","name":"Tigre","cost":800},{"icon":"🦅","name":"Águila","cost":900},{"icon":"🌊","name":"Ola JEMMO","cost":1000},{"icon":"⚡","name":"Rayo","cost":1200},{"icon":"🎆","name":"Fuegos","cost":1500},{"icon":"🌌","name":"Galaxia","cost":1800},{"icon":"🪐","name":"Planeta","cost":2000},{"icon":"🚁","name":"Helicóptero","cost":2500},{"icon":"⛵","name":"Velero","cost":3000},{"icon":"🏎️","name":"Supercoche","cost":3500},{"icon":"💍","name":"Anillo","cost":4000},{"icon":"🛸","name":"Nave espacial","cost":5000},{"icon":"🐳","name":"Ballena","cost":6000},{"icon":"🗿","name":"Guardián","cost":7000},{"icon":"🎡","name":"Parque","cost":8000},{"icon":"🌋","name":"Volcán","cost":9000},{"icon":"👸","name":"Reina JEMMO","cost":10000},{"icon":"🤴","name":"Rey JEMMO","cost":12000},{"icon":"🏯","name":"Palacio","cost":15000},{"icon":"🌍","name":"Mundo JEMMO","cost":20000},{"icon":"✨","name":"Universo","cost":25000}]);
+  const MESSAGE_GIFT_QUANTITIES = Object.freeze([1, 10, 15, 100]);
 
   function esc(value) {
     return String(value ?? '').replace(/[&<>'"]/g, character => ({
@@ -111,6 +120,10 @@
       .chat-row.jemmo-real{cursor:pointer}.chat-row.jemmo-real:active{transform:scale(.992)}
       .bubble.pending{opacity:.65}.bubble.failed{border-color:#ff4966!important}.bubble .delivery{margin-left:5px;color:#aee8ff;font-size:8px}
       .jemmo-rt-user-card{display:grid;gap:8px}.jemmo-rt-user-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}.jemmo-rt-user-actions button,.jemmo-rt-user-actions a{min-height:42px;border:0;border-radius:13px;display:grid;place-items:center;text-decoration:none;font-weight:950;font-size:11px}.jemmo-rt-profile-link{background:#2b0a36;color:#fff;border:1px solid #71328a!important}.jemmo-rt-message-link{background:linear-gradient(135deg,#ffd34e,#ff9447,#a82cff);color:#24041b}.jemmo-rt-avatar-img{width:100%;height:100%;object-fit:cover;border-radius:inherit}.chat-mini-avatar.jemmo-profile-open{cursor:pointer}.jemmo-rt-user small em{display:block;margin-top:2px;color:#9e8ba7;font-style:normal}
+      .jemmo-rt-verified{display:inline-grid;place-items:center;width:15px;height:15px;margin-left:4px;border-radius:50%;background:#318af6;color:#fff;font:1000 9px/1 sans-serif;vertical-align:1px;box-shadow:0 0 8px #318af677}
+      .bubble.jemmo-message-gift{min-width:190px;padding:0;overflow:hidden;border-color:#9b7426;background:linear-gradient(145deg,#3b2508,#1b0a20)}.bubble.jemmo-message-gift.mine{background:linear-gradient(145deg,#704315,#5d2385);border-color:#ffd34e}.jemmo-message-gift-card{padding:12px;display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;align-items:center}.jemmo-message-gift-icon{width:48px;height:48px;border-radius:15px;display:grid;place-items:center;background:#120116aa;border:1px solid #ffd34e77;font-size:28px}.jemmo-message-gift-copy b,.jemmo-message-gift-copy span{display:block}.jemmo-message-gift-copy b{color:#ffe699;font-size:13px}.jemmo-message-gift-copy span{margin-top:3px;color:#eaddeb;font-size:10px}.bubble.jemmo-message-gift time{padding:0 10px 8px}
+      .jemmo-message-gift-backdrop{position:fixed;z-index:2147483500;inset:0;display:grid;place-items:end center;padding:10px;background:#020003d9;backdrop-filter:blur(5px)}.jemmo-message-gift-backdrop[hidden]{display:none!important}.jemmo-message-gift-sheet{width:min(100%,510px);max-height:88svh;display:grid;grid-template-rows:auto auto auto minmax(160px,1fr) auto;overflow:hidden;border:1px solid #a044ba;border-radius:25px;background:linear-gradient(180deg,#2a0735,#0b000e);box-shadow:0 -22px 70px #000}.jemmo-message-gift-head{padding:13px 14px 10px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #5c2470}.jemmo-message-gift-head div{min-width:0;flex:1}.jemmo-message-gift-head small,.jemmo-message-gift-head strong{display:block}.jemmo-message-gift-head small{color:#ffd34e;font-size:9px;font-weight:1000;letter-spacing:.08em}.jemmo-message-gift-head strong{margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.jemmo-message-gift-close{width:40px;height:40px;border:1px solid #713087;border-radius:13px;background:#390d45;color:#fff;font-size:24px}.jemmo-message-gift-wallet{padding:9px 13px;display:flex;align-items:center;justify-content:space-between;gap:10px;background:#120218}.jemmo-message-gift-wallet span{color:#cdbdd2;font-size:10px}.jemmo-message-gift-wallet b{color:#ffd34e}.jemmo-message-gift-wallet button{min-height:34px;border:1px solid #886621;border-radius:11px;background:#362207;color:#ffe489;font-weight:950;font-size:9px}.jemmo-message-gift-quantities{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;padding:9px 12px}.jemmo-message-gift-quantity{min-height:39px;border:1px solid #5e2872;border-radius:12px;background:#16021d;color:#fff;font-weight:1000}.jemmo-message-gift-quantity.active{border-color:#ffd34e;background:linear-gradient(135deg,#ffd34e,#ff9447);color:#28051c}.jemmo-message-gift-grid{min-height:0;overflow:auto;padding:0 10px 10px;display:grid;grid-template-columns:repeat(4,1fr);gap:7px;align-content:start;scrollbar-width:none}.jemmo-message-gift-grid::-webkit-scrollbar{display:none}.jemmo-message-gift-item{min-height:82px;padding:7px 4px;border:1px solid #552269;border-radius:14px;background:#14021b;color:#fff;display:grid;place-items:center;text-align:center}.jemmo-message-gift-item span,.jemmo-message-gift-item b,.jemmo-message-gift-item small{display:block}.jemmo-message-gift-item span{font-size:27px}.jemmo-message-gift-item b{margin-top:3px;font-size:8px;line-height:1.15}.jemmo-message-gift-item small{color:#bcaac2;font-size:7px}.jemmo-message-gift-item.active{border-color:#ffd34e;background:linear-gradient(145deg,#472d0a,#30113b);box-shadow:0 0 12px #ffd34e33}.jemmo-message-gift-footer{padding:10px 12px calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid #5a226d;background:#0d0111}.jemmo-message-gift-summary{display:flex;justify-content:space-between;gap:10px;margin-bottom:8px;color:#d9c8de;font-size:10px}.jemmo-message-gift-summary b{color:#ffd34e}.jemmo-message-gift-send{width:100%;min-height:51px;border:0;border-radius:16px;background:linear-gradient(90deg,#ffd34e,#ff9447,#b72cff);color:#26041c;font-weight:1000}.jemmo-message-gift-send:disabled{opacity:.55}
+      @media(max-width:370px){.jemmo-message-gift-grid{grid-template-columns:repeat(3,1fr)}.jemmo-message-gift-sheet{max-height:92svh}}
     `;
     document.head.appendChild(style);
   }
@@ -121,7 +134,7 @@
     status = document.createElement('div');
     status.id = 'jemmoRealtimeStatus';
     status.className = 'jemmo-rt-status';
-    status.textContent = 'Conectando Mensajes con Firebase…';
+    status.textContent = 'Conectando Mensajes con JEMMO LIVE…';
     const onlineBlock = document.querySelector('.online-block');
     if (onlineBlock) onlineBlock.insertBefore(status, onlineBlock.firstChild);
     else document.querySelector('.topbar')?.appendChild(status);
@@ -182,6 +195,174 @@
     if (dialog) dialog.hidden = true;
   }
 
+  function formatJemmos(value) {
+    const amount = Math.max(0, Math.floor(Number(value) || 0));
+    return window.JemmoWallet?.formatNumber ? window.JemmoWallet.formatNumber(amount) : amount.toLocaleString('es-ES');
+  }
+
+  function currentGift() {
+    return MESSAGE_GIFT_CATALOG[state.giftSelection] || MESSAGE_GIFT_CATALOG[0];
+  }
+
+  function giftDialogVisible() {
+    const dialog = $('jemmoMessageGiftDialog');
+    return Boolean(dialog && !dialog.hidden);
+  }
+
+  function updateGiftDialog() {
+    const dialog = $('jemmoMessageGiftDialog');
+    if (!dialog) return;
+    const gift = currentGift();
+    const quantity = MESSAGE_GIFT_QUANTITIES.includes(state.giftQuantity) ? state.giftQuantity : 1;
+    const total = gift.cost * quantity;
+    const wallet = window.JemmoWallet?.get?.();
+    const balance = Math.max(0, Number(wallet?.jemmos ?? wallet?.coins) || 0);
+    const balanceNode = $('jemmoMessageGiftBalance');
+    if (balanceNode) balanceNode.textContent = `${formatJemmos(balance)} JEMMOS`;
+    const selectedNode = $('jemmoMessageGiftSelected');
+    if (selectedNode) selectedNode.textContent = `${gift.icon} ${gift.name} ×${quantity}`;
+    const totalNode = $('jemmoMessageGiftTotal');
+    if (totalNode) totalNode.textContent = `${formatJemmos(total)} JEMMOS`;
+    dialog.querySelectorAll('[data-message-gift-index]').forEach(button => button.classList.toggle('active', Number(button.dataset.messageGiftIndex) === state.giftSelection));
+    dialog.querySelectorAll('[data-message-gift-quantity]').forEach(button => button.classList.toggle('active', Number(button.dataset.messageGiftQuantity) === quantity));
+    const send = $('jemmoMessageGiftSend');
+    if (send) {
+      send.disabled = state.giftBusy || state.blockedByMe;
+      send.textContent = state.giftBusy ? 'REGISTRANDO…' : `ENVIAR A ${String(state.currentPeer?.name || 'USUARIO').toLocaleUpperCase('es')}`;
+    }
+  }
+
+  function ensureGiftDialog() {
+    let backdrop = $('jemmoMessageGiftDialog');
+    if (backdrop) return backdrop;
+    backdrop = document.createElement('div');
+    backdrop.id = 'jemmoMessageGiftDialog';
+    backdrop.className = 'jemmo-message-gift-backdrop';
+    backdrop.hidden = true;
+    backdrop.innerHTML = `
+      <section class="jemmo-message-gift-sheet" role="dialog" aria-modal="true" aria-labelledby="jemmoMessageGiftTitle">
+        <header class="jemmo-message-gift-head"><div><small>REGALO PRIVADO</small><strong id="jemmoMessageGiftTitle">Enviar regalo</strong></div><button class="jemmo-message-gift-close" id="jemmoMessageGiftClose" type="button" aria-label="Cerrar">×</button></header>
+        <div class="jemmo-message-gift-wallet"><span>Saldo: <b id="jemmoMessageGiftBalance">0 JEMMOS</b></span><button id="jemmoMessageGiftRecharge" type="button">RECARGAR</button></div>
+        <div class="jemmo-message-gift-quantities">${MESSAGE_GIFT_QUANTITIES.map(quantity => `<button class="jemmo-message-gift-quantity${quantity === 1 ? ' active' : ''}" data-message-gift-quantity="${quantity}" type="button">×${quantity}</button>`).join('')}</div>
+        <div class="jemmo-message-gift-grid">${MESSAGE_GIFT_CATALOG.map((gift,index) => `<button class="jemmo-message-gift-item${index === 0 ? ' active' : ''}" data-message-gift-index="${index}" type="button"><span>${gift.icon}</span><b>${esc(gift.name)}</b><small>${formatJemmos(gift.cost)} J</small></button>`).join('')}</div>
+        <footer class="jemmo-message-gift-footer"><div class="jemmo-message-gift-summary"><span id="jemmoMessageGiftSelected">👍 Like ×1</span><b id="jemmoMessageGiftTotal">1 JEMMO</b></div><button class="jemmo-message-gift-send" id="jemmoMessageGiftSend" type="button">ENVIAR REGALO</button></footer>
+      </section>`;
+    document.body.appendChild(backdrop);
+    $('jemmoMessageGiftClose')?.addEventListener('click', () => closeMessageGiftDialog({ useHistory: true }));
+    $('jemmoMessageGiftRecharge')?.addEventListener('click', () => window.JemmoWallet?.openRecharge?.());
+    $('jemmoMessageGiftSend')?.addEventListener('click', sendCurrentGift);
+    backdrop.addEventListener('click', event => { if (event.target === backdrop) closeMessageGiftDialog({ useHistory: true }); });
+    backdrop.querySelectorAll('[data-message-gift-index]').forEach(button => button.addEventListener('click', () => { state.giftSelection = Number(button.dataset.messageGiftIndex) || 0; updateGiftDialog(); }));
+    backdrop.querySelectorAll('[data-message-gift-quantity]').forEach(button => button.addEventListener('click', () => { state.giftQuantity = Number(button.dataset.messageGiftQuantity) || 1; updateGiftDialog(); }));
+    return backdrop;
+  }
+
+  function openMessageGiftDialog() {
+    if (!state.currentConversationId || !state.currentPeer) { toast('Abre una conversación para enviar un regalo.'); return; }
+    if (state.blockedByMe) { toast('Desbloquea a esta persona antes de enviar regalos.'); return; }
+    if (!window.JemmoWallet?.spendCoins) { toast('El monedero todavía se está preparando. Vuelve a intentarlo en unos segundos.'); return; }
+    const dialog = ensureGiftDialog();
+    $('jemmoMessageGiftTitle').textContent = `Regalo para ${state.currentPeer.name}`;
+    dialog.hidden = false;
+    updateGiftDialog();
+    if (!history.state?.jemmoMessageGift) {
+      history.pushState({ ...(history.state || {}), jemmoMessageGift: true }, '', location.href);
+      state.giftHistoryOpen = true;
+    }
+  }
+
+  function closeMessageGiftDialog({ useHistory = false } = {}) {
+    const dialog = $('jemmoMessageGiftDialog');
+    if (!dialog || dialog.hidden) return;
+    dialog.hidden = true;
+    state.giftBusy = false;
+    updateGiftDialog();
+    if (useHistory && history.state?.jemmoMessageGift) {
+      state.ignoreGiftPop = true;
+      history.back();
+    }
+  }
+
+  async function sendCurrentGift() {
+    if (state.giftBusy || !state.currentConversationId || !state.currentPeer || !state.user || !state.sdk) return;
+    if (state.blockedByMe) { toast('Desbloquea a esta persona antes de enviar regalos.'); return; }
+    const gift = currentGift();
+    const quantity = MESSAGE_GIFT_QUANTITIES.includes(state.giftQuantity) ? state.giftQuantity : 1;
+    const total = gift.cost * quantity;
+    const walletApi = window.JemmoWallet;
+    if (!walletApi?.spendCoins) { toast('El monedero todavía no está disponible.'); return; }
+    const wallet = walletApi.get?.();
+    const balance = Math.max(0, Number(wallet?.jemmos ?? wallet?.coins) || 0);
+    if (balance < total) {
+      toast(`Saldo insuficiente. Faltan ${formatJemmos(total - balance)} JEMMOS.`);
+      walletApi.openRecharge?.();
+      return;
+    }
+    const accepted = confirm(`¿Enviar ${gift.icon} ${gift.name} ×${quantity} a ${state.currentPeer.name} por ${formatJemmos(total)} JEMMOS?`);
+    if (!accepted) return;
+    state.giftBusy = true;
+    updateGiftDialog();
+    const idempotencyKey = `messages:${state.currentConversationId}:${state.user.uid}:${state.currentPeer.uid}:${gift.name}:${quantity}:${Math.floor(Date.now() / 5000)}`;
+    const result = walletApi.spendCoins(total, {
+      recipientUid: state.currentPeer.uid,
+      giftName: gift.name,
+      title: 'Regalo enviado por Mensajes',
+      detail: `${gift.icon} ${gift.name} ×${quantity} para ${state.currentPeer.name}`,
+      context: 'MENSAJES',
+      source: 'message-gift',
+      reference: state.currentConversationId,
+      idempotencyKey
+    });
+    if (!result.ok) {
+      state.giftBusy = false;
+      updateGiftDialog();
+      if (result.duplicate) toast('Doble toque bloqueado: este regalo ya se registró.');
+      else { toast(`Saldo insuficiente. Faltan ${formatJemmos(result.missing)} JEMMOS.`); walletApi.openRecharge?.(); }
+      return;
+    }
+
+    const conversation = state.conversations.find(item => item.id === state.currentConversationId);
+    if (!conversation) { state.giftBusy = false; updateGiftDialog(); toast('No se encontró la conversación.'); return; }
+    const { doc, collection, writeBatch, serverTimestamp, increment, FieldPath } = state.sdk.firestore;
+    const conversationReference = doc(state.db, 'conversaciones', state.currentConversationId);
+    const messageReference = doc(collection(conversationReference, 'mensajes'));
+    const participants = Array.isArray(conversation.data?.participants) ? conversation.data.participants : [];
+    const recipientUids = participants.filter(uid => uid !== state.user.uid);
+    const preview = `🎁 ${gift.name} ×${quantity}`;
+    try {
+      const batch = writeBatch(state.db);
+      batch.set(messageReference, {
+        senderId: state.user.uid,
+        recipientId: state.currentPeer.uid,
+        type: 'gift',
+        text: preview,
+        gift: { icon: gift.icon, name: gift.name, unitCost: gift.cost, quantity, total, operationId: result.operationId },
+        createdAt: serverTimestamp(),
+        clientCreatedAt: Date.now(),
+        version: 4
+      });
+      const updateFields = [
+        'lastMessage', preview,
+        'lastMessageAt', serverTimestamp(),
+        'lastSenderId', state.user.uid,
+        'updatedAt', serverTimestamp(),
+        new FieldPath('unreadBy', state.user.uid), 0,
+        'version', 4
+      ];
+      recipientUids.forEach(uid => updateFields.push(new FieldPath('unreadBy', uid), increment(1)));
+      batch.update(conversationReference, ...updateFields);
+      await batch.commit();
+      closeMessageGiftDialog({ useHistory: true });
+      toast(`${gift.name} ×${quantity} enviado a ${state.currentPeer.name}.`);
+    } catch (error) {
+      console.warn('[JEMMO regalos Mensajes] No se pudo registrar la conversación.', error);
+      try { walletApi.addCoins?.(total, { type: 'gift-refund', title: 'Devolución de regalo no entregado', detail: `${gift.name} ×${quantity}`, source: 'message-gift-refund' }); } catch {}
+      state.giftBusy = false;
+      updateGiftDialog();
+      toast('El regalo no llegó a la conversación. Los JEMMOS se devolvieron.', 5200);
+    }
+  }
+
   function peerData(conversation) {
     const data = conversation?.data || {};
     const participants = Array.isArray(data.participants) ? data.participants : [];
@@ -198,7 +379,7 @@
       country: String(profile.country || fallback?.country || ''),
       city: String(profile.city || fallback?.city || ''),
       bio: String(profile.bio || fallback?.bio || ''),
-      verified: Boolean(profile.verified || fallback?.verified),
+      verified: Boolean(profile.verified || fallback?.verified || ['ruth','ru'].includes(name.trim().toLocaleLowerCase('es')) || String(profile.username || fallback?.username || '').replace(/^@/, '').toLocaleLowerCase('es') === 'ruth'),
       initial: initials(name),
       type: String(data.type || 'direct')
     };
@@ -252,7 +433,7 @@
       : esc(peer.initial);
     button.innerHTML = `
       <span class="row-avatar round" style="--a1:#75239a;--a2:#190322;--accent:#a943ff">${avatar}</span>
-      <span class="row-copy"><span class="row-name"><strong>${esc(peer.name)}</strong></span><p>${esc(data.lastSenderId === state.user.uid && data.lastMessage ? `Tú: ${data.lastMessage}` : (data.lastMessage || 'Conversación creada.'))}</p></span>
+      <span class="row-copy"><span class="row-name"><strong>${esc(peer.name)}${peer.verified ? ' <i class="jemmo-rt-verified" aria-label="Cuenta verificada">✓</i>' : ''}</strong></span><p>${esc(data.lastSenderId === state.user.uid && data.lastMessage ? `Tú: ${data.lastMessage}` : (data.lastMessage || 'Conversación creada.'))}</p></span>
       <span class="row-side"><time>${esc(formatTime(data.lastMessageAt || data.updatedAt || data.createdAt))}</time>${unread ? `<span class="unread">${unread > 99 ? '99+' : unread}</span>` : ''}</span>`;
     button.addEventListener('click', () => openConversation(conversation.id));
     return button;
@@ -286,7 +467,7 @@
   function renderMessages(messageDocuments) {
     const area = $('messagesArea');
     if (!area) return;
-    area.innerHTML = '<div class="day">MENSAJES EN TIEMPO REAL · FIREBASE · PRUEBA</div>';
+    area.innerHTML = '<div class="day">CONVERSACIÓN PRIVADA · JEMMO LIVE · PRUEBA</div>';
 
     if (!messageDocuments.length) {
       const empty = document.createElement('div');
@@ -301,7 +482,14 @@
       const mine = data.senderId === state.user.uid;
       bubble.className = `bubble ${mine ? 'mine' : 'theirs'}`;
       const time = formatTime(data.createdAt || data.clientCreatedAt);
-      bubble.innerHTML = `${esc(data.text || '')}<time>${esc(time)}${mine ? '<span class="delivery">✓</span>' : ''}</time>`;
+      if (data.type === 'gift' && data.gift) {
+        const gift = data.gift || {};
+        bubble.classList.add('jemmo-message-gift');
+        const direction = mine ? `Para ${state.currentPeer?.name || 'usuario'}` : `Regalo recibido`;
+        bubble.innerHTML = `<div class="jemmo-message-gift-card"><span class="jemmo-message-gift-icon">${esc(gift.icon || '🎁')}</span><span class="jemmo-message-gift-copy"><b>${esc(gift.name || 'Regalo')} ×${Math.max(1, Number(gift.quantity) || 1)}</b><span>${esc(direction)} · ${formatJemmos(gift.total || 0)} JEMMOS</span></span></div><time>${esc(time)}${mine ? '<span class="delivery">✓</span>' : ''}</time>`;
+      } else {
+        bubble.innerHTML = `${esc(data.text || '')}<time>${esc(time)}${mine ? '<span class="delivery">✓</span>' : ''}</time>`;
+      }
       area.appendChild(bubble);
     }
 
@@ -338,7 +526,7 @@
     const chatView = $('chatView');
     if (inbox) inbox.classList.add('hidden');
     if (chatView) chatView.classList.remove('hidden');
-    if ($('chatName')) $('chatName').textContent = peer.name;
+    if ($('chatName')) $('chatName').innerHTML = `${esc(peer.name)}${peer.verified ? ' <i class="jemmo-rt-verified" aria-label="Cuenta verificada">✓</i>' : ''}`;
     if ($('chatStatus')) {
       $('chatStatus').textContent = peer.publicId || (peer.username ? `@${peer.username}` : 'Conversación JEMMO');
       $('chatStatus').classList.remove('online');
@@ -386,9 +574,14 @@
     });
 
     setTimeout(() => $('messageInput')?.focus(), 60);
+    if (state.pendingGiftFromUrl && !state.giftUrlConsumed) {
+      state.giftUrlConsumed = true;
+      setTimeout(openMessageGiftDialog, 260);
+    }
   }
 
   function closeConversation({ useHistory = false } = {}) {
+    if (giftDialogVisible()) closeMessageGiftDialog({ useHistory: false });
     if (state.messagesStop) {
       state.messagesStop();
       state.messagesStop = null;
@@ -439,7 +632,7 @@
         text,
         createdAt: serverTimestamp(),
         clientCreatedAt: Date.now(),
-        version: 3
+        version: 4
       });
 
       const updateFields = [
@@ -502,7 +695,7 @@
       return;
     }
 
-    result.innerHTML = '<div class="jemmo-rt-help">Buscando perfil en Firebase…</div>';
+    result.innerHTML = '<div class="jemmo-rt-help">Buscando perfil en JEMMO LIVE…</div>';
     const { doc, getDoc, collection, query, where, limit, getDocs } = state.sdk.firestore;
 
     async function firstMatch(collectionName, field, value) {
@@ -530,7 +723,7 @@
       }
 
       if (!targetSnapshot) {
-        result.innerHTML = '<div class="jemmo-rt-help error">No aparece ese perfil. Comprueba la ID JEMMO o el nombre de usuario. La otra persona debe haber iniciado sesión con PRUEBA 08.</div>';
+        result.innerHTML = '<div class="jemmo-rt-help error">No aparece ese perfil. Comprueba la ID JEMMO o el nombre de usuario.</div>';
         return;
       }
       if (targetSnapshot.id === state.user.uid) {
@@ -599,7 +792,7 @@
       city: String(data.city || '').trim(),
       avatarData: String(data.avatarData || ''),
       coverData: String(data.coverData || ''),
-      verified: Boolean(data.verified),
+      verified: Boolean(data.verified || data.isVerified || ['ruth','ru'].includes(name.toLocaleLowerCase('es')) || String(data.username || '').replace(/^@/, '').toLocaleLowerCase('es') === 'ruth'),
       level: Math.max(1, Number(data.level) || 1)
     };
   }
@@ -656,7 +849,7 @@
         city: profile.city,
         publicProfileEnabled: true,
         messagesEnabled: true,
-        messagesVersion: 3,
+        messagesVersion: 4,
         updatedAt: serverTimestamp()
       }, { merge: true }),
       setDoc(doc(state.db, 'directorioMensajes', state.user.uid), {
@@ -683,7 +876,7 @@
         level: profile.level,
         publicProfileEnabled: true,
         messagesEnabled: true,
-        messagesVersion: 3,
+        messagesVersion: 4,
         ultimaActividad: serverTimestamp(),
         updatedAt: serverTimestamp()
       }, { merge: true })
@@ -734,14 +927,14 @@
         createdBy: state.user.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-        version: 3
+        version: 4
       });
     } else {
       await updateDoc(
         reference,
         new FieldPath('participantProfiles', state.user.uid), participantProfiles[state.user.uid],
         'updatedAt', serverTimestamp(),
-        'version', 3
+        'version', 4
       );
     }
     return conversationId;
@@ -776,6 +969,8 @@
       input.placeholder = state.blockedByMe ? 'Usuario bloqueado' : 'Escribe un mensaje…';
     }
     if (submit) submit.disabled = Boolean(state.blockedByMe);
+    const giftButton = $('messageGiftButton');
+    if (giftButton) giftButton.disabled = Boolean(state.blockedByMe || !state.currentConversationId);
     const area = $('messagesArea');
     area?.querySelector('.jemmo-blocked-note')?.remove();
     if (state.blockedByMe && area) {
@@ -905,10 +1100,10 @@
   function firebaseErrorMessage(error) {
     const code = String(error?.code || '');
     if (String(error?.message || '').includes('jemmo-user-blocked-by-me')) return 'Has bloqueado a esta persona. Desbloquéala para iniciar o continuar la conversación.';
-    if (code.includes('permission-denied')) return 'La operación fue bloqueada por seguridad. Puede existir un bloqueo entre las cuentas o faltar publicar las reglas de PRUEBA 08.';
-    if (code.includes('unavailable')) return 'No hay conexión con Firebase. Comprueba Internet y vuelve a intentarlo.';
+    if (code.includes('permission-denied')) return 'La operación fue bloqueada por seguridad. Puede existir un bloqueo entre las cuentas.';
+    if (code.includes('unavailable')) return 'No hay conexión con JEMMO LIVE. Comprueba Internet y vuelve a intentarlo.';
     if (code.includes('unauthenticated')) return 'La sesión caducó. Cierra y vuelve a iniciar sesión.';
-    if (code.includes('failed-precondition')) return 'Firestore necesita terminar su configuración. Revisa las reglas y los índices indicados.';
+    if (code.includes('failed-precondition')) return 'Mensajes necesita terminar su configuración. Vuelve a intentarlo más tarde.';
     return String(error?.message || 'No se pudo completar la operación de Mensajes.');
   }
 
@@ -922,12 +1117,14 @@
   }
 
   function bindInterface() {
+    ensureGiftDialog();
     bindCapture($('createGroupButton'), 'click', openNewConversation);
     bindCapture($('messageForm'), 'submit', sendCurrentMessage);
     bindCapture($('chatBack'), 'click', () => closeConversation({ useHistory: true }));
     bindCapture($('markAllRead'), 'click', markAllRead);
     bindCapture($('chatOptions'), 'click', openSecurityDialog);
-    bindCapture($('attachButton'), 'click', () => toast('Fotos, audio y archivos se habilitarán después de configurar Firebase Storage.'));
+    bindCapture($('attachButton'), 'click', () => toast('Fotos, audio y archivos se habilitarán cuando se active el almacenamiento multimedia.'));
+    bindCapture($('messageGiftButton'), 'click', openMessageGiftDialog);
     bindCapture($('managePinned'), 'click', () => toast('Las conversaciones ancladas se habilitarán en la próxima prueba.'));
 
     const searchInput = $('searchInput');
@@ -946,6 +1143,8 @@
     });
 
     window.addEventListener('popstate', () => {
+      if (state.ignoreGiftPop) { state.ignoreGiftPop = false; return; }
+      if (giftDialogVisible()) { closeMessageGiftDialog({ useHistory: false }); return; }
       if (state.currentConversationId) closeConversation({ useHistory: false });
     });
   }
@@ -979,7 +1178,7 @@
         - timestampMs(a.data.lastMessageAt || a.data.updatedAt || a.data.createdAt));
 
       state.ready = true;
-      setStatus(`Mensajes conectados · ${state.profile.publicId || state.profile.name}`, 'ok');
+      setStatus(`Mensajes activos · ${state.profile.publicId || state.profile.name}`, 'ok');
       renderConversations();
 
       if (state.pendingConversationFromUrl && !state.autoOpenedFromUrl) {
@@ -994,7 +1193,7 @@
         const current = state.conversations.find(item => item.id === state.currentConversationId);
         if (current) {
           const peer = peerData(current);
-          if ($('chatName')) $('chatName').textContent = peer.name;
+          if ($('chatName')) $('chatName').innerHTML = `${esc(peer.name)}${peer.verified ? ' <i class="jemmo-rt-verified" aria-label="Cuenta verificada">✓</i>' : ''}`;
         }
       }
     }, error => {
@@ -1017,7 +1216,7 @@
       console.warn('[JEMMO mensajes] No se pudo preparar el usuario.', error);
       setStatus(firebaseErrorMessage(error), 'error');
       const allList = $('allChatsList');
-      if (allList) allList.innerHTML = `<div class="empty"><b>Falta activar Mensajes en Firebase</b>${esc(firebaseErrorMessage(error))}</div>`;
+      if (allList) allList.innerHTML = `<div class="empty"><b>Mensajes todavía no están disponibles</b>${esc(firebaseErrorMessage(error))}</div>`;
     }
   }
 
@@ -1065,9 +1264,11 @@
         state.conversations = [];
         state.currentConversationId = '';
         state.followingProfiles = [];
+        state.giftBusy = false;
+        if (giftDialogVisible()) closeMessageGiftDialog({ useHistory: false });
 
         if (!user) {
-          setStatus('No existe una sesión Firebase activa.', 'error');
+          setStatus('No existe una sesión activa.', 'error');
           if (allList) allList.innerHTML = '<div class="empty"><b>Sesión no disponible</b>Vuelve a iniciar sesión para utilizar Mensajes.</div>';
           return;
         }
@@ -1075,8 +1276,8 @@
       });
     } catch (error) {
       console.warn('[JEMMO mensajes] Error de inicialización.', error);
-      setStatus('No se pudo cargar Firebase para Mensajes. Comprueba la conexión.', 'error');
-      if (allList) allList.innerHTML = '<div class="empty"><b>Firebase no disponible</b>Comprueba Internet y vuelve a abrir Mensajes.</div>';
+      setStatus('No se pudo cargar Mensajes. Comprueba la conexión.', 'error');
+      if (allList) allList.innerHTML = '<div class="empty"><b>Mensajes no disponibles</b>Comprueba Internet y vuelve a abrir Mensajes.</div>';
     }
 
     document.documentElement.dataset.jemmoMessagesEngine = VERSION;

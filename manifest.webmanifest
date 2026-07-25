@@ -5,7 +5,7 @@
   "description": "JEMMO LIVE: transmisiones en vivo, salas, comunidad, perfiles y Chili IA.",
   "lang": "es-ES",
   "dir": "ltr",
-  "start_url": "./index.html?source=pwa-audio-room-gifts-03",
+  "start_url": "./index.html?source=pwa-profile-messages-gifts-04",
   "scope": "./",
   "display": "standalone",
   "display_override": [

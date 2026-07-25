@@ -1,23 +1,42 @@
-JEMMO LIVE V1 · CORRECCIÓN ENVÍO REGALOS AUDIO ROOM PRUEBA 03
+JEMMO LIVE V1 · PERFIL COMPLETO Y REGALOS EN MENSAJES PRUEBA 04
 Fecha: 25/07/2026
 
 Base:
-- JEMMO LIVE V1 · CORRECCIÓN ESPEJO Y REGALOS PRUEBA 02.
-- Validada en móvil por Jesús: espejo, persistencia, destinatarios y cantidades correctos.
+- JEMMO LIVE V1 · CORRECCIÓN ENVÍO REGALOS AUDIO ROOM PRUEBA 03.
+- Validada en móvil por Jesús: Audio Room permanece abierto después de enviar regalos.
 
-Incidencia móvil corregida:
-- Después de confirmar un regalo dentro de Audio Room, la caja se cerraba mediante history.back().
-- El evento popstate interpretaba ese retroceso como una orden para abandonar la sala.
-- El resultado visible era el cierre del Audio Room justo después de enviar el regalo.
+Objetivo de esta entrega:
+- Convertir el perfil público básico en una vista rápida con acceso a un perfil completo.
+- Añadir regalos dentro de las conversaciones privadas de Mensajes.
+- Retirar de la interfaz referencias técnicas a Firebase o a la base de datos.
 
-Corrección:
-- El cierre programático de una caja usa una marca específica para consumir únicamente el retroceso de la caja.
-- popstate ya no ejecuta leaveRoom cuando el retroceso corresponde al panel de Regalos o Ajustes.
-- El clic sobre un regalo se aísla con preventDefault, stopPropagation y stopImmediatePropagation.
-- Tras enviar un regalo, el Audio Room permanece abierto, el chat registra el envío y los badges/saldo se actualizan.
-- También queda protegido el cierre de cajas mediante X, fondo y botón atrás sin cerrar accidentalmente la sala.
-- Se conservan espejo OFF/ON, ×1/×10/×15/×100, ALL, selección individual, confirmación, badges, idempotencia y modo de pruebas.
-- Nueva caché PWA para actualizar la aplicación instalada sin desinstalarla.
+Perfil público:
+- La tarjeta principal se conserva como presentación rápida.
+- Nuevo botón VER PERFIL COMPLETO con Vídeos, Fotos, Publicaciones e Información.
+- Se muestran redes vinculadas, incluida Instagram, únicamente cuando existen.
+- Las fotos de perfil y portada se incorporan a la galería pública cuando están disponibles.
+- Los vídeos, fotos y publicaciones futuros se leen desde campos públicos del perfil.
+- Ruth/Ru aparece con check azul de verificación durante esta fase de pruebas.
+- La verificación real deberá validarse en servidor antes de producción.
+- Se elimina “Perfil verificado por Firebase” y cualquier texto técnico equivalente.
+- Nuevo acceso ENVIAR REGALO desde el perfil, que abre la conversación y su caja de regalos.
+
+Mensajes y regalos:
+- Nuevo botón 🎁 junto al cuadro de escritura.
+- Catálogo de 54 regalos, desde Like hasta Universo.
+- Cantidades ×1, ×10, ×15 y ×100.
+- Confirmación previa con destinatario y coste total.
+- El regalo utiliza el mismo JemmoWallet, descuenta JEMMOS y conserva idempotencia.
+- El mensaje de regalo se registra en la conversación en tiempo real con icono, nombre, cantidad y coste.
+- El destinatario recibe el aviso dentro de la conversación.
+- Doble toque bloqueado y botón desactivado mientras se registra.
+- Si la escritura de la conversación falla, se ejecuta una devolución compensatoria de JEMMOS.
+- Botón RECARGAR disponible desde la caja.
+- La economía continúa en MODO DE PRUEBAS y no representa dinero real.
+
+Actualización PWA:
+- Nueva caché para actualizar la aplicación instalada sin desinstalarla.
+- Mensajes incluye directamente jemmo-messages-realtime.js y el service worker evita duplicarlo.
 
 Archivos del ZIP incremental:
 - INTEGRIDAD_SHA256.txt
@@ -25,8 +44,7 @@ Archivos del ZIP incremental:
 - manifest.webmanifest
 - pwa-register.js
 - sw.js
-- salas.html
-
-No incluido en esta entrega:
-- No se modifica LIVE, Inicio, Perfil ni Mensajes.
-- No se activan pagos, cobros ni retiros reales.
+- perfil-publico.html
+- mensajes.html
+- jemmo-messages-realtime.js
+- jemmo-social.js

@@ -60,7 +60,7 @@
     .chat-head{padding:calc(10px + var(--safe-top)) 11px 9px;display:grid;grid-template-columns:44px 48px minmax(0,1fr) 44px;gap:8px;align-items:center;background:#0c0010e8;border-bottom:1px solid #5a2170;backdrop-filter:blur(13px)}
     .back-btn,.chat-options{width:44px;height:44px;border-radius:14px;border:1px solid #64247e;background:#17031f;font-size:24px}.chat-mini-avatar{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,var(--a1,#6b1e8c),var(--a2,#1c0527));border:2px solid var(--accent,#8e31b5);font-weight:1000}.chat-person{min-width:0}.chat-person strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chat-person small{display:block;margin-top:2px;color:var(--muted);font-size:10px}.chat-person small.online{color:var(--green)}
     .messages{min-height:0;overflow-y:auto;padding:16px 13px 24px;display:flex;flex-direction:column;gap:9px;scrollbar-width:none}.messages::-webkit-scrollbar{display:none}.day{text-align:center;color:#ad9db3;font-size:9px;margin:4px 0 2px}.bubble{width:max-content;max-width:82%;padding:10px 12px;border-radius:16px;background:#21042b;border:1px solid #633078;font-size:13px;line-height:1.35;box-shadow:0 7px 17px #0004}.bubble.mine{align-self:flex-end;background:linear-gradient(135deg,#7021a2,#405fbd);border-color:#8b65ec;border-bottom-right-radius:5px}.bubble.theirs{align-self:flex-start;border-bottom-left-radius:5px}.bubble.system{align-self:center;max-width:92%;text-align:center;background:#261707;border-color:#8e702b;color:#ffe8a4;font-size:11px}.bubble time{display:block;margin-top:4px;text-align:right;color:#dacde0aa;font-size:8px}
-    .composer{padding:8px 10px calc(9px + var(--safe-bottom));display:grid;grid-template-columns:46px minmax(0,1fr) 52px;gap:7px;align-items:end;background:#0b000fe8;border-top:1px solid #4f1d61;box-shadow:0 -12px 30px #0008}.attach{height:48px;border-radius:15px;border:1px solid #65307a;background:#17031f;font-size:24px}.compose-box{min-height:48px;display:flex;align-items:center;border:1px solid #643079;border-radius:17px;background:#100116;padding:0 12px}.compose-box input{width:100%;min-width:0;height:45px;border:0;background:transparent;color:#fff;outline:none}.send{height:48px;border-radius:16px;background:linear-gradient(135deg,#8b24be,#4d7ee2);font-size:24px;font-weight:1000;box-shadow:0 0 16px #7b41db55}
+    .composer{padding:8px 10px calc(9px + var(--safe-bottom));display:grid;grid-template-columns:44px 44px minmax(0,1fr) 52px;gap:6px;align-items:end;background:#0b000fe8;border-top:1px solid #4f1d61;box-shadow:0 -12px 30px #0008}.attach,.chat-gift{height:48px;border-radius:15px;border:1px solid #65307a;background:#17031f;font-size:22px}.chat-gift{border-color:#9b7627;background:linear-gradient(145deg,#3a2608,#1b0d05);color:#ffe17d;box-shadow:0 0 14px #ffd34e22}.compose-box{min-height:48px;display:flex;align-items:center;border:1px solid #643079;border-radius:17px;background:#100116;padding:0 12px}.compose-box input{width:100%;min-width:0;height:45px;border:0;background:transparent;color:#fff;outline:none}.send{height:48px;border-radius:16px;background:linear-gradient(135deg,#8b24be,#4d7ee2);font-size:24px;font-weight:1000;box-shadow:0 0 16px #7b41db55}
 
     /* HOJAS */
     .backdrop{position:absolute;z-index:70;inset:0;background:#0200038e;backdrop-filter:blur(3px)}
@@ -121,6 +121,7 @@
     <main class="messages" id="messagesArea"></main>
     <form class="composer" id="messageForm">
       <button class="btn attach" id="attachButton" type="button" aria-label="Adjuntar">＋</button>
+      <button class="btn chat-gift" id="messageGiftButton" type="button" aria-label="Enviar regalo">🎁</button>
       <label class="compose-box"><input id="messageInput" maxlength="500" autocomplete="off" placeholder="Escribe un mensaje…"></label>
       <button class="btn send" type="submit" aria-label="Enviar">➤</button>
     </form>
@@ -287,6 +288,7 @@
   $('chatBack').addEventListener('click',()=>closeChat());
   $('chatOptions').addEventListener('click',()=>currentChat&&openConversationOptions(currentChat));
   $('attachButton').addEventListener('click',()=>toast('Fotos, audio y archivos se conectarán al almacenamiento real en la fase de servidor.'));
+  $('messageGiftButton').addEventListener('click',()=>toast('Preparando la caja de regalos…'));
   $('messageForm').addEventListener('submit',event=>{event.preventDefault();const input=$('messageInput'),text=input.value.trim();if(!text||!currentChat)return;const time=now();state.messages[currentChat]||=[];state.messages[currentChat].push({from:'mine',text,time});const chat=getChat(currentChat);chat.preview=`Tú: ${text}`;chat.time=time;input.value='';saveState();renderMessages();input.focus()});
   $('pinAction').addEventListener('click',()=>{const chat=getChat(selectedMenuChat);if(!chat)return;chat.pinned=!chat.pinned;saveState();renderLists($('searchInput').value);closeSheets();toast(chat.pinned?'Conversación anclada arriba.':'Conversación desanclada.')});
   $('readAction').addEventListener('click',()=>{const chat=getChat(selectedMenuChat);if(chat){chat.unread=0;saveState();renderLists($('searchInput').value)}closeSheets();toast('Conversación marcada como leída.')});
@@ -298,11 +300,14 @@
 
   addEventListener('popstate',()=>{
     if(suppressNextPop){suppressNextPop=false;return}
+    const giftDialog=document.getElementById('jemmoMessageGiftDialog');
+    if(giftDialog&&!giftDialog.hidden)return;
     if(document.querySelector('.sheet:not(.hidden)')){closeSheets(false);return}
     if(!$('chatView').classList.contains('hidden')){closeChat(false);return}
   });
   if(location.hash.startsWith('#chat-')){const id=decodeURIComponent(location.hash.slice(6));if(getChat(id))openChat(id,false)}
 })();
 </script>
+<script src="jemmo-messages-realtime.js"></script>
 </body>
 </html>

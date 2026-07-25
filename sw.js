@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · CORRECCIÓN ENVÍO REGALOS AUDIO ROOM PRUEBA 03 */
-const CACHE = 'jemmo-live-v1-audio-room-regalos-03-20260725';
+/* JEMMO LIVE V1 · PERFIL COMPLETO Y REGALOS EN MENSAJES PRUEBA 04 */
+const CACHE = 'jemmo-live-v1-profile-messages-gifts-04-20260725';
 const APP_SHELL = [
   './',
   './index.html',
@@ -102,25 +102,25 @@ async function injectJemmoScripts(response, url) {
   if (UNREAD_PAGES.has(page)) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="bloque-1-critico-01"></script>'
+      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="perfil-mensajes-04"></script>'
     );
   }
-  if (page === '/mensajes.html') {
+  if (page === '/mensajes.html' && !html.includes('jemmo-messages-realtime.js')) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="bloque-1-critico-01"></script>'
+      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="perfil-mensajes-04"></script>'
     );
   }
   if (['/yo.html','/perfil-publico.html','/mensajes.html','/chili-ia.html'].includes(page) && !html.includes('jemmo-social.js')) {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="bloque-1-critico-01"></script>'
+      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="perfil-mensajes-04"></script>'
     );
   }
   if (page === '/yo.html') {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="bloque-1-critico-01"></script>'
+      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="perfil-mensajes-04"></script>'
     );
   }
 
@@ -128,7 +128,7 @@ async function injectJemmoScripts(response, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-version', 'bloque-1-critico-01');
+  headers.set('x-jemmo-version', 'perfil-mensajes-04');
 
   return new Response(html, {
     status: response.status,
