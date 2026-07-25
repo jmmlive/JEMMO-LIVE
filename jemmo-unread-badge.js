@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · MENSAJES TIEMPO REAL PRUEBA 01
+/* JEMMO LIVE V1 · ID PÚBLICA Y SEGURIDAD PRUEBA 08
    Contador global de conversaciones no leídas.
 */
 (() => {
@@ -16,7 +16,7 @@
     appId: '1:355540892255:web:d15a8dd03b2915e31939ea'
   };
 
-  const SCRIPT_VERSION = 'messages-realtime-01';
+  const SCRIPT_VERSION = 'id-seguridad-08';
   const BADGE_SELECTORS = [
     '#navUnread',
     'a[href$="mensajes.html"] .nav-badge',

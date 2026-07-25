@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · PERFILES Y MENSAJES REALES PRUEBA 07 */
-const CACHE = 'jemmo-live-v1-perfiles-mensajes-reales-07-20260725';
+/* JEMMO LIVE V1 · ID PÚBLICA Y SEGURIDAD PRUEBA 08 */
+const CACHE = 'jemmo-live-v1-id-seguridad-08-20260725';
 const APP_SHELL = [
   './',
   './index.html',
@@ -23,6 +23,7 @@ const APP_SHELL = [
   './jemmo-unread-badge.js',
   './jemmo-messages-realtime.js',
   './jemmo-cloud-profile.js',
+  './jemmo-public-id.js',
   './manifest.webmanifest',
   './jemmo-logo-header.webp',
   './jemmo-fish-nav.webp',
@@ -85,19 +86,19 @@ async function injectJemmoScripts(response, url) {
   if (UNREAD_PAGES.has(page)) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="perfiles-mensajes-reales-07"></script>'
+      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="id-seguridad-08"></script>'
     );
   }
   if (page === '/mensajes.html') {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="perfiles-mensajes-reales-07"></script>'
+      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="id-seguridad-08"></script>'
     );
   }
   if (page === '/yo.html') {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="perfiles-mensajes-reales-07"></script>'
+      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="id-seguridad-08"></script>'
     );
   }
 
@@ -105,7 +106,7 @@ async function injectJemmoScripts(response, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-version', 'perfiles-mensajes-reales-07');
+  headers.set('x-jemmo-version', 'id-seguridad-08');
 
   return new Response(html, {
     status: response.status,

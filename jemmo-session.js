@@ -1,3 +1,4 @@
+import { ensurePublicId } from './jemmo-public-id.js';
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
 import {
   initializeAuth,
@@ -12,7 +13,8 @@ import {
   getFirestore,
   doc,
   setDoc,
-  serverTimestamp
+  serverTimestamp,
+  deleteField
 } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -115,7 +117,9 @@ function buildIdentity(user) {
     country,
     city,
     bio,
-    profileId: cleanText(local.id || '', 40),
+    publicId: cleanText(local.publicId || local.id || '', 40),
+    publicIdLower: normalizeSearch(local.publicId || local.id || ''),
+    profileId: cleanText(local.publicId || local.id || '', 40),
     verified: Boolean(local.verified),
     level: Math.max(1, Number(local.level) || 1),
     publicProfileEnabled: true,
@@ -128,14 +132,46 @@ function buildIdentity(user) {
 
 async function syncCloudIdentity(user) {
   if (!user?.uid || !navigator.onLine) return null;
-  const identity = buildIdentity(user);
+  const assigned = await ensurePublicId(user, db);
+  const identity = {
+    ...buildIdentity(user),
+    publicId: assigned.publicId,
+    publicIdLower: assigned.publicId.toLocaleLowerCase('es'),
+    publicIdNumber: assigned.publicIdNumber,
+    profileId: assigned.publicId
+  };
   const publicIdentity = {
-    ...identity,
+    uid: identity.uid,
+    email: deleteField(),
+    emailLower: deleteField(),
+    publicId: identity.publicId,
+    publicIdLower: identity.publicIdLower,
+    publicIdNumber: identity.publicIdNumber,
+    profileId: identity.publicId,
+    displayName: identity.displayName,
+    displayNameLower: identity.displayNameLower,
+    nombre: identity.nombre,
+    name: identity.name,
+    nameLower: identity.nameLower,
+    username: identity.username,
+    usernameLower: identity.usernameLower,
+    country: identity.country,
+    city: identity.city,
+    bio: identity.bio,
+    verified: identity.verified,
+    level: identity.level,
+    publicProfileEnabled: true,
+    messagesEnabled: true,
+    messagesVersion: 3,
+    profileVersion: 3,
+    profileUpdatedAtClient: identity.profileUpdatedAtClient,
     ultimaActividad: serverTimestamp(),
     updatedAt: serverTimestamp()
   };
   const userIdentity = {
     ...identity,
+    messagesVersion: 3,
+    profileVersion: 3,
     lastLoginAt: serverTimestamp(),
     updatedAt: serverTimestamp()
   };

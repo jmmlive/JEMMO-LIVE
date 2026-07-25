@@ -92,7 +92,7 @@
   });
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    const reloadKey = 'jemmo_sw_reloaded_perfiles_mensajes_reales_07';
+    const reloadKey = 'jemmo_sw_reloaded_id_seguridad_08';
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       try {
         if (sessionStorage.getItem(reloadKey) === '1') return;

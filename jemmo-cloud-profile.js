@@ -1,4 +1,5 @@
-/* JEMMO LIVE V1 · PERFILES Y MENSAJES REALES PRUEBA 07
+import { ensurePublicId } from './jemmo-public-id.js';
+/* JEMMO LIVE V1 · ID PÚBLICA Y SEGURIDAD PRUEBA 08
    Sincroniza el perfil editable de Yo con Firestore y el directorio de Mensajes.
 */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
@@ -8,7 +9,8 @@ import {
   doc,
   getDoc,
   setDoc,
-  serverTimestamp
+  serverTimestamp,
+  deleteField
 } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 
 const FIREBASE_CONFIG = {
@@ -25,7 +27,7 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 const MEDIA_DB = 'jemmo-profile-media-v1';
 const MEDIA_STORE = 'media';
-const RELOAD_KEY = 'jemmo_profile_cloud_hydrated_07';
+const RELOAD_KEY = 'jemmo_profile_cloud_hydrated_08';
 let user = null;
 let syncing = false;
 
@@ -179,7 +181,7 @@ async function publicMedia(uid) {
   return { avatarData, coverData };
 }
 
-function profilePayload(currentUser, local, media) {
+function profilePayload(currentUser, local, media, assigned) {
   const email = clean(currentUser.email, 180);
   const displayName = clean(local.name || currentUser.displayName || email.split('@')[0] || 'Usuario JEMMO', 40);
   const username = clean(local.username || '', 24).replace(/^@+/, '');
@@ -201,7 +203,10 @@ function profilePayload(currentUser, local, media) {
     bio,
     country,
     city,
-    profileId: clean(local.id || '', 40),
+    publicId: assigned.publicId,
+    publicIdLower: assigned.publicId.toLocaleLowerCase('es'),
+    publicIdNumber: assigned.publicIdNumber,
+    profileId: assigned.publicId,
     verified: Boolean(local.verified),
     level: Math.max(1, Number(local.level) || 1),
     avatarData: media.avatarData || '',
@@ -222,16 +227,46 @@ async function syncLocalProfile() {
   if (!user || syncing || !navigator.onLine) return;
   syncing = true;
   try {
+    const assigned = await ensurePublicId(user, db);
     const local = readLocalProfile(user.uid);
     const media = await publicMedia(user.uid);
-    const payload = profilePayload(user, local, media);
+    const payload = profilePayload(user, local, media, assigned);
+    if (local.id !== assigned.publicId || local.publicId !== assigned.publicId) {
+      writeLocalProfile(user.uid, { ...local, id: assigned.publicId, publicId: assigned.publicId });
+    }
     await Promise.all([
       setDoc(doc(db, 'users', user.uid), {
         ...payload,
         updatedAt: serverTimestamp()
       }, { merge: true }),
       setDoc(doc(db, 'directorioMensajes', user.uid), {
-        ...payload,
+        uid: payload.uid,
+        email: deleteField(),
+        emailLower: deleteField(),
+        publicId: payload.publicId,
+        publicIdLower: payload.publicIdLower,
+        publicIdNumber: payload.publicIdNumber,
+        profileId: payload.publicId,
+        displayName: payload.displayName,
+        displayNameLower: payload.displayNameLower,
+        nombre: payload.nombre,
+        name: payload.name,
+        nameLower: payload.nameLower,
+        username: payload.username,
+        usernameLower: payload.usernameLower,
+        bio: payload.bio,
+        country: payload.country,
+        city: payload.city,
+        verified: payload.verified,
+        level: payload.level,
+        avatarData: payload.avatarData,
+        coverData: payload.coverData,
+        coverPosition: payload.coverPosition,
+        publicProfileEnabled: true,
+        messagesEnabled: true,
+        messagesVersion: 3,
+        profileVersion: 3,
+        profileUpdatedAtClient: payload.profileUpdatedAtClient,
         ultimaActividad: serverTimestamp(),
         updatedAt: serverTimestamp()
       }, { merge: true })
@@ -265,7 +300,8 @@ async function hydrateFromCloud() {
       bio: clean(cloud.bio || local.bio, 160),
       country: clean(cloud.country || local.country, 40),
       city: clean(cloud.city || local.city, 40),
-      id: clean(cloud.profileId || local.id, 40),
+      id: clean(cloud.publicId || cloud.profileId || local.publicId || local.id, 40),
+      publicId: clean(cloud.publicId || cloud.profileId || local.publicId || local.id, 40),
       verified: Boolean(cloud.verified),
       level: Math.max(1, Number(cloud.level) || Number(local.level) || 1),
       coverPosition: cloud.coverPosition || local.coverPosition || { x: 50, y: 50 },

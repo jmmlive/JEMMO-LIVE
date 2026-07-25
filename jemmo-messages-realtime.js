@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · PERFILES Y MENSAJES REALES PRUEBA 07
+/* JEMMO LIVE V1 · ID PÚBLICA Y SEGURIDAD PRUEBA 08
    Mensajería directa con Firebase Authentication + Cloud Firestore.
    Mantiene la interfaz visual existente y sustituye únicamente el motor local de Mensajes.
 */
@@ -17,7 +17,7 @@
     appId: '1:355540892255:web:d15a8dd03b2915e31939ea'
   };
 
-  const VERSION = 'JEMMO LIVE V1 · PERFILES Y MENSAJES REALES PRUEBA 07';
+  const VERSION = 'JEMMO LIVE V1 · ID PÚBLICA Y SEGURIDAD PRUEBA 08';
   const $ = id => document.getElementById(id);
   const state = {
     sdk: null,
@@ -33,7 +33,10 @@
     historyGuard: false,
     pendingConversationFromUrl: new URLSearchParams(location.search).get('chat') || '',
     autoOpenedFromUrl: false,
-    ready: false
+    ready: false,
+    publicIdApi: null,
+    currentPeer: null,
+    blockedByMe: false
   };
 
   let toastTimer = 0;
@@ -139,12 +142,12 @@
     backdrop.innerHTML = `
       <section class="jemmo-rt-new-sheet" role="dialog" aria-modal="true" aria-labelledby="jemmoRtNewTitle">
         <header class="jemmo-rt-new-head"><strong id="jemmoRtNewTitle">Nuevo mensaje</strong><button class="jemmo-rt-new-close" id="jemmoRtNewClose" type="button" aria-label="Cerrar">×</button></header>
-        <p>Busca por correo exacto, nombre de usuario o UID. El perfil se registra automáticamente al iniciar sesión con esta actualización.</p>
+        <p>Busca por ID JEMMO o nombre de usuario. El correo de acceso permanece privado.</p>
         <form class="jemmo-rt-new-row" id="jemmoRtSearchForm">
-          <input id="jemmoRtUserSearch" type="text" inputmode="email" autocomplete="off" maxlength="160" placeholder="correo, usuario o UID">
+          <input id="jemmoRtUserSearch" type="search" inputmode="search" autocomplete="off" maxlength="80" placeholder="JEMMO-1000001 o @usuario">
           <button type="submit">BUSCAR</button>
         </form>
-        <div class="jemmo-rt-search-result" id="jemmoRtSearchResult"><div class="jemmo-rt-help">Escribe su correo, nombre de usuario o UID.</div></div>
+        <div class="jemmo-rt-search-result" id="jemmoRtSearchResult"><div class="jemmo-rt-help">Escribe su ID JEMMO o nombre de usuario.</div></div>
       </section>`;
     document.body.appendChild(backdrop);
 
@@ -168,7 +171,7 @@
       setTimeout(() => input.focus(), 30);
     }
     const result = $('jemmoRtSearchResult');
-    if (result) result.innerHTML = '<div class="jemmo-rt-help">Escribe su correo, nombre de usuario o UID.</div>';
+    if (result) result.innerHTML = '<div class="jemmo-rt-help">Escribe su ID JEMMO o nombre de usuario.</div>';
   }
 
   function closeNewConversation() {
@@ -186,12 +189,13 @@
     return {
       uid: peerUid,
       name,
-      email: String(profile.email || fallback?.email || ''),
+      publicId: String(profile.publicId || profile.profileId || fallback?.publicId || ''),
       username: String(profile.username || fallback?.username || ''),
       avatarData: String(profile.avatarData || fallback?.avatarData || ''),
       country: String(profile.country || fallback?.country || ''),
       city: String(profile.city || fallback?.city || ''),
       bio: String(profile.bio || fallback?.bio || ''),
+      verified: Boolean(profile.verified || fallback?.verified),
       initial: initials(name),
       type: String(data.type || 'direct')
     };
@@ -260,11 +264,11 @@
       if (!filter) return true;
       const peer = peerData(conversation);
       const data = conversation.data || {};
-      return `${peer.name} ${peer.email} ${data.lastMessage || ''}`.toLocaleLowerCase('es').includes(filter);
+      return `${peer.name} ${peer.username} ${peer.publicId} ${data.lastMessage || ''}`.toLocaleLowerCase('es').includes(filter);
     });
 
     if (!visible.length) {
-      allList.innerHTML = `<div class="empty"><b>${state.search ? 'Sin resultados' : 'No hay conversaciones todavía'}</b>${state.search ? 'Prueba con otro nombre o correo.' : 'Pulsa ＋ y busca a una persona por su correo de acceso.'}</div>`;
+      allList.innerHTML = `<div class="empty"><b>${state.search ? 'Sin resultados' : 'No hay conversaciones todavía'}</b>${state.search ? 'Prueba con otra ID o nombre de usuario.' : 'Pulsa ＋ y busca a una persona por su ID JEMMO o nombre de usuario.'}</div>`;
     } else {
       visible.forEach(conversation => allList.appendChild(conversationRow(conversation)));
     }
@@ -322,13 +326,14 @@
 
     state.currentConversationId = conversationId;
     const peer = peerData(conversation);
+    state.currentPeer = peer;
     const inbox = $('inboxView');
     const chatView = $('chatView');
     if (inbox) inbox.classList.add('hidden');
     if (chatView) chatView.classList.remove('hidden');
     if ($('chatName')) $('chatName').textContent = peer.name;
     if ($('chatStatus')) {
-      $('chatStatus').textContent = peer.email || 'Conversación JEMMO';
+      $('chatStatus').textContent = peer.publicId || (peer.username ? `@${peer.username}` : 'Conversación JEMMO');
       $('chatStatus').classList.remove('online');
     }
     if ($('chatAvatar')) {
@@ -348,6 +353,7 @@
       state.historyGuard = true;
     }
 
+    await refreshBlockState(peer.uid);
     await markConversationRead(conversationId);
 
     const { collection, query, orderBy, limit, onSnapshot, doc } = state.sdk.firestore;
@@ -364,6 +370,7 @@
         data: documentSnapshot.data()
       }));
       renderMessages(messages);
+      updateComposerState();
       markConversationRead(conversationId);
     }, error => {
       console.warn('[JEMMO mensajes] No se pudo abrir la conversación.', error);
@@ -380,6 +387,9 @@
       state.messagesStop = null;
     }
     state.currentConversationId = '';
+    state.currentPeer = null;
+    state.blockedByMe = false;
+    updateComposerState();
     const inbox = $('inboxView');
     const chatView = $('chatView');
     if (chatView) chatView.classList.add('hidden');
@@ -396,6 +406,7 @@
     const input = $('messageInput');
     const text = String(input?.value || '').trim();
     if (!text || !state.currentConversationId || !state.user || !state.sdk) return;
+    if (state.blockedByMe) { toast('Desbloquea a esta persona antes de enviar mensajes.'); return; }
     if (text.length > 1000) {
       toast('El mensaje supera el máximo de 1.000 caracteres.');
       return;
@@ -421,7 +432,7 @@
         text,
         createdAt: serverTimestamp(),
         clientCreatedAt: Date.now(),
-        version: 1
+        version: 3
       });
 
       const updateFields = [
@@ -443,7 +454,8 @@
       toast(firebaseErrorMessage(error), 5200);
     } finally {
       input.disabled = false;
-      input.focus();
+      updateComposerState();
+      if (!state.blockedByMe) input.focus();
     }
   }
 
@@ -475,7 +487,7 @@
     const raw = String($('jemmoRtUserSearch')?.value || '').trim();
     if (!result) return;
     if (!raw) {
-      result.innerHTML = '<div class="jemmo-rt-help error">Escribe un correo, usuario o UID.</div>';
+      result.innerHTML = '<div class="jemmo-rt-help error">Escribe una ID JEMMO o nombre de usuario.</div>';
       return;
     }
     if (!state.user || !state.sdk) {
@@ -497,32 +509,21 @@
 
     try {
       const lower = raw.toLocaleLowerCase('es');
+      const normalizedPublicId = state.publicIdApi?.normalizePublicId(raw) || '';
+      const username = lower.replace(/^@+/, '');
       let targetSnapshot = null;
 
-      if (!raw.includes('@') && raw.length >= 20) {
-        targetSnapshot = await getDoc(doc(state.db, 'directorioMensajes', raw));
-        if (!targetSnapshot.exists()) targetSnapshot = await getDoc(doc(state.db, 'users', raw));
-        if (!targetSnapshot.exists()) targetSnapshot = null;
+      if (normalizedPublicId) {
+        targetSnapshot = await firstMatch('directorioMensajes', 'publicIdLower', normalizedPublicId.toLocaleLowerCase('es'));
       }
-
-      if (!targetSnapshot && raw.includes('@')) {
-        targetSnapshot = await firstMatch('directorioMensajes', 'emailLower', lower)
-          || await firstMatch('users', 'emailLower', lower)
-          || await firstMatch('directorioMensajes', 'email', raw)
-          || await firstMatch('users', 'email', raw);
-      }
-
-      if (!targetSnapshot) {
-        const username = lower.replace(/^@+/, '');
+      if (!targetSnapshot && username) {
         targetSnapshot = await firstMatch('directorioMensajes', 'usernameLower', username)
-          || await firstMatch('users', 'usernameLower', username)
           || await firstMatch('directorioMensajes', 'displayNameLower', lower)
-          || await firstMatch('users', 'displayNameLower', lower)
-          || await firstMatch('users', 'nameLower', lower);
+          || await firstMatch('directorioMensajes', 'nameLower', lower);
       }
 
       if (!targetSnapshot) {
-        result.innerHTML = '<div class="jemmo-rt-help error">No aparece ese perfil. La otra persona debe iniciar sesión una vez con PRUEBA 07. También puedes buscar por su correo exacto o nombre de usuario.</div>';
+        result.innerHTML = '<div class="jemmo-rt-help error">No aparece ese perfil. Comprueba la ID JEMMO o el nombre de usuario. La otra persona debe haber iniciado sesión con PRUEBA 08.</div>';
         return;
       }
       if (targetSnapshot.id === state.user.uid) {
@@ -540,9 +541,9 @@
       const avatar = target.avatarData
         ? `<img class="jemmo-rt-avatar-img" src="${esc(target.avatarData)}" alt="">`
         : esc(initials(target.name));
-      const usernameText = target.username ? `@${target.username}` : target.email;
+      const usernameText = target.username ? `@${target.username}` : target.publicId;
       const place = [target.country, target.city].filter(Boolean).join(' · ');
-      button.innerHTML = `<i>${avatar}</i><span><b>${esc(target.name)}</b><small>${esc(usernameText || target.uid)}${place ? `<em>${esc(place)}</em>` : ''}</small></span>`;
+      button.innerHTML = `<i>${avatar}</i><span><b>${esc(target.name)}</b><small>${esc(usernameText || target.publicId)}${target.publicId && usernameText !== target.publicId ? `<em>${esc(target.publicId)}</em>` : ''}${place ? `<em>${esc(place)}</em>` : ''}</small></span>`;
       button.addEventListener('click', () => { location.href = `perfil-publico.html?uid=${encodeURIComponent(target.uid)}`; });
       card.appendChild(button);
 
@@ -580,12 +581,11 @@
   }
 
   function normalizedUserProfile(uid, data) {
-    const email = String(data.email || '').trim();
-    const name = String(data.displayName || data.nombre || data.name || email.split('@')[0] || 'Usuario JEMMO').trim();
+    const name = String(data.displayName || data.nombre || data.name || 'Usuario JEMMO').trim();
     return {
       uid,
       name,
-      email,
+      publicId: String(data.publicId || data.profileId || '').trim(),
       username: String(data.username || '').trim(),
       bio: String(data.bio || '').trim(),
       country: String(data.country || '').trim(),
@@ -598,7 +598,7 @@
   }
 
   async function ensureCurrentUserDocument() {
-    const { doc, getDoc, setDoc, serverTimestamp } = state.sdk.firestore;
+    const { doc, getDoc, setDoc, updateDoc, serverTimestamp, FieldPath } = state.sdk.firestore;
     let cloudData = {};
     try {
       const snapshot = await getDoc(doc(state.db, 'users', state.user.uid));
@@ -612,6 +612,7 @@
       localData = JSON.parse(localStorage.getItem(`jemmo_profile_v1_${state.user.uid}`) || '{}') || {};
     } catch {}
 
+    const assigned = await state.publicIdApi.ensurePublicId(state.user, state.db);
     const profile = normalizedUserProfile(state.user.uid, {
       ...cloudData,
       displayName: localData.name || cloudData.displayName || state.user.displayName,
@@ -619,19 +620,24 @@
       bio: localData.bio || cloudData.bio,
       country: localData.country || cloudData.country,
       city: localData.city || cloudData.city,
-      email: state.user.email || cloudData.email,
+      publicId: assigned.publicId,
       avatarData: cloudData.avatarData,
       coverData: cloudData.coverData,
       verified: localData.verified ?? cloudData.verified,
       level: localData.level || cloudData.level
     });
+    profile.publicId = assigned.publicId;
     state.profile = profile;
 
     await Promise.all([
       setDoc(doc(state.db, 'users', state.user.uid), {
         uid: state.user.uid,
-        email: profile.email,
-        emailLower: profile.email.toLocaleLowerCase('es'),
+        email: String(state.user.email || ''),
+        emailLower: String(state.user.email || '').toLocaleLowerCase('es'),
+        publicId: profile.publicId,
+        publicIdLower: profile.publicId.toLocaleLowerCase('es'),
+        publicIdNumber: assigned.publicIdNumber,
+        profileId: profile.publicId,
         displayName: profile.name,
         displayNameLower: profile.name.toLocaleLowerCase('es'),
         name: profile.name,
@@ -643,13 +649,17 @@
         city: profile.city,
         publicProfileEnabled: true,
         messagesEnabled: true,
-        messagesVersion: 2,
+        messagesVersion: 3,
         updatedAt: serverTimestamp()
       }, { merge: true }),
       setDoc(doc(state.db, 'directorioMensajes', state.user.uid), {
         uid: state.user.uid,
-        email: profile.email,
-        emailLower: profile.email.toLocaleLowerCase('es'),
+        email: state.sdk.firestore.deleteField(),
+        emailLower: state.sdk.firestore.deleteField(),
+        publicId: profile.publicId,
+        publicIdLower: profile.publicId.toLocaleLowerCase('es'),
+        publicIdNumber: assigned.publicIdNumber,
+        profileId: profile.publicId,
         nombre: profile.name,
         displayName: profile.name,
         displayNameLower: profile.name.toLocaleLowerCase('es'),
@@ -666,7 +676,7 @@
         level: profile.level,
         publicProfileEnabled: true,
         messagesEnabled: true,
-        messagesVersion: 2,
+        messagesVersion: 3,
         ultimaActividad: serverTimestamp(),
         updatedAt: serverTimestamp()
       }, { merge: true })
@@ -674,7 +684,10 @@
   }
 
   async function ensureDirectConversation(target) {
-    const { doc, getDoc, setDoc, serverTimestamp } = state.sdk.firestore;
+    const { doc, getDoc, setDoc, updateDoc, serverTimestamp, FieldPath } = state.sdk.firestore;
+    const ownBlockRef = doc(state.db, 'bloqueos', `${state.user.uid}__${target.uid}`);
+    const ownBlock = await getDoc(ownBlockRef);
+    if (ownBlock.exists() && ownBlock.data()?.active !== false) throw new Error('jemmo-user-blocked-by-me');
     const participants = [state.user.uid, target.uid].sort();
     const conversationId = participants.join('__');
     const reference = doc(state.db, 'conversaciones', conversationId);
@@ -682,7 +695,7 @@
     const participantProfiles = {
       [state.user.uid]: {
         name: state.profile.name,
-        email: state.profile.email,
+        publicId: state.profile.publicId,
         username: state.profile.username || '',
         avatarData: state.profile.avatarData || '',
         country: state.profile.country || '',
@@ -691,7 +704,7 @@
       },
       [target.uid]: {
         name: target.name,
-        email: target.email,
+        publicId: target.publicId,
         username: target.username || '',
         avatarData: target.avatarData || '',
         country: target.country || '',
@@ -714,14 +727,15 @@
         createdBy: state.user.uid,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-        version: 1
+        version: 3
       });
     } else {
-      await setDoc(reference, {
-        participantProfiles,
-        updatedAt: serverTimestamp(),
-        version: 1
-      }, { merge: true });
+      await updateDoc(
+        reference,
+        new FieldPath('participantProfiles', state.user.uid), participantProfiles[state.user.uid],
+        'updatedAt', serverTimestamp(),
+        'version', 3
+      );
     }
     return conversationId;
   }
@@ -742,9 +756,149 @@
     });
   }
 
+
+  function blockDocumentId(ownerUid, targetUid) {
+    return `${ownerUid}__${targetUid}`;
+  }
+
+  function updateComposerState() {
+    const input = $('messageInput');
+    const submit = $('messageForm')?.querySelector('button[type="submit"]');
+    if (input) {
+      input.disabled = Boolean(state.blockedByMe);
+      input.placeholder = state.blockedByMe ? 'Usuario bloqueado' : 'Escribe un mensaje…';
+    }
+    if (submit) submit.disabled = Boolean(state.blockedByMe);
+    const area = $('messagesArea');
+    area?.querySelector('.jemmo-blocked-note')?.remove();
+    if (state.blockedByMe && area) {
+      const note = document.createElement('div');
+      note.className = 'jemmo-blocked-note';
+      note.textContent = 'Has bloqueado a esta persona. No podéis intercambiar mensajes mientras el bloqueo siga activo.';
+      area.appendChild(note);
+    }
+  }
+
+  async function refreshBlockState(targetUid) {
+    if (!state.user || !state.sdk || !targetUid) return false;
+    const { doc, getDoc } = state.sdk.firestore;
+    try {
+      const snapshot = await getDoc(doc(state.db, 'bloqueos', blockDocumentId(state.user.uid, targetUid)));
+      state.blockedByMe = snapshot.exists() && snapshot.data()?.active !== false;
+    } catch (error) {
+      console.warn('[JEMMO seguridad] No se pudo consultar el bloqueo.', error);
+      state.blockedByMe = false;
+    }
+    updateComposerState();
+    return state.blockedByMe;
+  }
+
+  function closeSecurityDialog() {
+    const dialog = $('jemmoSecurityDialog');
+    if (dialog) dialog.hidden = true;
+  }
+
+  async function toggleCurrentBlock() {
+    const peer = state.currentPeer;
+    if (!peer || !state.user || !state.sdk) return;
+    const { doc, setDoc, deleteDoc, serverTimestamp } = state.sdk.firestore;
+    const reference = doc(state.db, 'bloqueos', blockDocumentId(state.user.uid, peer.uid));
+    try {
+      if (state.blockedByMe) {
+        await deleteDoc(reference);
+        state.blockedByMe = false;
+        toast(`${peer.name} ha sido desbloqueado.`);
+      } else {
+        const accepted = confirm(`¿Bloquear a ${peer.name}? No podréis enviaros mensajes hasta que lo desbloquees.`);
+        if (!accepted) return;
+        await setDoc(reference, {
+          ownerUid: state.user.uid,
+          blockedUid: peer.uid,
+          active: true,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+          version: 1
+        });
+        state.blockedByMe = true;
+        toast(`${peer.name} ha sido bloqueado.`);
+      }
+      updateComposerState();
+      closeSecurityDialog();
+    } catch (error) {
+      toast(firebaseErrorMessage(error), 5200);
+    }
+  }
+
+  async function reportCurrentPeer(reason) {
+    const peer = state.currentPeer;
+    if (!peer || !state.user || !state.sdk) return;
+    const { collection, addDoc, serverTimestamp } = state.sdk.firestore;
+    try {
+      await addDoc(collection(state.db, 'denuncias'), {
+        reporterUid: state.user.uid,
+        targetUid: peer.uid,
+        conversationId: state.currentConversationId || '',
+        reason: String(reason || 'otro').slice(0, 40),
+        status: 'pending',
+        createdAt: serverTimestamp(),
+        version: 1
+      });
+      toast('Denuncia enviada para revisión.');
+      closeSecurityDialog();
+    } catch (error) {
+      toast(firebaseErrorMessage(error), 5200);
+    }
+  }
+
+  function openSecurityDialog() {
+    const peer = state.currentPeer;
+    if (!peer) {
+      toast('Abre una conversación para ver sus opciones.');
+      return;
+    }
+    let backdrop = $('jemmoSecurityDialog');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.id = 'jemmoSecurityDialog';
+      backdrop.className = 'jemmo-security-backdrop';
+      backdrop.hidden = true;
+      document.body.appendChild(backdrop);
+      backdrop.addEventListener('click', event => { if (event.target === backdrop) closeSecurityDialog(); });
+    }
+    backdrop.innerHTML = `
+      <section class="jemmo-security-sheet" role="dialog" aria-modal="true">
+        <h3>Seguridad de ${esc(peer.name)}</h3>
+        <p>${esc(peer.publicId || (peer.username ? `@${peer.username}` : 'Perfil JEMMO'))}</p>
+        <div class="jemmo-security-grid">
+          <a href="perfil-publico.html?uid=${encodeURIComponent(peer.uid)}">VER PERFIL</a>
+          <button class="gold" id="jemmoCopyPeerId" type="button">COPIAR ID JEMMO</button>
+          <button class="${state.blockedByMe ? '' : 'danger'}" id="jemmoToggleBlock" type="button">${state.blockedByMe ? 'DESBLOQUEAR USUARIO' : 'BLOQUEAR USUARIO'}</button>
+          <p style="margin:5px 0 0">Denunciar cuenta o conversación:</p>
+          <div class="jemmo-security-reasons">
+            <button type="button" data-report-reason="spam">SPAM</button>
+            <button type="button" data-report-reason="acoso">ACOSO</button>
+            <button type="button" data-report-reason="suplantacion">SUPLANTACIÓN</button>
+            <button type="button" data-report-reason="menor">POSIBLE MENOR</button>
+          </div>
+        </div>
+        <button class="jemmo-security-close" id="jemmoSecurityClose" type="button">CERRAR</button>
+      </section>`;
+    backdrop.hidden = false;
+    $('jemmoSecurityClose')?.addEventListener('click', closeSecurityDialog);
+    $('jemmoToggleBlock')?.addEventListener('click', toggleCurrentBlock);
+    $('jemmoCopyPeerId')?.addEventListener('click', () => {
+      if (peer.publicId) state.publicIdApi.copyPublicId(peer.publicId);
+      else toast('Este perfil todavía no tiene una ID JEMMO disponible.');
+    });
+    backdrop.querySelectorAll('[data-report-reason]').forEach(button => {
+      button.addEventListener('click', () => reportCurrentPeer(button.dataset.reportReason));
+    });
+  }
+
   function firebaseErrorMessage(error) {
     const code = String(error?.code || '');
-    if (code.includes('permission-denied')) return 'Firebase rechazó la operación. Publica las reglas de Mensajes incluidas con esta entrega.';
+    if (String(error?.message || '').includes('jemmo-user-blocked-by-me')) return 'Has bloqueado a esta persona. Desbloquéala para iniciar o continuar la conversación.';
+    if (code.includes('permission-denied')) return 'La operación fue bloqueada por seguridad. Puede existir un bloqueo entre las cuentas o faltar publicar las reglas de PRUEBA 08.';
     if (code.includes('unavailable')) return 'No hay conexión con Firebase. Comprueba Internet y vuelve a intentarlo.';
     if (code.includes('unauthenticated')) return 'La sesión caducó. Cierra y vuelve a iniciar sesión.';
     if (code.includes('failed-precondition')) return 'Firestore necesita terminar su configuración. Revisa las reglas y los índices indicados.';
@@ -765,7 +919,7 @@
     bindCapture($('messageForm'), 'submit', sendCurrentMessage);
     bindCapture($('chatBack'), 'click', () => closeConversation({ useHistory: true }));
     bindCapture($('markAllRead'), 'click', markAllRead);
-    bindCapture($('chatOptions'), 'click', () => toast('Bloquear, denunciar y silenciar se conectarán en la siguiente revisión de seguridad.'));
+    bindCapture($('chatOptions'), 'click', openSecurityDialog);
     bindCapture($('attachButton'), 'click', () => toast('Fotos, audio y archivos se habilitarán después de configurar Firebase Storage.'));
     bindCapture($('managePinned'), 'click', () => toast('Las conversaciones ancladas se habilitarán en la próxima prueba.'));
 
@@ -805,7 +959,7 @@
         - timestampMs(a.data.lastMessageAt || a.data.updatedAt || a.data.createdAt));
 
       state.ready = true;
-      setStatus(`Mensajes conectados · ${state.profile.email || state.profile.name}`, 'ok');
+      setStatus(`Mensajes conectados · ${state.profile.publicId || state.profile.name}`, 'ok');
       renderConversations();
 
       if (state.pendingConversationFromUrl && !state.autoOpenedFromUrl) {
@@ -858,13 +1012,15 @@
     if (allList) allList.innerHTML = '<div class="empty"><b>Espera un momento</b>Verificando tu sesión de JEMMO LIVE.</div>';
 
     try {
-      const [appSdk, authSdk, firestoreSdk] = await Promise.all([
+      const [appSdk, authSdk, firestoreSdk, publicIdApi] = await Promise.all([
         import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js'),
         import('https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js'),
-        import('https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js')
+        import('https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js'),
+        import('./jemmo-public-id.js')
       ]);
       const app = appSdk.getApps()[0] || appSdk.initializeApp(FIREBASE_CONFIG);
       state.sdk = { app: appSdk, auth: authSdk, firestore: firestoreSdk };
+      state.publicIdApi = publicIdApi;
       state.auth = authSdk.getAuth(app);
       state.db = firestoreSdk.getFirestore(app);
 
