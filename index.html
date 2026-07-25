@@ -7,9 +7,9 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="icon" href="icons/icon-192.png">
-  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="favicon-64.png">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <title>JEMMO LIVE</title><script>window.JemmoBootStorage=(()=>{const read=()=>{try{const uid=localStorage.getItem("jemmo_active_uid");if(uid)return uid}catch{}try{return sessionStorage.getItem("jemmo_active_uid")||""}catch{return""}};const write=uid=>{const value=String(uid||"");if(!value)return false;try{localStorage.setItem("jemmo_active_uid",value);try{sessionStorage.removeItem("jemmo_active_uid")}catch{}return true}catch{}try{sessionStorage.setItem("jemmo_active_uid",value);return true}catch{return false}};const clear=()=>{try{localStorage.removeItem("jemmo_active_uid")}catch{}try{sessionStorage.removeItem("jemmo_active_uid")}catch{}};return{read,write,clear}})();if(window.JemmoBootStorage.read()){setTimeout(()=>location.replace("inicio.html?sesion=local"),80)}else{setTimeout(()=>{if(location.pathname.endsWith("index.html")||location.pathname.endsWith("/"))location.replace("acceso.html?sesion=timeout")},6000)}</script>
   <style>
     *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#050007;color:#fff;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}

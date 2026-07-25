@@ -1,10 +1,11 @@
 {
   "id": "./",
   "name": "JEMMO LIVE",
-  "short_name": "JEMMO LIVE",
-  "description": "JEMMO LIVE: transmisiones, salas, comunidad, perfiles sociales reales y Chili IA.",
-  "lang": "es",
-  "start_url": "./index.html?source=pwa-social-chili-04",
+  "short_name": "JEMMO",
+  "description": "JEMMO LIVE: transmisiones en vivo, salas, comunidad, perfiles y Chili IA.",
+  "lang": "es-ES",
+  "dir": "ltr",
+  "start_url": "./index.html?source=pwa-installable-05",
   "scope": "./",
   "display": "standalone",
   "display_override": [
@@ -14,6 +15,7 @@
   "orientation": "portrait-primary",
   "background_color": "#050007",
   "theme_color": "#09000f",
+  "prefer_related_applications": false,
   "categories": [
     "social",
     "entertainment"
@@ -23,22 +25,66 @@
   },
   "icons": [
     {
-      "src": "icons/icon-192.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-512.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "icons/icon-maskable-512.png",
+      "src": "icon-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "jemmo-install-preview.webp",
+      "sizes": "674x1278",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "Inicio de JEMMO LIVE"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Inicio",
+      "short_name": "Inicio",
+      "url": "./inicio.html?source=shortcut",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Chili IA",
+      "short_name": "Chili IA",
+      "url": "./chili-ia.html?source=shortcut",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Mensajes",
+      "short_name": "Mensajes",
+      "url": "./mensajes.html?source=shortcut",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }

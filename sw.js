@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · SEGUIDORES Y CHILI OFICIAL PRUEBA 04 */
-const CACHE = 'jemmo-live-v1-social-chili-04-20260725';
+/* JEMMO LIVE V1 · INSTALABLE PWA MÓVIL PRUEBA 05 */
+const CACHE = 'jemmo-live-v1-installable-pwa-05-20260725';
 const APP_SHELL = [
   './',
   './index.html',
@@ -40,9 +40,11 @@ const APP_SHELL = [
   './manifest.webmanifest',
   './jemmo-logo-header.webp',
   './jemmo-fish-nav.webp',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/icon-maskable-512.png'
+  './icon-192.png',
+  './icon-512.png',
+  './icon-maskable-512.png',
+  './favicon-64.png',
+  './jemmo-install-preview.webp'
 ];
 
 const UNREAD_PAGES = new Set([
@@ -99,25 +101,25 @@ async function injectJemmoScripts(response, url) {
   if (UNREAD_PAGES.has(page)) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="social-chili-04"></script>'
+      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="installable-pwa-05"></script>'
     );
   }
   if (page === '/mensajes.html') {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="social-chili-04"></script>'
+      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="installable-pwa-05"></script>'
     );
   }
   if (['/yo.html','/perfil-publico.html','/mensajes.html','/chili-ia.html'].includes(page) && !html.includes('jemmo-social.js')) {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="social-chili-04"></script>'
+      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="installable-pwa-05"></script>'
     );
   }
   if (page === '/yo.html') {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="social-chili-04"></script>'
+      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="installable-pwa-05"></script>'
     );
   }
 
@@ -125,7 +127,7 @@ async function injectJemmoScripts(response, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-version', 'social-chili-04');
+  headers.set('x-jemmo-version', 'installable-pwa-05');
 
   return new Response(html, {
     status: response.status,

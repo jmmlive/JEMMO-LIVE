@@ -1,60 +1,58 @@
-JEMMO LIVE V1 · SEGUIDORES Y CHILI OFICIAL PRUEBA 04
+JEMMO LIVE V1 · INSTALABLE PWA MÓVIL PRUEBA 05
 Fecha: 25/07/2026
 
 Base:
-- JEMMO LIVE V1 · CHILI IA MULTIMEDIA MÓVIL PRUEBA 03.
-- Mantiene ID pública, perfiles y mensajería de PRUEBA 08.
+- JEMMO LIVE V1 · SEGUIDORES Y CHILI OFICIAL PRUEBA 04.
+- Mantiene Chili IA, perfiles, mensajes, ID pública y relaciones sociales.
 
-Objetivo:
-- Crear relaciones sociales reales entre cuentas.
-- Mostrar seguidores y seguidos en los perfiles.
-- Mantener a Chili IA como asistente oficial disponible para todos, sin obligar a seguirla.
+Problema confirmado:
+- JEMMO tenía manifest, service worker y código de instalación, pero el repositorio no contenía los iconos exigidos por el manifest.
+- Las rutas apuntaban a icons/icon-192.png, icons/icon-512.png e icons/icon-maskable-512.png, archivos ausentes.
+- Es el mismo tipo de incidencia que ocurrió en JM Elite: sin iconos válidos Chrome puede ofrecer solo un acceso directo o no mostrar la instalación como aplicación.
+- El botón de instalación existente estaba principalmente en Acceso; los usuarios con sesión iniciada eran enviados a Inicio y no lo veían.
 
-Seguidores y seguidos:
-- Botón SEGUIR / SIGUIENDO en perfiles públicos.
-- Cada relación se guarda en Firestore con ID determinista followerUid__targetUid.
-- No se permiten auto-seguimientos ni relaciones duplicadas.
-- El usuario puede dejar de seguir libremente.
-- Contadores y listas se actualizan desde Firestore.
-- En Mi perfil aparece una sección “Tu comunidad” con las personas seguidas.
-- Si Jesús sigue a Ruth, Ruth aparece en “Personas que sigues” con foto, usuario e ID JEMMO.
-- Al pulsar Seguidores o Seguidos se abre la lista real correspondiente.
-
-Chili IA:
-- Chili aparece en todos los perfiles como “Asistente oficial”.
-- Aparece también como contacto fijo dentro de Mensajes.
-- La ayuda esencial sigue disponible aunque el usuario no siga a Chili.
-- Seguir a Chili es voluntario y activa su presencia en la lista de seguidos.
-- La página de Chili muestra botón SEGUIR A CHILI y contador real de seguidores.
-
-Mensajes:
-- La franja superior “Personas que sigues” muestra perfiles sociales reales.
-- Chili se abre directamente desde su tarjeta oficial.
-- Las personas seguidas abren su perfil público para poder escribirles.
-
-Seguridad:
-- Nueva colección Firestore seguimientos.
-- Solo el propietario del seguimiento puede crearlo o eliminarlo.
-- El objetivo debe ser un perfil público existente o la cuenta oficial virtual de Chili.
-- Las relaciones son visibles para usuarios autenticados porque seguidores y seguidos son datos públicos del perfil.
+Correcciones:
+- Iconos oficiales de 192x192 y 512x512 generados con el pez JEMMO.
+- Icono maskable 512x512 con zona segura para Android.
+- Todos los iconos están en la raíz para poder subirlos desde el selector móvil sin carpetas.
+- Manifest actualizado con iconos reales, descripción, captura de instalación, accesos directos y prefer_related_applications=false.
+- Botón flotante INSTALAR JEMMO visible desde cualquier página cuando se abre en Chrome.
+- Panel propio con botón INSTALAR AHORA y pasos manuales de respaldo.
+- El botón y el panel desaparecen cuando la app ya está instalada.
+- La app abre en modo standalone desde su icono y reutiliza la ventana existente mediante launch_handler.
+- Nueva caché del service worker para sustituir manifest y recursos antiguos.
 
 Archivos del ZIP incremental:
 - INTEGRIDAD_SHA256.txt
 - VERSION.txt
-- jemmo-social.js
-- jemmo-messages-realtime.js
-- yo.html
-- perfil-publico.html
-- mensajes.html
-- chili-ia.html
 - manifest.webmanifest
 - pwa-register.js
 - sw.js
+- index.html
+- acceso.html
+- inicio.html
+- live.html
+- salas.html
+- mensajes.html
+- yo.html
+- chili-ia.html
+- perfil-publico.html
+- casa-demo.html
+- icon-192.png
+- icon-512.png
+- icon-maskable-512.png
+- favicon-64.png
+- jemmo-install-preview.webp
 
-Archivo externo:
-- JEMMO_LIVE_V1_PRUEBA_04_SOCIAL_FIRESTORE.rules
+Instalación esperada:
+1. Publicar los 20 archivos.
+2. Cerrar todas las pestañas antiguas de JEMMO y Chrome.
+3. Abrir una sola vez el enlace publicado en Chrome.
+4. Pulsar INSTALAR JEMMO y después INSTALAR AHORA.
+5. Abrir JEMMO desde el icono creado en la pantalla del teléfono.
 
 Estado:
 - Validación estática completada.
-- Pendiente de instalación, publicación de reglas y prueba real entre Jesús y Ruth.
-- PRUEBA 03 continúa siendo la última base validada hasta superar la prueba cruzada social.
+- Iconos comprobados en sus dimensiones reales.
+- Manifest JSON y JavaScript validados.
+- Pendiente de publicación y prueba real de instalación en el móvil de Jesús.
