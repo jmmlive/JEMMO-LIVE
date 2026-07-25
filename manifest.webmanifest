@@ -5,7 +5,7 @@
   "description": "JEMMO LIVE: transmisiones en vivo, salas, comunidad, perfiles y Chili IA.",
   "lang": "es-ES",
   "dir": "ltr",
-  "start_url": "./index.html?source=pwa-guest-receive-referrals-11",
+  "start_url": "./index.html?source=pwa-houses-battle-gifts-12",
   "scope": "./",
   "display": "standalone",
   "display_override": [
@@ -57,6 +57,17 @@
       "name": "Inicio",
       "short_name": "Inicio",
       "url": "./inicio.html?source=shortcut",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Casas",
+      "short_name": "Casas",
+      "url": "./casa-demo.html?source=shortcut",
       "icons": [
         {
           "src": "icon-192.png",

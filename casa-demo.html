@@ -1,27 +1,103 @@
-
-<!doctype html>
-<html lang="es">
-<head><link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="favicon-64.png"><link rel="icon" href="icon-192.png">
+<!DOCTYPE html>
+<html class="jemmo-auth-pending" lang="es">
+<head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="stylesheet" href="jemmo.css">
-  <title>JEMMO LIVE · CASA</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#09000f">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" href="favicon-64.png">
+  <link rel="icon" href="icon-192.png">
+  <title>JEMMO LIVE · Casas</title>
+  <link rel="stylesheet" href="app.css">
+  <style>html.jemmo-auth-pending body{visibility:hidden}</style>
+  <script>document.documentElement.classList.add('jemmo-auth-pending');setTimeout(()=>{if(!document.documentElement.classList.contains('jemmo-auth-pending'))return;let uid='';try{uid=localStorage.getItem('jemmo_active_uid')||''}catch{}if(!uid)try{uid=sessionStorage.getItem('jemmo_active_uid')||''}catch{}if(uid)document.documentElement.classList.remove('jemmo-auth-pending');else location.replace('acceso.html?sesion=timeout')},5500)</script>
 </head>
-<body class="home-page">
-  <main class="phone-shell">
-    <header class="topbar"><div class="brand"><span class="j">J</span><span>EMMO</span><b> LIVE</b></div></header>
-    <section class="hero compact-hero">
-      <p class="kicker">BASE NAVEGABLE</p>
-      <h1>CASA</h1>
-      <p>Base de navegación de Casa. Las reglas completas pertenecen a la Fase 5 y 6.</p>
+<body class="houses-page">
+  <main class="app-shell houses-shell">
+    <header class="houses-header">
+      <a class="houses-back" href="inicio.html" aria-label="Volver a Inicio">‹</a>
+      <a class="brand-logo houses-logo" href="inicio.html" aria-label="JEMMO LIVE Inicio"><img src="jemmo-logo-header.webp" alt="JEMMO LIVE"></a>
+      <button class="houses-help" id="housesHelp" type="button" aria-label="Información sobre Casas">?</button>
+    </header>
+
+    <section class="houses-hero" aria-labelledby="housesTitle">
+      <span class="houses-kicker">COMUNIDAD JEMMO LIVE</span>
+      <h1 id="housesTitle">Encuentra tu Casa</h1>
+      <p>Únete a una comunidad, participa en batallas y avanza junto a sus miembros.</p>
+      <div class="houses-hero-actions">
+        <a href="#explorar" class="houses-primary">EXPLORAR CASAS</a>
+        <button id="createHouseOpen" class="houses-secondary" type="button">CREAR CASA</button>
+      </div>
     </section>
-    <nav class="bottom-nav">
-      <a href="inicio.html">INICIO</a>
-      <a href="live.html">LIVE</a>
-      <a href="casa-demo.html">CASA</a>
-      <a href="mensajes.html">MENSAJES</a>
-      <a href="yo.html">YO</a>
-    </nav>
+
+    <section class="panel my-house-panel" id="myHousePanel" hidden aria-live="polite"></section>
+
+    <section class="panel house-mother-panel" aria-labelledby="motherHouseTitle">
+      <div class="house-mother-mark">♛</div>
+      <div>
+        <small>CASA OFICIAL</small>
+        <h2 id="motherHouseTitle">Casa Madre JEMMO</h2>
+        <p>Centro oficial para novedades, orientación y actividades generales de la comunidad.</p>
+      </div>
+      <button type="button" data-house-details="madre">VER CASA</button>
+    </section>
+
+    <section class="panel houses-explorer-panel" id="explorar" aria-labelledby="explorerTitle">
+      <div class="section-title houses-title-row">
+        <h2 id="explorerTitle">EXPLORADOR DE CASAS</h2>
+        <span id="houseResultCount">0 Casas</span>
+      </div>
+      <label class="house-search">
+        <span>⌕</span>
+        <input id="houseSearch" type="search" autocomplete="off" placeholder="Buscar por nombre, país o ciudad" aria-label="Buscar Casas">
+      </label>
+      <div class="house-filters" id="houseFilters" role="group" aria-label="Filtros de Casas">
+        <button type="button" class="active" data-house-filter="all">Todas</button>
+        <button type="button" data-house-filter="battle">En batalla</button>
+        <button type="button" data-house-filter="open">Aceptan miembros</button>
+        <button type="button" data-house-filter="new">Nuevas</button>
+      </div>
+      <div class="house-explorer-grid" id="houseExplorerGrid" aria-live="polite"></div>
+    </section>
+
+    <section class="panel house-ranking-panel" aria-labelledby="rankingTitle">
+      <div class="section-title"><h2 id="rankingTitle">ELEVADOR DE CASAS</h2><span>Temporada actual</span></div>
+      <div id="houseRanking" class="house-ranking"></div>
+    </section>
   </main>
-<script type="module" src="jemmo-session.js"></script><script src="pwa-register.js"></script></body>
+
+  <div class="house-modal-backdrop" id="houseModalBackdrop" hidden></div>
+  <section class="house-modal" id="houseModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="houseModalTitle">
+    <button class="house-modal-close" id="houseModalClose" type="button" aria-label="Cerrar">×</button>
+    <div id="houseModalContent"></div>
+  </section>
+
+  <section class="house-modal create-house-modal" id="createHouseModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="createHouseTitle">
+    <button class="house-modal-close" id="createHouseClose" type="button" aria-label="Cerrar">×</button>
+    <div class="house-modal-head"><span>♛</span><div><small>SOLICITUD PARA AGENTES</small><h2 id="createHouseTitle">Crear una Casa</h2></div></div>
+    <p class="house-modal-copy">La creación requiere revisión. Envía la solicitud y JEMMO LIVE comprobará el rol y los datos antes de activarla.</p>
+    <form id="createHouseForm" class="create-house-form">
+      <label>Nombre de la Casa<input name="name" maxlength="36" required placeholder="Ejemplo: Casa Tenerife"></label>
+      <label>País o territorio<input name="country" maxlength="40" required placeholder="Ejemplo: España"></label>
+      <label>Descripción<textarea name="description" maxlength="180" required placeholder="Objetivo y comunidad de la Casa"></textarea></label>
+      <button type="submit" class="house-confirm">ENVIAR SOLICITUD</button>
+    </form>
+    <p class="house-form-status" id="createHouseStatus" role="status"></p>
+  </section>
+
+  <div class="demo-toast" id="demoToast" role="status"></div>
+  <nav class="bottom-nav" data-current="inicio">
+    <a data-tab="inicio" href="inicio.html"><span class="nav-icon">⌂</span><b>Inicio</b></a>
+    <a data-tab="live" href="live.html"><span class="nav-icon">▣</span><b>Live</b></a>
+    <a data-tab="salas" href="salas.html"><span class="nav-icon">🎙</span><b>Salas</b></a>
+    <a data-tab="mensajes" href="mensajes.html"><span class="badge">8</span><span class="nav-icon">◌</span><b>Mensajes</b></a>
+    <a data-tab="yo" href="yo.html"><span class="nav-icon">♙</span><b>Yo</b></a>
+  </nav>
+  <script type="module" src="jemmo-session.js"></script>
+  <script src="pwa-register.js"></script>
+  <script src="jemmo-wallet.js"></script>
+  <script src="app.js"></script>
+  <script type="module" src="jemmo-houses.js"></script>
+</body>
 </html>

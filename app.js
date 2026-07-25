@@ -20,6 +20,7 @@
   {label:'Historial del monedero',icon:'📜',terms:'historial movimientos pagos monedero',action:'wallet'},
   {label:'Iniciar LIVE',icon:'📹',terms:'live directo transmitir camara',route:'live.html'},
   {label:'Salas de audio',icon:'🎙️',terms:'salas audio microfono',route:'salas.html'},
+  {label:'Casas',icon:'♛',terms:'casas casa comunidad agente batalla unirse miembros ranking elevador',route:'casa-demo.html'},
   {label:'Mensajes',icon:'💬',terms:'mensajes chats soporte avisos',route:'mensajes.html'},
   {label:'Chili IA',icon:'✦',terms:'chili ia ayuda soporte academia videos asistente problemas',route:'chili-ia.html'},
   {label:'Idioma',icon:'🌍',terms:'idioma lengua configuracion',demo:'Idioma'},
@@ -72,7 +73,7 @@
  loadChat();
 
  const nav=qs('.bottom-nav');
- const currentTab=()=>{const file=(location.pathname.split('/').pop()||'inicio.html').toLowerCase();return ({'inicio.html':'inicio','live.html':'live','salas.html':'salas','mensajes.html':'mensajes','yo.html':'yo'})[file]||nav?.dataset.current||'inicio'};
+ const currentTab=()=>{const file=(location.pathname.split('/').pop()||'inicio.html').toLowerCase();return ({'inicio.html':'inicio','live.html':'live','salas.html':'salas','mensajes.html':'mensajes','yo.html':'yo','casa-demo.html':'inicio'})[file]||nav?.dataset.current||'inicio'};
  const syncNav=()=>{if(!nav)return;const current=currentTab();qsa('a',nav).forEach(a=>{a.classList.toggle('active',a.dataset.tab===current);qs('.active-fish',a)?.remove()});const active=qs('a.active',nav);if(active){const fish=document.createElement('img');fish.className='active-fish';fish.src='jemmo-fish-nav.webp';fish.alt='Pez JEMMO';active.append(fish)}};
  if(nav){syncNav();qsa('a',nav).forEach(a=>a.addEventListener('click',e=>{if(a.dataset.tab===currentTab()){e.preventDefault();return}e.preventDefault();navigate(a.href)}));addEventListener('pageshow',syncNav)}
 })();

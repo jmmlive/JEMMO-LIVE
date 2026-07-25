@@ -1,10 +1,11 @@
-/* JEMMO LIVE V1 · RECEPCIÓN INVITADA E INVITAR AMIGOS PRUEBA 11 */
-const CACHE = 'jemmo-live-v1-guest-receive-referrals-11-20260725';
+/* JEMMO LIVE V1 · CASAS Y REGALOS DE BATALLA PRUEBA 12 */
+const CACHE = 'jemmo-live-v1-houses-battle-gifts-12-20260725';
 const APP_SHELL = [
   './',
   './index.html',
   './acceso.html',
   './inicio.html',
+  './casa-demo.html',
   './directos.html',
   './live.html',
   './salas.html',
@@ -18,6 +19,8 @@ const APP_SHELL = [
   './directos.css',
   './jemmo.css',
   './app.js',
+  './jemmo-houses.js',
+  './jemmo-battle-gifts.js',
   './directos.js',
   './jemmo-session.js',
   './pwa-register.js',
@@ -56,6 +59,7 @@ const APP_SHELL = [
 
 const UNREAD_PAGES = new Set([
   '/inicio.html',
+  '/casa-demo.html',
   '/directos.html',
   '/live.html',
   '/salas.html',
@@ -109,25 +113,25 @@ async function injectJemmoScripts(response, url) {
   if (UNREAD_PAGES.has(page)) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="guest-receive-referrals-11"></script>'
+      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="houses-battle-gifts-12"></script>'
     );
   }
   if (page === '/mensajes.html' && !html.includes('jemmo-messages-realtime.js')) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="guest-receive-referrals-11"></script>'
+      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="houses-battle-gifts-12"></script>'
     );
   }
   if (['/yo.html','/mensajes.html','/chili-ia.html'].includes(page) && !html.includes('jemmo-social.js')) {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="guest-receive-referrals-11"></script>'
+      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="houses-battle-gifts-12"></script>'
     );
   }
   if (page === '/yo.html') {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="guest-receive-referrals-11"></script>'
+      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="houses-battle-gifts-12"></script>'
     );
   }
 
@@ -135,7 +139,7 @@ async function injectJemmoScripts(response, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-version', 'guest-receive-referrals-11');
+  headers.set('x-jemmo-version', 'houses-battle-gifts-12');
 
   return new Response(html, {
     status: response.status,

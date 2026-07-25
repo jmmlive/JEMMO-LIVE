@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-guest-receive-referrals-11';
+  const VERSION = 'pwa-houses-battle-gifts-12';
   let installPrompt = null;
 
   const isStandalone = () =>
