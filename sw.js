@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · SALAS RUTH Y TAREAS LIVE PRUEBA 08 */
-const CACHE = 'jemmo-live-v1-salas-ruth-tareas-live-08-20260725';
+/* JEMMO LIVE V1 · CHAT Y AUDIO SALAS RUTH PRUEBA 09 */
+const CACHE = 'jemmo-live-v1-chat-audio-ruth-09-20260725';
 const APP_SHELL = [
   './',
   './index.html',
@@ -108,25 +108,25 @@ async function injectJemmoScripts(response, url) {
   if (UNREAD_PAGES.has(page)) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="salas-ruth-tareas-live-08"></script>'
+      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="chat-audio-ruth-09"></script>'
     );
   }
   if (page === '/mensajes.html' && !html.includes('jemmo-messages-realtime.js')) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="salas-ruth-tareas-live-08"></script>'
+      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="chat-audio-ruth-09"></script>'
     );
   }
   if (['/yo.html','/mensajes.html','/chili-ia.html'].includes(page) && !html.includes('jemmo-social.js')) {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="salas-ruth-tareas-live-08"></script>'
+      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="chat-audio-ruth-09"></script>'
     );
   }
   if (page === '/yo.html') {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="salas-ruth-tareas-live-08"></script>'
+      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="chat-audio-ruth-09"></script>'
     );
   }
 
@@ -134,7 +134,7 @@ async function injectJemmoScripts(response, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-version', 'salas-ruth-tareas-live-08');
+  headers.set('x-jemmo-version', 'chat-audio-ruth-09');
 
   return new Response(html, {
     status: response.status,

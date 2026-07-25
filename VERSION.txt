@@ -1,46 +1,32 @@
-JEMMO LIVE V1 · SALAS RUTH Y TAREAS LIVE PRUEBA 08
+JEMMO LIVE V1 · CHAT Y AUDIO SALAS RUTH PRUEBA 09
 Fecha: 25/07/2026
 
 Base:
-- JEMMO LIVE V1 · DIRECTOS POR SEGUIDOS Y PAÍSES PRUEBA 07.
+- JEMMO LIVE V1 · SALAS RUTH Y TAREAS LIVE PRUEBA 08.
 
-Objetivo:
-- Activar una prueba real de Audio Room y Sala con cámara entre dos móviles, preparada para Jesús y Ruth.
-- Restaurar y mantener visibles las tareas durante un LIVE personal.
-- Quitar del LIVE personal cualquier tarjeta o mensaje que indique que el emisor está participando en una batalla.
+Incidencia confirmada en la prueba real:
+- Ruth podía abrir la invitación y aparecer como participante.
+- Los mensajes escritos por Jesús o Ruth solo se añadían al chat local de cada móvil y no se sincronizaban.
+- El audio remoto podía quedar bloqueado por la reproducción automática del móvil.
+- Al compartir la invitación y pasar temporalmente a otra aplicación, el evento `pagehide` podía cerrar la conexión y detener el micrófono o la cámara.
 
-SALAS · PRUEBA CON RUTH:
-- Audio Room solicita micrófono y transmite audio mediante WebRTC.
-- Sala con cámara solicita micrófono y cámara y transmite ambos mediante WebRTC.
-- La señalización de la prueba utiliza Firestore en `salasPruebaWebRTC`.
-- Al entrar como anfitrión se prepara una invitación temporal de dos horas.
-- El botón superior “INVITAR A RUTH” comparte o copia el enlace de acceso.
-- Ruth abre el enlace, acepta la invitación y entra desde su propia cuenta y móvil.
-- La silla 2 muestra “Esperando invitación” hasta que se establece la conexión.
-- Al conectar, se actualizan nombre, estado, audio y vídeo remoto.
-- El micrófono puede activarse o silenciarse desde Ajustes.
-- Si Firestore o WebRTC fallan, la sala permanece abierta en modo local de prueba y muestra el estado real.
-- Se mantiene la cámara sin espejo, regalos, cantidades, ALL, badges y protección contra doble cobro.
+Correcciones:
+- El chat de Audio Room y Sala con cámara se sincroniza en tiempo real mediante la subcolección `salasPruebaWebRTC/{roomId}/messages`.
+- Cada mensaje incluye remitente, texto, hora y UID; ambos móviles reciben el mismo mensaje.
+- El envío mantiene el texto si Firestore falla y muestra un aviso real, sin fingir que se entregó.
+- Se añade el botón visible `TOCA PARA ESCUCHAR` cuando Android o Chrome bloquean el audio remoto.
+- Al tocarlo se activa el elemento de audio con volumen completo y sin silencio.
+- El botón superior de conexión también reactiva el audio cuando la otra persona ya está conectada.
+- Se vigilan los estados mute, unmute y ended de la pista remota.
+- El micrófono local se fuerza habilitado y se marca con `contentHint=speech` cuando el navegador lo admite.
+- Se añaden servidores STUN adicionales de Cloudflare y Twilio para mejorar la negociación entre redes.
+- La sala ya no cierra WebRTC ni detiene los medios por un simple `pagehide` al usar Compartir o cambiar temporalmente de aplicación.
+- Al volver a JEMMO, si Android detuvo el micrófono o la cámara, se solicitan de nuevo y se reemplazan las pistas del enlace activo.
+- El estado `RUTH CONECTADA` ya no se utiliza por sí solo para fingir que existe audio: la interfaz espera la pista remota real.
 
-LIVE · TAREAS:
-- La tarjeta de tareas vuelve a mostrarse al comenzar cada ciclo diario de prueba.
-- Tarea 1 y Tarea 2 duran 60 segundos cada una para facilitar la validación móvil.
-- Al tocar la tarjeta se abre el detalle con progreso de ambas tareas.
-- Al completar las dos, la tarjeta permanece visible como “Tareas del LIVE completadas”.
-- Se incorpora “REINICIAR TAREAS DE PRUEBA” para repetir la validación sin esperar al día siguiente.
-- La persistencia queda separada por UID y día.
-
-LIVE · BATALLA ELIMINADA:
-- Se elimina la tarjeta de batalla del LIVE personal.
-- Se eliminan el panel, mensajes rotatorios y referencias visuales de batalla dentro del LIVE.
-- Las Batallas de Casas permanecen únicamente en Inicio y en sus módulos específicos.
-- Regalar dentro de un LIVE personal ya no presenta puntos de batalla.
-
-Archivos modificados o añadidos:
-- live.html
+Archivos modificados:
 - salas.html
 - jemmo-room-realtime.js
-- ruth-avatar-test.jpg
 - sw.js
 - manifest.webmanifest
 - pwa-register.js
@@ -48,11 +34,18 @@ Archivos modificados o añadidos:
 - INTEGRIDAD_SHA256.txt
 
 Actualización PWA:
-- Caché: `jemmo-live-v1-salas-ruth-tareas-live-08-20260725`.
-- La aplicación instalada se actualiza sin desinstalarse.
+- Caché: `jemmo-live-v1-chat-audio-ruth-09-20260725`.
+- La aplicación instalada se actualiza sin desinstalarla.
 
-Límites de esta prueba:
-- Es una conexión WebRTC directa entre dos participantes, no el servidor multimedia definitivo para salas masivas.
-- Depende de conectividad compatible con WebRTC; redes móviles con NAT restrictivo pueden requerir posteriormente un servidor TURN.
-- La colección de señalización y las reglas de Firestore deben endurecerse antes de producción.
-- No activa pagos reales ni verificación biométrica.
+Prueba móvil obligatoria:
+1. Jesús abre Audio Room y comparte la invitación.
+2. Ruth entra y concede permiso de micrófono.
+3. Ambos escriben un mensaje y comprueban que aparece en los dos móviles.
+4. Si aparece `TOCA PARA ESCUCHAR`, se pulsa una vez en cada móvil.
+5. Jesús y Ruth hablan alternativamente y verifican el audio en ambas direcciones.
+6. Repetir en Sala con cámara.
+
+Límite técnico:
+- Esta sigue siendo una prueba WebRTC directa entre dos móviles.
+- Las redes móviles con NAT especialmente restrictivo pueden requerir un servidor TURN propio; los servidores STUN no sustituyen TURN.
+- No es todavía la infraestructura de producción para salas masivas.

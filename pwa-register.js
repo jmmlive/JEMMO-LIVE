@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-salas-ruth-tareas-live-08';
+  const VERSION = 'pwa-chat-audio-ruth-09';
   let installPrompt = null;
 
   const isStandalone = () =>

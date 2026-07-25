@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · PRUEBA REAL AUDIO/CÁMARA CON RUTH 08
-   Señalización WebRTC de prueba mediante Firestore. No es infraestructura de producción. */
+/* JEMMO LIVE V1 · CHAT Y AUDIO REAL CON RUTH PRUEBA 09
+   Señalización WebRTC y chat de prueba mediante Firestore. No es infraestructura de producción. */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
 import {
@@ -29,7 +29,7 @@ const db = getFirestore(app);
 const ROOM_COLLECTION = 'salasPruebaWebRTC';
 const RTC_CONFIG = {
   iceServers: [
-    { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }
+    { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302', 'stun:stun.cloudflare.com:3478', 'stun:global.stun.twilio.com:3478'] }
   ],
   iceCandidatePoolSize: 6
 };
@@ -102,7 +102,43 @@ async function readProfile(user) {
   };
 }
 
-function makeSession({ role, roomId, roomRef, peer, remoteStream, unsubs, onStatus }) {
+
+function configureRoomChat({ roomRef, user, profile, unsubs, onMessage }) {
+  const seen = new Set();
+  const messagesRef = collection(roomRef, 'messages');
+  unsubs.push(onSnapshot(messagesRef, snapshot => {
+    const added = snapshot.docChanges()
+      .filter(change => change.type === 'added' && !seen.has(change.doc.id))
+      .map(change => {
+        seen.add(change.doc.id);
+        const data = change.doc.data() || {};
+        return {
+          id: change.doc.id,
+          senderUid: clean(data.senderUid, 128),
+          senderName: clean(data.senderName) || 'Usuario JEMMO',
+          text: clean(data.text, 160),
+          createdAtMs: Number(data.createdAtMs) || 0
+        };
+      })
+      .filter(message => message.text)
+      .sort((a, b) => a.createdAtMs - b.createdAtMs);
+    added.forEach(message => onMessage?.({ ...message, own: message.senderUid === user.uid }));
+  }, error => console.warn('JEMMO Room chat listener:', error)));
+
+  return async text => {
+    const value = clean(text, 160);
+    if (!value) throw new Error('Escribe un mensaje.');
+    await addDoc(messagesRef, {
+      senderUid: user.uid,
+      senderName: profile.name,
+      text: value,
+      createdAtMs: Date.now(),
+      createdAt: serverTimestamp()
+    });
+  };
+}
+
+function makeSession({ role, roomId, roomRef, peer, remoteStream, unsubs, onStatus, sendChatMessage }) {
   let closed = false;
   const close = async ({ endRoom = role === 'host' } = {}) => {
     if (closed) return;
@@ -130,6 +166,16 @@ function makeSession({ role, roomId, roomRef, peer, remoteStream, unsubs, onStat
     inviteUrl: new URL(`salas.html?join=${encodeURIComponent(roomId)}`, location.href).href,
     peer,
     remoteStream,
+    sendChatMessage,
+    async replaceLocalStream(stream) {
+      if (!(stream instanceof MediaStream)) return;
+      const byKind = new Map(stream.getTracks().map(track => [track.kind, track]));
+      await Promise.all(peer.getSenders().map(sender => {
+        const kind = sender.track?.kind;
+        const next = kind ? byKind.get(kind) : null;
+        return next ? sender.replaceTrack(next) : Promise.resolve();
+      }));
+    },
     close
   };
 }
@@ -166,6 +212,15 @@ function configurePeer({ peer, roomRef, ownCandidates, remoteCandidates, remoteS
     else if (state === 'connecting') onStatus?.({ state: 'connecting', text: 'Conectando audio y cámara…' });
     else if (['failed', 'disconnected'].includes(state)) onStatus?.({ state: 'warning', text: 'Conexión interrumpida' });
     else if (state === 'closed') onStatus?.({ state: 'closed', text: 'Sala desconectada' });
+  });
+  peer.addEventListener('iceconnectionstatechange', () => {
+    const state = peer.iceConnectionState;
+    if (state === 'checking') onStatus?.({ state: 'connecting', text: 'Comprobando la conexión…' });
+    else if (['connected', 'completed'].includes(state)) onStatus?.({ state: 'connected', text: 'Audio conectado' });
+    else if (state === 'failed') onStatus?.({ state: 'warning', text: 'La red bloqueó el audio directo' });
+  });
+  peer.addEventListener('icecandidateerror', event => {
+    console.warn('JEMMO Room ICE candidate error:', event.errorText || event.errorCode || event);
   });
   unsubs.push(onSnapshot(collection(roomRef, remoteCandidates), snapshot => {
     snapshot.docChanges().forEach(change => {
@@ -251,9 +306,12 @@ async function createHostSession(options = {}) {
       });
     }
   }, error => console.warn('JEMMO Room host snapshot:', error)));
+  const sendChatMessage = configureRoomChat({
+    roomRef, user, profile, unsubs, onMessage: options.onMessage
+  });
   options.onLocalProfile?.(profile);
   options.onStatus?.({ state: 'waiting', text: 'Esperando a Ruth' });
-  return makeSession({ role: 'host', roomId: id, roomRef, peer, remoteStream, unsubs, onStatus: options.onStatus });
+  return makeSession({ role: 'host', roomId: id, roomRef, peer, remoteStream, unsubs, onStatus: options.onStatus, sendChatMessage });
 }
 
 async function joinGuestSession(code, options = {}) {
@@ -300,14 +358,17 @@ async function joinGuestSession(code, options = {}) {
     const room = roomSnapshot.data() || {};
     if (room.status === 'ended') options.onStatus?.({ state: 'closed', text: 'El anfitrión finalizó la sala' });
   }, error => console.warn('JEMMO Room guest snapshot:', error)));
+  const sendChatMessage = configureRoomChat({
+    roomRef, user, profile, unsubs, onMessage: options.onMessage
+  });
   options.onLocalProfile?.(profile);
   options.onRemoteProfile?.({ name: preview.hostName, photo: preview.hostPhoto, verified: Boolean(data.hostVerified) });
   options.onStatus?.({ state: 'connecting', text: 'Entrando en la sala…' });
-  return makeSession({ role: 'guest', roomId: preview.roomId, roomRef, peer, remoteStream, unsubs, onStatus: options.onStatus });
+  return makeSession({ role: 'guest', roomId: preview.roomId, roomRef, peer, remoteStream, unsubs, onStatus: options.onStatus, sendChatMessage });
 }
 
 window.JemmoRoomRealtime = Object.freeze({
-  version: '1.0.0-test',
+  version: '1.1.0-test',
   getRoomPreview,
   createHostSession,
   joinGuestSession
