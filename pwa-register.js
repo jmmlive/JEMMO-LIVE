@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-critical-block-01';
+  const VERSION = 'pwa-mirror-gifts-02';
   let installPrompt = null;
 
   const isStandalone = () =>

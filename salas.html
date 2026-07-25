@@ -9,7 +9,7 @@
   <link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="favicon-64.png">
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <title>JEMMO LIVE · SALAS · CORRECCIÓN GLOBAL 01</title>
+  <title>JEMMO LIVE · SALAS · ESPEJO Y REGALOS 02</title>
   <style>html.jemmo-auth-pending body{visibility:hidden}</style>
   <style>
     :root{
@@ -76,7 +76,7 @@
     .jr-seat{isolation:isolate;position:relative;width:100%;height:100%;min-width:0;padding:4px 3px;border:1.5px solid #8f27b9;background:radial-gradient(circle at 50% 25%,#5a1b71,#24032e 66%);box-shadow:inset 0 0 18px #b83cff22,0 0 12px #9227ba22;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
     .jr-seat::before{content:"";position:absolute;z-index:-1;inset:7%;background:url('jemmo-fish-nav.webp') center/70% auto no-repeat;opacity:.34;filter:saturate(1.2) drop-shadow(0 0 9px #d14cff77);transform:rotate(-8deg)}
     .jr-seat>*{position:relative;z-index:1}
-    .jr-seat-video{position:absolute;z-index:0;inset:0;width:100%;height:100%;object-fit:cover;background:#08000b;transform:scaleX(1)!important;-webkit-transform:scaleX(1)!important}
+    .jr-seat-video{position:absolute;z-index:0;inset:0;width:100%;height:100%;object-fit:cover;background:#08000b;transform:scaleX(var(--jemmo-camera-scale,-1))!important;-webkit-transform:scaleX(var(--jemmo-camera-scale,-1))!important}
     .jr-seat.camera .jr-seat-video+.jr-seat-overlay{position:absolute;z-index:1;inset:auto 4px 4px;display:flex;justify-content:space-between;align-items:end;gap:4px}
     .jr-camera-error{position:absolute;z-index:2;inset:8px;display:grid;place-items:center;text-align:center;padding:8px;border-radius:14px;background:#16051dcc;color:#ffe1ea;font-size:10px;font-weight:900}
     .jr-seat.audio{width:100%;height:auto;max-height:100%;aspect-ratio:1;align-self:center;justify-self:center;border-radius:50%}.jr-seat.camera{width:100%;height:100%;border-radius:21%}
@@ -133,7 +133,12 @@
       .jr-room-head{padding-top:calc(7px + var(--safe-top));padding-bottom:6px}.jr-room-avatar{width:48px;height:48px}.jr-close{width:43px;height:43px}.jr-chat{height:112px}.jr-seats-wrap{padding-bottom:112px}.jr-controls{padding-top:6px;padding-bottom:calc(7px + var(--safe-bottom))}.jr-control-btn,.jr-compose{height:50px}
       .jr-room[data-count="4"]{--seat-w:min(31vw,132px);--seat-h:min(31vw,132px)}
     }
-  </style>
+  
+    /* BLOQUE 2: espejo real y catálogo completo */
+    .jr-setting.active{border-color:var(--gold);background:#332009}.jr-setting.active small{color:#ffe49b}
+    .jr-gifts-grid{max-height:205px;overflow:auto;padding-right:2px;grid-template-columns:repeat(4,1fr)}
+    .jr-gift{min-height:70px;border-radius:13px;padding:5px}.jr-gift span{font-size:22px}.jr-gift b{font-size:8px;line-height:1.05}.jr-gift small{font-size:7px}
+</style>
 </head>
 <body data-jemmo-wallet-native-gifts="true">
 <div class="jr-app" id="app">
@@ -229,6 +234,7 @@
 <section class="jr-sheet jr-hidden" id="settingsSheet" aria-label="Ajustes de sala">
   <header class="jr-sheet-head"><strong>Ajustes de la sala</strong><button class="jr-sheet-close" data-close type="button">×</button></header>
   <button class="jr-setting" type="button" data-action="micro"><span>🎙️</span><b>Micrófono<small>Activar o silenciar tu audio</small></b><i>›</i></button>
+  <button class="jr-setting" id="roomMirrorButton" type="button" data-action="mirror"><span>⇆</span><b>Espejo OFF<small>Imagen frontal corregida y sin reflejo</small></b><i>›</i></button>
   <button class="jr-setting" type="button" data-action="invite"><span>＋</span><b>Invitar personas<small>Compartir o enviar invitación</small></b><i>›</i></button>
   <button class="jr-setting" type="button" data-action="chat"><span>💬</span><b>Control del chat<small>Comentarios y usuarios bloqueados</small></b><i>›</i></button>
   <button class="jr-setting" type="button" data-action="minor"><span>🛡️</span><b>Posible menor<small>Proteger, registrar y solicitar revisión</small></b><i>›</i></button>
@@ -248,16 +254,11 @@
   <div class="jr-quantities" id="giftQuantities">
     <button class="jr-btn jr-quantity active" data-quantity="1" type="button">×1</button>
     <button class="jr-btn jr-quantity" data-quantity="10" type="button">×10</button>
-    <button class="jr-btn jr-quantity" data-quantity="20" type="button">×20</button>
+    <button class="jr-btn jr-quantity" data-quantity="15" type="button">×15</button>
     <button class="jr-btn jr-quantity" data-quantity="100" type="button">×100</button>
   </div>
   <div class="jr-gift-summary" id="giftSummary">Selecciona destinatarios y cantidad.</div>
-  <div class="jr-gifts-grid">
-    <button class="jr-gift" data-gift="🌹 Rosa" data-price="1" type="button"><span>🌹</span><b>Rosa</b><small>1 JEMMO</small></button>
-    <button class="jr-gift" data-gift="🚀 Cohete" data-price="100" type="button"><span>🚀</span><b>Cohete</b><small>100 JEMMOS</small></button>
-    <button class="jr-gift" data-gift="👑 Corona" data-price="500" type="button"><span>👑</span><b>Corona</b><small>500 JEMMOS</small></button>
-    <button class="jr-gift lucky" id="luckyGift" data-gift="🍀 Afortunados" data-price="50" type="button"><span>🍀</span><b>Afortunados<br><small>50 JEMMOS · dentro de Regalos</small></b></button>
-  </div>
+  <div class="jr-gifts-grid" id="roomGiftCatalog" aria-label="Catálogo de regalos"></div>
 </section>
 <div class="jr-toast" id="toast" role="status"></div>
 
@@ -283,7 +284,8 @@
     giftQuantity:1,
     giftBalance:0,
     giftTotals:new Map(),
-    giftSending:false
+    giftSending:false,
+    mirrorPreview:false
   };
   let toastTimer=0;
   let saveTimer=0;
@@ -306,7 +308,8 @@
       title:$('roomTitle').value,
       description:$('roomDescription').value,
       language:$('roomLanguage').value,
-      password:$('roomPassword').value
+      password:$('roomPassword').value,
+      mirrorPreview:state.mirrorPreview
     };
   }
 
@@ -339,6 +342,7 @@
       state.count=[4,8,12,15,25].includes(Number(data.count))?Number(data.count):4;
       if(state.mode==='camera'&&state.count===25)state.count=15;
       state.private=!!data.private;
+      state.mirrorPreview=Boolean(data.mirrorPreview);
       state.cover=data.cover||null;
       $('roomTitle').value=data.title||'';
       $('roomDescription').value=data.description||'';
@@ -384,6 +388,7 @@
     $('privateSwitch').classList.toggle('on',state.private);
     $('privateSwitch').setAttribute('aria-pressed',String(state.private));
     $('passwordField').classList.toggle('jr-hidden',!state.private);
+    updateRoomMirrorControl();
     validation();
   }
 
@@ -406,7 +411,7 @@
     ];
     demo.slice(0,Math.min(state.count,5)).forEach((person,index)=>state.occupants.set(index+1,person));
     state.selectedRecipients.clear();
-    state.selectedRecipients.add('all');
+    state.occupants.forEach((_,index)=>state.selectedRecipients.add(index));
   }
 
   function occupantFor(index){return state.occupants.get(index)||null}
@@ -447,8 +452,10 @@
         if(i===1){toast('Esta es la silla del anfitrión.');return}
         if(state.occupants.has(i)){
           state.occupants.delete(i);
+          state.giftTotals.delete(i);
           toast(`La persona de la silla ${i} bajó en esta prueba.`);
         }else{
+          state.giftTotals.delete(i);
           state.occupants.set(i,{name:`Invitado ${i}`,role:'En silla',photo:'jemmo-fish-nav.webp',host:false});
           toast(`Invitado ${i} subió a la silla.`);
         }
@@ -472,6 +479,28 @@
     box.textContent=message;
   }
 
+  function applyRoomMirror(){
+    const video=$('hostCameraVideo');
+    if(video)video.style.setProperty('--jemmo-camera-scale',String(state.mirrorPreview?1:-1));
+  }
+
+  function updateRoomMirrorControl(){
+    const button=$('roomMirrorButton');
+    if(!button)return;
+    const title=button.querySelector('b');
+    const small=button.querySelector('small');
+    if(title)title.childNodes[0].textContent=`Espejo ${state.mirrorPreview?'ON':'OFF'}`;
+    if(small)small.textContent=state.mode==='camera'?(state.mirrorPreview?'Vista reflejada activada':'Imagen frontal corregida y sin reflejo'):'Disponible en Sala con cámara';
+    button.classList.toggle('active',state.mirrorPreview);
+  }
+
+  function toggleRoomMirror(){
+    if(state.mode!=='camera'){toast('El control de espejo se usa en Sala con cámara.');return}
+    state.mirrorPreview=!state.mirrorPreview;
+    applyRoomMirror();updateRoomMirrorControl();void save();
+    toast(state.mirrorPreview?'Modo espejo activado.':'Modo espejo desactivado: imagen corregida.');
+  }
+
   async function startCamera(){
     stopCamera();
     if(state.mode!=='camera'||!roomOpen)return;
@@ -488,8 +517,7 @@
       state.stream=stream;
       const video=$('hostCameraVideo');
       if(video){
-        video.style.transform='scaleX(1)';
-        video.style.webkitTransform='scaleX(1)';
+        applyRoomMirror();
         video.srcObject=stream;
         await video.play().catch(()=>{});
       }
@@ -583,16 +611,14 @@
   }
 
   function selectedRecipientIndexes(){
-    const occupied=[...state.occupants.keys()];
-    if(state.selectedRecipients.has('all'))return occupied;
     return [...state.selectedRecipients].map(Number).filter(index=>state.occupants.has(index));
   }
 
   function recipientLabel(){
     const indexes=selectedRecipientIndexes();
-    if(state.selectedRecipients.has('all'))return`Todas (${indexes.length})`;
+    if(indexes.length&&indexes.length===state.occupants.size)return`ALL (${indexes.length})`;
     const names=indexes.map(index=>occupantFor(index)?.name).filter(Boolean);
-    return names.length?names.join(', '):'Selecciona una persona';
+    return names.length?names.join(', '):'Nadie seleccionado';
   }
 
   function formatCoins(value){return Number(value).toLocaleString('es-ES')}
@@ -624,13 +650,15 @@
     const container=$('giftRecipients');
     container.innerHTML='';
     const occupied=[...state.occupants.entries()];
+    [...state.selectedRecipients].forEach(index=>{if(!state.occupants.has(Number(index)))state.selectedRecipients.delete(index)});
+    const allSelected=occupied.length>0&&occupied.every(([index])=>state.selectedRecipients.has(index));
     const all=document.createElement('button');
     all.type='button';
-    all.className=`jr-btn jr-recipient all ${state.selectedRecipients.has('all')?'active':''}`;
+    all.className=`jr-btn jr-recipient all ${allSelected?'active':''}`;
     all.innerHTML='<span>ALL</span><b>Todas</b>';
     all.addEventListener('click',()=>{
       state.selectedRecipients.clear();
-      state.selectedRecipients.add('all');
+      if(!allSelected)occupied.forEach(([index])=>state.selectedRecipients.add(index));
       renderGiftRecipients();
     });
     container.append(all);
@@ -641,10 +669,8 @@
       btn.className=`jr-btn jr-recipient ${state.selectedRecipients.has(index)?'active':''}`;
       btn.innerHTML=`<img src="${person.photo}" alt=""><b>${person.name}</b>`;
       btn.addEventListener('click',()=>{
-        state.selectedRecipients.delete('all');
         if(state.selectedRecipients.has(index))state.selectedRecipients.delete(index);
         else state.selectedRecipients.add(index);
-        if(state.selectedRecipients.size===0)state.selectedRecipients.add('all');
         renderGiftRecipients();
       });
       container.append(btn);
@@ -711,8 +737,13 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
     release();
   }
 
+  const ROOM_GIFT_CATALOG=[{"icon":"👍","name":"Like","cost":1},{"icon":"🌹","name":"Rosa","cost":2},{"icon":"💜","name":"Corazón violeta","cost":3},{"icon":"⭐","name":"Estrella","cost":5},{"icon":"🔥","name":"Fuego","cost":8},{"icon":"🎈","name":"Globo","cost":10},{"icon":"🍀","name":"Trébol","cost":12},{"icon":"🌻","name":"Girasol","cost":15},{"icon":"🍓","name":"Fresa","cost":18},{"icon":"🍫","name":"Chocolate","cost":20},{"icon":"☕","name":"Café","cost":25},{"icon":"🎂","name":"Tarta","cost":30},{"icon":"🦋","name":"Mariposa","cost":35},{"icon":"🐬","name":"Delfín","cost":40},{"icon":"🐟","name":"Chicharro","cost":50},{"icon":"🦄","name":"Unicornio","cost":60},{"icon":"💎","name":"Diamante","cost":75},{"icon":"🎤","name":"Micrófono","cost":90},{"icon":"🚀","name":"Cohete","cost":100},{"icon":"👑","name":"Corona","cost":120},{"icon":"🏆","name":"Trofeo","cost":150},{"icon":"🌙","name":"Luna","cost":180},{"icon":"☀️","name":"Sol","cost":200},{"icon":"🌈","name":"Arcoíris","cost":220},{"icon":"🛥️","name":"Yate","cost":250},{"icon":"🏍️","name":"Moto","cost":280},{"icon":"🚗","name":"Coche","cost":300},{"icon":"✈️","name":"Avión","cost":350},{"icon":"🏝️","name":"Isla","cost":400},{"icon":"🗼","name":"Torre","cost":450},{"icon":"🏰","name":"Castillo","cost":500},{"icon":"🐉","name":"Dragón","cost":600},{"icon":"🦁","name":"León","cost":700},{"icon":"🐯","name":"Tigre","cost":800},{"icon":"🦅","name":"Águila","cost":900},{"icon":"🌊","name":"Ola JEMMO","cost":1000},{"icon":"⚡","name":"Rayo","cost":1200},{"icon":"🎆","name":"Fuegos","cost":1500},{"icon":"🌌","name":"Galaxia","cost":1800},{"icon":"🪐","name":"Planeta","cost":2000},{"icon":"🚁","name":"Helicóptero","cost":2500},{"icon":"⛵","name":"Velero","cost":3000},{"icon":"🏎️","name":"Supercoche","cost":3500},{"icon":"💍","name":"Anillo","cost":4000},{"icon":"🛸","name":"Nave espacial","cost":5000},{"icon":"🐳","name":"Ballena","cost":6000},{"icon":"🗿","name":"Guardián","cost":7000},{"icon":"🎡","name":"Parque","cost":8000},{"icon":"🌋","name":"Volcán","cost":9000},{"icon":"👸","name":"Reina JEMMO","cost":10000},{"icon":"🤴","name":"Rey JEMMO","cost":12000},{"icon":"🏯","name":"Palacio","cost":15000},{"icon":"🌍","name":"Mundo JEMMO","cost":20000},{"icon":"✨","name":"Universo","cost":25000}];
+  function renderRoomGiftCatalog(){
+    $('roomGiftCatalog').innerHTML=ROOM_GIFT_CATALOG.map(gift=>`<button class="jr-gift" data-gift="${gift.icon} ${gift.name}" data-price="${gift.cost}" type="button"><span>${gift.icon}</span><b>${gift.name}</b><small>${gift.cost.toLocaleString('es-ES')} J</small></button>`).join('');
+  }
+  renderRoomGiftCatalog();
   renderPreparation();
-  void restore().then(renderPreparation);
+  void restore().then(()=>{renderPreparation();updateRoomMirrorControl()});
 
   document.querySelectorAll('.jr-mode').forEach(btn=>btn.addEventListener('click',()=>{
     state.mode=btn.dataset.mode;
@@ -786,9 +817,7 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
     updateGiftPanel();
   }));
 
-  document.querySelectorAll('[data-gift]:not(#luckyGift)').forEach(btn=>btn.addEventListener('click',()=>sendGift(btn.dataset.gift,Number(btn.dataset.price)||0)));
-
-  $('luckyGift').addEventListener('click',()=>sendGift($('luckyGift').dataset.gift,Number($('luckyGift').dataset.price)||0));
+  $('roomGiftCatalog').addEventListener('click',event=>{const btn=event.target.closest('[data-gift]');if(btn)sendGift(btn.dataset.gift,Number(btn.dataset.price)||0)});
 
   $('rechargeButton').addEventListener('click',event=>{
     event.preventDefault();
@@ -805,7 +834,9 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
 
   document.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>{
     const action=btn.dataset.action;
-    if(action==='minor'){
+    if(action==='mirror'){
+      toggleRoomMirror();
+    }else if(action==='minor'){
       toast('Posible menor: protección activada y caso preparado para revisión.');
     }else if(action==='close'){
       closeSheets();

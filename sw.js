@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · BLOQUE 1 CRÍTICO PRUEBA 01 */
-const CACHE = 'jemmo-live-v1-bloque-1-critico-01-20260725';
+/* JEMMO LIVE V1 · CORRECCIÓN ESPEJO Y REGALOS PRUEBA 02 */
+const CACHE = 'jemmo-live-v1-espejo-regalos-02-20260725';
 const APP_SHELL = [
   './',
   './index.html',

@@ -1,28 +1,30 @@
-JEMMO LIVE V1 · BLOQUE 1 CRÍTICO PRUEBA 01
+JEMMO LIVE V1 · CORRECCIÓN ESPEJO Y REGALOS PRUEBA 02
 Fecha: 25/07/2026
 
-Base verificada:
-- JEMMO LIVE V1 · INSTALABLE PWA MÓVIL PRUEBA 05.
-- Archivo de origen: JEMMO-LIVE-main (10).zip.
-- JEMMO LIVE ya estaba instalada como aplicación PWA en el móvil de Jesús.
+Base:
+- JEMMO LIVE V1 · BLOQUE 1 CRÍTICO PRUEBA 01.
+- Aplicación PWA ya instalada en el móvil de Jesús.
 
-Alcance estricto:
-- No se modifica Inicio.
-- No se modifica Perfil.
-- No se modifica Mensajes.
-- No se modifican distribuciones visuales de LIVE ni Salas.
+Incidencias móviles corregidas:
+1. La cámara frontal seguía mostrando la vista reflejada aunque el código usaba scaleX(1).
+2. El estado del espejo no se podía cambiar ni conservar de forma visible.
+3. LIVE no tenía selector de cantidad ni selector real de destinatarios.
+4. Salas mostraba ×20 en lugar de ×15.
+5. El botón ALL de Salas no permitía deseleccionar a todas las personas.
+6. Los catálogos de regalos eran incompletos.
 
-Correcciones críticas:
-1. Conversión JEMMOS → CRISTALES a razón exacta de 1:1 y sin comisión.
-2. Se elimina de la interfaz el cambio inverso CRISTALES → JEMMOS para impedir arbitraje económico.
-3. Portada, título, descripción y ajustes de preparación de LIVE se guardan por usuario en IndexedDB, con respaldo local/sessionStorage.
-4. Portada, título, descripción y ajustes de preparación de Salas usan el mismo esquema duradero por usuario.
-5. Los borradores parciales se guardan automáticamente aunque todavía no estén completos.
-6. LIVE registra el gasto real mediante JemmoWallet antes de mostrar el regalo como enviado.
-7. LIVE y Salas bloquean doble toque mientras una operación está en curso.
-8. El monedero incorpora idempotencia temporal persistida para impedir doble cobro repetido.
-9. La cámara frontal mantiene visualización natural sin espejo forzado en LIVE y Salas.
-10. Nueva caché PWA para que la aplicación instalada reciba la actualización sin desinstalarse.
+Correcciones:
+- LIVE y Sala con cámara usan compensación real para la cámara frontal: ESPEJO OFF aplica la imagen corregida y ESPEJO ON permite recuperar la vista reflejada.
+- El ajuste ESPEJO OFF/ON queda guardado por UID junto con la preparación de LIVE o Salas.
+- El ajuste se aplica en preparación, transmisión principal, cámara secundaria y Sala con cámara.
+- LIVE incorpora destinatarios compactos, avatares redondos, ALL seleccionable/deseleccionable y selección individual.
+- LIVE y Salas incorporan cantidades ×1, ×10, ×15 y ×100.
+- Confirmación obligatoria antes de descontar JEMMOS, mostrando destino, cantidad y coste total.
+- Badges de regalos acumulados en las sillas.
+- Catálogo ampliado a 54 regalos en LIVE y Salas, comenzando por Like.
+- Saldo y botón RECARGAR visibles dentro de ambas cajas.
+- Se conserva el bloqueo de doble toque, la idempotencia y el modo económico de pruebas.
+- Nueva caché PWA para actualizar la aplicación instalada sin desinstalarla.
 
 Archivos del ZIP incremental:
 - INTEGRIDAD_SHA256.txt
@@ -30,11 +32,9 @@ Archivos del ZIP incremental:
 - manifest.webmanifest
 - pwa-register.js
 - sw.js
-- jemmo-wallet.js
-- jemmo-prep-storage.js
 - live.html
 - salas.html
 
-Modo económico:
-- Continúa en MODO DE PRUEBAS.
-- No se activan pagos ni cobros reales.
+No incluido en esta entrega:
+- No se modifican Inicio, Perfil ni Mensajes.
+- No se activan cobros ni pagos reales.
