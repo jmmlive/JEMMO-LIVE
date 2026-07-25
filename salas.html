@@ -290,6 +290,7 @@
   let toastTimer=0;
   let saveTimer=0;
   let roomOpen=false;
+  let suppressRoomLeaveOnSheetPop=false;
 
   function toast(message){
     const el=$('toast');
@@ -596,9 +597,18 @@
   }
 
   function closeSheets(useHistory=true){
-    const hadSheet=Boolean(history.state?.jemmoRoomSheet||document.querySelector('.jr-sheet:not(.jr-hidden)'));
+    const hasHistorySheet=Boolean(history.state?.jemmoRoomSheet);
+    if(useHistory&&hasHistorySheet){
+      suppressRoomLeaveOnSheetPop=true;
+      history.back();
+      return;
+    }
     hideSheets();
-    if(useHistory&&hadSheet&&history.state?.jemmoRoomSheet)history.back();
+    if(hasHistorySheet){
+      const cleanState={...(history.state||{})};
+      delete cleanState.jemmoRoomSheet;
+      history.replaceState(cleanState,'');
+    }
   }
 
   function addChat(text,kind=''){
@@ -817,7 +827,14 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
     updateGiftPanel();
   }));
 
-  $('roomGiftCatalog').addEventListener('click',event=>{const btn=event.target.closest('[data-gift]');if(btn)sendGift(btn.dataset.gift,Number(btn.dataset.price)||0)});
+  $('roomGiftCatalog').addEventListener('click',event=>{
+    const btn=event.target.closest('[data-gift]');
+    if(!btn)return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    sendGift(btn.dataset.gift,Number(btn.dataset.price)||0);
+  },true);
 
   $('rechargeButton').addEventListener('click',event=>{
     event.preventDefault();
@@ -847,6 +864,11 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   }));
 
   window.addEventListener('popstate',()=>{
+    if(suppressRoomLeaveOnSheetPop){
+      suppressRoomLeaveOnSheetPop=false;
+      hideSheets();
+      return;
+    }
     if(document.querySelector('.jr-sheet:not(.jr-hidden)')){hideSheets();return}
     if(roomOpen)leaveRoom(false,false);
   });

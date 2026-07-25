@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · CORRECCIÓN ESPEJO Y REGALOS PRUEBA 02 */
-const CACHE = 'jemmo-live-v1-espejo-regalos-02-20260725';
+/* JEMMO LIVE V1 · CORRECCIÓN ENVÍO REGALOS AUDIO ROOM PRUEBA 03 */
+const CACHE = 'jemmo-live-v1-audio-room-regalos-03-20260725';
 const APP_SHELL = [
   './',
   './index.html',

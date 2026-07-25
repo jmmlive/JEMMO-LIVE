@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-mirror-gifts-02';
+  const VERSION = 'pwa-audio-room-gifts-03';
   let installPrompt = null;
 
   const isStandalone = () =>

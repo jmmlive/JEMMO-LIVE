@@ -1,29 +1,22 @@
-JEMMO LIVE V1 · CORRECCIÓN ESPEJO Y REGALOS PRUEBA 02
+JEMMO LIVE V1 · CORRECCIÓN ENVÍO REGALOS AUDIO ROOM PRUEBA 03
 Fecha: 25/07/2026
 
 Base:
-- JEMMO LIVE V1 · BLOQUE 1 CRÍTICO PRUEBA 01.
-- Aplicación PWA ya instalada en el móvil de Jesús.
+- JEMMO LIVE V1 · CORRECCIÓN ESPEJO Y REGALOS PRUEBA 02.
+- Validada en móvil por Jesús: espejo, persistencia, destinatarios y cantidades correctos.
 
-Incidencias móviles corregidas:
-1. La cámara frontal seguía mostrando la vista reflejada aunque el código usaba scaleX(1).
-2. El estado del espejo no se podía cambiar ni conservar de forma visible.
-3. LIVE no tenía selector de cantidad ni selector real de destinatarios.
-4. Salas mostraba ×20 en lugar de ×15.
-5. El botón ALL de Salas no permitía deseleccionar a todas las personas.
-6. Los catálogos de regalos eran incompletos.
+Incidencia móvil corregida:
+- Después de confirmar un regalo dentro de Audio Room, la caja se cerraba mediante history.back().
+- El evento popstate interpretaba ese retroceso como una orden para abandonar la sala.
+- El resultado visible era el cierre del Audio Room justo después de enviar el regalo.
 
-Correcciones:
-- LIVE y Sala con cámara usan compensación real para la cámara frontal: ESPEJO OFF aplica la imagen corregida y ESPEJO ON permite recuperar la vista reflejada.
-- El ajuste ESPEJO OFF/ON queda guardado por UID junto con la preparación de LIVE o Salas.
-- El ajuste se aplica en preparación, transmisión principal, cámara secundaria y Sala con cámara.
-- LIVE incorpora destinatarios compactos, avatares redondos, ALL seleccionable/deseleccionable y selección individual.
-- LIVE y Salas incorporan cantidades ×1, ×10, ×15 y ×100.
-- Confirmación obligatoria antes de descontar JEMMOS, mostrando destino, cantidad y coste total.
-- Badges de regalos acumulados en las sillas.
-- Catálogo ampliado a 54 regalos en LIVE y Salas, comenzando por Like.
-- Saldo y botón RECARGAR visibles dentro de ambas cajas.
-- Se conserva el bloqueo de doble toque, la idempotencia y el modo económico de pruebas.
+Corrección:
+- El cierre programático de una caja usa una marca específica para consumir únicamente el retroceso de la caja.
+- popstate ya no ejecuta leaveRoom cuando el retroceso corresponde al panel de Regalos o Ajustes.
+- El clic sobre un regalo se aísla con preventDefault, stopPropagation y stopImmediatePropagation.
+- Tras enviar un regalo, el Audio Room permanece abierto, el chat registra el envío y los badges/saldo se actualizan.
+- También queda protegido el cierre de cajas mediante X, fondo y botón atrás sin cerrar accidentalmente la sala.
+- Se conservan espejo OFF/ON, ×1/×10/×15/×100, ALL, selección individual, confirmación, badges, idempotencia y modo de pruebas.
 - Nueva caché PWA para actualizar la aplicación instalada sin desinstalarla.
 
 Archivos del ZIP incremental:
@@ -32,9 +25,8 @@ Archivos del ZIP incremental:
 - manifest.webmanifest
 - pwa-register.js
 - sw.js
-- live.html
 - salas.html
 
 No incluido en esta entrega:
-- No se modifican Inicio, Perfil ni Mensajes.
-- No se activan cobros ni pagos reales.
+- No se modifica LIVE, Inicio, Perfil ni Mensajes.
+- No se activan pagos, cobros ni retiros reales.
