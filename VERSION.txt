@@ -1,72 +1,59 @@
-JEMMO LIVE V1 · CHILI IA FUNDACIÓN PRUEBA 01
+JEMMO LIVE V1 · CHILI IA IMAGEN Y VÍDEOS PRUEBA 02
 Fecha: 25/07/2026
 
-Base técnica:
-- JEMMO LIVE V1 · ID PÚBLICA Y SEGURIDAD PRUEBA 08.
-- PRUEBA 08 permanece pendiente de validación completa con Ruth; esta entrega no modifica su lógica de identidad, mensajes ni reglas Firestore.
+Base:
+- JEMMO LIVE V1 · CHILI IA FUNDACIÓN PRUEBA 01 instalada y visible en móvil.
+- Mantiene la arquitectura de ID pública y seguridad de PRUEBA 08 sin modificar sus reglas Firestore.
 
 Objetivo:
-- Crear la página propia de Chili IA e integrarla desde Inicio antes de que el proyecto crezca y resulte más costoso añadirla a toda la navegación.
-- Establecer una arquitectura visual, funcional y segura para convertirla en el centro oficial de ayuda, formación, incidencias y asistencia inteligente de JEMMO LIVE.
+- Sustituir la identidad visual provisional de Chili por las fotografías oficiales entregadas por Jesús.
+- Integrar los tres vídeos oficiales dentro de la propia página, con reproducción móvil y carga bajo demanda.
 
-Página Chili IA:
-- Nueva ruta chili-ia.html.
-- Cuenta oficial verificada y estado visible.
-- Cabecera, presentación, chat, accesos rápidos, academia, vídeos, estado de conocimiento, ayuda gratuita/VIP y regalos de prueba.
-- Diseño móvil premium coherente con JEMMO LIVE.
-- Navegación inferior conservada y regreso directo a Inicio.
+Identidad visual:
+- Avatar oficial de Chili en la barra superior, cabecera, chat y tarjeta de Inicio.
+- Cabecera panorámica premium con fotografía oficial, nombre, cuenta verificada, estado en línea y acceso directo a la presentación.
+- Galería oficial con cuatro fotografías optimizadas para móvil.
+- La mascota JEMMO continúa como identidad general de la aplicación, pero deja de representar visualmente a Chili.
 
-Conocimiento inicial:
-- Nueva biblioteca jemmo-chili-knowledge.js con información revisada sobre LIVE, Salas, perfiles, ID JEMMO, mensajes, monedero, Casas, acceso, seguridad, roles y límites de Chili.
-- Búsqueda local por intención y palabras clave.
-- Respuestas con botones directos a las pantallas relacionadas.
-- La biblioteca no aprende automáticamente de conversaciones privadas.
-- Las preguntas sin respuesta se reconocen como pendientes de revisión, sin inventar información.
+Vídeos:
+- Presentación principal: Conoce a Chili IA.
+- Segundo vídeo: Chili presenta JEMMO LIVE.
+- De los tres archivos MP4 recibidos, dos eran copias binarias idénticas. La copia repetida no se muestra dos veces para evitar contenido duplicado.
+- Los vídeos se reproducen en un visor propio dentro de JEMMO LIVE.
+- Se cargan únicamente después de pulsar reproducir; no forman parte de la precarga del service worker.
+- Formato MP4 H.264/AAC, 1280 × 720, duración aproximada de 10 segundos cada uno y optimización fast-start.
 
-Chat funcional:
-- Preguntas escritas y accesos rápidos.
-- Dictado por voz cuando el navegador lo admite.
-- Historial por usuario almacenado primero en IndexedDB y con respaldo de sesión.
-- Limpieza del historial local.
-- Valoración útil/no útil para preparar futuras revisiones.
-- Alturas automáticas, teclado móvil y controles accesibles.
+PWA y rendimiento:
+- Fotografías convertidas a WebP y carteles de vídeo optimizados.
+- Fotografías y carteles incluidos en el app shell.
+- Archivos MP4 excluidos de la caché automática para evitar llenar el almacenamiento del móvil.
+- Nueva caché jemmo-live-v1-chili-ia-media-02-20260725.
+- Nuevo start_url y nueva clave de recarga del service worker.
 
-Multimedia:
-- Tres espacios preparados para la fotografía y los vídeos oficiales de Chili.
-- Los medios se incorporarán cuando Jesús entregue los archivos, sin rehacer la página.
-
-Integración en Inicio:
-- Tarjeta premium “Habla con Chili IA” después de Batalla Oficial.
-- Acceso Chili IA dentro del menú lateral.
-- Ayuda y soporte dirige a Chili IA.
-- El buscador de funciones reconoce Chili, IA, ayuda, academia, vídeos y soporte.
-
-Seguridad y arquitectura futura:
-- Esta entrega no expone ninguna clave de proveedor de IA en el navegador.
-- El chat actual usa conocimiento local revisado.
-- La conexión generativa futura deberá pasar por un servicio seguro con autenticación, límites, App Check, control de costes, registro de errores y fuentes revisadas.
-- La ayuda esencial, seguridad, normas y recuperación de cuenta seguirán siendo gratuitas.
-
-PWA:
-- Nueva caché jemmo-live-v1-chili-ia-fundacion-01-20260725.
-- chili-ia.html, chili-ia.css, jemmo-chili.js y jemmo-chili-knowledge.js añadidos al app shell.
-- Nuevo start_url para forzar actualización de la instalación.
-
-Archivos del ZIP incremental:
-- INTEGRIDAD_SHA256.txt
-- VERSION.txt
+Archivos actualizados:
 - chili-ia.html
 - chili-ia.css
 - jemmo-chili.js
-- jemmo-chili-knowledge.js
 - inicio.html
-- app.js
 - manifest.webmanifest
 - pwa-register.js
 - sw.js
+- VERSION.txt
+- INTEGRIDAD_SHA256.txt
+
+Recursos nuevos:
+- media/chili/chili-avatar.webp
+- media/chili/chili-hero.webp
+- media/chili/chili-galeria-retrato.webp
+- media/chili/chili-galeria-cuerpo.webp
+- media/chili/chili-galeria-estudio.webp
+- media/chili/chili-galeria-oficial.webp
+- media/chili/chili-presentacion-poster.webp
+- media/chili/chili-presentacion.mp4
+- media/chili/chili-primeros-pasos-poster.webp
+- media/chili/chili-primeros-pasos.mp4
 
 Estado:
-- Código preparado y validado estáticamente.
-- Pendiente de instalación y prueba visual real en móvil.
-- Fotografía y vídeos oficiales pendientes de entrega por Jesús.
-- Motor generativo remoto pendiente de diseño y conexión segura.
+- Código y recursos preparados.
+- Pendiente de instalar en Comby y validar visualmente en el móvil de Jesús.
+- La inteligencia generativa remota todavía no está conectada; se mantiene la base de conocimiento local revisada.

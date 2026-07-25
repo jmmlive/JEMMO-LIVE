@@ -12,3 +12,63 @@ button:focus-visible,a:focus-visible,textarea:focus-visible{outline:3px solid #6
 @media(max-width:560px){.chili-shell{padding-left:8px;padding-right:8px}.hero-card{grid-template-columns:82px 1fr;padding:16px;gap:12px}.hero-avatar{width:78px;height:78px;border-radius:25px}.hero-copy>p:not(.eyebrow){font-size:12px}.trust-row span{font-size:8.5px}.chat-card,.help-section,.media-section,.plans-section{padding:14px}.help-grid{grid-template-columns:1fr 1fr}.help-tile{min-height:124px}.status-card{grid-template-columns:42px 1fr}.status-card button{grid-column:1/-1}.plans-grid{grid-template-columns:1fr}.gift-card{grid-template-columns:1fr}.gift-card button{width:100%}.top-identity small{font-size:9.5px}}
 @media(max-width:350px){.hero-card{grid-template-columns:1fr;text-align:center}.hero-avatar{margin:auto}.trust-row{justify-content:center}.help-grid{grid-template-columns:1fr}.media-rail{grid-auto-columns:86%}.composer{grid-template-columns:38px 1fr 40px}.composer-tool,.send-button{width:38px;height:38px}.top-identity .mini-avatar{display:none}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+
+/* JEMMO LIVE V1 · CHILI IA IMAGEN Y VÍDEOS PRUEBA 02 */
+.hero-card.hero-official{min-height:328px;display:block;padding:0;border-color:rgba(216,76,255,.72);background:#09010d;isolation:isolate}
+.hero-cover{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:-3}
+.hero-shade{position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,rgba(5,0,9,.96) 0%,rgba(8,1,13,.91) 38%,rgba(8,1,13,.38) 68%,rgba(8,1,13,.22) 100%),linear-gradient(0deg,rgba(4,0,7,.83),transparent 45%)}
+.official-copy{width:min(57%,430px);min-height:328px;display:flex;flex-direction:column;justify-content:center;padding:30px 24px;text-shadow:0 2px 16px #000}
+.official-copy h1{font-size:clamp(32px,6vw,47px)}
+.official-copy>p:not(.eyebrow){font-size:14px;color:#f0e6f3;max-width:390px}
+.hero-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px}
+.hero-play{min-height:44px;padding:9px 14px;border:1px solid #ffd85e;border-radius:14px;background:linear-gradient(90deg,#ffd75d,#ff78a8,#d54cff);color:#230422;font-weight:950;box-shadow:0 0 20px rgba(223,67,255,.26)}
+.hero-play span{font-size:12px;margin-right:4px}
+.hero-online{display:flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid #315b45;border-radius:999px;background:#07170fbd;color:#a9f5c9;font-size:9px;font-weight:900;letter-spacing:.5px}
+.hero-online i{width:8px;height:8px;border-radius:50%;background:#28df78;box-shadow:0 0 9px #28df78}
+.available-pill{align-self:center;border:1px solid #2f7b58;border-radius:999px;color:#aef0ca;background:#07170f;padding:6px 9px;font-size:9px;font-weight:900}
+.official-media,.gallery-section{padding:18px;border:1px solid rgba(119,38,141,.66);border-radius:24px;background:linear-gradient(180deg,rgba(23,6,30,.96),rgba(7,1,10,.98));box-shadow:0 18px 55px rgba(0,0,0,.25);margin:12px 0}
+.official-video-card{width:100%;padding:0;text-align:left;border:1px solid #552066;border-radius:18px;background:#0b0210;color:#fff;overflow:hidden;box-shadow:0 9px 26px rgba(0,0,0,.22)}
+.featured-video{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(145px,.75fr);align-items:stretch;margin-top:14px}
+.video-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px}.secondary-video{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(145px,.65fr)}.secondary-video .video-copy{justify-content:center}
+.video-thumb{position:relative;display:block;aspect-ratio:16/9;overflow:hidden;background:#09010c}
+.video-thumb img{width:100%;height:100%;display:block;object-fit:cover;transition:transform .25s ease}
+.official-video-card:hover .video-thumb img{transform:scale(1.025)}
+.video-overlay{position:absolute;inset:0;background:linear-gradient(0deg,rgba(3,0,5,.76),transparent 62%)}
+.video-play{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:50%;display:grid;place-items:center;padding-left:3px;background:rgba(255,255,255,.92);color:#300936;font-size:20px;box-shadow:0 0 24px rgba(255,255,255,.54)}
+.video-thumb small{position:absolute;right:8px;bottom:7px;padding:4px 6px;border-radius:7px;background:#030005d9;color:#fff;font-size:9px;font-weight:900}
+.video-copy{display:flex;flex-direction:column;padding:12px}
+.video-copy strong{font-size:15px;line-height:1.2}
+.video-copy em{margin-top:4px;color:#b9a6c0;font-size:10px;font-style:normal;line-height:1.35}
+.video-copy u{margin-top:auto;padding-top:13px;color:#ffd658;font-size:9px;font-weight:950;text-decoration:none;letter-spacing:.9px}
+.featured-video .video-copy{justify-content:center}
+.featured-video .video-copy strong{font-size:20px}
+.chili-gallery{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(190px,43%);gap:10px;overflow-x:auto;padding:14px 1px 5px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.chili-gallery::-webkit-scrollbar{display:none}
+.chili-gallery figure{position:relative;scroll-snap-align:start;aspect-ratio:4/5;margin:0;border:1px solid #582069;border-radius:19px;overflow:hidden;background:#0a010d}
+.chili-gallery img{width:100%;height:100%;object-fit:cover;display:block}
+.chili-gallery figcaption{position:absolute;left:8px;right:8px;bottom:8px;padding:8px 9px;border:1px solid rgba(255,255,255,.12);border-radius:11px;background:rgba(6,1,9,.78);backdrop-filter:blur(8px);font-size:10px;font-weight:850;color:#fff}
+.video-modal{position:fixed;inset:0;z-index:150;display:grid;place-items:center;padding:14px;background:#020003ee;backdrop-filter:blur(9px)}
+.video-modal[hidden]{display:none}
+.video-modal-card{position:relative;width:min(100%,780px);border:1px solid #8c36a4;border-radius:24px;background:linear-gradient(180deg,#1d0625,#07010a);padding:18px;box-shadow:0 28px 90px #000}
+.video-modal-close{position:absolute;z-index:2;right:9px;top:8px;width:40px;height:40px;border:0;border-radius:50%;background:#351040;color:#fff;font-size:27px}
+.video-modal-head{padding:0 42px 12px 2px}.video-modal-head h2{margin:0;font-size:22px}.video-modal-head>p:last-child{margin:6px 0 0;color:#b9a8bf;font-size:11px;line-height:1.4}
+.video-modal video{display:block;width:100%;aspect-ratio:16/9;border-radius:16px;background:#000;box-shadow:0 0 0 1px #481656}
+.top-identity .mini-avatar img,.message-avatar img{object-position:center;transform:none}
+@media(max-width:560px){
+  .hero-card.hero-official{min-height:350px}
+  .hero-cover{object-position:center}
+  .hero-shade{background:linear-gradient(90deg,rgba(5,0,9,.97) 0%,rgba(8,1,13,.86) 50%,rgba(8,1,13,.28) 100%),linear-gradient(0deg,rgba(4,0,7,.91),transparent 55%)}
+  .official-copy{width:63%;min-height:350px;padding:22px 15px}
+  .official-copy h1{font-size:31px}
+  .official-copy>p:not(.eyebrow){font-size:11.5px;line-height:1.4}
+  .hero-actions{gap:7px}.hero-play{min-height:40px;padding:7px 10px;font-size:9px}.hero-online{font-size:8px;padding:7px 8px}
+  .trust-row span{font-size:7.8px;padding:5px 7px}
+  .official-media,.gallery-section{padding:14px}
+  .featured-video{grid-template-columns:1fr}.featured-video .video-copy{padding:11px}.featured-video .video-copy strong{font-size:16px}.featured-video .video-copy u{padding-top:6px}
+  .video-grid{grid-template-columns:1fr;gap:8px}.secondary-video{grid-template-columns:1fr}.secondary-video .video-copy{padding:11px}.video-copy{padding:9px}.video-copy strong{font-size:12px}.video-copy em{font-size:8.5px}
+  .video-play{width:43px;height:43px;font-size:16px}
+  .chili-gallery{grid-auto-columns:58%}
+  .video-modal{padding:8px}.video-modal-card{padding:12px;border-radius:20px}.video-modal-head h2{font-size:18px}
+}
+@media(max-width:360px){.official-copy{width:68%}.official-copy h1{font-size:27px}.video-grid{grid-template-columns:1fr}.chili-gallery{grid-auto-columns:72%}}

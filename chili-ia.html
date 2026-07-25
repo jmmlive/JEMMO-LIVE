@@ -30,23 +30,24 @@
   <header class="chili-topbar">
     <button class="icon-button" id="chiliBack" type="button" aria-label="Volver a Inicio">‹</button>
     <div class="top-identity">
-      <span class="mini-avatar"><img src="jemmo-fish-nav.webp" alt=""></span>
+      <span class="mini-avatar"><img src="media/chili/chili-avatar.webp" alt=""></span>
       <div><strong>Chili IA <b class="verified">✓</b></strong><small><i></i> Asistente oficial JEMMO</small></div>
     </div>
     <button class="icon-button" id="chiliShare" type="button" aria-label="Compartir Chili IA">↗</button>
   </header>
 
   <main class="chili-shell">
-    <section class="hero-card" aria-labelledby="chiliTitle">
-      <div class="hero-glow" aria-hidden="true"></div>
-      <div class="hero-avatar" role="img" aria-label="Avatar provisional de Chili IA">
-        <img src="jemmo-fish-nav.webp" alt="Chili IA, asistente oficial de JEMMO LIVE">
-        <span class="online-dot"></span>
-      </div>
-      <div class="hero-copy">
+    <section class="hero-card hero-official" aria-labelledby="chiliTitle">
+      <img class="hero-cover" src="media/chili/chili-hero.webp" alt="" fetchpriority="high">
+      <div class="hero-shade" aria-hidden="true"></div>
+      <div class="hero-copy official-copy">
         <p class="eyebrow">CUENTA OFICIAL · VERIFICADA</p>
-        <h1 id="chiliTitle">Hola, soy <span>Chili IA</span></h1>
-        <p>Tu guía dentro de JEMMO LIVE. Te ayudo a encontrar funciones, resolver problemas y aprender a usar la aplicación con seguridad.</p>
+        <h1 id="chiliTitle">Hola, soy<br><span>Chili IA</span></h1>
+        <p>Tu asistente oficial dentro de JEMMO LIVE. Te ayudo a aprender, crear, compartir y resolver problemas con seguridad.</p>
+        <div class="hero-actions">
+          <button class="hero-play" type="button" data-media-slot="presentacion"><span>▶</span> VER PRESENTACIÓN</button>
+          <span class="hero-online"><i></i> EN LÍNEA</span>
+        </div>
         <div class="trust-row" aria-label="Características de Chili IA">
           <span>✓ Ayuda esencial gratis</span><span>✓ Privacidad protegida</span><span>PRUEBAS</span>
         </div>
@@ -66,7 +67,7 @@
 
       <div class="chat-log" id="chiliChatLog" role="log" aria-live="polite" aria-relevant="additions">
         <article class="message assistant welcome-message">
-          <div class="message-avatar"><img src="jemmo-fish-nav.webp" alt=""></div>
+          <div class="message-avatar"><img src="media/chili/chili-avatar.webp" alt=""></div>
           <div class="bubble">
             <strong>Chili IA</strong>
             <p id="welcomeText">Estoy preparada para ayudarte. Elige una opción o escribe tu pregunta.</p>
@@ -101,23 +102,29 @@
       </div>
     </section>
 
-    <section class="media-section" aria-labelledby="mediaTitle">
-      <div class="section-heading"><div><p class="eyebrow">ACADEMIA Y VÍDEOS</p><h2 id="mediaTitle">Centro Chili</h2></div><span class="pending-pill">MEDIOS PENDIENTES</span></div>
-      <div class="media-rail" id="mediaRail">
-        <button class="video-card featured" type="button" data-media-slot="presentacion">
-          <div class="video-art"><span class="play">▶</span><i>01</i></div>
-          <strong>Conoce a Chili IA</strong><small>Vídeo oficial de presentación</small>
-        </button>
-        <button class="video-card" type="button" data-media-slot="primeros-pasos">
-          <div class="video-art alt"><span class="play">▶</span><i>02</i></div>
-          <strong>Primeros pasos</strong><small>Cuenta, perfil e ID JEMMO</small>
-        </button>
-        <button class="video-card" type="button" data-media-slot="live-seguro">
-          <div class="video-art warm"><span class="play">▶</span><i>03</i></div>
-          <strong>Transmitir con seguridad</strong><small>LIVE, salas y normas</small>
+    <section class="media-section official-media" aria-labelledby="mediaTitle">
+      <div class="section-heading"><div><p class="eyebrow">ACADEMIA Y VÍDEOS</p><h2 id="mediaTitle">Conoce a Chili</h2></div><span class="available-pill">2 VÍDEOS</span></div>
+      <button class="official-video-card featured-video" type="button" data-media-slot="presentacion" aria-label="Reproducir Conoce a Chili IA">
+        <span class="video-thumb"><img src="media/chili/chili-presentacion-poster.webp" alt="Chili IA presentándose en el estudio de JEMMO LIVE" loading="lazy"><i class="video-overlay"></i><b class="video-play">▶</b><small>00:10</small></span>
+        <span class="video-copy"><strong>Conoce a Chili IA</strong><em>Presentación oficial</em><u>REPRODUCIR</u></span>
+      </button>
+      <div class="video-grid">
+        <button class="official-video-card secondary-video" type="button" data-media-slot="primeros-pasos" aria-label="Reproducir Chili presenta JEMMO LIVE">
+          <span class="video-thumb"><img src="media/chili/chili-primeros-pasos-poster.webp" alt="Chili presentando JEMMO LIVE" loading="lazy"><i class="video-overlay"></i><b class="video-play">▶</b><small>00:10</small></span>
+          <span class="video-copy"><strong>Chili presenta JEMMO LIVE</strong><em>Mensaje oficial desde su estudio</em><u>REPRODUCIR</u></span>
         </button>
       </div>
-      <p class="media-note">Los espacios están preparados para incorporar la fotografía y los vídeos oficiales de Chili sin rehacer la página.</p>
+      <p class="media-note">Los vídeos se cargan únicamente al reproducirlos para mantener rápida la aplicación.</p>
+    </section>
+
+    <section class="gallery-section" aria-labelledby="galleryTitle">
+      <div class="section-heading"><div><p class="eyebrow">IDENTIDAD OFICIAL</p><h2 id="galleryTitle">Chili dentro de JEMMO</h2></div></div>
+      <div class="chili-gallery" aria-label="Galería oficial de Chili IA">
+        <figure><img src="media/chili/chili-galeria-retrato.webp" alt="Retrato oficial de Chili IA" loading="lazy"><figcaption>Asistente oficial</figcaption></figure>
+        <figure><img src="media/chili/chili-galeria-cuerpo.webp" alt="Chili IA en el estudio de JEMMO LIVE" loading="lazy"><figcaption>Identidad JEMMO</figcaption></figure>
+        <figure><img src="media/chili/chili-galeria-estudio.webp" alt="Chili IA presentando JEMMO LIVE desde su estudio" loading="lazy"><figcaption>Centro de ayuda</figcaption></figure>
+        <figure><img src="media/chili/chili-galeria-oficial.webp" alt="Chili IA con la mascota y la marca JEMMO LIVE" loading="lazy"><figcaption>Cuenta verificada</figcaption></figure>
+      </div>
     </section>
 
     <section class="status-card" aria-labelledby="statusTitle">
@@ -147,6 +154,14 @@
     <a data-tab="mensajes" href="mensajes.html"><span class="nav-icon">◌</span><b>Mensajes</b></a>
     <a data-tab="yo" href="yo.html"><span class="nav-icon">♙</span><b>Yo</b></a>
   </nav>
+
+  <div class="video-modal" id="videoModal" hidden>
+    <div class="video-modal-card" role="dialog" aria-modal="true" aria-labelledby="videoModalTitle">
+      <button class="video-modal-close" id="videoModalClose" type="button" aria-label="Cerrar vídeo">×</button>
+      <div class="video-modal-head"><p class="eyebrow">VÍDEO OFICIAL · CHILI IA</p><h2 id="videoModalTitle">Conoce a Chili IA</h2><p id="videoModalText"></p></div>
+      <video id="chiliVideo" controls playsinline preload="none" controlslist="nodownload" disablepictureinpicture></video>
+    </div>
+  </div>
 
   <div class="chili-modal" id="chiliModal" hidden>
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">

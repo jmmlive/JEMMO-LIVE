@@ -2,9 +2,9 @@
   "id": "./",
   "name": "JEMMO LIVE",
   "short_name": "JEMMO LIVE",
-  "description": "JEMMO LIVE: transmisiones, salas, comunidad y Chili IA, asistente oficial de ayuda.",
+  "description": "JEMMO LIVE: transmisiones, salas, comunidad y Chili IA con presentación y academia en vídeo.",
   "lang": "es",
-  "start_url": "./index.html?source=pwa-chili-ia-fundacion-01",
+  "start_url": "./index.html?source=pwa-chili-ia-imagen-videos-02",
   "scope": "./",
   "display": "standalone",
   "display_override": [

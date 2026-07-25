@@ -92,7 +92,7 @@
   });
 
   if ('serviceWorker' in navigator && location.protocol !== 'file:') {
-    const reloadKey = 'jemmo_sw_reloaded_chili_ia_01';
+    const reloadKey = 'jemmo_sw_reloaded_chili_media_02';
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       try {
         if (sessionStorage.getItem(reloadKey) === '1') return;

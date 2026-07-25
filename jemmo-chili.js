@@ -8,6 +8,12 @@ const input = $('#chiliInput');
 const send = $('#sendButton');
 const toast = $('#chiliToast');
 const modal = $('#chiliModal');
+const videoModal = $('#videoModal');
+const videoPlayer = $('#chiliVideo');
+const MEDIA = {
+  presentacion:{title:'Conoce a Chili IA',text:'Presentación oficial de la asistente de JEMMO LIVE.',src:'media/chili/chili-presentacion.mp4',poster:'media/chili/chili-presentacion-poster.webp'},
+  'primeros-pasos':{title:'Chili presenta JEMMO LIVE',text:'Mensaje oficial de Chili desde su estudio dentro de JEMMO LIVE.',src:'media/chili/chili-primeros-pasos.mp4',poster:'media/chili/chili-primeros-pasos-poster.webp'}
+};
 const HISTORY_KEY = 'conversation-v1';
 let currentUid = 'guest';
 let speechRecognition = null;
@@ -37,6 +43,16 @@ function showModal(title,text,symbol='✦'){
   $('#modalOk').focus();
 }
 function closeModal(){ modal.hidden=true; }
+function openVideo(slot){
+  const item=MEDIA[slot]; if(!item) return;
+  $('#videoModalTitle').textContent=item.title; $('#videoModalText').textContent=item.text;
+  videoPlayer.poster=item.poster; videoPlayer.src=item.src; videoModal.hidden=false;
+  videoPlayer.load(); videoPlayer.play().catch(()=>{});
+  $('#videoModalClose').focus();
+}
+function closeVideo(){
+  videoPlayer.pause(); videoPlayer.removeAttribute('src'); videoPlayer.load(); videoModal.hidden=true;
+}
 
 function openDb(){
   return new Promise((resolve,reject)=>{
@@ -81,7 +97,7 @@ function createMessage(role,text,options={}){
   const article=document.createElement('article'); article.className=`message ${role}`;
   if(role==='assistant'){
     const avatar=document.createElement('div'); avatar.className='message-avatar';
-    const image=document.createElement('img'); image.src='jemmo-fish-nav.webp'; image.alt=''; avatar.append(image); article.append(avatar);
+    const image=document.createElement('img'); image.src='media/chili/chili-avatar.webp'; image.alt=''; avatar.append(image); article.append(avatar);
   }
   const bubble=document.createElement('div'); bubble.className='bubble';
   const label=document.createElement('strong'); label.textContent=role==='assistant'?'Chili IA':'Tú'; bubble.append(label);
@@ -121,8 +137,10 @@ $('#chiliShare').addEventListener('click',async()=>{
   try{ if(navigator.share){await navigator.share(data);return;} await navigator.clipboard.writeText(location.href); showToast('Enlace de Chili copiado'); }catch(error){ if(error?.name!=='AbortError') showToast('No se pudo compartir'); }
 });
 $('#giftButton').addEventListener('click',()=>showModal('Regalos en modo de pruebas','Todavía no generan ingresos reales. Esta función se activará únicamente cuando JEMMO LIVE pase a producción con autorización expresa.','🎁'));
-$$('[data-media-slot]').forEach(button=>button.addEventListener('click',()=>showModal('Espacio multimedia preparado','Aquí se incorporará el vídeo oficial correspondiente cuando se entreguen los archivos de Chili. La estructura ya está lista y no requiere rehacer la página.','▶')));
+$$('[data-media-slot]').forEach(button=>button.addEventListener('click',()=>openVideo(button.dataset.mediaSlot)));
+$('#videoModalClose').addEventListener('click',closeVideo); videoModal.addEventListener('click',event=>{if(event.target===videoModal)closeVideo();});
 $('#modalClose').addEventListener('click',closeModal); $('#modalOk').addEventListener('click',closeModal); modal.addEventListener('click',event=>{if(event.target===modal)closeModal();});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'){if(!videoModal.hidden)closeVideo();else if(!modal.hidden)closeModal();}});
 
 function setupVoice(){
   const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
