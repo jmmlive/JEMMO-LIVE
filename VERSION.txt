@@ -1,32 +1,41 @@
-JEMMO LIVE V1 · CHAT Y AUDIO SALAS RUTH PRUEBA 09
+JEMMO LIVE V1 · CONEXIÓN BIDIRECCIONAL E INVITACIONES DE EMISOR PRUEBA 10
 Fecha: 25/07/2026
 
 Base:
-- JEMMO LIVE V1 · SALAS RUTH Y TAREAS LIVE PRUEBA 08.
+- JEMMO LIVE V1 · CHAT Y AUDIO SALAS RUTH PRUEBA 09.
 
 Incidencia confirmada en la prueba real:
-- Ruth podía abrir la invitación y aparecer como participante.
-- Los mensajes escritos por Jesús o Ruth solo se añadían al chat local de cada móvil y no se sincronizaban.
-- El audio remoto podía quedar bloqueado por la reproducción automática del móvil.
-- Al compartir la invitación y pasar temporalmente a otra aplicación, el evento `pagehide` podía cerrar la conexión y detener el micrófono o la cámara.
+- Jesús podía ver y escuchar a Ruth correctamente.
+- Ruth aparecía conectada, pero no recibía la cámara ni el micrófono de Jesús.
+- La conexión WebRTC era unidireccional después de compartir la invitación y regresar a JEMMO.
+- Faltaba la función de invitación pagada desde el perfil público del emisor.
 
-Correcciones:
-- El chat de Audio Room y Sala con cámara se sincroniza en tiempo real mediante la subcolección `salasPruebaWebRTC/{roomId}/messages`.
-- Cada mensaje incluye remitente, texto, hora y UID; ambos móviles reciben el mismo mensaje.
-- El envío mantiene el texto si Firestore falla y muestra un aviso real, sin fingir que se entregó.
-- Se añade el botón visible `TOCA PARA ESCUCHAR` cuando Android o Chrome bloquean el audio remoto.
-- Al tocarlo se activa el elemento de audio con volumen completo y sin silencio.
-- El botón superior de conexión también reactiva el audio cuando la otra persona ya está conectada.
-- Se vigilan los estados mute, unmute y ended de la pista remota.
-- El micrófono local se fuerza habilitado y se marca con `contentHint=speech` cuando el navegador lo admite.
-- Se añaden servidores STUN adicionales de Cloudflare y Twilio para mejorar la negociación entre redes.
-- La sala ya no cierra WebRTC ni detiene los medios por un simple `pagehide` al usar Compartir o cambiar temporalmente de aplicación.
-- Al volver a JEMMO, si Android detuvo el micrófono o la cámara, se solicitan de nuevo y se reemplazan las pistas del enlace activo.
-- El estado `RUTH CONECTADA` ya no se utiliza por sí solo para fingir que existe audio: la interfaz espera la pista remota real.
+Corrección de audio y vídeo en ambos sentidos:
+- El anfitrión y la invitada usan transceptores WebRTC `sendrecv` explícitos.
+- Después de la primera respuesta se realiza una segunda negociación para confirmar que las pistas activas del anfitrión llegan al móvil invitado.
+- La invitada comprueba si recibió audio y, en Sala con cámara, también vídeo.
+- Si falta alguna pista, solicita automáticamente una renegociación al anfitrión.
+- El anfitrión recupera micrófono y cámara al regresar desde Compartir, WhatsApp u otra aplicación y reemplaza las pistas dentro de la conexión activa.
+- Se reintenta también con `visibilitychange`, `focus`, `pageshow` y mediante el botón superior de conexión.
+- La invitada puede tocar el botón superior para pedir manualmente de nuevo el audio y la cámara del anfitrión.
+- Se conservan el chat compartido, el botón TOCA PARA ESCUCHAR, regalos, sillas, espejo y tareas LIVE.
+
+Invitaciones desde el perfil del emisor:
+- En Editar perfil se añade la opción Aceptar invitaciones y un campo de tarifa en JEMMOS.
+- JEMMO no inventa una tarifa: cada emisor configura la suya.
+- Cuando la tarifa está activa, el perfil público completo muestra un botón compacto INVITAR A UNA SALA con el precio.
+- La persona elige Audio Room o Sala con cámara y confirma el coste antes de continuar.
+- El importe se descuenta una sola vez mediante JemmoWallet y queda registrado como Invitación de emisor en modo de pruebas.
+- Se crea un registro en Firestore `invitacionesEmisor` y se abre Salas con el emisor, modalidad y solicitud ya preparados.
+- Si Firestore no puede registrar la invitación, los JEMMOS se devuelven automáticamente.
+- La sala relaciona el código WebRTC con la solicitud pagada y marca la invitación como aceptada cuando la persona invitada entra.
 
 Archivos modificados:
 - salas.html
 - jemmo-room-realtime.js
+- perfil-publico.html
+- yo.html
+- jemmo-cloud-profile.js
 - sw.js
 - manifest.webmanifest
 - pwa-register.js
@@ -34,18 +43,20 @@ Archivos modificados:
 - INTEGRIDAD_SHA256.txt
 
 Actualización PWA:
-- Caché: `jemmo-live-v1-chat-audio-ruth-09-20260725`.
+- Caché: `jemmo-live-v1-bidirectional-invites-10-20260725`.
 - La aplicación instalada se actualiza sin desinstalarla.
 
 Prueba móvil obligatoria:
-1. Jesús abre Audio Room y comparte la invitación.
-2. Ruth entra y concede permiso de micrófono.
-3. Ambos escriben un mensaje y comprueban que aparece en los dos móviles.
-4. Si aparece `TOCA PARA ESCUCHAR`, se pulsa una vez en cada móvil.
-5. Jesús y Ruth hablan alternativamente y verifican el audio en ambas direcciones.
-6. Repetir en Sala con cámara.
+1. Ruth abre Yo > Editar perfil, activa Aceptar invitaciones, establece una tarifa de prueba y guarda.
+2. Jesús abre el perfil completo de Ruth y comprueba el botón INVITAR A UNA SALA con la tarifa.
+3. Jesús elige Audio Room o Sala con cámara, confirma el cobro y prepara la invitación.
+4. Ruth entra desde el enlace y concede permisos.
+5. Ambos deben verse y escucharse en las dos direcciones.
+6. Si un lado no recibe medios, toca el botón superior de conexión para forzar la recuperación.
+7. Verificar que la tarifa se descuenta una sola vez.
 
-Límite técnico:
-- Esta sigue siendo una prueba WebRTC directa entre dos móviles.
-- Las redes móviles con NAT especialmente restrictivo pueden requerir un servidor TURN propio; los servidores STUN no sustituyen TURN.
+Límites técnicos:
+- La economía continúa en MODO DE PRUEBAS.
+- WebRTC sigue siendo una conexión directa entre dos móviles; ciertas redes pueden requerir un servidor TURN.
+- La tarifa de invitación se procesa con el monedero local de pruebas y no sustituye la futura economía atómica en servidor.
 - No es todavía la infraestructura de producción para salas masivas.

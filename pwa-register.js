@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-chat-audio-ruth-09';
+  const VERSION = 'pwa-bidirectional-invites-10';
   let installPrompt = null;
 
   const isStandalone = () =>

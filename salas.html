@@ -9,7 +9,7 @@
   <link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="favicon-64.png">
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <title>JEMMO LIVE · SALAS · CHAT Y AUDIO CON RUTH 09</title>
+  <title>JEMMO LIVE · SALAS · CONEXIÓN BIDIRECCIONAL 10</title>
   <style>html.jemmo-auth-pending body{visibility:hidden}</style>
   <style>
     :root{
@@ -297,6 +297,16 @@
   const activeUid=()=>{try{return String(window.__jemmoAuthenticatedUid||localStorage.getItem('jemmo_active_uid')||sessionStorage.getItem('jemmo_active_uid')||'local-user')}catch{return 'local-user'}};
   const storageKey=()=>`salas:${activeUid()}`;
   const previousStorageKeys=()=>[`jemmo_v1_salas_prueba_06_${activeUid()}`,`jemmo_v1_salas_prueba_05_${activeUid()}`,'jemmo_v1_salas_prueba_05','jemmo_v1_salas_prueba_04'];
+  const launchParams=new URLSearchParams(location.search);
+  const paidInvite={
+    targetUid:String(launchParams.get('inviteTarget')||''),
+    targetName:String(launchParams.get('inviteName')||'').trim(),
+    mode:launchParams.get('inviteMode')==='camera'?'camera':'audio',
+    requestId:String(launchParams.get('inviteRequest')||''),
+    operationId:String(launchParams.get('inviteOperation')||'')
+  };
+  const hasPaidInvite=Boolean(paidInvite.targetUid&&paidInvite.requestId);
+
   const state={
     mode:'audio',
     count:4,
@@ -312,7 +322,7 @@
     mirrorPreview:false,
     realtimeSession:null,
     remoteStream:null,
-    remoteName:'Ruth',
+    remoteName:paidInvite.targetName||'Ruth',
     remotePhoto:'ruth-avatar-test.jpg',
     remoteConnected:false,
     ownName:'Jesús',
@@ -321,6 +331,9 @@
     localSeat:1,
     remoteSeat:2,
     inviteMeta:null,
+    paidInviteTargetUid:paidInvite.targetUid,
+    paidInviteRequestId:paidInvite.requestId,
+    paidInviteOperationId:paidInvite.operationId,
     micEnabled:true,
     remoteAudioBlocked:false,
     remoteAudioPlaying:false,
@@ -330,6 +343,9 @@
   let saveTimer=0;
   let roomOpen=false;
   let suppressRoomLeaveOnSheetPop=false;
+  let hiddenAt=0;
+  let mediaRecoveryBusy=false;
+  let lastMediaRecoveryAt=0;
 
   function toast(message){
     const el=$('toast');
@@ -393,6 +409,16 @@
         $('roomAvatar').src=state.cover;
       }
     }catch(e){console.warn('No se pudo recuperar la configuración.',e)}
+  }
+
+  function applyPaidInvitePreset(){
+    if(!hasPaidInvite)return;
+    state.mode=paidInvite.mode;
+    if(state.mode==='camera'&&state.count===25)state.count=15;
+    state.remoteName=paidInvite.targetName||state.remoteName||'Emisor';
+    if(!$('roomTitle').value.trim())$('roomTitle').value=`Sala con ${state.remoteName}`;
+    if(!$('roomDescription').value.trim())$('roomDescription').value=`Invitación privada para ${state.remoteName} desde su perfil de emisor.`;
+    updateRoomConnection('waiting',`INVITAR A ${state.remoteName.toUpperCase()}`);
   }
 
   function setValidity(id,ok){
@@ -701,18 +727,18 @@
     defaultOccupants();
     renderSeats();
     renderGiftRecipients();
-    updateRoomConnection('connected',state.isGuest?'CONECTADA CON JESÚS':'RUTH CONECTADA');
+    updateRoomConnection('connected',state.isGuest?'CONECTADA CON JESÚS':`${(state.remoteName||'RUTH').toUpperCase()} CONECTADA`);
     void playRemoteAudio(false);
     if(firstConnection)addChat(`JEMMO: ${state.remoteName||'Ruth'} se conectó con audio${state.mode==='camera'?' y cámara':''}.`,'system');
   }
 
   function handleRealtimeStatus(detail={}){
     if(detail.state==='connected'){
-      updateRoomConnection('connected',state.isGuest?'CONECTADA CON JESÚS':'RUTH CONECTADA');
+      updateRoomConnection('connected',state.isGuest?'CONECTADA CON JESÚS':`${(state.remoteName||'RUTH').toUpperCase()} CONECTADA`);
     }else if(detail.state==='warning'||detail.state==='closed'){
       updateRoomConnection('warning',detail.state==='closed'?'SALA DESCONECTADA':'REVISAR CONEXIÓN');
     }else{
-      updateRoomConnection('waiting',state.isGuest?'CONECTANDO…':'INVITAR A RUTH');
+      updateRoomConnection('waiting',state.isGuest?'CONECTANDO…':`INVITAR A ${(state.remoteName||'RUTH').toUpperCase()}`);
     }
   }
 
@@ -723,24 +749,26 @@
     const api=await waitRealtimeApi();
     state.realtimeSession=await api.createHostSession({
       mode:state.mode,count:state.count,title:$('roomTitle').value.trim(),description:$('roomDescription').value.trim(),localStream:stream,
+      inviteRequestId:state.paidInviteRequestId,invitedTargetUid:state.paidInviteTargetUid,
+      onOutgoingMediaNeeded:()=>recoverLocalMedia(true),
       onRemoteStream:handleRemoteStream,onRemoteProfile:handleRemoteProfile,onLocalProfile:profile=>{state.ownName=profile.name||state.ownName;state.ownPhoto=profile.photo||state.ownPhoto},onStatus:handleRealtimeStatus,onMessage:handleRoomMessage
     });
-    updateRoomConnection('waiting','INVITAR A RUTH');
+    updateRoomConnection('waiting',`INVITAR A ${(state.remoteName||'RUTH').toUpperCase()}`);
     return state.realtimeSession;
   }
 
   async function shareRoomInvite(){
     try{
       const session=await startRealtimeHost();
-      const text=`Únete a mi ${state.mode==='camera'?'Sala con cámara':'Audio Room'} en JEMMO LIVE`;
+      const text=`${state.remoteName||'Te'}: únete a mi ${state.mode==='camera'?'Sala con cámara':'Audio Room'} en JEMMO LIVE`;
       if(navigator.share){
         await navigator.share({title:'Invitación JEMMO LIVE',text,url:session.inviteUrl});
-        toast('Invitación preparada para Ruth.');
+        toast(`Invitación preparada para ${state.remoteName||'la persona'}.`);
       }else if(navigator.clipboard?.writeText){
         await navigator.clipboard.writeText(session.inviteUrl);
-        toast('Enlace copiado. Envíalo a Ruth.');
+        toast(`Enlace copiado. Envíalo a ${state.remoteName||'la persona'}.`);
       }else{
-        prompt('Copia este enlace y envíalo a Ruth:',session.inviteUrl);
+        prompt(`Copia este enlace y envíalo a ${state.remoteName||'la persona'}:`,session.inviteUrl);
       }
     }catch(error){
       if(error?.name==='AbortError')return;
@@ -769,8 +797,8 @@
     state.isGuest=false;
     state.localSeat=1;
     state.remoteSeat=2;
-    state.remoteName='Ruth';
-    state.remotePhoto='ruth-avatar-test.jpg';
+    state.remoteName=paidInvite.targetName||state.remoteName||'Ruth';
+    state.remotePhoto=state.remotePhoto||'ruth-avatar-test.jpg';
     state.remoteConnected=false;
     const title=$('roomTitle').value.trim();
     save();
@@ -786,12 +814,12 @@
     document.body.style.overflow='hidden';
     roomOpen=true;
     if(!history.state?.jemmoRoom)history.pushState({...(history.state||{}),jemmoRoom:true},'');
-    updateRoomConnection('waiting','PREPARANDO INVITACIÓN');
+    updateRoomConnection('waiting',`PREPARANDO INVITACIÓN PARA ${(state.remoteName||'RUTH').toUpperCase()}`);
     const stream=await startCamera();
     if(!stream){updateRoomConnection('warning','SIN AUDIO/CÁMARA');return}
     try{
       await startRealtimeHost();
-      addChat('JEMMO: Sala de prueba activada. Pulsa INVITAR A RUTH para compartir el enlace.','system');
+      addChat(`JEMMO: Sala de prueba activada. Pulsa INVITAR A ${(state.remoteName||'RUTH').toUpperCase()} para compartir el enlace.`,'system');
     }catch(error){
       console.warn('Inicio de sala en tiempo real:',error);
       updateRoomConnection('warning','PRUEBA LOCAL');
@@ -1046,7 +1074,7 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   }
   renderRoomGiftCatalog();
   renderPreparation();
-  void restore().then(()=>{renderPreparation();updateRoomMirrorControl();void prepareIncomingInvite()});
+  void restore().then(()=>{applyPaidInvitePreset();renderPreparation();updateRoomMirrorControl();void prepareIncomingInvite()});
 
   document.querySelectorAll('.jr-mode').forEach(btn=>btn.addEventListener('click',()=>{
     state.mode=btn.dataset.mode;
@@ -1182,9 +1210,34 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
     }
   }));
 
+  async function recoverLocalMedia(force=false){
+    if(!roomOpen||mediaRecoveryBusy)return false;
+    const tracks=state.stream?.getTracks?.()||[];
+    const unhealthy=!tracks.length||tracks.some(track=>track.readyState!=='live'||track.muted||!track.enabled);
+    if(!force&&!unhealthy&&Date.now()-lastMediaRecoveryAt<2500)return true;
+    mediaRecoveryBusy=true;
+    try{
+      const stream=await startCamera();
+      if(!stream)return false;
+      if(state.realtimeSession?.replaceLocalStream)await state.realtimeSession.replaceLocalStream(stream);
+      lastMediaRecoveryAt=Date.now();
+      toast('Tu micrófono y cámara se están enviando de nuevo.');
+      return true;
+    }catch(error){
+      console.warn('Recuperar audio/cámara local:',error);
+      toast('No se pudo reactivar tu micrófono o cámara.');
+      return false;
+    }finally{mediaRecoveryBusy=false}
+  }
+
   $('roomConnectionButton').addEventListener('click',()=>{
-    if(state.remoteConnected){void playRemoteAudio(true);return}
-    if(state.isGuest){toast('Conectando con el anfitrión…');return}
+    if(state.remoteConnected){void recoverLocalMedia(true);void playRemoteAudio(true);return}
+    if(state.isGuest){
+      void recoverLocalMedia(true);
+      void state.realtimeSession?.requestRenegotiation?.('toque-manual-invitada');
+      toast('Solicitando de nuevo el audio y la cámara del anfitrión…');
+      return;
+    }
     void shareRoomInvite();
   });
   $('acceptRoomInvite').addEventListener('click',()=>{if(state.inviteMeta)void joinIncomingRoom(state.inviteMeta)});
@@ -1200,18 +1253,16 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
     if(roomOpen)leaveRoom(false,false);
   });
 
-  document.addEventListener('visibilitychange',async()=>{
-    if(document.hidden)return;
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden){hiddenAt=Date.now();return}
     if(!roomOpen)return;
-    const hasLiveTrack=state.stream?.getTracks?.().some(track=>track.readyState==='live');
-    if(!hasLiveTrack){
-      const stream=await startCamera();
-      if(stream&&state.realtimeSession?.replaceLocalStream){
-        try{await state.realtimeSession.replaceLocalStream(stream);toast('Micrófono y cámara reactivados.')}catch(error){console.warn('Reactivar medios:',error)}
-      }
-    }
+    const awayFor=hiddenAt?Date.now()-hiddenAt:0;
+    hiddenAt=0;
+    void recoverLocalMedia(awayFor>700);
     if(state.remoteStream)void playRemoteAudio(false);
   });
+  window.addEventListener('focus',()=>{if(roomOpen)void recoverLocalMedia(false)});
+  window.addEventListener('pageshow',()=>{if(roomOpen)void recoverLocalMedia(true)});
 
   window.addEventListener('pagehide',()=>{void save()});
   window.addEventListener('beforeunload',stopCamera);
