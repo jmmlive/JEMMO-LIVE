@@ -1,5 +1,5 @@
 /* JEMMO LIVE V1 · PERFIL PÚBLICO NATURAL PRUEBA 05 */
-const CACHE = 'jemmo-live-v1-public-profile-natural-05-20260725';
+const CACHE = 'jemmo-live-v1-inicio-batalla-live-06-20260725';
 const APP_SHELL = [
   './',
   './index.html',
@@ -128,7 +128,7 @@ async function injectJemmoScripts(response, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-version', 'perfil-publico-natural-05');
+  headers.set('x-jemmo-version', 'inicio-batalla-live-06');
 
   return new Response(html, {
     status: response.status,

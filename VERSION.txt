@@ -1,50 +1,37 @@
-JEMMO LIVE V1 · PERFIL PÚBLICO NATURAL PRUEBA 05
+JEMMO LIVE V1 · INICIO BATALLA Y LIVE PRUEBA 06
 Fecha: 25/07/2026
 
 Base:
-- JEMMO LIVE V1 · PERFIL COMPLETO Y REGALOS EN MENSAJES PRUEBA 04.
-- Validación móvil de Jesús: regalos en Mensajes funcionan, pero la presentación del perfil público anterior resultaba recargada y poco natural.
+- JEMMO LIVE V1 · PERFIL PÚBLICO NATURAL PRUEBA 05.
+- Continuación del diseño aprobado de la página Inicio.
 
 Objetivo:
-- Mostrar primero una vista rápida, pequeña y limpia del usuario.
-- Abrir el perfil completo como una pantalla independiente, no desplegarlo hacia abajo dentro de la misma tarjeta.
-- Hacer que el perfil público tenga la misma identidad visual que el perfil propio de Yo.
-- Mantener los regalos dentro de Mensajes sin convertirlos en un botón grande y llamativo dentro del perfil.
+- Dar prioridad visual a la Batalla de Casas destacada.
+- Colocar las personas en directo inmediatamente debajo de la batalla.
+- Mantener el chat público compacto y unido al bloque de batalla.
+- Evitar que los LIVE vuelvan a ocupar la parte superior por encima de la batalla.
 
-Vista rápida:
-- Foto, nombre, check azul, usuario, ubicación, biografía, seguidores y seguidos.
-- Botones discretos Seguir y Mensaje.
-- La foto y el botón VER PERFIL COMPLETO abren una pantalla independiente mediante `view=full`.
-- Se eliminan de la vista principal los botones grandes Enviar regalo y Bloquear o denunciar.
+Cambios en Inicio:
+- La Batalla oficial pasa a ser el primer módulo de contenido después de la cabecera y el monedero.
+- Se añade la etiqueta visual DESTACADA sin alterar el funcionamiento de la batalla.
+- El chat público permanece dentro del mismo módulo y reduce su altura visible para conservar una portada equilibrada.
+- El módulo PERSONAS EN DIRECTO se coloca justo debajo de la batalla.
+- Los LIVE se muestran en una fila horizontal de tarjetas compactas, cuadradas y desplazables.
+- El enlace Ver todos continúa abriendo la página LIVE.
+- Chili IA queda después del módulo de personas en directo.
 
-Perfil completo:
-- Diseño equivalente al perfil propio: avatar lateral, nombre, usuario, ID, ubicación, nivel, presencia, portada, biografía y estadísticas.
-- Instagram, TikTok, YouTube y Facebook aparecen junto a la identidad, como en Yo; solo se abren cuando están vinculados.
-- `jemmo-cloud-profile.js` sincroniza ahora esas redes desde el perfil propio hacia Firestore para que otras personas puedan verlas.
-- Vídeos, fotos y publicaciones se mantienen como contenido público en una sección separada y ordenada.
-- El regalo se mantiene como un icono pequeño que abre Mensajes con la caja de regalos.
-- Bloquear, denunciar, copiar ID y compartir se trasladan al menú de tres puntos.
-- Se elimina el bloque Asistente oficial del perfil de otros usuarios para evitar ruido visual.
-
-Seguridad y funcionalidad:
-- Seguir/dejar de seguir continúa usando la colección `seguimientos`.
-- Mensaje y regalo continúan creando o reutilizando la conversación privada.
-- Bloquear y denunciar conservan su lógica, pero quedan dentro del menú secundario.
-- Ruth/Ru conserva el check azul de prueba.
-- No se muestran textos técnicos sobre Firebase.
-- Economía y regalos continúan en MODO DE PRUEBAS.
+Alcance estricto:
+- Solo se reorganiza y ajusta la página Inicio.
+- No se modifica la lógica de LIVE, Salas, Perfil, Mensajes, regalos, monedero ni sesión.
+- No se eliminan módulos ni datos existentes.
 
 Actualización PWA:
-- Nueva caché `jemmo-live-v1-public-profile-natural-05-20260725`.
-- La aplicación instalada se actualiza sin desinstalarse.
-- `perfil-publico.html` gestiona directamente su seguimiento y estadísticas; el service worker ya no inyecta `jemmo-social.js` en esa pantalla.
+- Nueva caché `jemmo-live-v1-inicio-batalla-live-06-20260725`.
+- La aplicación instalada recibe la actualización sin desinstalarse.
 
-Archivos del ZIP incremental:
-- INTEGRIDAD_SHA256.txt
-- VERSION.txt
-- manifest.webmanifest
-- pwa-register.js
-- sw.js
-- perfil-publico.html
-- jemmo-social.js
-- jemmo-cloud-profile.js
+Validación:
+- Orden DOM verificado: Batalla → Personas en directo → Chili IA.
+- HTML analizado sin identificadores duplicados.
+- Manifest válido.
+- Recursos del APP_SHELL presentes.
+- Vista móvil estática revisada a 393 × 852 px.
