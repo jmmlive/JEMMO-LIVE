@@ -76,7 +76,7 @@
     .jr-seat{isolation:isolate;position:relative;width:100%;height:100%;min-width:0;padding:4px 3px;border:1.5px solid #8f27b9;background:radial-gradient(circle at 50% 25%,#5a1b71,#24032e 66%);box-shadow:inset 0 0 18px #b83cff22,0 0 12px #9227ba22;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
     .jr-seat::before{content:"";position:absolute;z-index:-1;inset:7%;background:url('jemmo-fish-nav.webp') center/70% auto no-repeat;opacity:.34;filter:saturate(1.2) drop-shadow(0 0 9px #d14cff77);transform:rotate(-8deg)}
     .jr-seat>*{position:relative;z-index:1}
-    .jr-seat-video{position:absolute;z-index:0;inset:0;width:100%;height:100%;object-fit:cover;background:#08000b}
+    .jr-seat-video{position:absolute;z-index:0;inset:0;width:100%;height:100%;object-fit:cover;background:#08000b;transform:scaleX(1)!important;-webkit-transform:scaleX(1)!important}
     .jr-seat.camera .jr-seat-video+.jr-seat-overlay{position:absolute;z-index:1;inset:auto 4px 4px;display:flex;justify-content:space-between;align-items:end;gap:4px}
     .jr-camera-error{position:absolute;z-index:2;inset:8px;display:grid;place-items:center;text-align:center;padding:8px;border-radius:14px;background:#16051dcc;color:#ffe1ea;font-size:10px;font-weight:900}
     .jr-seat.audio{width:100%;height:auto;max-height:100%;aspect-ratio:1;align-self:center;justify-self:center;border-radius:50%}.jr-seat.camera{width:100%;height:100%;border-radius:21%}
@@ -264,13 +264,14 @@
 <script type="module" src="jemmo-session.js"></script>
 <script src="pwa-register.js"></script>
 <script src="jemmo-wallet.js"></script>
+<script src="jemmo-prep-storage.js"></script>
 <script>
 (()=>{
   'use strict';
   const $=id=>document.getElementById(id);
-  const uid=localStorage.getItem('jemmo_active_uid')||'local-user';
-  const storageKey=`jemmo_v1_salas_prueba_06_${uid}`;
-  const previousStorageKeys=[`jemmo_v1_salas_prueba_05_${uid}`,'jemmo_v1_salas_prueba_05','jemmo_v1_salas_prueba_04'];
+  const activeUid=()=>{try{return String(window.__jemmoAuthenticatedUid||localStorage.getItem('jemmo_active_uid')||sessionStorage.getItem('jemmo_active_uid')||'local-user')}catch{return 'local-user'}};
+  const storageKey=()=>`salas:${activeUid()}`;
+  const previousStorageKeys=()=>[`jemmo_v1_salas_prueba_06_${activeUid()}`,`jemmo_v1_salas_prueba_05_${activeUid()}`,'jemmo_v1_salas_prueba_05','jemmo_v1_salas_prueba_04'];
   const state={
     mode:'audio',
     count:4,
@@ -281,9 +282,11 @@
     occupants:new Map(),
     giftQuantity:1,
     giftBalance:0,
-    giftTotals:new Map()
+    giftTotals:new Map(),
+    giftSending:false
   };
   let toastTimer=0;
+  let saveTimer=0;
   let roomOpen=false;
 
   function toast(message){
@@ -308,14 +311,29 @@
   }
 
   function save(){
-    try{localStorage.setItem(storageKey,JSON.stringify(configPayload()))}
-    catch(e){console.warn('No se pudo guardar la configuración local.',e)}
+    const storage=window.JemmoPrepStorage;
+    if(storage?.save)return storage.save(storageKey(),configPayload());
+    try{
+      localStorage.setItem(previousStorageKeys()[0],JSON.stringify(configPayload()));
+      return Promise.resolve({ok:true,durable:false});
+    }catch(e){
+      console.warn('No se pudo guardar la configuración local.',e);
+      return Promise.resolve({ok:false,durable:false});
+    }
   }
 
-  function restore(){
+  function queueSave(){
+    clearTimeout(saveTimer);
+    saveTimer=setTimeout(()=>{void save()},260);
+  }
+
+  async function restore(){
     try{
-      const raw=localStorage.getItem(storageKey)||previousStorageKeys.map(key=>localStorage.getItem(key)).find(Boolean);
-      const data=JSON.parse(raw||'null');
+      let data=await window.JemmoPrepStorage?.load?.(storageKey(),previousStorageKeys());
+      if(!data){
+        const raw=previousStorageKeys().map(key=>{try{return localStorage.getItem(key)}catch{return null}}).find(Boolean);
+        data=JSON.parse(raw||'null');
+      }
       if(!data)return;
       state.mode=data.mode==='camera'?'camera':'audio';
       state.count=[4,8,12,15,25].includes(Number(data.count))?Number(data.count):4;
@@ -470,6 +488,8 @@
       state.stream=stream;
       const video=$('hostCameraVideo');
       if(video){
+        video.style.transform='scaleX(1)';
+        video.style.webkitTransform='scaleX(1)';
         video.srcObject=stream;
         await video.play().catch(()=>{});
       }
@@ -645,9 +665,18 @@
     });
   }
 
+  function setGiftSending(active){
+    state.giftSending=active;
+    document.querySelectorAll('[data-gift]').forEach(button=>button.disabled=active);
+    document.querySelectorAll('.jr-quantity,.jr-recipient').forEach(button=>button.disabled=active);
+  }
+
   function sendGift(gift,unitPrice){
+    if(state.giftSending){toast('El regalo anterior todavía se está registrando.');return}
+    setGiftSending(true);
+    const release=()=>setTimeout(()=>setGiftSending(false),1000);
     const indexes=selectedRecipientIndexes();
-    if(!indexes.length){toast('Selecciona a quién enviar el regalo.');return}
+    if(!indexes.length){toast('Selecciona a quién enviar el regalo.');release();return}
     const recipients=indexes.length;
     const totalGifts=recipients*state.giftQuantity;
     const totalCoins=totalGifts*unitPrice;
@@ -655,15 +684,23 @@
     if(totalCoins>state.giftBalance){
       toast(`Saldo insuficiente: necesitas ${formatCoins(totalCoins)} JEMMOS.`);
       openRoomWallet('recharge');
+      release();
       return;
     }
     const target=recipientLabel();
     const question=`¿Seguro que quieres enviar ${state.giftQuantity} ${gift} a cada una de ${recipients} persona${recipients===1?'':'s'}?
 
 Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
-    if(!confirm(question))return;
-    const spent=window.JemmoWallet?.spendCoins?.(totalCoins,{title:'Regalo enviado en Sala',giftName:gift,detail:`${gift} · ${target} · ×${state.giftQuantity}`,context:'Audio Room / Salas',source:'salas-gift'});
-    if(!spent?.ok){toast('Saldo insuficiente. Abriendo el Monedero.');openRoomWallet('recharge');return}
+    if(!confirm(question)){release();return}
+    const recipientKey=indexes.slice().sort((a,b)=>a-b).join('-');
+    const idempotencyKey=`salas:${gift}:${unitPrice}:${state.giftQuantity}:${recipientKey}:${Math.floor(Date.now()/2000)}`;
+    const spent=window.JemmoWallet?.spendCoins?.(totalCoins,{title:'Regalo enviado en Sala',giftName:gift,detail:`${gift} · ${target} · ×${state.giftQuantity}`,context:'Audio Room / Salas',source:'salas-gift',idempotencyKey});
+    if(!spent?.ok){
+      if(spent?.duplicate)toast('Doble toque bloqueado: el regalo ya se registró.');
+      else{toast('Saldo insuficiente. Abriendo el Monedero.');openRoomWallet('recharge')}
+      release();
+      return;
+    }
     state.giftBalance=spent.wallet.jemmos;
     indexes.forEach(index=>state.giftTotals.set(index,(state.giftTotals.get(index)||0)+state.giftQuantity));
     updateGiftBadges();
@@ -671,10 +708,11 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
     addChat(`Tú enviaste ${state.giftQuantity} ${gift} a ${target}. Total: ${totalGifts} regalos.`,'gift');
     toast(`${totalGifts} regalos enviados correctamente.`);
     closeSheets();
+    release();
   }
 
-  restore();
   renderPreparation();
+  void restore().then(renderPreparation);
 
   document.querySelectorAll('.jr-mode').forEach(btn=>btn.addEventListener('click',()=>{
     state.mode=btn.dataset.mode;
@@ -714,8 +752,8 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   });
 
   ['roomTitle','roomDescription','roomLanguage','roomPassword'].forEach(id=>{
-    $(id).addEventListener('input',()=>{save();validation()});
-    $(id).addEventListener('change',()=>{save();validation()});
+    $(id).addEventListener('input',()=>{queueSave();validation()});
+    $(id).addEventListener('change',()=>{void save();validation()});
   });
 
   $('startRoom').addEventListener('click',enterRoom);
@@ -790,6 +828,7 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
     }
   });
 
+  window.addEventListener('pagehide',()=>{void save();stopCamera()});
   window.addEventListener('beforeunload',stopCamera);
 })();
 </script>

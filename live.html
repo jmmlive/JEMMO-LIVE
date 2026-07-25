@@ -1074,7 +1074,7 @@
     .jl-live-lock{margin-top:8px;padding:10px;border:1px solid #ff5d76;border-radius:12px;background:#2a0710;color:#ffd4db;font-size:12px;font-weight:800}.jl-live-lock[hidden]{display:none!important}
 </style>
 </head>
-<body>
+<body data-jemmo-wallet-native-gifts="true">
   <main class="jl-shell" id="prepScreen">
     <header class="jl-header">
       <button class="jl-round" id="menuOpen" type="button" aria-label="Abrir menú">☰</button>
@@ -1369,12 +1369,20 @@
   <script type="module" src="jemmo-session.js"></script>
   <script src="pwa-register.js"></script>
   <script src="jemmo-wallet.js"></script>
+  <script src="jemmo-prep-storage.js"></script>
   <script>
   (() => {
     "use strict";
 
     const $ = id => document.getElementById(id);
-    const PROFILE_KEY = `jemmo_live_profile_v065:${localStorage.getItem("jemmo_active_uid")||"local"}`;
+    const activeUid = () => {
+      try { return String(window.__jemmoAuthenticatedUid || localStorage.getItem("jemmo_active_uid") || sessionStorage.getItem("jemmo_active_uid") || "local-user"); }
+      catch { return "local-user"; }
+    };
+    const profileStorageKey = () => `live:${activeUid()}`;
+    const legacyProfileKeys = () => [`jemmo_live_profile_v065:${activeUid()}`];
+    let profileSaveTimer = 0;
+    let giftSending = false;
     const state = {
       mode:"user",
       mainStream:null,
@@ -1773,20 +1781,45 @@
     $("micToggle").addEventListener("click",()=>toggle($("micToggle"),"mic"));
     $("chatToggle").addEventListener("click",()=>toggle($("chatToggle"),"comments"));
 
-    function readProfile(){
-      try{
-        const raw=JSON.parse(localStorage.getItem(PROFILE_KEY)||"null");
-        if(!raw) return null;
-        return {
-          title:raw.title||raw.liveTitle||"",
-          description:raw.description||raw.liveDescription||"",
-          visibility:raw.visibility||"public",
-          coverData:raw.coverData||raw.cover||""
-        };
-      }catch{return null}
+    function profilePayload(){
+      return {
+        title:$("liveTitle").value.trim(),
+        description:$("liveDescription").value.trim(),
+        visibility:$("liveVisibility").value,
+        coverData:state.coverData
+      };
     }
-    function loadProfile(){
-      const profile=readProfile();
+    async function readProfile(){
+      const storage=window.JemmoPrepStorage;
+      let raw=null;
+      if(storage?.load) raw=await storage.load(profileStorageKey(),legacyProfileKeys());
+      if(!raw){
+        try{raw=JSON.parse(localStorage.getItem(legacyProfileKeys()[0])||"null")}catch{}
+      }
+      if(!raw) return null;
+      return {
+        title:raw.title||raw.liveTitle||"",
+        description:raw.description||raw.liveDescription||"",
+        visibility:raw.visibility||"public",
+        coverData:raw.coverData||raw.cover||""
+      };
+    }
+    async function persistProfile({silent=true}={}){
+      const profile=profilePayload();
+      const result=await window.JemmoPrepStorage?.save?.(profileStorageKey(),profile);
+      if(!silent){
+        $("editorStatus").textContent="Guardado · toca para editar";
+        setEditorCollapsed(true);
+        showToast(result?.durable===false?"Datos guardados con respaldo temporal del móvil.":"Datos del LIVE guardados.");
+      }
+      return result;
+    }
+    function queueProfileSave(){
+      clearTimeout(profileSaveTimer);
+      profileSaveTimer=setTimeout(()=>{void persistProfile({silent:true})},260);
+    }
+    async function loadProfile(){
+      const profile=await readProfile();
       if(!profile) return;
       $("liveTitle").value=profile.title;
       $("liveDescription").value=profile.description;
@@ -1819,28 +1852,22 @@
       reader.onload=()=>{
         state.coverData=String(reader.result||"");
         $("coverPreview").src=state.coverData;
+        queueProfileSave();
         updateChecks();
       };
       reader.readAsDataURL(file);
     });
-    ["liveTitle","liveDescription"].forEach(id=>$(id).addEventListener("input",updateChecks));
-    $("saveProfile").addEventListener("click",()=>{
-      const profile={
-        title:$("liveTitle").value.trim(),
-        description:$("liveDescription").value.trim(),
-        visibility:$("liveVisibility").value,
-        coverData:state.coverData
-      };
+    ["liveTitle","liveDescription"].forEach(id=>$(id).addEventListener("input",()=>{queueProfileSave();updateChecks()}));
+    $("liveVisibility").addEventListener("change",queueProfileSave);
+    $("saveProfile").addEventListener("click",async()=>{
+      const profile=profilePayload();
       if(!profile.coverData||!profile.title||!profile.description){
         showToast("Faltan portada, título o descripción.");
         updateChecks();
         return;
       }
-      try{localStorage.setItem(PROFILE_KEY,JSON.stringify(profile))}catch{}
-      $("editorStatus").textContent="Guardado · toca para editar";
-      setEditorCollapsed(true);
+      await persistProfile({silent:false});
       updateChecks();
-      showToast("Datos del LIVE guardados.");
     });
 
     function hasCamera(){
@@ -2142,7 +2169,12 @@
       button.addEventListener("click",event=>{
         event.preventDefault();
         event.stopPropagation();
+        if(giftSending){
+          showToast("El regalo anterior todavía se está registrando.");
+          return;
+        }
         const cost=Number(button.dataset.cost||0);
+        updateBalanceUI();
         if(state.balance<cost){
           state.pendingGift={icon:button.dataset.gift,cost};
           $("rechargeNote").textContent=`Te faltan ${(cost-state.balance).toLocaleString("es-ES")} JEMMOS para enviar ${button.dataset.gift}. Recarga y volverás al panel de regalos.`;
@@ -2150,22 +2182,45 @@
           window.JemmoWallet?.open?.('recharge');
           return;
         }
-        state.balance-=cost;
-        state.gifts+=cost;
-        state.scoreA+=cost;
-        $("giftCount").textContent=`🎁 ${state.gifts}`;
-        updateBalanceUI();
-        $("giftBurstIcon").textContent=button.dataset.gift;
-        $("giftBurstText").textContent=`${button.dataset.gift} enviado · +${cost}`;
-        $("giftBurst").hidden=false;
-        $("giftBurst").style.animation="none";
-        void $("giftBurst").offsetWidth;
-        $("giftBurst").style.animation="";
-        setTimeout(()=>$("giftBurst").hidden=true,1750);
-        addChat(`Tú enviaste ${button.dataset.gift} · +${cost} puntos`);
-        showEventTicker(`Regalo ${button.dataset.gift} enviado · +${cost} puntos`,"🎁");
-        updateBattle();
-        closeSheets();
+        giftSending=true;
+        document.querySelectorAll("[data-gift]").forEach(giftButton=>giftButton.disabled=true);
+        const idempotencyKey=`live:${button.dataset.gift}:${cost}:${Math.floor(Date.now()/2000)}`;
+        const spent=window.JemmoWallet?.spendCoins?.(cost,{
+          title:"Regalo enviado en LIVE",
+          giftName:button.querySelector("b")?.textContent||button.dataset.gift,
+          detail:`${button.dataset.gift} · LIVE`,
+          context:"LIVE",
+          source:"live-gift",
+          idempotencyKey
+        });
+        if(!spent?.ok){
+          if(spent?.duplicate) showToast("Doble toque bloqueado: el regalo ya se registró.");
+          else{
+            showToast("Saldo insuficiente. Abriendo el Monedero.");
+            window.JemmoWallet?.open?.('recharge');
+          }
+        }else{
+          state.balance=spent.wallet.jemmos;
+          state.gifts+=cost;
+          state.scoreA+=cost;
+          $("giftCount").textContent=`🎁 ${state.gifts}`;
+          updateBalanceUI();
+          $("giftBurstIcon").textContent=button.dataset.gift;
+          $("giftBurstText").textContent=`${button.dataset.gift} enviado · +${cost}`;
+          $("giftBurst").hidden=false;
+          $("giftBurst").style.animation="none";
+          void $("giftBurst").offsetWidth;
+          $("giftBurst").style.animation="";
+          setTimeout(()=>$("giftBurst").hidden=true,1750);
+          addChat(`Tú enviaste ${button.dataset.gift} · +${cost} puntos`);
+          showEventTicker(`Regalo ${button.dataset.gift} enviado · +${cost} puntos`,"🎁");
+          updateBattle();
+          closeSheets();
+        }
+        setTimeout(()=>{
+          giftSending=false;
+          document.querySelectorAll("[data-gift]").forEach(giftButton=>giftButton.disabled=false);
+        },1000);
       });
     });
 
@@ -2363,6 +2418,7 @@
     observer.observe($("broadcastScreen"),{attributes:true,attributeFilter:["hidden","class","style"]});
 
     addEventListener("pagehide",()=>{
+      void persistProfile({silent:true});
       saveTaskProgress();
       stopStream(state.mainStream);
       stopStream(state.pipStream);
@@ -2381,7 +2437,7 @@
       updateChecks();
     });
 
-    loadProfile();
+    void loadProfile();
     applyFilter("natural");
     updateBattle();
     updateBalanceUI();

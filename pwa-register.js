@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-mobile-05';
+  const VERSION = 'pwa-critical-block-01';
   let installPrompt = null;
 
   const isStandalone = () =>

@@ -1,26 +1,28 @@
-JEMMO LIVE V1 · INSTALABLE PWA MÓVIL PRUEBA 05
+JEMMO LIVE V1 · BLOQUE 1 CRÍTICO PRUEBA 01
 Fecha: 25/07/2026
 
-Base:
-- JEMMO LIVE V1 · SEGUIDORES Y CHILI OFICIAL PRUEBA 04.
-- Mantiene Chili IA, perfiles, mensajes, ID pública y relaciones sociales.
+Base verificada:
+- JEMMO LIVE V1 · INSTALABLE PWA MÓVIL PRUEBA 05.
+- Archivo de origen: JEMMO-LIVE-main (10).zip.
+- JEMMO LIVE ya estaba instalada como aplicación PWA en el móvil de Jesús.
 
-Problema confirmado:
-- JEMMO tenía manifest, service worker y código de instalación, pero el repositorio no contenía los iconos exigidos por el manifest.
-- Las rutas apuntaban a icons/icon-192.png, icons/icon-512.png e icons/icon-maskable-512.png, archivos ausentes.
-- Es el mismo tipo de incidencia que ocurrió en JM Elite: sin iconos válidos Chrome puede ofrecer solo un acceso directo o no mostrar la instalación como aplicación.
-- El botón de instalación existente estaba principalmente en Acceso; los usuarios con sesión iniciada eran enviados a Inicio y no lo veían.
+Alcance estricto:
+- No se modifica Inicio.
+- No se modifica Perfil.
+- No se modifica Mensajes.
+- No se modifican distribuciones visuales de LIVE ni Salas.
 
-Correcciones:
-- Iconos oficiales de 192x192 y 512x512 generados con el pez JEMMO.
-- Icono maskable 512x512 con zona segura para Android.
-- Todos los iconos están en la raíz para poder subirlos desde el selector móvil sin carpetas.
-- Manifest actualizado con iconos reales, descripción, captura de instalación, accesos directos y prefer_related_applications=false.
-- Botón flotante INSTALAR JEMMO visible desde cualquier página cuando se abre en Chrome.
-- Panel propio con botón INSTALAR AHORA y pasos manuales de respaldo.
-- El botón y el panel desaparecen cuando la app ya está instalada.
-- La app abre en modo standalone desde su icono y reutiliza la ventana existente mediante launch_handler.
-- Nueva caché del service worker para sustituir manifest y recursos antiguos.
+Correcciones críticas:
+1. Conversión JEMMOS → CRISTALES a razón exacta de 1:1 y sin comisión.
+2. Se elimina de la interfaz el cambio inverso CRISTALES → JEMMOS para impedir arbitraje económico.
+3. Portada, título, descripción y ajustes de preparación de LIVE se guardan por usuario en IndexedDB, con respaldo local/sessionStorage.
+4. Portada, título, descripción y ajustes de preparación de Salas usan el mismo esquema duradero por usuario.
+5. Los borradores parciales se guardan automáticamente aunque todavía no estén completos.
+6. LIVE registra el gasto real mediante JemmoWallet antes de mostrar el regalo como enviado.
+7. LIVE y Salas bloquean doble toque mientras una operación está en curso.
+8. El monedero incorpora idempotencia temporal persistida para impedir doble cobro repetido.
+9. La cámara frontal mantiene visualización natural sin espejo forzado en LIVE y Salas.
+10. Nueva caché PWA para que la aplicación instalada reciba la actualización sin desinstalarse.
 
 Archivos del ZIP incremental:
 - INTEGRIDAD_SHA256.txt
@@ -28,31 +30,11 @@ Archivos del ZIP incremental:
 - manifest.webmanifest
 - pwa-register.js
 - sw.js
-- index.html
-- acceso.html
-- inicio.html
+- jemmo-wallet.js
+- jemmo-prep-storage.js
 - live.html
 - salas.html
-- mensajes.html
-- yo.html
-- chili-ia.html
-- perfil-publico.html
-- casa-demo.html
-- icon-192.png
-- icon-512.png
-- icon-maskable-512.png
-- favicon-64.png
-- jemmo-install-preview.webp
 
-Instalación esperada:
-1. Publicar los 20 archivos.
-2. Cerrar todas las pestañas antiguas de JEMMO y Chrome.
-3. Abrir una sola vez el enlace publicado en Chrome.
-4. Pulsar INSTALAR JEMMO y después INSTALAR AHORA.
-5. Abrir JEMMO desde el icono creado en la pantalla del teléfono.
-
-Estado:
-- Validación estática completada.
-- Iconos comprobados en sus dimensiones reales.
-- Manifest JSON y JavaScript validados.
-- Pendiente de publicación y prueba real de instalación en el móvil de Jesús.
+Modo económico:
+- Continúa en MODO DE PRUEBAS.
+- No se activan pagos ni cobros reales.

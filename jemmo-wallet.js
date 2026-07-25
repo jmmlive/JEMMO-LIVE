@@ -6,7 +6,7 @@
   'use strict';
   if (window.JemmoWallet?.version) return;
 
-  const VERSION = '7.1.1-test';
+  const VERSION = '7.2.0-test';
   const FINANCE_KEY = 'jemmo_finance_v1';
   const STORAGE_DB = 'jemmo_live_durable_v1';
   const STORAGE_DB_VERSION = 1;
@@ -741,12 +741,18 @@
       return { ok: false, wallet, missing: Math.max(0, amount - wallet.jemmos) };
     }
 
+    const state = readFinance();
+    const idempotencyKey = String(meta.idempotencyKey || '').trim();
+    if (idempotencyKey) {
+      const existing = state.gifts.find(item => item.idempotencyKey === idempotencyKey && Date.now() - Number(item.createdAt || 0) < 15000);
+      if (existing) return { ok: false, duplicate: true, wallet, operationId: existing.id };
+    }
+
     const allocations = consumeLots(wallet, amount);
     if (!allocations) return { ok: false, wallet, missing: amount };
     wallet.jemmos -= amount;
     wallet.coins = wallet.jemmos;
 
-    const state = readFinance();
     const settings = state.settings;
     const recipientUid = String(meta.recipientUid || senderUid);
     const member = state.membership[recipientUid] || { hasHouse: false, houseId: '', houseName: '' };
@@ -812,7 +818,7 @@
       });
     }
     state.gifts.unshift({
-      id: operationId, senderUid, recipientUid, context, reference, giftName,
+      id: operationId, idempotencyKey, senderUid, recipientUid, context, reference, giftName,
       total: amount, hostTotal, hostConfirmed, hostPending,
       appTotal, appConfirmed, appPending,
       agencyTotal, agencyConfirmed, agencyPending,
@@ -883,18 +889,17 @@
     const wallet = getWallet();
     if (requested <= 0) return { valid: false, message: 'Escribe una cantidad para calcular el resultado.' };
     if (type === 'jemmos-crystals') {
-      const output = Math.floor(requested / 10);
-      const used = output * 10;
-      if (output < 1) return { valid: false, message: 'Se necesitan al menos 10 JEMMOS.' };
+      const output = requested;
+      const used = requested;
       return {
         valid: wallet.jemmos >= used, input: used, output, type,
-        message: `Recibirás <b>${formatNumber(output)} CRISTALES</b> usando ${formatNumber(used)} JEMMOS.${wallet.jemmos < used ? ' Saldo insuficiente.' : ''}`
+        message: `Cambio 1:1 sin comisión: recibirás <b>${formatNumber(output)} CRISTALES</b> usando ${formatNumber(used)} JEMMOS.${wallet.jemmos < used ? ' Saldo insuficiente.' : ''}`
       };
     }
     if (type === 'crystals-jemmos') {
       return {
-        valid: wallet.crystals >= requested, input: requested, output: requested * 10, type,
-        message: `Recibirás <b>${formatNumber(requested * 10)} JEMMOS</b> usando ${formatNumber(requested)} CRISTALES.${wallet.crystals < requested ? ' Saldo insuficiente.' : ''}`
+        valid: false, input: requested, output: 0, type,
+        message: 'El cambio CRISTALES → JEMMOS no está habilitado.'
       };
     }
     return {
@@ -1082,8 +1087,8 @@
           <p class="jw-note">USDT admite Binance Smart Chain BEP20, TRON TRC20 y Ethereum ERC20. USDC admite Binance BEP20 y Ethereum ERC20. No se mueve dinero real.</p>
         </div>
         <div class="jw-view" data-jw-view="exchange" hidden>
-          <article class="jw-card"><h3>Intercambiar monedas internas</h3><p>Los JEMMOS pueden convertirse en CRISTALES. Los JEMS confirmados también pueden convertirse en JEMMOS.</p></article>
-          <label class="jw-field"><span>Tipo de cambio</span><select id="jw-exchange-type"><option value="jemmos-crystals">JEMMOS → CRISTALES</option><option value="crystals-jemmos">CRISTALES → JEMMOS</option><option value="jems-jemmos">JEMS → JEMMOS</option></select></label>
+          <article class="jw-card"><h3>Intercambiar monedas internas</h3><p>Los JEMMOS se convierten en CRISTALES a razón de 1:1 y sin comisión. Los JEMS confirmados también pueden convertirse en JEMMOS.</p></article>
+          <label class="jw-field"><span>Tipo de cambio</span><select id="jw-exchange-type"><option value="jemmos-crystals">JEMMOS → CRISTALES · 1:1</option><option value="jems-jemmos">JEMS → JEMMOS</option></select></label>
           <label class="jw-field"><span id="jw-exchange-label">Cantidad de JEMMOS</span><input id="jw-exchange-amount" type="number" min="1" inputmode="numeric" placeholder="Escribe la cantidad"></label>
           <div class="jw-preview" id="jw-exchange-preview">Escribe una cantidad para calcular el resultado.</div>
           <button class="jw-primary" id="jw-exchange-confirm" type="button" disabled>CONFIRMAR CAMBIO</button>
@@ -1471,6 +1476,7 @@
   }
 
   const liveGiftPrices = { rose: 10, fish: 50, crown: 250, rocket: 500, diamond: 900, castle: 1500 };
+  let liveGiftPending = false;
   const numericText = value => Number(String(value || '').replace(/[^0-9]/g, '')) || 0;
 
   function giftPrice(button) {
@@ -1540,19 +1546,33 @@
       if (!price) return;
       event.preventDefault();
       event.stopImmediatePropagation();
+      if (liveGiftPending) {
+        toast('El regalo anterior todavía se está registrando.');
+        return;
+      }
+      liveGiftPending = true;
+      button.disabled = true;
+      const idempotencyKey = `live:${giftName(button)}:${price}:${Math.floor(Date.now() / 2000)}`;
       const result = spendCoins(price, {
         title: 'Regalo enviado en LIVE', giftName: giftName(button),
         detail: `${giftIcon(button)} ${giftName(button)}`,
-        context: 'LIVE', source: 'live-gift'
+        context: 'LIVE', source: 'live-gift', idempotencyKey
       });
       if (!result.ok) {
-        toast(`Saldo insuficiente. Faltan ${formatNumber(result.missing)} JEMMOS.`);
-        open('recharge');
-        return;
+        if (result.duplicate) toast('Doble toque bloqueado: el regalo ya se registró.');
+        else {
+          toast(`Saldo insuficiente. Faltan ${formatNumber(result.missing)} JEMMOS.`);
+          open('recharge');
+        }
+      } else {
+        updateLiveGiftVisuals(button, price);
+        syncVisibleBalances(result.wallet);
+        toast(`${giftName(button)} enviado. Reparto guardado en JEMMO Finanzas.`);
       }
-      updateLiveGiftVisuals(button, price);
-      syncVisibleBalances(result.wallet);
-      toast(`${giftName(button)} enviado. Reparto guardado en JEMMO Finanzas.`);
+      setTimeout(() => {
+        liveGiftPending = false;
+        button.disabled = false;
+      }, 1000);
     }, true);
   }
 
