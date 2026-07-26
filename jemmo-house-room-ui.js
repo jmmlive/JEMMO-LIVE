@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · CABECERO MÓVIL DE SALA DE CASA PRUEBA 16
-   Muestra únicamente datos reales de la Casa y la tarea activa. */
+/* JEMMO LIVE V1 · IDENTIDAD OFICIAL DE SALA DE CASA PRUEBA 27
+   La cabecera pertenece a la Casa y usa la identidad configurada por sus responsables. */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
 import { getFirestore, doc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
@@ -16,15 +16,16 @@ if(params.get('houseRoom')==='1'){
   const millis=v=>v?.toMillis?.()||(v?.seconds?Number(v.seconds)*1000:Number(v||0));
   const date=v=>{const ms=millis(v);if(!ms)return'';try{return new Intl.DateTimeFormat('es-ES',{day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date(ms))}catch{return''}};
   const duration=ms=>{const total=Math.max(0,Math.ceil(number(ms)/1000)),h=Math.floor(total/3600),m=Math.floor(total%3600/60),s=total%60;return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`};
-  let user=null,task={},house={},timer=0;
+  let user=null,task={},house={},roomConfig={},timer=0;
   document.body.classList.add('jemmo-house-room');
 
   function waitUser(timeout=12000){if(auth.currentUser)return Promise.resolve(auth.currentUser);return new Promise((resolve,reject)=>{let stop=()=>{};const t=setTimeout(()=>{stop();reject(new Error('Sesión no disponible.'))},timeout);stop=onAuthStateChanged(auth,u=>{if(!u)return;clearTimeout(t);stop();resolve(u)},e=>{clearTimeout(t);stop();reject(e)})})}
   function renderHouse(){
-    const name=clean(house.name||params.get('houseName')||'Casa JEMMO',60);
+    const houseName=clean(house.name||params.get('houseName')||'Casa JEMMO',60);
+    const name=clean(roomConfig.title||`Sala 24/7 de ${houseName}`,60);
     if($('roomTitleLabel'))$('roomTitleLabel').textContent=name;
     if($('roomCapacityLabel'))$('roomCapacityLabel').textContent='20 sillas · Sala 24/7 · solo audio';
-    const image=clean(house.logo||house.photo||house.cover||house.avatar,500);
+    const image=clean(roomConfig.roomPhotoData||roomConfig.roomPhoto||roomConfig.image||house.logo||house.photo||house.cover||house.avatar,260000);
     if(image&&$('roomAvatar'))$('roomAvatar').src=image;
     const createdMs=millis(house.createdAt||house.approvedAt||house.createdAtClient);
     const days=createdMs?Math.max(0,Math.floor((Date.now()-createdMs)/86400000)):null;
@@ -61,6 +62,7 @@ if(params.get('houseRoom')==='1'){
       if(!houseId)return;
       user=await waitUser();
       onSnapshot(doc(db,'casas',houseId),snap=>{house=snap.data()||{};renderHouse()},e=>console.warn('JEMMO Sala Casa: datos',e?.code||e));
+      onSnapshot(doc(db,'casas',houseId,'configuracion','sala'),snap=>{roomConfig=snap.data()||{};renderHouse()},e=>console.warn('JEMMO Sala Casa: identidad',e?.code||e));
       onSnapshot(doc(db,'casas',houseId,'tareas',user.uid),snap=>{task=snap.data()||{};renderTask()},e=>console.warn('JEMMO Sala Casa: tarea',e?.code||e));
       clearInterval(timer);timer=setInterval(renderTask,1000);renderTask();
     }catch(e){console.warn('JEMMO Sala Casa móvil:',e?.message||e)}

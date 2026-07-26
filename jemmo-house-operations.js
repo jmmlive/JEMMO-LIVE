@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · TAREAS REALES Y PANEL FINANCIERO DE AGENTES PRUEBA 23
+/* JEMMO LIVE V1 · TAREAS, FINANZAS E IDENTIDAD DE SALA PRUEBA 27
    Sala oficial, tareas auditables, emisoras asignadas y reparto 70/20/10. */
 const firebaseConfig = {
   apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
@@ -53,7 +53,9 @@ const DEFAULT_ROOM_CONFIG = {
   mode: 'audio',
   seatPolicy: 'members',
   minLevel: 1,
-  title: 'Sala oficial de la Casa'
+  title: 'Sala oficial de la Casa',
+  description: 'Audio Room permanente para tareas y comunidad de la Casa.',
+  roomPhotoData: ''
 };
 
 const state = {
@@ -69,6 +71,7 @@ const state = {
   actualAgent: false,
   isAdmin: false,
   canViewAgentPanel: false,
+  canManageRoom: false,
   testRole: '',
   members: [],
   profiles: new Map(),
@@ -131,6 +134,7 @@ function refreshAuthority() {
   state.actualAgent = state.selfHousePosition === 'agent' || normalizedAccountRole(state.profile.role || state.profile.rol || state.profile.accountRole) === 'agent';
   state.isAdmin = state.testRole ? ['owner', 'agent'].includes(state.testRole) : state.actualAdmin;
   state.canViewAgentPanel = Boolean(state.isAdmin || state.actualAgent);
+  state.canManageRoom = Boolean(state.isAdmin || state.actualAgent);
 }
 
 function positionLabel(member) {
@@ -393,24 +397,30 @@ function permanentRoomUrl() {
   url.searchParams.set('houseName', houseName);
   url.searchParams.set('mode', 'audio');
   url.searchParams.set('count', '20');
-  url.searchParams.set('title', `Sala 24/7 de ${houseName}`);
-  url.searchParams.set('description', 'Audio Room permanente para tareas y organización de emisores y emisoras de la Casa.');
+  url.searchParams.set('title', clean(state.roomConfig.title || `Sala 24/7 de ${houseName}`, 60));
+  url.searchParams.set('description', clean(state.roomConfig.description || 'Audio Room permanente para tareas y comunidad de la Casa.', 180));
   return url.href;
 }
 
 async function ensurePermanentRoom() {
-  if (!state.actualAdmin || !state.services || !state.houseId) return;
+  if (!state.canManageRoom || !state.services || !state.houseId) return;
   const s = state.services;
   try {
     await s.setDoc(s.doc(s.db, 'casas', state.houseId, 'configuracion', 'sala'), {
       capacity: 20, mode: 'audio', permanent: true, open24x7: true,
       seatPolicy: clean(state.roomConfig.seatPolicy || 'members', 20),
       minLevel: Math.min(100, Math.max(1, Number(state.roomConfig.minLevel) || 1)),
+      title: clean(state.roomConfig.title || `Sala 24/7 de ${clean(state.house.name || 'Casa JEMMO', 60)}`, 60),
+      description: clean(state.roomConfig.description || 'Audio Room permanente para tareas y comunidad de la Casa.', 180),
+      roomPhotoData: clean(state.roomConfig.roomPhotoData || state.house.logo || state.house.photo || state.house.cover, 260000),
       updatedBy: state.user.uid, updatedAt: s.serverTimestamp()
     }, { merge: true });
     await s.setDoc(s.doc(s.db, 'casas', state.houseId, 'salaActual', 'estado'), {
       status: 'open', permanent: true, open24x7: true, mode: 'audio', capacity: 20, count: 20,
       houseId: state.houseId, houseName: clean(state.house.name || 'Casa Padre JEMMO', 60),
+      roomTitle: clean(state.roomConfig.title || `Sala 24/7 de ${clean(state.house.name || 'Casa JEMMO', 60)}`, 60),
+      roomDescription: clean(state.roomConfig.description || 'Audio Room permanente para tareas y comunidad de la Casa.', 180),
+      roomPhoto: clean(state.roomConfig.roomPhotoData || state.house.logo || state.house.photo || state.house.cover, 260000),
       directUrl: permanentRoomUrl(), updatedAt: s.serverTimestamp()
     }, { merge: true });
   } catch (error) { console.warn('JEMMO Casa: sala permanente', error?.code || error); }
@@ -423,17 +433,20 @@ function renderRoom() {
   const directUrl = permanentRoomUrl();
   const sessionActive = clean(state.room.sessionStatus, 20) === 'active' && Number(state.room.sessionExpiresAtMs || state.room.expiresAtMs || 0) > Date.now();
   const policy = ({ members: 'Solo miembros', fans: 'Fans y miembros', followers: 'Seguidores, fans y miembros', admins: 'Solo responsables', manual: 'Invitación manual' })[state.roomConfig.seatPolicy] || 'Solo miembros';
+  const roomTitle = clean(state.roomConfig.title || `Sala 24/7 de ${houseName}`, 60);
+  const roomDescription = clean(state.roomConfig.description || 'Audio Room permanente para tareas y comunidad de la Casa.', 180);
+  const roomPhoto = clean(state.roomConfig.roomPhotoData || state.house.logo || state.house.photo || state.house.cover, 260000);
   target.innerHTML = `
     <div class="house-room-hero is-live is-permanent">
-      <span class="house-room-icon">🎙</span>
-      <div><small>SALA DE CASA ABIERTA 24/7 · SOLO AUDIO</small><h2>Sala de ${escapeHtml(houseName)}</h2><p>${sessionActive ? `Hay una conexión activa dirigida por ${escapeHtml(state.room.hostName || 'la Casa')}.` : 'Entra directamente. La primera persona conectada prepara la sesión de audio de prueba.'}</p></div>
+      <span class="house-room-icon">${roomPhoto ? `<img src="${escapeHtml(roomPhoto)}" alt="Foto de la sala" onerror="this.remove()">` : '🎙'}</span>
+      <div><small>SALA DE CASA ABIERTA 24/7 · SOLO AUDIO</small><h2>${escapeHtml(roomTitle)}</h2><p>${sessionActive ? `Sesión de audio dirigida por ${escapeHtml(state.room.hostName || 'la Casa')}.` : escapeHtml(roomDescription)}</p></div>
       <span class="house-room-status">24/7</span>
     </div>
     <div class="house-room-data">
       <div><small>CAPACIDAD</small><b>20</b></div><div><small>ACCESO A SILLA</small><b>${escapeHtml(policy)}</b></div><div><small>CÁMARA</small><b>DESACTIVADA</b></div>
     </div>
     <div class="house-room-actions"><a class="primary" href="${escapeHtml(directUrl)}">ENTRAR DIRECTAMENTE</a></div>
-    ${state.isAdmin ? `<form class="house-room-config" id="houseRoomConfigForm"><label>Quién puede subir a silla<select name="seatPolicy"><option value="members" ${state.roomConfig.seatPolicy === 'members' ? 'selected' : ''}>Solo miembros</option><option value="fans" ${state.roomConfig.seatPolicy === 'fans' ? 'selected' : ''}>Fans y miembros</option><option value="followers" ${state.roomConfig.seatPolicy === 'followers' ? 'selected' : ''}>Seguidores, fans y miembros</option><option value="admins" ${state.roomConfig.seatPolicy === 'admins' ? 'selected' : ''}>Solo responsables</option><option value="manual" ${state.roomConfig.seatPolicy === 'manual' ? 'selected' : ''}>Invitación manual</option></select></label><label>Nivel mínimo<input name="minLevel" type="number" min="1" max="100" value="${number(state.roomConfig.minLevel || 1)}"></label><button type="submit">GUARDAR AJUSTES</button></form>` : ''}
+    ${state.canManageRoom ? `<form class="house-room-config expanded" id="houseRoomConfigForm"><label class="wide">Nombre de la Sala<input name="title" type="text" maxlength="60" value="${escapeHtml(roomTitle)}" required></label><label class="wide">Descripción<input name="description" type="text" maxlength="180" value="${escapeHtml(roomDescription)}" required></label><label class="wide">Foto oficial de la Sala<input name="roomPhoto" type="file" accept="image/*"></label><label>Quién puede subir a silla<select name="seatPolicy"><option value="members" ${state.roomConfig.seatPolicy === 'members' ? 'selected' : ''}>Solo miembros</option><option value="fans" ${state.roomConfig.seatPolicy === 'fans' ? 'selected' : ''}>Fans y miembros</option><option value="followers" ${state.roomConfig.seatPolicy === 'followers' ? 'selected' : ''}>Seguidores, fans y miembros</option><option value="admins" ${state.roomConfig.seatPolicy === 'admins' ? 'selected' : ''}>Solo responsables</option><option value="manual" ${state.roomConfig.seatPolicy === 'manual' ? 'selected' : ''}>Invitación manual</option></select></label><label>Nivel mínimo<input name="minLevel" type="number" min="1" max="100" value="${number(state.roomConfig.minLevel || 1)}"></label><button type="submit">GUARDAR IDENTIDAD Y AJUSTES</button></form>` : ''}
     <p class="house-module-note">Esta sala pertenece a la Casa, no al perfil personal de una emisora. Permanece disponible aunque una persona salga. Las emisoras entran desde Mi Casa o desde su perfil y el tiempo cuenta para la tarea.</p>`;
 }
 
@@ -519,7 +532,7 @@ function renderAll() {
 
 async function saveTaskConfig(event) {
   event.preventDefault();
-  if (!state.isAdmin) return;
+  if (!state.canManageRoom) return;
   const data = new FormData(event.currentTarget);
   const next = {
     enabled: true,
@@ -537,20 +550,56 @@ async function saveTaskConfig(event) {
   } catch (error) { toast('No se pudieron guardar los objetivos.', 'error'); }
 }
 
+
+async function roomImageFromFile(file) {
+  if (!(file instanceof File) || !file.size) return '';
+  if (!String(file.type || '').startsWith('image/')) throw new Error('La imagen de la sala debe ser una foto.');
+  if (file.size > 8 * 1024 * 1024) throw new Error('La imagen supera 8 MB.');
+  const source = await new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(new Error('No se pudo leer la imagen.'));
+    reader.readAsDataURL(file);
+  });
+  const image = await new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error('La imagen no es válida.'));
+    img.src = source;
+  });
+  const size = 520, canvas = document.createElement('canvas');
+  canvas.width = size; canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const scale = Math.max(size / image.naturalWidth, size / image.naturalHeight);
+  const width = image.naturalWidth * scale, height = image.naturalHeight * scale;
+  ctx.drawImage(image, (size - width) / 2, (size - height) / 2, width, height);
+  let output = canvas.toDataURL('image/jpeg', .82);
+  if (output.length > 250000) output = canvas.toDataURL('image/jpeg', .68);
+  if (output.length > 260000) throw new Error('No se pudo reducir la imagen lo suficiente.');
+  return output;
+}
+
 async function saveRoomConfig(event) {
   event.preventDefault();
   if (!state.isAdmin) return;
   const data = new FormData(event.currentTarget);
   try {
+    const file = data.get('roomPhoto');
+    const roomPhotoData = file instanceof File && file.size ? await roomImageFromFile(file) : clean(state.roomConfig.roomPhotoData || '', 260000);
+    const title = clean(data.get('title'), 60) || `Sala 24/7 de ${clean(state.house.name || 'Casa JEMMO', 60)}`;
+    const description = clean(data.get('description'), 180) || 'Audio Room permanente para tareas y comunidad de la Casa.';
     await state.services.setDoc(state.services.doc(state.services.db, 'casas', state.houseId, 'configuracion', 'sala'), {
       capacity: 20,
       mode: 'audio',
+      title,
+      description,
+      roomPhotoData,
       seatPolicy: clean(data.get('seatPolicy'), 20) || 'members',
       minLevel: Math.min(100, Math.max(1, Number(data.get('minLevel')) || 1)),
       updatedBy: state.user.uid,
       updatedAt: state.services.serverTimestamp()
     }, { merge: true });
-    await writeAudit('official_room_config_updated', '', { capacity: 20, mode: 'audio', seatPolicy: clean(data.get('seatPolicy'), 20) || 'members', minLevel: Math.min(100, Math.max(1, Number(data.get('minLevel')) || 1)) });
+    await writeAudit('official_room_config_updated', '', { capacity: 20, mode: 'audio', title, seatPolicy: clean(data.get('seatPolicy'), 20) || 'members', minLevel: Math.min(100, Math.max(1, Number(data.get('minLevel')) || 1)) });
     toast('Ajustes de la sala guardados.', 'success');
   } catch { toast('No se pudieron guardar los ajustes.', 'error'); }
 }

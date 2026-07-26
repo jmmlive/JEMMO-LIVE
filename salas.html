@@ -9,7 +9,7 @@
   <link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="favicon-64.png">
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <title>JEMMO LIVE · AVATARES, NOMBRES EN SILLA Y VIP · PRUEBA 26</title>
+  <title>JEMMO LIVE · OYENTES E IDENTIDAD DE SALA DE CASA · PRUEBA 27</title>
   <style>html.jemmo-auth-pending body{visibility:hidden}</style>
   <style>
     :root{
@@ -464,6 +464,7 @@
     remotePhoto:'jemmo-fish-nav.webp',
     remoteUid:'',
     remoteConnected:false,
+    remoteSeatActive:false,
     ownName:'Jesús',
     ownPhoto:'',
     ownUid:activeUid(),
@@ -481,6 +482,9 @@
     remoteAudioPlaying:false,
     chatSending:false,
     houseSeatActive:true,
+    houseListenerOnly:false,
+    houseAccess:null,
+    pendingHouseSeat:0,
     moderatedDown:false,
     currentUserVip:storedVipActive(),
     vipKnown:false
@@ -509,6 +513,7 @@
   let hiddenAt=0;
   let mediaRecoveryBusy=false;
   let lastMediaRecoveryAt=0;
+  let houseWaitingTimer=0;
 
   function toast(message){
     const el=$('toast');
@@ -563,9 +568,38 @@
       state.ownName=profile.name||state.ownName;
       state.ownPhoto=profile.photo||state.ownPhoto;
       applyVipProfile(profile);
-      if(state.ownPhoto)$('roomAvatar').src=state.ownPhoto;
+      if(state.ownPhoto&&!houseContext.enabled)$('roomAvatar').src=state.ownPhoto;
     }catch(error){console.warn('JEMMO VIP/profile access:',error)}
   }
+
+
+  function houseRoomIdentity(access=state.houseAccess||{}){
+    const room=access.roomConfig||{},house=access.house||{};
+    const name=String(access.houseName||house.name||houseContext.name||'Casa JEMMO').trim().slice(0,60);
+    return{
+      name,
+      title:String(access.title||room.title||`Sala 24/7 de ${name}`).trim().slice(0,60),
+      description:String(access.description||room.description||house.description||'Audio Room oficial de la Casa.').trim().slice(0,180),
+      image:String(access.image||room.roomPhotoData||room.roomPhoto||room.image||house.logo||house.photo||house.cover||'jemmo-fish-nav.webp').trim()
+    };
+  }
+
+  function applyHouseRoomIdentity(access={}){
+    if(!houseContext.enabled)return;
+    state.houseAccess=access||{};
+    const identity=houseRoomIdentity(access);
+    houseContext.name=identity.name;
+    state.cover=identity.image||'jemmo-fish-nav.webp';
+    if($('roomTitle'))$('roomTitle').value=identity.title;
+    if($('roomDescription'))$('roomDescription').value=identity.description;
+    if($('roomTitleLabel'))$('roomTitleLabel').textContent=identity.title;
+    if($('roomAvatar'))$('roomAvatar').src=state.cover;
+    if($('coverPreview'))$('coverPreview').src=state.cover;
+    if($('roomModeLabel'))$('roomModeLabel').textContent='AUDIO ROOM DE LA CASA';
+  }
+
+  function houseUserCanHost(){return Boolean(state.houseAccess?.canHost)}
+  function houseRoleLabel(){return String(state.houseAccess?.positionLabel||(state.isGuest?'Miembro':'Responsable de Casa')).slice(0,40)}
 
   function configPayload(){
     return {
@@ -634,7 +668,8 @@
     const description=pageParams.get('description')||'Audio Room oficial para miembros, tareas y actividades de la Casa.';
     $('roomTitle').value=String(title).slice(0,60);
     $('roomDescription').value=String(description).slice(0,180);
-    if(!state.cover){state.cover='jemmo-fish-nav.webp';$('coverPreview').src=state.cover;$('roomAvatar').src=state.cover}
+    if(!state.cover){state.cover='jemmo-fish-nav.webp'}
+    $('coverPreview').src=state.cover;$('roomAvatar').src=state.cover
     $('roomModeLabel').textContent='AUDIO ROOM DE LA CASA';
     document.body.classList.add('jemmo-house-room');
     $('roomConnectionButton').textContent='INVITAR';
@@ -719,7 +754,7 @@
     const hostPerson=state.isGuest
       ? {uid:state.remoteUid||'remote-host',name:state.remoteName||'Anfitrión',role:state.remoteConnected?'Anfitrión conectado':'Anfitrión',photo:state.remotePhoto||'jemmo-fish-nav.webp',host:true,remote:true}
       : ownPerson;
-    const remoteGuest=!state.isGuest&&state.remoteConnected
+    const remoteGuest=!state.isGuest&&state.remoteConnected&&(!houseContext.enabled||state.remoteSeatActive)
       ? {uid:state.remoteUid||'',name:state.remoteName||'Invitada',role:'Conectada en tiempo real',photo:state.remotePhoto||'jemmo-fish-nav.webp',host:false,remote:true}
       : null;
 
@@ -730,7 +765,8 @@
     };
 
     if(state.isGuest){
-      addUnique(state.remoteSeat||1,hostPerson);
+      const hasKnownHost=Boolean(state.remoteUid||state.inviteMeta?.hostUid||state.realtimeSession||state.remoteConnected);
+      if(hasKnownHost)addUnique(state.remoteSeat||1,hostPerson);
       if(!state.moderatedDown&&(!houseContext.enabled||state.houseSeatActive))addUnique(state.localSeat||2,ownPerson);
     }else{
       if(!houseContext.enabled||state.houseSeatActive)addUnique(state.localSeat||1,hostPerson);
@@ -848,7 +884,7 @@
   }
 
   function localHousePerson(){
-    return {uid:state.ownUid||activeUid(),name:state.ownName||'Usuario JEMMO',role:state.isGuest?'Emisor/a':'Agente de Casa',photo:state.ownPhoto||'jemmo-fish-nav.webp',host:!state.isGuest,local:true};
+    return {uid:state.ownUid||activeUid(),name:state.ownName||'Usuario JEMMO',role:houseRoleLabel(),photo:state.ownPhoto||'jemmo-fish-nav.webp',host:!state.isGuest&&houseUserCanHost(),local:true};
   }
 
   function updateRoomControlLabels(){
@@ -886,18 +922,23 @@
     if(!houseContext.enabled)return;
     if(state.houseSeatActive){
       [...state.occupants.entries()].forEach(([index,person])=>{if(person?.local)state.occupants.delete(index)});
-      state.houseSeatActive=false;state.micEnabled=false;
+      state.houseSeatActive=false;state.houseListenerOnly=true;state.pendingHouseSeat=0;state.micEnabled=false;
       state.stream?.getAudioTracks?.().forEach(track=>{track.enabled=false});
-      toast('Has bajado de la silla. Sigues dentro de la Sala de Casa.');
+      state.realtimeSession?.setOutgoingEnabled?.(false);
+      void state.realtimeSession?.setSeatState?.(false,0).catch(error=>console.warn('Estado oyente:',error));
+      toast('Has bajado de la silla. Sigues dentro de la Sala de Casa como oyente.');
     }else{
       const requested=Number(preferredIndex);
       const preferred=requested>=1&&requested<=state.count?requested:(state.isGuest?2:1);
       const index=!state.occupants.has(preferred)?preferred:[...Array(state.count)].map((_,i)=>i+1).find(i=>!state.occupants.has(i));
       if(!index){toast('No hay sillas libres en este momento.');return}
-      state.houseSeatActive=true;state.micEnabled=true;state.localSeat=index;
+      state.houseSeatActive=true;state.houseListenerOnly=false;state.micEnabled=true;state.localSeat=index;state.pendingHouseSeat=index;
       state.occupants.set(index,localHousePerson());
       state.stream?.getAudioTracks?.().forEach(track=>{track.enabled=true});
-      toast(`Has subido a la silla ${index}.`);
+      state.realtimeSession?.setOutgoingEnabled?.(true);
+      void state.realtimeSession?.setSeatState?.(true,index).catch(error=>console.warn('Estado en silla:',error));
+      if(!state.realtimeSession)toast(`Has elegido la silla ${index}. El audio se activará cuando el responsable abra la sesión.`);
+      else toast(`Has subido a la silla ${index}.`);
     }
     syncHouseDirectControls();renderSeats();renderGiftRecipients();
   }
@@ -1030,7 +1071,7 @@
         audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}
       });
       state.stream=stream;
-      state.micEnabled=true;
+      state.micEnabled=!(houseContext.enabled&&!state.houseSeatActive);
       if(state.mode!=='camera')state.cameraEnabled=false;
       stream.getAudioTracks().forEach(track=>{
         track.enabled=state.micEnabled;
@@ -1084,7 +1125,12 @@
     state.remoteName=String(profile.name||state.remoteName||'Invitada');
     state.remotePhoto=String(profile.photo||state.remotePhoto||'jemmo-fish-nav.webp');
     state.remoteUid=incomingUid||String(state.remoteUid||'');
-    if(state.isGuest&&state.remotePhoto)$('roomAvatar').src=state.remotePhoto;
+    if(!state.isGuest&&houseContext.enabled){
+      const status=String(profile.seatStatus||'').toLowerCase();
+      state.remoteSeatActive=status?status==='seated':state.remoteSeatActive;
+      const reportedSeat=Number(profile.seat)||0;if(reportedSeat>=1&&reportedSeat<=state.count)state.remoteSeat=reportedSeat;
+    }
+    if(state.isGuest&&state.remotePhoto&&!houseContext.enabled)$('roomAvatar').src=state.remotePhoto;
     const candidate={uid:state.remoteUid,name:state.remoteName};
     const remaining=remainingBanSeconds(candidate);
     if(remaining){
@@ -1160,10 +1206,11 @@
     const api=await waitRealtimeApi();
     state.realtimeSession=await api.createHostSession({
       mode:state.mode,count:state.count,title:$('roomTitle').value.trim(),description:$('roomDescription').value.trim(),localStream:stream,
-      cover:(!houseContext.enabled&&state.cover&&!String(state.cover).startsWith('data:')&&!String(state.cover).startsWith('blob:'))?String(state.cover).slice(0,1200):'',
+      cover:(state.cover&&!String(state.cover).startsWith('blob:'))?String(state.cover).slice(0,1200):'',
+      roomOwnerTitle:houseContext.enabled?houseRoomIdentity().title:'',roomOwnerDescription:houseContext.enabled?houseRoomIdentity().description:'',roomOwnerPhoto:houseContext.enabled?houseRoomIdentity().image:'',
       houseId:houseContext.enabled?houseContext.id:'',houseName:houseContext.enabled?(houseContext.name||$('roomTitle').value.trim()):'',permanentHouseRoom:houseContext.enabled,
       onOutgoingMediaNeeded:()=>recoverLocalMedia(true),
-      onRemoteStream:handleRemoteStream,onRemoteProfile:handleRemoteProfile,onLocalProfile:profile=>{state.ownUid=profile.uid||state.ownUid;state.ownName=profile.name||state.ownName;state.ownPhoto=profile.photo||state.ownPhoto;applyVipProfile(profile);if(state.ownPhoto)$('roomAvatar').src=state.ownPhoto;defaultOccupants();renderSeats();renderGiftRecipients()},onStatus:handleRealtimeStatus,onMessage:handleRoomMessage,onChatState:handleRemoteChatState,onModeration:handleRoomModeration
+      onRemoteStream:handleRemoteStream,onRemoteProfile:handleRemoteProfile,onLocalProfile:profile=>{state.ownUid=profile.uid||state.ownUid;state.ownName=profile.name||state.ownName;state.ownPhoto=profile.photo||state.ownPhoto;applyVipProfile(profile);if(state.ownPhoto&&!houseContext.enabled)$('roomAvatar').src=state.ownPhoto;defaultOccupants();renderSeats();renderGiftRecipients()},onStatus:handleRealtimeStatus,onMessage:handleRoomMessage,onChatState:handleRemoteChatState,onModeration:handleRoomModeration
     });
     updateRoomConnection('waiting',houseContext.enabled?'SALA ABIERTA · ESPERANDO EMISORA':state.remoteName?`INVITAR A ${state.remoteName.toUpperCase()}`:'INVITAR');
     return state.realtimeSession;
@@ -1202,22 +1249,28 @@
   }
 
   async function enterRoom(){
+    if(houseContext.enabled&&state.houseAccess&&!houseUserCanHost()){await enterHouseListenerMode(state.houseAccess);return}
     if(!enforceHostVipCapacity({notify:true})){renderPreparation();save();return}
     if(!validation()){
       toast('Completa portada, título y descripción.');
       return;
     }
     state.isGuest=false;
+    state.houseListenerOnly=false;
+    state.houseSeatActive=true;
+    state.pendingHouseSeat=1;
     state.moderatedDown=false;
     state.localSeat=1;
     state.remoteSeat=2;
     state.remoteName=state.remoteName||'';
     state.remotePhoto=state.remotePhoto||'jemmo-fish-nav.webp';
     state.remoteConnected=false;
+    state.remoteSeatActive=false;
+    state.micEnabled=true;
     state.cameraEnabled=state.mode==='camera';state.chatClosed=false;updateRoomControlLabels();toggleRoomChat(false,{silent:true,sync:false});
     const title=$('roomTitle').value.trim();
     resetRoomChat();
-    $('roomAvatar').src=state.ownPhoto||'jemmo-fish-nav.webp';
+    $('roomAvatar').src=houseContext.enabled?houseRoomIdentity().image:(state.ownPhoto||'jemmo-fish-nav.webp');
     save();
     if(!houseContext.enabled)document.body.classList.remove('jemmo-house-room');
     syncRoomCover();
@@ -1247,26 +1300,31 @@
     }
   }
 
-  async function joinIncomingRoom(meta){
+  async function joinIncomingRoom(meta,{asListener=houseContext.enabled,preferredSeat=0}={}){
     state.isGuest=true;
+    state.houseListenerOnly=Boolean(asListener);
+    state.houseSeatActive=!asListener;
+    state.pendingHouseSeat=asListener?0:(Number(preferredSeat)||2);
     state.moderatedDown=false;
-    state.localSeat=2;
+    state.localSeat=asListener?0:state.pendingHouseSeat;
     state.remoteSeat=1;
     state.mode=meta.mode;
     state.count=meta.mode==='camera'&&meta.count===25?15:meta.count;
     state.remoteName=meta.hostName||'Jesús';
     state.remotePhoto=meta.hostPhoto||'jemmo-fish-nav.webp';
     state.remoteConnected=false;
+    state.remoteSeatActive=true;
+    state.micEnabled=!asListener;
     state.cameraEnabled=state.mode==='camera';state.chatClosed=false;updateRoomControlLabels();toggleRoomChat(false,{silent:true,sync:false});
     if(!houseContext.enabled&&meta.cover)state.cover=String(meta.cover).slice(0,1400);
-    $('roomAvatar').src=meta.hostPhoto||'jemmo-fish-nav.webp';
+    $('roomAvatar').src=houseContext.enabled?houseRoomIdentity().image:(meta.hostPhoto||'jemmo-fish-nav.webp');
     if(!houseContext.enabled)document.body.classList.remove('jemmo-house-room');
     resetRoomChat();
     syncRoomCover();
     $('incomingInviteDialog').hidden=true;
     $('roomModeLabel').textContent=state.mode==='audio'?'AUDIO ROOM':'SALA CON CÁMARA';
-    $('roomTitleLabel').textContent=meta.title||'Sala de JEMMO';
-    $('roomCapacityLabel').textContent=houseContext.enabled?`${state.count} sillas`:`${state.count}${state.count===25?' VIP':''} plazas`;
+    $('roomTitleLabel').textContent=houseContext.enabled?houseRoomIdentity().title:(meta.title||'Sala de JEMMO');
+    $('roomCapacityLabel').textContent=houseContext.enabled?'20 sillas · Sala oficial':`${state.count}${state.count===25?' VIP':''} plazas`;
     $('prepareView').classList.add('jr-hidden');
     $('prepareNav').classList.add('jr-hidden');
     $('roomView').classList.remove('jr-hidden');
@@ -1279,8 +1337,9 @@
     if(!stream){updateRoomConnection('warning','PERMISOS NECESARIOS');return}
     try{
       const api=await waitRealtimeApi();
-      state.realtimeSession=await api.joinGuestSession(meta.roomId,{mode:state.mode,localStream:stream,onRemoteStream:handleRemoteStream,onRemoteProfile:handleRemoteProfile,onLocalProfile:profile=>{state.ownUid=profile.uid||state.ownUid;state.ownName=profile.name||state.ownName||'Usuario JEMMO';state.ownPhoto=profile.photo||state.ownPhoto||'jemmo-fish-nav.webp';applyVipProfile(profile);defaultOccupants();renderSeats();renderGiftRecipients()},onStatus:handleRealtimeStatus,onMessage:handleRoomMessage,onChatState:handleRemoteChatState,onModeration:handleRoomModeration});
-      addChat(`JEMMO: Has entrado en la sala de ${meta.hostName||'Jesús'}.`,'system');
+      state.realtimeSession=await api.joinGuestSession(meta.roomId,{mode:state.mode,localStream:stream,listenOnly:asListener,seat:state.localSeat,onRemoteStream:handleRemoteStream,onRemoteProfile:handleRemoteProfile,onLocalProfile:profile=>{state.ownUid=profile.uid||state.ownUid;state.ownName=profile.name||state.ownName||'Usuario JEMMO';state.ownPhoto=profile.photo||state.ownPhoto||'jemmo-fish-nav.webp';applyVipProfile(profile);defaultOccupants();renderSeats();renderGiftRecipients()},onStatus:handleRealtimeStatus,onMessage:handleRoomMessage,onChatState:handleRemoteChatState,onModeration:handleRoomModeration});
+      state.realtimeSession.setOutgoingEnabled?.(!asListener);
+      addChat(asListener?'JEMMO: Has entrado como oyente. Toca una silla libre para subir.':`JEMMO: Has entrado en la sala de ${meta.hostName||'la Casa'}.`,'system');
     }catch(error){
       console.warn('Unión a sala:',error);
       updateRoomConnection('warning','NO SE PUDO CONECTAR');
@@ -1288,19 +1347,72 @@
     }
   }
 
+
+  function clearHouseWaiting(){if(houseWaitingTimer){clearInterval(houseWaitingTimer);houseWaitingTimer=0}}
+
+  function watchForHouseHost(){
+    clearHouseWaiting();
+    if(!houseContext.enabled||state.realtimeSession)return;
+    houseWaitingTimer=setInterval(async()=>{
+      if(!roomOpen||state.realtimeSession)return clearHouseWaiting();
+      try{
+        const api=await waitRealtimeApi();
+        const active=await api.getActiveHouseRoom?.(houseContext.id);
+        if(active&&active.hostUid&&active.hostUid!==activeUid()){
+          const seated=state.houseSeatActive,seat=state.pendingHouseSeat||state.localSeat||2;
+          clearHouseWaiting();
+          await joinIncomingRoom(active,{asListener:!seated,preferredSeat:seat});
+        }
+      }catch(error){console.warn('Espera de responsable de Sala de Casa:',error)}
+    },5000);
+  }
+
+  async function enterHouseListenerMode(access={}){
+    applyHouseRoomIdentity(access);
+    state.isGuest=true;
+    state.houseListenerOnly=true;
+    state.houseSeatActive=false;
+    state.pendingHouseSeat=0;
+    state.localSeat=0;
+    state.remoteSeat=1;
+    state.inviteMeta=null;
+    state.remoteUid='';
+    state.remoteName='';
+    state.remotePhoto='jemmo-fish-nav.webp';
+    state.remoteConnected=false;
+    state.remoteSeatActive=false;
+    state.micEnabled=false;
+    state.cameraEnabled=false;
+    state.chatClosed=false;
+    resetRoomChat();
+    defaultOccupants();renderSeats();renderGiftRecipients();syncHouseDirectControls();updateRoomControlLabels();
+    $('prepareView').classList.add('jr-hidden');$('prepareNav').classList.add('jr-hidden');$('roomView').classList.remove('jr-hidden');
+    document.body.style.overflow='hidden';roomOpen=true;
+    if(!history.state?.jemmoRoom)history.pushState({...(history.state||{}),jemmoRoom:true},'');
+    $('roomModeLabel').textContent='AUDIO ROOM DE LA CASA';
+    $('roomTitleLabel').textContent=houseRoomIdentity(access).title;
+    $('roomCapacityLabel').textContent='20 sillas · Sala oficial';
+    updateRoomConnection('waiting','ESPERANDO AL RESPONSABLE');
+    addChat('JEMMO: Has entrado abajo como oyente. Toca una silla libre para subir cuando haya audio disponible.','system');
+    watchForHouseHost();
+  }
+
   async function enterHouseRoomDirect(){
     if(!houseContext.enabled||!houseContext.direct)return false;
     try{
       const api=await waitRealtimeApi();
+      const access=await api.getHouseRoomAccess?.(houseContext.id)||{};
+      applyHouseRoomIdentity(access);
       const joinCode=pageParams.get('join');
-      if(joinCode){const meta=await api.getRoomPreview(joinCode);state.inviteMeta=meta;await joinIncomingRoom(meta);return true}
+      if(joinCode){const meta=await api.getRoomPreview(joinCode);state.inviteMeta=meta;await joinIncomingRoom(meta,{asListener:true});return true}
       const active=await api.getActiveHouseRoom?.(houseContext.id);
-      if(active&&active.hostUid&&active.hostUid!==activeUid()){state.inviteMeta=active;await joinIncomingRoom(active);return true}
-      await enterRoom();return true;
+      if(active&&active.hostUid&&active.hostUid!==activeUid()){state.inviteMeta=active;await joinIncomingRoom(active,{asListener:true});return true}
+      if(access.canHost){await enterRoom();return true}
+      await enterHouseListenerMode(access);return true;
     }catch(error){
       console.warn('Entrada directa a Sala de Casa:',error);
-      toast('La Sala de Casa se abrirá en modo local mientras se recupera la conexión.');
-      await enterRoom();return true;
+      toast('No se pudo verificar el responsable. Entrarás como oyente.');
+      await enterHouseListenerMode(state.houseAccess||{});return true;
     }
   }
 
@@ -1337,6 +1449,7 @@
   function leaveRoom(confirmExit=true,useHistory=true){
     if(confirmExit&&!confirm(houseContext.enabled?'¿Quieres salir de la Sala de tu Casa? La sala seguirá disponible 24/7.':'¿Quieres salir de esta sala?'))return;
     const steps=history.state?.jemmoRoomSheet?2:history.state?.jemmoRoom?1:0;
+    clearHouseWaiting();
     void closeRealtime(!state.isGuest);
     stopCamera();
     roomOpen=false;
@@ -1728,6 +1841,7 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   }
 
   $('roomConnectionButton').addEventListener('click',()=>{
+    if(houseContext.enabled&&state.houseListenerOnly&&!state.realtimeSession){toast('Estás como oyente. El responsable de la Casa todavía no ha abierto el audio.');return}
     if(state.remoteConnected){
       void playRemoteAudio(true);
       if(state.isGuest){

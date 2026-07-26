@@ -1,28 +1,32 @@
-JEMMO LIVE V1 · AVATARES, NOMBRES EN SILLA Y VALIDACIÓN VIP PRUEBA 26
+JEMMO LIVE V1 · ACCESO COMO OYENTE E IDENTIDAD DE SALA DE CASA PRUEBA 27
 Fecha: 26/07/2026
 
 Base acumulada:
-- JEMMO LIVE V1 · AUDIO ROOM SIN DUPLICADOS Y AVATARES CORREGIDOS PRUEBA 25.
-- Conserva acceso directo a Sala oficial, tareas reales, panel financiero, Perfil, navegación, Universo y moderación acumulados.
+- JEMMO LIVE V1 · AVATARES, NOMBRES EN SILLA Y VALIDACIÓN VIP PRUEBA 26.
+- Conserva tareas reales, panel financiero de agentes, acceso directo a Mi Casa, moderación, regalos, Perfil y navegación acumulados.
 
-Incidencias confirmadas en la prueba real con Ruth:
-- La foto de una persona sentada seguía apareciendo pequeña dentro de una silla circular grande, en lugar de llenar correctamente el círculo.
-- El nombre debía permanecer visible justo debajo del rostro en la silla ocupada y acompañar a la persona cuando eligiera otra posición.
-- Una cuenta no VIP podía conservar o seleccionar 25 plazas como anfitriona.
-- La regla correcta no es bloquear a los invitados no VIP: Ruth sí puede entrar como invitada a una sala de 25 creada por un anfitrión VIP.
+Incidencias confirmadas en la prueba real:
+- Ruth, como Emisora de una Casa, entraba ocupando automáticamente la silla 1 de la Sala oficial.
+- La cabecera y la identidad visual de la Sala oficial podían sustituirse por la foto y los datos personales de la persona que entraba.
+- La Sala oficial pertenece a la Casa/Agencia y debe conservar sus propios datos, configurados por el agente o propietario.
 
-Correcciones:
-- En Audio Room, la foto de cada silla ocupada llena completamente el círculo con recorte centrado y degradado inferior para legibilidad.
-- Nombre y rol aparecen en una franja integrada debajo del rostro dentro de la silla.
-- La posición local se conserva: al tocar una silla libre para subir, foto y nombre aparecen exactamente en esa silla.
-- La sala de 25 plazas solo puede ser creada por un anfitrión VIP.
-- Un anfitrión no VIP queda limitado a 15 plazas aunque el móvil conserve una configuración antigua de 25 o se intente forzar el valor.
-- El botón de 25 aparece bloqueado para anfitriones no VIP y explica la regla.
-- Los invitados no VIP pueden entrar normalmente en una sala de 25 mediante invitación, enlace oficial o acceso desde el perfil del anfitrión.
-- La condición VIP se lee desde el perfil Firebase cuando existe y conserva compatibilidad con el indicador local de pruebas.
-- La sala registra si el anfitrión es VIP para auditoría, sin exigir VIP a la persona invitada.
-- Nueva caché PWA PRUEBA 26.
+Correcciones funcionales:
+- Miembros, Emisores/as e invitados entran primero abajo como oyentes, sin ocupar ninguna silla.
+- Para subir, la persona toca una silla libre; su foto, nombre y rol aparecen únicamente en esa posición.
+- Al bajar, vuelve a la zona de oyentes y el micrófono deja de transmitirse.
+- Si el responsable todavía no ha abierto la sesión de audio, la persona puede esperar abajo o reservar una silla; el audio se conecta cuando se abre la sesión.
+- Solo el propietario, agente o administrador autorizado de esa Casa abre la sesión como anfitrión y ocupa la silla principal.
+- La condición de responsable se valida con el documento de membresía, la posición de Casa y el propietario real de la Casa.
+- El anfitrión ve a una persona conectada como oyente fuera de las sillas; solo aparece en una silla cuando informa estado `seated` y número de silla.
+- La conexión WebRTC admite entrada en modo escucha: inicialmente no envía micrófono y activa la salida al subir a una silla.
+
+Identidad oficial de Sala de Casa:
+- Nombre, descripción y foto de la Sala se leen de `casas/{houseId}/configuracion/sala` y, como respaldo, de los datos de la Casa.
+- La cabecera ya no utiliza la foto del último miembro o Emisor/a que entra.
+- El agente, propietario o administrador puede configurar nombre, descripción, foto oficial, política de sillas y nivel mínimo desde el panel de la Casa.
+- La identidad se guarda en Firebase y también se registra en el estado de la Sala oficial para mantenerla estable.
 
 Estado:
 - MODO DE PRUEBAS.
-- Pendiente de prueba real: Ruth como anfitriona no VIP debe tener máximo 15; Ruth como invitada debe poder entrar en una sala VIP de 25 creada por Jesús.
+- Pendiente de prueba real: el agente abre la Sala; Ruth entra abajo como oyente; Ruth toca una silla libre y entonces aparece en ella con su perfil.
+- La captura automatizada con navegador local no pudo ejecutarse por una restricción administrativa del entorno. Se realizaron validaciones de sintaxis, estructura y pruebas unitarias.

@@ -1,6 +1,6 @@
-/* JEMMO LIVE V1 · AVATARES, NOMBRES EN SILLA Y VIP PRUEBA 26
+/* JEMMO LIVE V1 · OYENTES E IDENTIDAD OFICIAL DE CASA PRUEBA 27
    Señalización WebRTC, chat y moderación de prueba mediante Firestore. No es infraestructura de producción.
-   La invitada enlaza sus pistas a los transceptores ofrecidos por el anfitrión antes de responder. */
+   En Salas de Casa, miembros y emisores entran como oyentes; solo responsables autorizados abren la sesión. */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
 import {
@@ -82,13 +82,13 @@ function addLocalTracks(peer, stream) {
   });
 }
 
-async function bindLocalTracksToRemoteOffer(peer, stream) {
+async function bindLocalTracksToRemoteOffer(peer, stream, outgoingEnabled = true) {
   if (!(stream instanceof MediaStream)) return;
   const tracksByKind = new Map(stream.getTracks().map(track => [track.kind, track]));
   for (const kind of ['audio', 'video']) {
     const track = tracksByKind.get(kind);
     if (!track) continue;
-    track.enabled = true;
+    track.enabled = Boolean(outgoingEnabled);
     try { if (kind === 'audio') track.contentHint = 'speech'; } catch {}
     let transceiver = peer.getTransceivers().find(item => !item.stopped && item.receiver?.track?.kind === kind && !item.sender?.track);
     if (!transceiver) transceiver = peer.getTransceivers().find(item => !item.stopped && item.receiver?.track?.kind === kind);
@@ -190,6 +190,65 @@ async function readProfile(user) {
 }
 
 
+function normalizedRole(value) {
+  return clean(value, 40).toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+async function getHouseRoomAccess(houseIdValue) {
+  const user = await waitForUser();
+  const houseId = clean(houseIdValue, 80);
+  if (!houseId) throw new Error('La Casa no está identificada.');
+  const [profileSnap, houseSnap, membershipSnap, configSnap, roomSnap] = await Promise.all([
+    getDoc(doc(db, 'users', user.uid)),
+    getDoc(doc(db, 'casas', houseId)),
+    getDoc(doc(db, 'casas', houseId, 'miembros', user.uid)),
+    getDoc(doc(db, 'casas', houseId, 'configuracion', 'sala')),
+    getDoc(doc(db, 'casas', houseId, 'salaActual', 'estado'))
+  ]);
+  const profile = profileSnap.data() || {};
+  const house = houseSnap.data() || {};
+  const membership = membershipSnap.data() || {};
+  const roomConfig = configSnap.data() || {};
+  const roomState = roomSnap.data() || {};
+  const membershipStatus = normalizedRole(membership.status || profile.houseStatus || 'active');
+  const role = normalizedRole(membership.role || profile.houseRole);
+  const position = normalizedRole(membership.housePosition || membership.position || profile.housePosition);
+  const ownerUid = clean(house.ownerUid || house.ownerId || house.createdBy || house.proprietorUid, 160);
+  const isHouseOwner = Boolean(ownerUid && ownerUid === user.uid);
+  const activeMembership = membershipSnap.exists() && !['left', 'removed', 'blocked', 'rejected'].includes(membershipStatus);
+  const canHost = Boolean(isHouseOwner || (activeMembership && (
+    ['owner', 'propietario', 'agent', 'agente', 'admin', 'administrador'].includes(role) ||
+    ['owner', 'propietario', 'agent', 'agente', 'admin', 'administrador'].includes(position)
+  )));
+  const houseName = clean(house.name || house.nombre || roomState.houseName || 'Casa JEMMO', 60);
+  const title = clean(roomConfig.title || roomState.roomTitle || roomState.title || `Sala 24/7 de ${houseName}`, 60);
+  const description = clean(roomConfig.description || roomState.roomDescription || roomState.description || house.description || house.descripcion || 'Audio Room oficial de la Casa.', 180);
+  const image = safeProfilePhoto(
+    roomConfig.roomPhotoData || roomConfig.roomPhoto || roomConfig.image || roomConfig.photo || roomConfig.logo || roomConfig.cover ||
+    roomState.roomPhoto || roomState.roomImage || house.logo || house.photo || house.cover || house.avatar
+  );
+  const positionLabel = canHost
+    ? (['agent', 'agente'].includes(position) ? 'Agente de Casa' : ['admin', 'administrador'].includes(role) ? 'Administración' : 'Responsable de Casa')
+    : (['emitter', 'emisor', 'emisora', 'host', 'creator'].includes(position) ? 'Emisor/a' : 'Miembro');
+  return {
+    uid: user.uid,
+    houseId,
+    isMember: activeMembership || isHouseOwner,
+    canHost,
+    role,
+    position,
+    positionLabel,
+    houseName,
+    title,
+    description,
+    image,
+    house,
+    membership,
+    roomConfig,
+    roomState
+  };
+}
+
 function configureRoomChat({ roomRef, user, profile, unsubs, onMessage }) {
   const seen = new Set();
   const messagesRef = collection(roomRef, 'messages');
@@ -254,8 +313,9 @@ function configureRoomControls({ roomRef, user }) {
   return { setChatClosed, sendModerationAction };
 }
 
-function makeSession({ role, roomId, roomRef, houseRoomRef, permanentHouseRoom = false, peer, remoteStream, unsubs, onStatus, sendChatMessage, setChatClosed, sendModerationAction, renegotiate, requestRenegotiation, expectVideo }) {
+function makeSession({ role, roomId, roomRef, houseRoomRef, permanentHouseRoom = false, peer, remoteStream, unsubs, onStatus, sendChatMessage, setChatClosed, sendModerationAction, renegotiate, requestRenegotiation, expectVideo, outgoingEnabled = true }) {
   let closed = false;
+  let outgoing = Boolean(outgoingEnabled);
   const close = async ({ endRoom = role === 'host' } = {}) => {
     if (closed) return;
     closed = true;
@@ -291,7 +351,7 @@ function makeSession({ role, roomId, roomRef, houseRoomRef, permanentHouseRoom =
       let addedTrack = false;
       const byKind = new Map(stream.getTracks().map(track => [track.kind, track]));
       for (const track of stream.getTracks()) {
-        track.enabled = true;
+        track.enabled = outgoing;
         try { if (track.kind === 'audio') track.contentHint = 'speech'; } catch {}
         const transceiver = peer.getTransceivers().find(item => !item.stopped && (
           item.sender?.track?.kind === track.kind || item.receiver?.track?.kind === track.kind
@@ -316,6 +376,20 @@ function makeSession({ role, roomId, roomRef, houseRoomRef, permanentHouseRoom =
       }
       if (role === 'host') await renegotiate?.(addedTrack ? 'track-added' : 'media-restored');
       else await requestRenegotiation?.('guest-media-restored');
+    },
+    setOutgoingEnabled(enabled) {
+      outgoing = Boolean(enabled);
+      peer.getSenders().forEach(sender => { if (sender.track) sender.track.enabled = outgoing; });
+      return outgoing;
+    },
+    async setSeatState(seated, seat = 0) {
+      if (role !== 'guest') return;
+      await updateDoc(roomRef, {
+        guestSeatStatus: seated ? 'seated' : 'listener',
+        guestSeat: seated ? Math.max(1, Number(seat) || 1) : 0,
+        guestSeatUpdatedAtMs: Date.now(),
+        updatedAt: serverTimestamp()
+      });
     },
     renegotiate: reason => role === 'host' ? renegotiate?.(reason || 'manual') : requestRenegotiation?.(reason || 'manual'),
     requestRenegotiation: reason => requestRenegotiation?.(reason || 'manual'),
@@ -520,6 +594,9 @@ async function createHostSession(options = {}) {
     title: clean(options.title, 60),
     description: clean(options.description, 180),
     cover: clean(options.cover, 1200),
+    roomOwnerTitle: clean(options.roomOwnerTitle || options.title, 60),
+    roomOwnerDescription: clean(options.roomOwnerDescription || options.description, 180),
+    roomOwnerPhoto: safeProfilePhoto(options.roomOwnerPhoto || options.cover),
     hostUid: user.uid,
     hostName: profile.name,
     hostPhoto: profile.photo,
@@ -545,6 +622,7 @@ async function createHostSession(options = {}) {
       status: 'open', permanent: permanentHouseRoom, open24x7: permanentHouseRoom, sessionStatus: 'active',
       roomId: id, activeRoomId: id, joinUrl, mode: options.mode === 'camera' ? 'camera' : 'audio',
       count: Number(options.count) || 20, capacity: Number(options.count) || 20, title: clean(options.title, 60), description: clean(options.description, 180),
+      roomTitle: clean(options.roomOwnerTitle || options.title, 60), roomDescription: clean(options.roomOwnerDescription || options.description, 180), roomPhoto: safeProfilePhoto(options.roomOwnerPhoto || options.cover),
       hostUid: user.uid, hostName: profile.name, hostVip: Boolean(profile.vip), houseId, houseName,
       openedAt: serverTimestamp(), updatedAt: serverTimestamp(), sessionExpiresAtMs: Date.now() + (permanentHouseRoom ? 8 : 2) * 60 * 60 * 1000
     }, { merge: true });
@@ -555,7 +633,7 @@ async function createHostSession(options = {}) {
     const data = snapshot.data() || {};
     if (data.status === 'ended') options.onStatus?.({ state: 'closed', text: 'La sala finalizó' });
     const guestUid = clean(data.guestUid, 160);
-    if (guestUid && guestUid !== user.uid && data.guestName) options.onRemoteProfile?.({ uid: guestUid, name: clean(data.guestName) || 'Invitada', photo: safeProfilePhoto(data.guestPhoto), verified: Boolean(data.guestVerified) });
+    if (guestUid && guestUid !== user.uid && data.guestName) options.onRemoteProfile?.({ uid: guestUid, name: clean(data.guestName) || 'Invitada', photo: safeProfilePhoto(data.guestPhoto), verified: Boolean(data.guestVerified), seatStatus: clean(data.guestSeatStatus, 20), seat: Math.max(0, Number(data.guestSeat) || 0) });
     if (typeof data.chatClosed === 'boolean') options.onChatState?.(Boolean(data.chatClosed));
     const moderation = data.moderationAction || null;
     if (moderation?.id && moderation.id !== moderationActionSeen) {
@@ -663,7 +741,7 @@ async function joinGuestSession(code, options = {}) {
       if (peer.signalingState !== 'stable') { queuedOffer = { offerData, revision }; return; }
       await peer.setRemoteDescription(new RTCSessionDescription(offerData));
       await peer.__jemmoFlushCandidates?.();
-      await bindLocalTracksToRemoteOffer(peer, localStream);
+      await bindLocalTracksToRemoteOffer(peer, localStream, !options.listenOnly);
       const answer = await peer.createAnswer();
       await peer.setLocalDescription(answer);
       appliedOfferRevision = revision;
@@ -674,6 +752,8 @@ async function joinGuestSession(code, options = {}) {
         guestName: profile.name,
         guestPhoto: profile.photo,
         guestVerified: profile.verified,
+        guestSeatStatus: options.listenOnly ? 'listener' : 'seated',
+        guestSeat: options.listenOnly ? 0 : Math.max(1, Number(options.seat) || 2),
         status: 'connected',
         joinedAt: serverTimestamp(),
         updatedAt: serverTimestamp()
@@ -744,7 +824,8 @@ async function joinGuestSession(code, options = {}) {
     onStatus: options.onStatus, sendChatMessage, setChatClosed, sendModerationAction,
     renegotiate: null,
     requestRenegotiation,
-    expectVideo: options.mode === 'camera'
+    expectVideo: options.mode === 'camera',
+    outgoingEnabled: !options.listenOnly
   });
 }
 
@@ -754,8 +835,9 @@ async function getCurrentProfile() {
 }
 
 window.JemmoRoomRealtime = Object.freeze({
-  version: '1.7.0-test',
+  version: '1.8.0-test',
   getCurrentProfile,
+  getHouseRoomAccess,
   getRoomPreview,
   getActiveHouseRoom,
   createHostSession,
