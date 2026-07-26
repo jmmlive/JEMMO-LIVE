@@ -1,59 +1,37 @@
-JEMMO LIVE V1 · TAREAS REALES Y PANEL FINANCIERO DE AGENTES PRUEBA 23
+JEMMO LIVE V1 · MI CASA Y ACCESO DIRECTO A SALA OFICIAL PRUEBA 24
 Fecha: 26/07/2026
 
 Base acumulada:
-- JEMMO LIVE V1 · NAVEGACIÓN INFERIOR DE MENSAJES UNIFICADA PRUEBA 22.
-- Incluye las correcciones de Universo, Salas, Perfil, Logros y navegación de PRUEBAS 20, 21 y 22.
+- JEMMO LIVE V1 · TAREAS REALES Y PANEL FINANCIERO DE AGENTES PRUEBA 23.
+- Conserva las correcciones acumuladas de PRUEBAS 20, 21 y 22.
 
-Objetivo:
-- Convertir las tareas de Casas y el panel de agentes en un sistema funcional de pruebas conectado a Firebase/Firestore.
-- No es una maqueta visual: registra actividad, regalos, reparto económico, estados e historial.
+Problemas corregidos:
+- Una cuenta aceptada en una Casa podía seguir mostrando “Todavía no perteneces a una Casa” en Perfil.
+- Una Emisora o miembro tenía que recorrer el explorador para localizar la Sala oficial.
+- La entrada a la propia Casa podía dirigir a una persona sin permisos hacia el espacio de gestión del agente.
 
-Tareas reales de emisoras:
-- La tarea se activa únicamente cuando la persona pertenece a la Casa y queda asignada formalmente como Emisor/a.
-- Cada emisora dispone de un ciclo individual de 24 horas.
-- Se contabiliza por separado el tiempo real en transmisión LIVE y en la Sala oficial de la Casa.
-- Cada sesión utiliza identificador, lease y segundos acreditados para impedir el cómputo duplicado entre pestañas o móviles.
-- El conteo se detiene al cerrar la emisión/sala, ocultar la página, perder conexión o ser sustituida la sesión por otra más reciente.
-- Al finalizar el ciclo se archiva el resultado y se conserva el historial.
-- La administración puede revisar, aprobar y reiniciar un ciclo de 24 horas.
-- Las tareas no generan salario automático en esta prueba.
+Mi Casa en Perfil:
+- La membresía se obtiene directamente desde users/{uid} en Firebase/Firestore.
+- El bloque se actualiza en tiempo real al aceptar, retirar o cambiar la función de una persona.
+- Muestra el nombre real de la Casa, su imagen y la función dentro de ella.
+- El botón principal abre directamente la Audio Room oficial 24/7.
+- Incluye accesos secundarios para ver la Casa y explorar otras Casas.
+- El estado local antiguo deja de decidir si la persona pertenece o no a una Casa.
 
-Panel financiero de agentes:
-- Diseño propio JEMMO LIVE: negro, morado fluorescente, amarillo y tarjetas premium.
-- Filtros: hoy, 7 días, 30 días, mes actual y rango personalizado.
-- Buscador por nombre o ID JEMMO.
-- Resumen de comisión total, confirmada y pendiente.
-- Lista de emisoras asignadas con estado de tarea, tiempo LIVE, tiempo en Sala oficial, regalos, valor bruto y comisión.
-- Detalle individual con reparto económico, movimientos de regalos e historial de ciclos.
-- Un agente real solo consulta las emisoras que tiene asignadas.
-- El propietario y la administración pueden consultar el conjunto de la Casa.
+Acceso desde Inicio y explorador:
+- Si la cuenta ya pertenece a una Casa, Inicio muestra “ENTRAR A AUDIO ROOM DE MI CASA”.
+- La tarjeta de la propia Casa abre directamente la Audio Room para miembros y Emisores/as.
+- Propietarios, administradores y agentes mantienen el acceso al panel de gestión.
+- Los miembros y Emisores/as no son dirigidos al panel financiero del agente.
 
-Asignación de agentes:
-- Administración permite asignar las funciones Miembro, Emisor/a, Agente o Apoyo administrativo.
-- Cada Emisor/a dispone de un selector explícito de agente responsable.
-- La asignación se sincroniza en el miembro, perfil y tarea de Firestore.
-
-Economía de regalos:
-- Emisora con Casa: 70% Emisora, 20% JEMMO LIVE y 10% Casa/agente.
-- Emisora independiente: 70% Emisora y 30% JEMMO LIVE.
-- Integración en LIVE, Audio Room/Salas, Mensajes privados y Destellos.
-- Cada regalo utiliza una operación idempotente y queda asociado a emisor, remitente, Casa, agente, fecha, contexto y estado.
-- Se separan cantidades confirmadas y pendientes según el origen de los JEMMOS.
-- Las cantidades pendientes se concilian cuando alcanza su fecha de confirmación.
-- Los regalos de Batalla de Casas no se atribuyen artificialmente a una emisora individual.
-
-Firebase y auditoría:
-- Movimientos globales en giftOperations.
-- Ganancias por usuario y resúmenes económicos.
-- Movimientos, resúmenes por emisora, agente y día dentro de cada Casa.
-- Auditoría de reparto, confirmación, tareas, objetivos, sala, ingreso, salida, expulsión, funciones y asignación de agente.
-- El panel no contiene controles para modificar saldos manualmente.
-
-Estado económico:
-- MODO DE PRUEBAS.
-- No mueve dinero real ni ejecuta retiros reales.
-- Antes de producción deben desplegarse reglas Firestore por roles y validación económica en backend/Cloud Functions.
+Sala oficial:
+- Ruta directa con houseRoom=1, direct=1, ID y nombre de la Casa.
+- Modo audio, capacidad de 20 sillas y título de Sala 24/7.
+- Mantiene el registro de tiempo para las tareas de Casa implementado en PRUEBA 23.
 
 Actualización móvil:
-- Nueva caché PWA y service worker para impedir que el móvil conserve archivos anteriores.
+- Nueva caché PWA y service worker para impedir que el móvil conserve la vista anterior.
+
+Estado:
+- MODO DE PRUEBAS.
+- Queda pendiente comprobar la actualización real de la membresía y el acceso directo con las cuentas de Jesús y Ruth.

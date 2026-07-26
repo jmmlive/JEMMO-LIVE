@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · CASA PADRE Y OPERACIONES PRUEBA 15 */
+/* JEMMO LIVE V1 · MI CASA Y ACCESO DIRECTO A SALA OFICIAL PRUEBA 24 */
 const firebaseConfig = {
   apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
   authDomain: 'jemmo-live.firebaseapp.com',
@@ -234,6 +234,33 @@ function sameMembership(house) {
   return state.membership?.houseId === house.id && state.membership?.status !== 'left';
 }
 
+function membershipCanManage() {
+  const role = lower(state.membership?.role || 'member');
+  const position = lower(state.membership?.position || state.membership?.housePosition || 'member');
+  return Boolean(state.platformAdmin || ['owner','admin','agent','propietario','administrador','agente'].includes(role) || position === 'agent');
+}
+
+function permanentHouseRoomUrl(house = houseById(state.membership?.houseId)) {
+  const houseId = cleanText(state.membership?.houseId || house?.id, 80);
+  const houseName = cleanText(house?.name || state.membership?.houseName || 'Mi Casa', 60);
+  const url = new URL('salas.html', location.href);
+  url.searchParams.set('houseRoom', '1');
+  url.searchParams.set('direct', '1');
+  url.searchParams.set('house', houseId);
+  url.searchParams.set('houseName', houseName);
+  url.searchParams.set('mode', 'audio');
+  url.searchParams.set('count', '20');
+  url.searchParams.set('title', `Sala 24/7 de ${houseName}`);
+  url.searchParams.set('description', 'Audio Room oficial de la Casa para miembros, emisores, tareas y comunidad.');
+  return url.href;
+}
+
+function openMembershipDestination(house = houseById(state.membership?.houseId), preferManagement = false) {
+  if (!house) return;
+  if (preferManagement && membershipCanManage()) { openWorkspace(house); return; }
+  location.href = permanentHouseRoomUrl(house);
+}
+
 function matchesFilter(house) {
   if (state.currentFilter === 'battle') return house.status === 'battle';
   if (state.currentFilter === 'open') return house.status === 'open' || house.status === 'battle';
@@ -264,8 +291,9 @@ function renderHome() {
   const join = $('#homeHouseJoin');
   if (join) {
     if (state.membership?.houseId) {
-      join.textContent = 'ENTRAR EN MI CASA';
-      join.href = `casa-demo.html?miCasa=1`;
+      const ownHouse = houseById(state.membership.houseId) || normalizeHouse({ id: state.membership.houseId, name: state.membership.houseName, cloud: true });
+      join.textContent = 'ENTRAR A AUDIO ROOM DE MI CASA';
+      join.href = permanentHouseRoomUrl(ownHouse);
     } else if (activeRequest()) {
       join.textContent = 'VER MI SOLICITUD';
       join.href = 'casa-demo.html?solicitud=1';
@@ -289,7 +317,7 @@ function renderExplorer() {
   target.innerHTML = filtered.map(house => {
     const isMine = sameMembership(house);
     const requested = requestFor(house);
-    const action = isMine ? 'ENTRAR' : house.preview ? 'VISTA' : requested ? 'PENDIENTE' : 'SOLICITAR';
+    const action = isMine ? (membershipCanManage() ? 'GESTIONAR' : 'AUDIO ROOM') : house.preview ? 'VISTA' : requested ? 'PENDIENTE' : 'SOLICITAR';
     return `
       <article class="house-card ${house.preview ? 'preview' : 'real'}" style="${cardStyle(house)}" data-house-card="${escapeHtml(house.id)}">
         <div class="house-card-head"><span class="house-card-emblem">${escapeHtml(house.emblem || house.short)}</span><span class="house-card-rank">#${house.rank}</span></div>
@@ -329,9 +357,10 @@ function renderMyHouse() {
     panel.innerHTML = `
       <div class="my-house-main" style="${cardStyle(house)}">
         <span class="my-house-emblem">${escapeHtml(house.emblem || house.short || '♛')}</span>
-        <div><span class="request-badge accepted">MI CASA · ${escapeHtml((state.membership.role || 'member').toUpperCase())}</span><h2>${escapeHtml(house.name)}</h2><p>Tu membresía está activa. Entra para ver avisos, chat, miembros y actividades.</p></div>
+        <div><span class="request-badge accepted">MI CASA · ${escapeHtml((state.membership.position || state.membership.role || 'member').toUpperCase())}</span><h2>${escapeHtml(house.name)}</h2><p>Tu membresía está activa. La Sala oficial de audio está disponible directamente desde aquí.</p></div>
       </div>
-      <button class="my-house-open" type="button" data-open-my-house>ENTRAR EN MI CASA</button>`;
+      <button class="my-house-open" type="button" data-open-my-house-room>ENTRAR A AUDIO ROOM DE MI CASA</button>
+      <div class="request-actions"><button type="button" data-house-details="${escapeHtml(house.id)}">VER MI CASA</button><button type="button" data-explore-other-houses>EXPLORAR OTRAS CASAS</button>${membershipCanManage() ? '<button type="button" data-open-my-house>GESTIONAR CASA</button>' : ''}</div>`;
     return;
   }
   if (state.pendingRequest) {
@@ -386,7 +415,7 @@ function closeAllModals() {
 }
 
 function joinButtonCopy(house) {
-  if (sameMembership(house)) return 'ENTRAR EN MI CASA';
+  if (sameMembership(house)) return membershipCanManage() ? 'GESTIONAR MI CASA' : 'ENTRAR A AUDIO ROOM';
   if (state.platformAdmin && house.cloud && !house.preview) return 'ADMINISTRAR CASA';
   if (house.preview) return state.platformAdmin ? 'ACTIVAR CASA REAL' : 'CASA DE MUESTRA';
   if (requestFor(house)) return 'CANCELAR SOLICITUD';
@@ -427,7 +456,7 @@ async function handleHouseAction(house) {
   }
   if (sameMembership(house)) {
     closeAllModals();
-    openWorkspace(house);
+    openMembershipDestination(house, true);
     return;
   }
   if (house.preview) {
@@ -608,6 +637,8 @@ function ownStateFromUser(data = {}) {
     houseId,
     houseName: cleanText(data.houseName, 48),
     role: cleanText(data.houseRole || 'member', 20),
+    position: cleanText(data.housePosition || 'member', 30),
+    assignedAgentUid: cleanText(data.assignedAgentUid, 160),
     status: cleanText(data.houseStatus || 'active', 20),
     joinedAt: timestampMillis(data.houseJoinedAt) || Date.now()
   };
@@ -1383,8 +1414,10 @@ function bind() {
     const details = event.target.closest('[data-house-details]');
     if (details) { const house = houseById(details.dataset.houseDetails); if (house) openHouse(house); return; }
     const action = event.target.closest('[data-house-action]');
-    if (action) { const house = houseById(action.dataset.houseAction); if (!house) return; if (sameMembership(house)) openWorkspace(house); else openHouse(house, true); return; }
-    if (event.target.closest('[data-open-my-house]')) { openWorkspace(); return; }
+    if (action) { const house = houseById(action.dataset.houseAction); if (!house) return; if (sameMembership(house)) openMembershipDestination(house, true); else openHouse(house, true); return; }
+    if (event.target.closest('[data-open-my-house-room]')) { openMembershipDestination(); return; }
+    if (event.target.closest('[data-open-my-house]')) { if (membershipCanManage()) openWorkspace(); else openMembershipDestination(); return; }
+    if (event.target.closest('[data-explore-other-houses]')) { document.getElementById('explorar')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
     if (event.target.closest('[data-cancel-request]')) { await cancelJoinRequest(); return; }
     if (event.target.closest('[data-request-details]')) { const house = houseById(state.pendingRequest?.houseId); if (house) openHouse(house); return; }
     const tab = event.target.closest('[data-workspace-tab]');
@@ -1442,9 +1475,14 @@ async function boot() {
   renderAll();
   const params = new URL(location.href).searchParams;
   if (params.get('miCasa') === '1' && state.membership?.houseId) {
-    openWorkspace();
-    const requestedTab = params.get('tab');
-    if (['home','room','tasks','emitters','chat','members','admin'].includes(requestedTab)) { state.workspaceTab = requestedTab; renderWorkspace(); }
+    if (membershipCanManage()) {
+      openWorkspace();
+      const requestedTab = params.get('tab');
+      if (['home','room','tasks','emitters','chat','members','admin'].includes(requestedTab)) { state.workspaceTab = requestedTab; renderWorkspace(); }
+    } else {
+      openMembershipDestination();
+      return;
+    }
   }
   const requestedId = params.get('casa');
   if (requestedId && $('#houseExplorerGrid')) {
@@ -1459,7 +1497,8 @@ window.JemmoHouses = {
     membership: state.membership ? { ...state.membership } : null,
     request: state.pendingRequest ? { ...state.pendingRequest } : null
   }),
-  openMyHouse: () => openWorkspace(),
+  openMyHouse: () => membershipCanManage() ? openWorkspace() : openMembershipDestination(),
+  openMyHouseRoom: () => openMembershipDestination(),
   refresh: async () => { await loadCloudHouses(); renderAll(); }
 };
 

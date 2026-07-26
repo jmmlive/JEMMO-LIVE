@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · TAREAS REALES Y PANEL FINANCIERO DE AGENTES PRUEBA 23 */
-const CACHE = 'jemmo-live-v1-house-tasks-agent-finance-23-20260726';
+/* JEMMO LIVE V1 · MI CASA Y ACCESO DIRECTO A SALA OFICIAL PRUEBA 24 */
+const CACHE = 'jemmo-live-v1-my-house-direct-room-24-20260726';
 const APP_SHELL = [
   './',
   './index.html',
@@ -31,6 +31,7 @@ const APP_SHELL = [
   './jemmo-house-activity.js',
   './jemmo-house-finance.js',
   './jemmo-house-room-ui.js',
+  './jemmo-my-house.js',
   './jemmo-role-lab.js',
   './jemmo-battle-gifts.js',
   './directos.js',
@@ -127,31 +128,31 @@ async function injectJemmoScripts(response, url) {
   if (UNREAD_PAGES.has(page)) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="house-tasks-agent-finance-23"></script>'
+      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="my-house-direct-room-24"></script>'
     );
   }
   if (page === '/mensajes.html' && !html.includes('jemmo-messages-realtime.js')) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="house-tasks-agent-finance-23"></script>'
+      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="my-house-direct-room-24"></script>'
     );
   }
   if (['/yo.html','/mensajes.html','/chili-ia.html'].includes(page) && !html.includes('jemmo-social.js')) {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="house-tasks-agent-finance-23"></script>'
+      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="my-house-direct-room-24"></script>'
     );
   }
   if (['/yo.html','/casa-demo.html'].includes(page) && !html.includes('jemmo-role-lab.js')) {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-role-lab.js" data-jemmo-injected="house-tasks-agent-finance-23"></script>'
+      '<script type="module" src="./jemmo-role-lab.js" data-jemmo-injected="my-house-direct-room-24"></script>'
     );
   }
   if (page === '/yo.html') {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="house-tasks-agent-finance-23"></script>'
+      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="my-house-direct-room-24"></script>'
     );
   }
 
@@ -159,7 +160,7 @@ async function injectJemmoScripts(response, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-version', 'house-tasks-agent-finance-23');
+  headers.set('x-jemmo-version', 'my-house-direct-room-24');
 
   return new Response(html, {
     status: response.status,

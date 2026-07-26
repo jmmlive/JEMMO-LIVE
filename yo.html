@@ -64,7 +64,7 @@
 
     .moments{display:flex;gap:8px;padding:0 1px 3px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}.moments::-webkit-scrollbar{display:none}.moment{position:relative;flex:0 0 132px;min-height:142px;border:1px solid #482057;border-radius:16px;background:radial-gradient(circle at 75% 22%,#bb31ff55,transparent 28%),linear-gradient(145deg,#270532,#0c010f 68%);overflow:hidden;scroll-snap-align:start;text-align:left;padding:0}.moment::before{content:"";position:absolute;inset:0;background:url('jemmo-fish-nav.webp') 78% 24%/88px auto no-repeat;opacity:.55}.moment-copy{position:absolute;left:0;right:0;bottom:0;padding:26px 10px 10px;background:linear-gradient(transparent,#070009 40%)}.moment-copy b{display:block;font-size:11px}.moment-copy small{display:block;margin-top:3px;color:#a99bad;font-size:8px}.moment.add::before{content:"+";background:none;inset:22px auto auto 50%;transform:translateX(-50%);font-size:46px;color:#d44cff}.moment.add .moment-copy{text-align:center}
 
-    .house-strip{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px}.house-icon{width:48px;height:48px;border-radius:15px;background:#25052f;display:grid;place-items:center;font-size:25px}.house-strip b{display:block;font-size:12px}.house-strip small{display:block;margin-top:3px;color:var(--muted);font-size:9px;line-height:1.3}.house-strip button{min-height:36px;padding:0 10px;border:1px solid #82631f;border-radius:12px;background:#2d1c06;color:#ffe08c;font-size:9px;font-weight:950}
+    .house-strip{display:grid;grid-template-columns:52px minmax(0,1fr);gap:11px;align-items:center;padding:13px}.house-strip.loading{opacity:.78}.house-icon{width:52px;height:52px;border-radius:16px;background:#25052f;display:grid;place-items:center;font-size:26px;overflow:hidden;box-shadow:inset 0 0 0 1px #6c2780}.house-icon img{width:100%;height:100%;object-fit:cover}.house-icon.has-image{background:#0b000e}.house-strip b{display:block;font-size:13px;line-height:1.25}.house-strip small{display:block;margin-top:4px;color:var(--muted);font-size:9px;line-height:1.4}.house-actions{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:2px}.house-actions button{min-height:40px;padding:0 10px;border:1px solid #6d2b82;border-radius:13px;background:#1a0421;color:#fff;font-size:8.5px;font-weight:1000}.house-actions .primary{grid-column:1/-1;min-height:46px;border:0;background:linear-gradient(90deg,var(--gold),#ff9b42,#d33eff);color:#21031a;font-size:9px}.house-actions .secondary{border-color:#82631f;background:#2d1c06;color:#ffe08c}.house-actions .explore:only-child{grid-column:1/-1}.house-strip.has-house{border-color:#76308e;box-shadow:0 11px 27px #0005,0 0 22px #b82cff12}
 
     .version{text-align:center;color:#776b7d;font-size:9px;margin:19px 0 4px}
 
@@ -693,14 +693,18 @@
 
     <section class="section">
       <div class="section-head"><div><h2>Mi Casa</h2><p>Tu comunidad dentro de JEMMO LIVE</p></div></div>
-      <div class="card house-strip">
-        <span class="house-icon">🏠</span>
-        <div><b id="houseName">Todavía no perteneces a una Casa</b><small id="houseText">Explora comunidades y solicita unirte cuando estés preparado.</small></div>
-        <button id="houseProfileButton" type="button">EXPLORAR</button>
+      <div class="card house-strip loading" id="myHouseCard">
+        <span class="house-icon" id="houseIcon"><img id="houseImage" alt="Logo de mi Casa" hidden><span id="houseFallback" aria-hidden="true">🏠</span></span>
+        <div><b id="houseName">Comprobando tu Casa…</b><small id="houseText">Sincronizando tu membresía con JEMMO LIVE.</small></div>
+        <div class="house-actions">
+          <button class="primary" id="houseRoomButton" type="button" hidden>ENTRAR A AUDIO ROOM DE MI CASA</button>
+          <button class="secondary" id="houseProfileButton" type="button" hidden>VER MI CASA</button>
+          <button class="explore" id="houseExploreButton" type="button">EXPLORAR CASAS</button>
+        </div>
       </div>
     </section>
 
-    <p class="version">JEMMO LIVE V1 · PERFIL Y NAVEGACIÓN INFERIOR CORREGIDOS PRUEBA 21</p>
+    <p class="version">JEMMO LIVE V1 · MI CASA Y ACCESO DIRECTO A SALA OFICIAL PRUEBA 24</p>
   </main>
 
   <div class="menu-backdrop" id="menuBackdrop" hidden></div>
@@ -1455,7 +1459,6 @@
         const achievements=Math.max(1,Math.min(36,Number(stats.achievements||1)));$('achievementCount').textContent=achievements;renderAchievements(achievements,profile.name||defaultProfile.name);
         $('profileProgress').textContent=`${completion}%`;$('activityRing').style.setProperty('--progress',`${completion}%`);$('progressMessage').textContent=completion>=100?'Perfil completo. Ya puedes centrarte en crecer.':'Completa tu perfil y empieza tu primer LIVE.';
         $('weekLives').textContent=format(stats.weekLives);$('weekHours').textContent=format(stats.weekHours);$('weekFans').textContent=`+${format(stats.weekFans)}`;
-        const house=localStorage.getItem('jemmo_house_name')||'';if(house){$('houseName').textContent=house;$('houseText').textContent='Tu comunidad oficial dentro de JEMMO LIVE.'}
         setAvatar(avatarData);setCover(coverData,coverPosition);
       };
 
@@ -1619,6 +1622,7 @@
       bootstrap();
     })();
   </script>
+  <script type="module" src="jemmo-my-house.js"></script>
   <script type="module" src="jemmo-personalization-runtime.js"></script>
   <script type="module" src="jemmo-role-lab.js"></script>
 </body>

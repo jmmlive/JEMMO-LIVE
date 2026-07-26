@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-house-tasks-agent-finance-23';
+  const VERSION = 'pwa-my-house-direct-room-24';
   let installPrompt = null;
 
   const isStandalone = () =>
