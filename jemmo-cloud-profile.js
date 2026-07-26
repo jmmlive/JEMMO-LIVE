@@ -1,6 +1,6 @@
 import { ensurePublicId } from './jemmo-public-id.js';
-/* JEMMO LIVE V1 · PERFIL SIN INVITACIONES PRIVADAS PRUEBA 11
-   Sincroniza el perfil editable de Yo y elimina los campos antiguos de tarifa privada.
+/* JEMMO LIVE V1 · PERFIL Y LOGROS PÚBLICOS PRUEBA 21
+   Sincroniza el perfil editable, el contador de logros y elimina los campos antiguos de tarifa privada.
 */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
 import { getAuth, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
@@ -50,6 +50,35 @@ function lower(value) {
 
 function profileKey(uid) {
   return `jemmo_profile_v1_${uid}`;
+}
+
+function statsKey(uid) {
+  return `jemmo_profile_stats_v1_${uid}`;
+}
+
+function readLocalStats(uid) {
+  for (const storage of [localStorage, sessionStorage]) {
+    try {
+      const raw = storage.getItem(statsKey(uid));
+      const parsed = raw ? JSON.parse(raw) : {};
+      if (parsed && typeof parsed === 'object') return parsed;
+    } catch {}
+  }
+  return {};
+}
+
+function readLocalAchievements(uid) {
+  const stats = readLocalStats(uid);
+  return Math.max(1, Math.min(36, Number(stats.achievements || stats.logros || 1)));
+}
+
+function writeLocalAchievements(uid, value) {
+  const achievements = Math.max(1, Math.min(36, Number(value) || 1));
+  const stats = { ...readLocalStats(uid), achievements };
+  const serialized = JSON.stringify(stats);
+  try { localStorage.setItem(statsKey(uid), serialized); } catch {}
+  try { sessionStorage.setItem(statsKey(uid), serialized); } catch {}
+  return achievements;
 }
 
 function readLocalProfile(uid) {
@@ -187,7 +216,7 @@ async function publicMedia(uid) {
   return { avatarData, coverData };
 }
 
-function profilePayload(currentUser, local, media, assigned) {
+function profilePayload(currentUser, local, media, assigned, achievements) {
   const email = clean(currentUser.email, 180);
   const displayName = clean(local.name || currentUser.displayName || email.split('@')[0] || 'Usuario JEMMO', 40);
   const username = clean(local.username || '', 24).replace(/^@+/, '');
@@ -225,6 +254,7 @@ function profilePayload(currentUser, local, media, assigned) {
     profileId: assigned.publicId,
     verified: Boolean(local.verified),
     level: Math.max(1, Number(local.level) || 1),
+    achievements: Math.max(1, Math.min(36, Number(achievements) || 1)),
     avatarData: media.avatarData || '',
     coverData: media.coverData || '',
     coverPosition: {
@@ -246,7 +276,7 @@ async function syncLocalProfile() {
     const assigned = await ensurePublicId(user, db);
     const local = readLocalProfile(user.uid);
     const media = await publicMedia(user.uid);
-    const payload = profilePayload(user, local, media, assigned);
+    const payload = profilePayload(user, local, media, assigned, readLocalAchievements(user.uid));
     if (local.id !== assigned.publicId || local.publicId !== assigned.publicId) {
       writeLocalProfile(user.uid, { ...local, id: assigned.publicId, publicId: assigned.publicId });
     }
@@ -286,13 +316,14 @@ async function syncLocalProfile() {
         acceptsInvitations: deleteField(),
         verified: payload.verified,
         level: payload.level,
+        achievements: payload.achievements,
         avatarData: payload.avatarData,
         coverData: payload.coverData,
         coverPosition: payload.coverPosition,
         publicProfileEnabled: true,
         messagesEnabled: true,
         messagesVersion: 3,
-        profileVersion: 3,
+        profileVersion: 4,
         profileUpdatedAtClient: payload.profileUpdatedAtClient,
         ultimaActividad: serverTimestamp(),
         updatedAt: serverTimestamp()
@@ -344,6 +375,7 @@ async function hydrateFromCloud() {
     delete merged.invitationsEnabled;
     delete merged.invitationPrice;
     delete merged.acceptsInvitations;
+    if (cloud.achievements || cloud.logros) writeLocalAchievements(user.uid, cloud.achievements || cloud.logros);
 
     await Promise.all([
       cloud.avatarData ? mediaWrite(`${user.uid}:avatar`, cloud.avatarData) : Promise.resolve(),
@@ -388,4 +420,5 @@ onAuthStateChanged(auth, async currentUser => {
 });
 
 window.addEventListener('online', () => syncLocalProfile());
+window.addEventListener('jemmo-achievements-change', () => syncLocalProfile());
 window.JemmoCloudProfile = { sync: syncLocalProfile, hydrate: hydrateFromCloud };

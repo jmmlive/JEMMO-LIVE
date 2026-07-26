@@ -1,38 +1,33 @@
-JEMMO LIVE V1 · UNIVERSO EQUIPADO Y MODERACIÓN DE SALAS PRUEBA 20
+JEMMO LIVE V1 · PERFIL Y NAVEGACIÓN INFERIOR CORREGIDOS PRUEBA 21
 Fecha: 26/07/2026
 
 Base:
-- JEMMO LIVE V1 · INICIO UNIVERSO, REGALOS Y PERSISTENCIA PRUEBA 19.
-- Corrección preparada sobre JEMMO-LIVE-main (12).zip.
+- JEMMO LIVE V1 · UNIVERSO EQUIPADO Y MODERACIÓN DE SALAS PRUEBA 20.
+- Corrección aplicada sobre JEMMO-LIVE-main (12).zip con la entrega incremental PRUEBA 20 incorporada.
 
-JEMMO Universo:
-- Universo queda reservado exclusivamente para complementos temporales; los regalos ya no aparecen como productos de la tienda.
-- Entradas / Rider tienen una vigencia de 1 mes desde la adquisición.
-- Marcos de avatar, marcos de silla, burbujas y perfiles / temas tienen una vigencia de 15 días.
-- Los artículos gratuitos base permanecen activos sin caducidad.
-- El inventario muestra vigencia, caducidad y renovación; al caducar, el artículo deja de aplicarse y se recupera el equipamiento base.
+Perfil:
+- Eliminado por completo el bloque “Mi espacio”.
+- Eliminadas de esa zona las tarjetas Mis LIVE, Mis Salas, Logros, Galería, Club de fans y JEMMO Universo.
+- JEMMO Universo continúa disponible desde el menú del Perfil.
+- Los logros quedan integrados en la tarjeta del nivel, evitando una sección duplicada y sin contexto.
+- La tarjeta de nivel muestra el progreso de logros y es táctil.
+- Al tocar el nivel se abre un panel con los 36 logros, diferenciando los desbloqueados de los pendientes.
+- El panel muestra el nombre de la persona, el total conseguido y una barra de progreso.
 
-Equipamiento visible:
-- Los perfiles / temas, marcos de avatar, burbujas y entradas equipadas se aplican en transmisión LIVE.
-- Los perfiles / temas, marcos de avatar, marcos de silla, burbujas y entradas equipadas se aplican en Audio Room y Sala con cámara.
-- El marco de avatar continúa visible en Perfil.
+Perfil público:
+- La misma zona del nivel permite consultar los logros públicos de otra persona.
+- El contador admite de 1 a 36 logros y se alimenta de los datos públicos del perfil.
+- El número de logros se sincroniza con los documentos públicos de Firebase para que otra persona vea el progreso real del perfil.
+- Al recuperar el perfil desde Firebase, el contador local de logros se conserva y restaura.
 
-Regalos:
-- Los regalos se mantienen dentro de las cajas de regalos de LIVE y Salas.
-- JEMMO Universo no compra ni equipa regalos.
-- Cantidades de envío unificadas en ×1, ×10, ×20 y ×100.
-
-Configuración y moderación de Salas:
-- Controles funcionales para activar/silenciar micrófono, apagar/reactivar cámara y cerrar/reabrir chat.
-- Cerrar o abrir el chat se sincroniza mediante Firestore y se aplica también en el móvil invitado.
-- Al tocar una persona sentada se abre su miniperfil; el seguimiento usa la relación social real cuando existe un UID válido.
-- El menú de tres puntos permite bajar de la silla, silenciar/reactivar y expulsar.
-- Las órdenes sobre una persona conectada se envían al segundo móvil mediante el documento de la sala de prueba.
-- En esta prueba, la expulsión cierra la sala en el móvil expulsado y bloquea la reentrada durante 1 minuto.
-- Para producción queda fijado el bloqueo definitivo de 15 minutos, junto con reglas de seguridad y validación de rol en backend.
+Navegación inferior:
+- El Perfil vuelve a utilizar exactamente la navegación común de JEMMO LIVE.
+- Eliminado el círculo flotante específico que deformaba el botón Yo y hacía parecer la barra ovalada.
+- Solo el apartado Yo queda activo; Inicio, LIVE, Salas y Mensajes permanecen inactivos.
+- Orden oficial conservado: Inicio, LIVE, Salas, Mensajes y Yo.
 
 Actualización móvil:
-- Nueva versión de caché del service worker y registro PWA para impedir que el móvil conserve archivos de PRUEBA 19.
+- Nueva versión de caché del service worker y del registro PWA para impedir que el móvil conserve la interfaz anterior.
 
 Economía:
 - MODO DE PRUEBAS · SIN COBROS REALES.

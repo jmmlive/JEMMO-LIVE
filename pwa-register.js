@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-universe-equipped-moderation-20';
+  const VERSION = 'pwa-profile-nav-achievements-21';
   let installPrompt = null;
 
   const isStandalone = () =>
