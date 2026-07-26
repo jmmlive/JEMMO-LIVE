@@ -1,11 +1,9 @@
-JEMMO LIVE V1 · PERFIL Y NAVEGACIÓN INFERIOR CORREGIDOS PRUEBA 21
+JEMMO LIVE V1 · NAVEGACIÓN INFERIOR DE MENSAJES UNIFICADA PRUEBA 22
 Fecha: 26/07/2026
 Contenido: archivos incrementales que deben sustituirse directamente en la raíz del proyecto.
 
 SHA-256 DE LOS ARCHIVOS:
-fca3612e3ba655f4ba7825973813072ac6f2f463c562c41dec4cd25db81b81d8  VERSION.txt
-08da21e0f60ef7b02c99f78532f660ee54fba690f208d32a298c9c7c91aad72c  yo.html
-1f0c166aaa054d7d4d7ba02332b3359a3edd1f406abd0ce884a2faade7ebd752  perfil-publico.html
-166c01925fa099b50495233c8139059a4fe5a46a60c7ad957d4520093f4d7526  jemmo-cloud-profile.js
-03b8c92b94bdbccdfb92e794c3403656e588ee80ebdb251a11a3c1602a1794b4  pwa-register.js
-5a8695b6c4bdb16edc45e7867c0376a24ad1b4586b59d78f65b646615eadfd9e  sw.js
+369b3ce2eba75a5b8bb13e8bf1c7425f7a1d97bde21549096a03cf3e74403fd1  /mnt/data/work22/package22/VERSION.txt
+8965437b1b24443d2dced1033ff90206d0e57c3363946c75ebb55ac261684e92  /mnt/data/work22/package22/mensajes.html
+4acd82701f611ebcf3a135385cefee7a783c06ee3736eba90bde31f375f8cca6  /mnt/data/work22/package22/pwa-register.js
+cb4d2662c041edee7ddb0e9b60731647414d0001f073616f9c1a01c00ed88066  /mnt/data/work22/package22/sw.js

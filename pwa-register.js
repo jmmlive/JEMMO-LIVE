@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-profile-nav-achievements-21';
+  const VERSION = 'pwa-messages-nav-unified-22';
   let installPrompt = null;
 
   const isStandalone = () =>

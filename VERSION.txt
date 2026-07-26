@@ -1,33 +1,25 @@
-JEMMO LIVE V1 · PERFIL Y NAVEGACIÓN INFERIOR CORREGIDOS PRUEBA 21
+JEMMO LIVE V1 · NAVEGACIÓN INFERIOR DE MENSAJES UNIFICADA PRUEBA 22
 Fecha: 26/07/2026
 
 Base:
-- JEMMO LIVE V1 · UNIVERSO EQUIPADO Y MODERACIÓN DE SALAS PRUEBA 20.
-- Corrección aplicada sobre JEMMO-LIVE-main (12).zip con la entrega incremental PRUEBA 20 incorporada.
+- JEMMO LIVE V1 · PERFIL Y NAVEGACIÓN INFERIOR CORREGIDOS PRUEBA 21.
 
-Perfil:
-- Eliminado por completo el bloque “Mi espacio”.
-- Eliminadas de esa zona las tarjetas Mis LIVE, Mis Salas, Logros, Galería, Club de fans y JEMMO Universo.
-- JEMMO Universo continúa disponible desde el menú del Perfil.
-- Los logros quedan integrados en la tarjeta del nivel, evitando una sección duplicada y sin contexto.
-- La tarjeta de nivel muestra el progreso de logros y es táctil.
-- Al tocar el nivel se abre un panel con los 36 logros, diferenciando los desbloqueados de los pendientes.
-- El panel muestra el nombre de la persona, el total conseguido y una barra de progreso.
+Incidencia confirmada:
+- La pantalla Mensajes conservaba una barra inferior antigua y diferente.
+- Los cinco apartados mostraban imágenes oscuras del pescado, mientras las demás pantallas utilizaban el sistema común de iconos y un único pescado en el apartado activo.
+- La navegación de Mensajes no mantenía el mismo tamaño, alineación ni comportamiento visual que Inicio, LIVE, Salas y Yo.
 
-Perfil público:
-- La misma zona del nivel permite consultar los logros públicos de otra persona.
-- El contador admite de 1 a 36 logros y se alimenta de los datos públicos del perfil.
-- El número de logros se sincroniza con los documentos públicos de Firebase para que otra persona vea el progreso real del perfil.
-- Al recuperar el perfil desde Firebase, el contador local de logros se conserva y restaura.
-
-Navegación inferior:
-- El Perfil vuelve a utilizar exactamente la navegación común de JEMMO LIVE.
-- Eliminado el círculo flotante específico que deformaba el botón Yo y hacía parecer la barra ovalada.
-- Solo el apartado Yo queda activo; Inicio, LIVE, Salas y Mensajes permanecen inactivos.
-- Orden oficial conservado: Inicio, LIVE, Salas, Mensajes y Yo.
+Corrección:
+- Mensajes utiliza ahora exactamente el sistema común de navegación inferior.
+- Orden oficial: Inicio, LIVE, Salas, Mensajes y Yo.
+- Solo Mensajes aparece activo en esa pantalla.
+- Solo existe un pescado visible en la barra: el del apartado activo Mensajes.
+- Los cuatro apartados inactivos utilizan sus iconos normales, sin pescados oscuros ni cuadrados repetidos.
+- Se conservan el contador rojo de mensajes no leídos y su actualización dinámica.
+- No se modifica ninguna conversación, contacto, grupo, regalo ni función interna de Mensajes.
 
 Actualización móvil:
-- Nueva versión de caché del service worker y del registro PWA para impedir que el móvil conserve la interfaz anterior.
+- Nueva versión de caché PWA y service worker para impedir que el móvil conserve la barra anterior.
 
 Economía:
 - MODO DE PRUEBAS · SIN COBROS REALES.
