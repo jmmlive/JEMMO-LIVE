@@ -21,10 +21,12 @@
       <button class="houses-help" id="housesHelp" type="button" aria-label="Información sobre Casas">?</button>
     </header>
 
+    <div class="house-cloud-state" id="houseCloudState" role="status">Conectando Casas…</div>
+
     <section class="houses-hero" aria-labelledby="housesTitle">
       <span class="houses-kicker">COMUNIDAD JEMMO LIVE</span>
       <h1 id="housesTitle">Encuentra tu Casa</h1>
-      <p>Únete a una comunidad, participa en batallas y avanza junto a sus miembros.</p>
+      <p>Solicita entrar, recibe la aprobación de la administración y participa en una comunidad real.</p>
       <div class="houses-hero-actions">
         <a href="#explorar" class="houses-primary">EXPLORAR CASAS</a>
         <button id="createHouseOpen" class="houses-secondary" type="button">CREAR CASA</button>
@@ -38,7 +40,7 @@
       <div>
         <small>CASA OFICIAL</small>
         <h2 id="motherHouseTitle">Casa Madre JEMMO</h2>
-        <p>Centro oficial para novedades, orientación y actividades generales de la comunidad.</p>
+        <p>Centro oficial para avisos, orientación y actividades generales de la comunidad.</p>
       </div>
       <button type="button" data-house-details="madre">VER CASA</button>
     </section>
@@ -54,6 +56,7 @@
       </label>
       <div class="house-filters" id="houseFilters" role="group" aria-label="Filtros de Casas">
         <button type="button" class="active" data-house-filter="all">Todas</button>
+        <button type="button" data-house-filter="real">Casas activas</button>
         <button type="button" data-house-filter="battle">En batalla</button>
         <button type="button" data-house-filter="open">Aceptan miembros</button>
         <button type="button" data-house-filter="new">Nuevas</button>
@@ -62,8 +65,78 @@
     </section>
 
     <section class="panel house-ranking-panel" aria-labelledby="rankingTitle">
-      <div class="section-title"><h2 id="rankingTitle">ELEVADOR DE CASAS</h2><span>Temporada actual</span></div>
+      <div class="section-title"><h2 id="rankingTitle">ELEVADOR DE CASAS</h2><span>Datos reales cuando la Casa está activa</span></div>
       <div id="houseRanking" class="house-ranking"></div>
+    </section>
+
+    <section class="panel house-workspace" id="houseWorkspace" hidden aria-labelledby="workspaceName">
+      <header class="house-workspace-header">
+        <button type="button" class="house-workspace-back" data-close-workspace aria-label="Volver al explorador">‹</button>
+        <span class="house-workspace-emblem" id="workspaceEmblem">♛</span>
+        <div><small id="workspaceRole">MIEMBRO</small><h1 id="workspaceName">Mi Casa</h1><p id="workspaceLocation">JEMMO LIVE</p></div>
+        <button type="button" class="house-leave-button" data-leave-house>SALIR</button>
+      </header>
+      <div class="house-workspace-kpis">
+        <div><b id="workspaceMemberCount">0</b><small>MIEMBROS</small></div>
+        <div><b id="workspaceScore">0</b><small>PUNTOS</small></div>
+        <div><b>ACTIVA</b><small>ESTADO</small></div>
+      </div>
+      <nav class="house-workspace-tabs" aria-label="Secciones de Mi Casa">
+        <button class="house-workspace-tab active" type="button" data-workspace-tab="home">INICIO</button>
+        <button class="house-workspace-tab" type="button" data-workspace-tab="chat">CHAT</button>
+        <button class="house-workspace-tab" type="button" data-workspace-tab="members">MIEMBROS</button>
+        <button class="house-workspace-tab" type="button" data-workspace-tab="admin" hidden>ADMINISTRACIÓN</button>
+      </nav>
+
+      <div class="house-workspace-view" data-workspace-view="home">
+        <section class="house-workspace-card house-activity-card">
+          <div class="house-workspace-title"><h2>RESUMEN DE LA CASA</h2><span>Actualizado en tiempo real</span></div>
+          <div class="house-activity-summary" id="houseActivitySummary"></div>
+        </section>
+        <form class="house-workspace-card house-notice-composer" id="houseNoticeComposer" hidden>
+          <div class="house-workspace-title"><h2>PUBLICAR AVISO</h2><span>Solo administración</span></div>
+          <label>Título<input name="title" maxlength="60" required placeholder="Ejemplo: Reunión de la Casa"></label>
+          <label>Aviso<textarea name="text" maxlength="500" required placeholder="Escribe la información para los miembros"></textarea></label>
+          <button type="submit">PUBLICAR AVISO</button>
+        </form>
+        <section class="house-workspace-card">
+          <div class="house-workspace-title"><h2>AVISOS</h2><span>Información interna</span></div>
+          <div class="house-notice-list" id="houseNoticeList"></div>
+        </section>
+      </div>
+
+      <div class="house-workspace-view" data-workspace-view="chat" hidden>
+        <section class="house-workspace-card house-chat-card">
+          <div class="house-workspace-title"><h2>CHAT DE MI CASA</h2><span>Solo miembros</span></div>
+          <div class="house-chat-messages" id="houseChatMessages" aria-live="polite"></div>
+          <form class="house-chat-form" id="houseChatForm">
+            <input id="houseChatInput" maxlength="400" autocomplete="off" placeholder="Escribe en el chat de tu Casa…" aria-label="Mensaje para la Casa">
+            <button type="submit">ENVIAR</button>
+          </form>
+        </section>
+      </div>
+
+      <div class="house-workspace-view" data-workspace-view="members" hidden>
+        <section class="house-workspace-card">
+          <div class="house-workspace-title"><h2>MIEMBROS</h2><span>Propietario, administradores y comunidad</span></div>
+          <div class="house-members-list" id="houseMembersList"></div>
+        </section>
+      </div>
+
+      <div class="house-workspace-view" data-workspace-view="admin" hidden>
+        <section class="house-workspace-card">
+          <div class="house-workspace-title"><h2>SOLICITUDES DE INGRESO</h2><span>Aceptar o rechazar</span></div>
+          <div class="house-admin-list" id="houseAdminRequests"></div>
+        </section>
+        <section class="house-workspace-card">
+          <div class="house-workspace-title"><h2>GESTIÓN DE MIEMBROS</h2><span>Roles y expulsiones</span></div>
+          <div class="house-admin-list" id="houseAdminMembers"></div>
+        </section>
+        <section class="house-workspace-card" id="houseCreationAdminBlock" hidden>
+          <div class="house-workspace-title"><h2>CREACIÓN DE CASAS</h2><span>Panel del propietario de JEMMO LIVE</span></div>
+          <div class="house-admin-list" id="houseCreationRequests"></div>
+        </section>
+      </div>
     </section>
   </main>
 
@@ -75,18 +148,19 @@
 
   <section class="house-modal create-house-modal" id="createHouseModal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="createHouseTitle">
     <button class="house-modal-close" id="createHouseClose" type="button" aria-label="Cerrar">×</button>
-    <div class="house-modal-head"><span>♛</span><div><small>SOLICITUD PARA AGENTES</small><h2 id="createHouseTitle">Crear una Casa</h2></div></div>
-    <p class="house-modal-copy">La creación requiere revisión. Envía la solicitud y JEMMO LIVE comprobará el rol y los datos antes de activarla.</p>
+    <div class="house-modal-head"><span>♛</span><div><small>SOLICITUD REAL PARA REVISIÓN</small><h2 id="createHouseTitle">Crear una Casa</h2></div></div>
+    <p class="house-modal-copy">La Casa no se activa automáticamente. El propietario de JEMMO LIVE debe revisar y aprobar la solicitud.</p>
     <form id="createHouseForm" class="create-house-form">
       <label>Nombre de la Casa<input name="name" maxlength="36" required placeholder="Ejemplo: Casa Tenerife"></label>
       <label>País o territorio<input name="country" maxlength="40" required placeholder="Ejemplo: España"></label>
+      <label>Ciudad o comunidad<input name="city" maxlength="40" placeholder="Ejemplo: Tenerife"></label>
       <label>Descripción<textarea name="description" maxlength="180" required placeholder="Objetivo y comunidad de la Casa"></textarea></label>
       <button type="submit" class="house-confirm">ENVIAR SOLICITUD</button>
     </form>
     <p class="house-form-status" id="createHouseStatus" role="status"></p>
   </section>
 
-  <div class="demo-toast" id="demoToast" role="status"></div>
+  <div class="demo-toast" id="demoToast" role="status" aria-live="polite"></div>
   <nav class="bottom-nav" data-current="inicio">
     <a data-tab="inicio" href="inicio.html"><span class="nav-icon">⌂</span><b>Inicio</b></a>
     <a data-tab="live" href="live.html"><span class="nav-icon">▣</span><b>Live</b></a>

@@ -1,16 +1,14 @@
-JEMMO LIVE V1 · CASAS Y REGALOS DE BATALLA PRUEBA 12
-Fecha: 25/07/2026
+JEMMO LIVE V1 · CASAS FUNCIONALES PRUEBA 13
+Fecha: 26/07/2026
 
 SHA-256 de los archivos de esta entrega:
-367fd57cc98e38bb8709d43602eba516aec588962fff4745bbc820e45efe368f  app.css
-c4eabf16eea3caeb4e65c7ad714381ea8a813ca8171a83920a540d4a82bdd465  app.js
-80f6ff273f16f5c22679467f04b76a63cb50fb7aae319fd3e13d0a64da552778  casa-demo.html
-7e1b4a50fa0e21daaf8d3d64329c8bdf3eb4342a69136e38c3768ee6424afce6  inicio.html
-b246dd98e2e02c330687480affd4ec1701b51811a97525b7b5e6d0c80159af59  jemmo-battle-gifts.js
-8af4047f01b9f6cff3c477d51e370cbb361cb8a94c50e59ed70c9317fa462246  jemmo-houses.js
-95e56bc6e95b1ed5f9083395d5fc2f6f76b8b4fee2725f6d96dd97eab5e520a1  manifest.webmanifest
-1ad5afc59bf3a890acacafe9b349f794f65ae208c9836e3d0502539cce3aeff0  pwa-register.js
-14a9d30246b79a585b4b2ee737cbcd5c9c31e7edbecaacd06525f29f9de000bf  sw.js
-79dfadd07655d4d3d565c6e11d1f3bab53dcb3a2217eba1c8c7213bdff554680  VERSION.txt
+a22b3ea7390d71c4707de5ab848985bef9a4cccb0c9036983663e8f040da5bb6  app.css
+3f46a16fde8e3aad8b88215287a4d23a27624513167bc07a859286ab0e78d635  casa-demo.html
+79c96ed5961fede7826d1818b4ee08709a34b835a3fc03a4e2f5b761f21af79a  inicio.html
+e7fb148225df990491f8bd3e4769fc45ac45e561a279bb65838877b8fde9284b  jemmo-houses.js
+45c6a60198cad4db885d412075c488093f608139627bfb2481e7c308354bb5bf  manifest.webmanifest
+a27bc1519f0d2212d2316ea95fc8a325a42882d8f7e5d152f93a99c7da327e86  pwa-register.js
+3e079648204e251576b7ac8d4d649b178ed62a675685cc94aee653f3db5608fd  sw.js
+65d3544a1083cd5a8b43a2450a08e2c90e545af37a84f6c3dc8fc0a2b3967e4a  VERSION.txt
 
 Nota: este archivo de control no incluye su propio hash para evitar una referencia circular.

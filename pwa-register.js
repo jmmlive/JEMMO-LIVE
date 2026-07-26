@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-houses-battle-gifts-12';
+  const VERSION = 'pwa-functional-houses-13';
   let installPrompt = null;
 
   const isStandalone = () =>

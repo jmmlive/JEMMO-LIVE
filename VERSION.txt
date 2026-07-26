@@ -1,76 +1,112 @@
-JEMMO LIVE V1 · CASAS Y REGALOS DE BATALLA PRUEBA 12
-Fecha: 25/07/2026
+JEMMO LIVE V1 · CASAS FUNCIONALES PRUEBA 13
+Fecha: 26/07/2026
 
 Base verificada:
-- JEMMO LIVE V1 · RECEPCIÓN INVITADA, INVITAR AMIGOS Y CAMBIO 1:1 PRUEBA 11.
-- Se conserva íntegramente la corrección WebRTC invitada → anfitrión, los referidos y el cambio JEMMOS → CRISTALES 1:1.
+- JEMMO LIVE V1 · CASAS Y REGALOS DE BATALLA PRUEBA 12.
+- Conserva las correcciones de PRUEBA 11: recepción WebRTC invitada → anfitrión, enlace personal para invitar amigos y cambio JEMMOS → CRISTALES 1:1.
+- Conserva el explorador visual de Casas, el bloque Casas de Inicio y los regalos de la Batalla oficial de PRUEBA 12.
 
-Corrección de la pantalla Casas:
-- Eliminada la pantalla provisional “BASE NAVEGABLE”.
-- Nuevo explorador funcional de Casas con búsqueda y filtros: Todas, En batalla, Aceptan miembros y Nuevas.
-- Tarjetas de Casa con ubicación, miembros, puntos, ranking, descripción y acceso a detalles.
-- Casa Madre JEMMO visible como Casa oficial.
-- Elevador de Casas con clasificación de temporada.
-- Flujo “Solicitar unirme”: solo permite una solicitud activa, la conserva localmente y sincroniza con Firestore cuando hay conexión.
-- Flujo “Crear Casa”: envía una solicitud de revisión para agentes, sin activar una Casa automáticamente.
-- Catálogo local disponible aunque falle la conexión; si existe la colección `casas`, sus datos se integran desde Firestore.
+Objetivo de esta entrega:
+- Sustituir el módulo de Casas principalmente demostrativo por un circuito operativo conectado a Cloud Firestore.
+- Diferenciar claramente una Casa activa de una ficha de vista previa, evitando que los datos ficticios aparenten actividad real.
 
-Navegación unificada:
-- La pantalla Casas usa la misma botonera inferior que Inicio: Inicio, Live, Salas, Mensajes y Yo.
-- Se conserva el pez JEMMO en la pestaña activa, colores, iconos, altura y zona segura móvil.
-- Casas se añade al buscador funcional del menú y a los accesos directos de la PWA.
+Casas reales y vistas previas:
+- Las Casas recuperadas desde `casas/{houseId}` aparecen con la etiqueta “CASA ACTIVA”.
+- Las fichas locales que todavía no existen en Firestore aparecen como “VISTA PREVIA”, con cero miembros y cero puntos.
+- Una vista previa no permite enviar solicitudes hasta que el propietario de JEMMO LIVE la active.
+- El propietario puede activar una vista previa como Casa real y administrarla sin abandonar Casa Madre.
+- Al activarse, se crea el documento real de la Casa con datos iniciales, propietario, estado, ranking y contador de miembros.
 
-Batalla oficial y regalos:
-- Eliminado completamente el botón “DONAR”.
-- El apoyo se realiza mediante un botón de regalo situado junto a Enviar en el chat de batalla.
-- Flujo obligatorio: elegir Casa, regalo y cantidad; revisar destino y coste; confirmar una sola vez.
-- Cantidades: x1, x10, x20 y x100.
-- Regalos iniciales: Rosa JEMMO, Estrella, Corona Real y León de Oro.
-- El cobro usa el monedero global mediante `JemmoWallet.spendCoins`.
-- Protección doble: bloqueo del botón durante la operación e idempotencia en el monedero.
-- Si falta saldo, se muestra el importe pendiente y se abre Recargar JEMMOS.
-- Tras el envío se actualizan los puntos, se añade el evento al chat y se limpia toda la selección.
-- Los puntos se conservan localmente y se sincronizan en Firestore bajo la Batalla oficial de prueba cuando hay conexión.
+Casa Madre JEMMO:
+- Cuando la cuenta propietaria está reconocida mediante su rol `owner/propietario` o la protección local de JEMMO Finanzas, se crea o completa `casas/madre`.
+- La cuenta propietaria queda registrada como propietaria de Casa Madre y obtiene acceso a su administración.
+- Las solicitudes antiguas pendientes de la propia cuenta se cierran al activar Casa Madre para evitar estados contradictorios.
 
-Inicio:
-- Añadido bloque Casas después de Personas en directo y antes de Chili IA.
-- Muestra Casas destacadas y acceso directo a “Unirme a una Casa”.
-- La navegación ya no conduce a una pantalla vacía o de desarrollo.
+Solicitud real de ingreso:
+- Solo se permite pertenecer a una Casa y mantener una solicitud pendiente.
+- La solicitud se guarda en:
+  - `solicitudesCasa/{uid}` para el estado personal y la auditoría.
+  - `casas/{houseId}/solicitudes/{uid}` para la bandeja de administración de la Casa.
+  - `users/{uid}` para reflejar el estado resumido del usuario.
+- El usuario puede consultar el estado y cancelar una solicitud pendiente.
+- Una solicitud rechazada puede eliminarse y sustituirse por otra posterior.
 
-Archivos modificados o añadidos:
-- inicio.html
-- casa-demo.html
-- app.css
-- app.js
-- jemmo-houses.js (nuevo)
-- jemmo-battle-gifts.js (nuevo)
-- sw.js
-- pwa-register.js
-- manifest.webmanifest
-- VERSION.txt
-- INTEGRIDAD_SHA256.txt
+Aceptación y rechazo:
+- El propietario o un administrador de la Casa recibe las solicitudes pendientes en tiempo real.
+- Al aceptar:
+  - se crea `casas/{houseId}/miembros/{uid}`;
+  - se actualiza `users/{uid}` con Casa, rol y estado;
+  - aumenta una sola vez el contador real de miembros;
+  - la solicitud queda marcada como aceptada.
+- Al rechazar, la solicitud queda marcada como rechazada y el usuario puede solicitar otra Casa.
+- Las operaciones críticas usan transacciones de Firestore para evitar duplicados y contadores incorrectos.
+
+Mi Casa:
+- Al ser aceptado aparece “ENTRAR EN MI CASA”.
+- Página interna con cuatro áreas:
+  1. Inicio: resumen, puntos, miembros y avisos.
+  2. Chat: mensajes internos en tiempo real, solo para miembros o administración.
+  3. Miembros: propietario, administradores y miembros.
+  4. Administración: solicitudes, roles, expulsiones y revisión de nuevas Casas.
+- Los avisos y el chat usan subcolecciones reales de la Casa.
+
+Administración de miembros:
+- El propietario puede nombrar o retirar administradores.
+- Propietario y administradores pueden expulsar miembros, respetando la jerarquía interna.
+- Un administrador no puede expulsar al propietario ni a otro administrador.
+- Los miembros y administradores pueden abandonar la Casa con confirmación.
+- El propietario no puede abandonar su Casa hasta que exista un flujo posterior de transferencia de propiedad.
+
+Creación real de Casas:
+- El formulario crea una solicitud real en `solicitudesCasaCreacion/{uid}`.
+- El propietario de JEMMO LIVE dispone de una bandeja para aprobar o rechazar.
+- Al aprobar:
+  - se crea `casas/{houseId}`;
+  - el solicitante queda registrado como propietario y primer miembro;
+  - se actualiza su perfil `users/{uid}`;
+  - la solicitud queda marcada como aprobada.
+- La Casa no se activa automáticamente sin revisión.
+
+Inicio y navegación:
+- El bloque Casas de Inicio indica si el usuario debe unirse, revisar una solicitud o entrar en Mi Casa.
+- Se mantiene la botonera oficial: Inicio, Live, Salas, Mensajes y Yo.
+- Casas continúa accesible desde el buscador global y el acceso directo de la PWA.
+
+Archivos modificados:
+- `casa-demo.html`
+- `inicio.html`
+- `app.css`
+- `jemmo-houses.js`
+- `sw.js`
+- `pwa-register.js`
+- `manifest.webmanifest`
+- `VERSION.txt`
+- `INTEGRIDAD_SHA256.txt`
 
 Actualización PWA:
-- Caché: `jemmo-live-v1-houses-battle-gifts-12-20260725`.
-- Registro: `pwa-houses-battle-gifts-12`.
+- Caché: `jemmo-live-v1-functional-houses-13-20260726`.
+- Registro: `pwa-functional-houses-13`.
 - No es necesario desinstalar la PWA.
 
-Validaciones superadas:
+Validaciones realizadas:
 - Sintaxis JavaScript de todos los archivos modificados.
-- Estructura HTML, IDs y recursos requeridos.
-- Prueba funcional aislada: regalo de 500 JEMMOS, un solo cobro, marcador actualizado y mensaje añadido.
-- Prueba funcional aislada: filtro de Casas y solicitud de ingreso conservada.
-- Revisión visual móvil de Inicio, explorador, selector de regalos y modal de ingreso.
+- Estructura HTML, IDs únicos y manifest JSON.
+- Comprobación de recursos locales usados por las páginas.
+- Renderización móvil del explorador, Mi Casa y Administración.
+- Prueba local aislada de navegación entre Inicio, Chat, Miembros y Administración.
+- Diferenciación visual entre “CASA ACTIVA” y “VISTA PREVIA”.
 
-Pruebas móviles pendientes:
-1. Instalar la entrega y comprobar la actualización de la caché.
-2. En Inicio, abrir el regalo del chat y enviar un regalo de prueba a cada Casa.
-3. Confirmar que el saldo se descuenta una sola vez y la selección se limpia.
-4. Abrir Casas, buscar, filtrar y enviar una solicitud de ingreso.
-5. Verificar en Firestore `solicitudesCasa`, `solicitudesCasaCreacion` y `batallas/oficial-prueba`.
-6. Mantener pendiente la prueba real de cámara y micrófono con Ruth.
+Pruebas móviles obligatorias:
+1. Instalar los nueve archivos y abrir Casas con conexión.
+2. Confirmar que la cuenta propietaria ve Casa Madre como Mi Casa.
+3. Desde la cuenta de Ruth, solicitar entrar en Casa Madre.
+4. Desde la cuenta de Jesús, abrir Administración y aceptar a Ruth.
+5. Verificar que Ruth ve “Entrar en mi Casa”.
+6. Probar un aviso, un mensaje de Jesús y una respuesta de Ruth.
+7. Probar rechazo, cancelación y salida con otra cuenta de prueba cuando exista.
+8. Mantener pendiente la prueba WebRTC real de cámara y micrófono entre Jesús y Ruth.
 
-Límites técnicos:
-- Casas, puntos y economía continúan en modo de pruebas.
-- La aceptación de miembros y la aprobación de nuevas Casas requieren un panel administrativo posterior.
-- Las reglas temporales de Firestore deben sustituirse antes de producción.
+Límites y seguridad:
+- El módulo es funcional para pruebas, pero las reglas actuales de Firestore siguen siendo temporales y permisivas.
+- Antes de producción deben aplicarse reglas que validen membresía, roles, administración y transacciones en servidor.
+- La transferencia de propiedad, moderación avanzada, notificaciones push y auditoría administrativa completa quedan para una fase posterior.
