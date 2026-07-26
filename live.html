@@ -1086,6 +1086,16 @@
     .jl-gift-summary{margin:7px 0;padding:7px 8px;border:1px solid #5e2674;border-radius:11px;background:#0e0114;color:#e7d9eb;font-size:9px;text-align:center}
     .jl-gift-catalog{max-height:190px;overflow:auto;grid-template-columns:repeat(4,1fr)!important;padding-right:2px}.jl-gift-catalog button{min-height:63px!important}.jl-gift-catalog button span{font-size:22px!important}.jl-gift-catalog button b{font-size:7px!important;line-height:1.1}.jl-gift-catalog button small{font-size:6.5px!important}
     .jl-seat-gift-total{position:absolute;z-index:4;right:-3px;top:-3px;min-width:28px;height:21px;padding:0 5px;border-radius:99px;background:linear-gradient(135deg,#ffd34e,#ff8c38);border:1px solid #fff1a0;color:#2a0b05;display:grid;place-items:center;font-size:8px;font-weight:1000}
+
+    /* PRUEBA 20 · EQUIPAMIENTO VISIBLE EN TRANSMISIÓN LIVE */
+    html.jemmo-personalization-ready .jl-broadcast{background:var(--jemmo-equipped-theme-bg,linear-gradient(155deg,#15031d,#09000e 58%,#020003))}
+    html.jemmo-personalization-ready .jl-avatar{box-shadow:var(--jemmo-equipped-avatar-shadow,0 0 0 3px #7c2f92,0 0 15px #9a37ba55)!important}
+    html.jemmo-personalization-ready .jl-chat-line.jemmo-own{background:var(--jemmo-equipped-bubble-bg,linear-gradient(135deg,#26102e,#130519))!important;border:1px solid var(--jemmo-equipped-bubble-border,#7b348e)!important;color:var(--jemmo-equipped-bubble-text,#fff)!important}
+    .jl-equipped-entry{position:absolute;z-index:25;left:50%;top:18%;transform:translate(-50%,-20px);width:min(88%,390px);padding:12px 15px;border:1px solid var(--jemmo-equipped-theme-accent,#d84dff);border-radius:18px;background:#100217ed;color:#fff;text-align:center;font-size:11px;font-weight:1000;box-shadow:0 14px 45px #000c;opacity:0;pointer-events:none}
+    .jl-equipped-entry.show{animation:jlEquippedEntry 2.8s ease both}.jl-equipped-entry.wave{background:linear-gradient(90deg,#22052c,#7b23a8,#22052c)}.jl-equipped-entry.comet{border-color:#ffd65b;background:linear-gradient(110deg,#12020d,#4b2c02,#26002e)}
+    @keyframes jlEquippedEntry{0%{opacity:0;transform:translate(-65%,-15px) scale(.9)}18%,72%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-35%,12px) scale(.96)}}
+    .jl-profile-row{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:10px;align-items:center}.jl-profile-row img{width:58px;height:58px;border-radius:50%;object-fit:cover;background:#2a0732}.jl-seat-more{width:42px;height:42px;border:1px solid #763188;border-radius:13px;background:#1d0425;color:#fff;font-size:23px}.jl-seat-follow{width:100%;min-height:44px;margin-top:9px;border:0;border-radius:13px;background:linear-gradient(90deg,#ffd34f,#d943ff);color:#21031d;font-size:10px;font-weight:1000}.jl-seat-follow.following{background:#24102a;border:1px solid #79408a;color:#fff}.jl-seat-moderation[hidden]{display:none}.jl-seat-moderation{display:grid;gap:7px;margin-top:8px}
+    .jl-chatbar.chat-closed form{opacity:.68}.jl-chatbar.chat-closed input{cursor:not-allowed}
 </style>
 </head>
 <body data-jemmo-wallet-native-gifts="true">
@@ -1204,6 +1214,7 @@
       </header>
 
       <div class="jl-event-ticker" id="eventTicker" aria-live="polite"><span>✨</span><b id="eventTickerText">Bienvenido al LIVE de JEMMO</b></div>
+      <div class="jl-equipped-entry" id="liveEntranceEffect" aria-live="polite"></div>
 
 
 
@@ -1271,7 +1282,7 @@
         <div class="jl-gift-quantities">
           <button class="jl-gift-quantity active" data-live-quantity="1" type="button">×1</button>
           <button class="jl-gift-quantity" data-live-quantity="10" type="button">×10</button>
-          <button class="jl-gift-quantity" data-live-quantity="15" type="button">×15</button>
+          <button class="jl-gift-quantity" data-live-quantity="20" type="button">×20</button>
           <button class="jl-gift-quantity" data-live-quantity="100" type="button">×100</button>
         </div>
         <div class="jl-gift-summary" id="liveGiftSummary">1 persona · 1 regalo.</div>
@@ -1305,13 +1316,14 @@
       </section>
 
       <section class="jl-sheet" id="seatSheet" hidden>
-        <div class="jl-sheet-head"><div><h3 id="seatTitle">Silla del LIVE</h3><p id="seatSubtitle">Gestión individual del participante</p></div><button class="jl-sheet-close" data-close-sheet>×</button></div>
-        <div class="jl-person-card"><h4 id="seatPerson">Luna · Nivel 12</h4><p>Casa Tenerife · España<br>Perfil emergente sin abandonar la transmisión.</p></div>
-        <div class="jl-person-actions">
-          <button class="accept" id="seatAccept">Aceptar / conectar</button>
+        <div class="jl-sheet-head"><div><h3 id="seatTitle">Perfil de la silla</h3><p id="seatSubtitle">Perfil público y moderación</p></div><button class="jl-sheet-close" data-close-sheet>×</button></div>
+        <div class="jl-person-card jl-profile-row"><img id="seatPhoto" src="jemmo-fish-nav.webp" alt=""><div><h4 id="seatPerson">Usuario JEMMO</h4><p id="seatPersonMeta">Perfil emergente sin abandonar la transmisión.</p></div><button class="jl-seat-more" id="seatMore" type="button" aria-label="Opciones de moderación">⋮</button></div>
+        <button class="jl-seat-follow" id="seatFollow" type="button">SEGUIR</button>
+        <div class="jl-person-actions"><button class="accept" id="seatAccept">Aceptar / conectar</button></div>
+        <div class="jl-person-actions jl-seat-moderation" id="seatModerationMenu" hidden>
           <button id="seatMute">Silenciar</button>
           <button id="seatDown">Bajar de la silla</button>
-          <button class="danger" id="seatKick">Expulsar 15 min</button>
+          <button class="danger" id="seatKick">⛔ EXPULSAR · 1 MINUTO</button>
         </div>
       </section>
 
@@ -1378,6 +1390,7 @@
   <script src="pwa-register.js"></script>
   <script src="jemmo-wallet.js"></script>
   <script src="jemmo-prep-storage.js"></script>
+  <script type="module" src="jemmo-personalization-runtime.js"></script>
   <script>
   (() => {
     "use strict";
@@ -1399,6 +1412,8 @@
       filter:"natural",
       mic:true,
       comments:true,
+      equippedEntrance:null,
+      seatFollowing:new Set(),
       coverData:"",
       live:false,
       prepSeconds:0,
@@ -2029,6 +2044,7 @@
       nav.setAttribute("aria-hidden","true");
       await refreshBroadcast();
       showEventTicker("Tu LIVE ha comenzado · cámara activa y controles compactos","🔴");
+      showLiveEntrance();
       playFishSplash();
     });
 
@@ -2070,9 +2086,18 @@
       if(target) setTimeout(()=>location.assign(target),120);
     });
 
+    function showLiveEntrance(equipped=state.equippedEntrance){
+      const entrance=equipped?.entrance||equipped;if(!entrance||!state.live)return;
+      state.equippedEntrance=entrance;
+      const node=$("liveEntranceEffect");if(!node)return;
+      node.className=`jl-equipped-entry ${entrance.preview?.effect||"base"}`;
+      node.textContent=String(entrance.preview?.label||"Jesús entró en el LIVE");
+      void node.offsetWidth;node.classList.add("show");setTimeout(()=>node.classList.remove("show"),2900);
+    }
+    window.addEventListener("jemmo-personalization-applied",event=>{state.equippedEntrance=event.detail?.equipped?.entrance||null;if(state.live)showLiveEntrance(state.equippedEntrance)});
     function addChat(text){
       const line=document.createElement("div");
-      line.className="jl-chat-line";
+      line.className=`jl-chat-line${/^(Tú:|Yo:)/i.test(text)?" jemmo-own":""}`;
       line.textContent=text;
       $("chatLayer").append(line);
       while($("chatLayer").children.length>6) $("chatLayer").firstElementChild?.remove();
@@ -2080,6 +2105,7 @@
     $("chatForm").addEventListener("submit",event=>{
       event.preventDefault();
       const input=$("chatInput");
+      if(!state.comments){showToast("El chat está cerrado por el anfitrión.");return}
       const text=input.value.trim();
       if(!text) return;
       addChat(`Tú: ${text}`);
@@ -2351,53 +2377,59 @@
     $("liveGiftCatalog").addEventListener("click",event=>{const button=event.target.closest("[data-live-gift]");if(button)sendLiveGift(button)});
     document.querySelectorAll("[data-live-quantity]").forEach(button=>button.addEventListener("click",()=>{state.giftQuantity=Number(button.dataset.liveQuantity);updateLiveGiftPanel()}));
 
+    function liveSeatData(seat){
+      const number=Number(seat?.dataset.seat||0),request=seat?.classList.contains("request"),occupied=seat?.classList.contains("occupied");
+      const name=number===1?"Luna":number===3?"Alex":`Silla ${number}`;
+      return{number,name,request,occupied,available:!request&&!occupied};
+    }
     document.querySelectorAll(".jl-seat").forEach(button=>{
       button.addEventListener("click",()=>{
+        const until=Number(button.dataset.bannedUntil)||0;
+        if(until>Date.now()){showToast(`No puede volver a entrar durante ${Math.max(1,Math.ceil((until-Date.now())/1000))} segundos.`);return}
+        if(until){delete button.dataset.bannedUntil}
         state.activeSeat=Number(button.dataset.seat);
-        $("seatTitle").textContent=`Silla ${state.activeSeat}`;
-        $("seatPerson").textContent=state.activeSeat===1?"Luna · Solicitud pendiente":state.activeSeat===3?"Alex · En la silla":"Silla disponible";
+        const person=liveSeatData(button);
+        $("seatTitle").textContent=person.available?`Silla ${person.number} disponible`:`Perfil · Silla ${person.number}`;
+        $("seatPerson").textContent=person.available?"Silla disponible":`${person.name} · Nivel ${person.number===1?12:8}`;
+        $("seatPersonMeta").textContent=person.available?"No hay ninguna persona sentada.":"Casa Tenerife · España · Perfil público JEMMO";
+        $("seatPhoto").src="jemmo-fish-nav.webp";
+        $("seatAccept").hidden=!person.request;
+        $("seatFollow").hidden=person.available;
+        $("seatMore").hidden=!person.occupied;
+        $("seatModerationMenu").hidden=true;
+        const following=state.seatFollowing.has(person.number);$("seatFollow").textContent=following?"SIGUIENDO":"SEGUIR";$("seatFollow").classList.toggle("following",following);
+        $("seatMute").textContent=button.classList.contains("muted")?"Reactivar audio":"Silenciar";
         openSheet("seatSheet");
       });
     });
+    $("seatFollow").addEventListener("click",()=>{
+      const seat=document.querySelector(`.jl-seat[data-seat="${state.activeSeat}"]`),person=liveSeatData(seat);if(person.available)return;
+      if(state.seatFollowing.has(person.number))state.seatFollowing.delete(person.number);else state.seatFollowing.add(person.number);
+      const following=state.seatFollowing.has(person.number);$("seatFollow").textContent=following?"SIGUIENDO":"SEGUIR";$("seatFollow").classList.toggle("following",following);showToast(following?`Ahora sigues a ${person.name}.`:`Has dejado de seguir a ${person.name}.`);
+    });
+    $("seatMore").addEventListener("click",()=>{$("seatModerationMenu").hidden=!$("seatModerationMenu").hidden});
     $("seatAccept").addEventListener("click",event=>{
-      event.preventDefault();
-      event.stopPropagation();
+      event.preventDefault();event.stopPropagation();
       const seat=document.querySelector(`.jl-seat[data-seat="${state.activeSeat}"]`);
-      seat?.classList.remove("request");
-      seat?.classList.add("occupied");
-      showToast("Participante conectado a la silla.");
-      renderLiveGiftRecipients();
-      closeSheets();
+      seat?.classList.remove("request");seat?.classList.add("occupied");
+      showToast("Participante conectado a la silla.");renderLiveGiftRecipients();closeSheets();
     });
     $("seatMute").addEventListener("click",event=>{
-      event.preventDefault();
-      event.stopPropagation();
-      const seat=document.querySelector(`.jl-seat[data-seat="${state.activeSeat}"]`);
-      seat?.classList.toggle("muted");
-      showToast(seat?.classList.contains("muted")?"Participante silenciado.":"Micrófono reactivado.");
-      closeSheets();
+      event.preventDefault();event.stopPropagation();
+      const seat=document.querySelector(`.jl-seat[data-seat="${state.activeSeat}"]`);seat?.classList.toggle("muted");
+      showToast(seat?.classList.contains("muted")?"Participante silenciado.":"Micrófono reactivado.");closeSheets();
     });
     $("seatDown").addEventListener("click",event=>{
-      event.preventDefault();
-      event.stopPropagation();
-      const seat=document.querySelector(`.jl-seat[data-seat="${state.activeSeat}"]`);
-      seat?.classList.remove("occupied","request","muted");
-      state.giftTotals.delete(`seat${state.activeSeat}`);
-      updateLiveGiftBadges();
-      showToast("Participante bajado de la silla.");
-      renderLiveGiftRecipients();
-      closeSheets();
+      event.preventDefault();event.stopPropagation();
+      const seat=document.querySelector(`.jl-seat[data-seat="${state.activeSeat}"]`);seat?.classList.remove("occupied","request","muted");
+      state.giftTotals.delete(`seat${state.activeSeat}`);updateLiveGiftBadges();showToast("Participante bajado de la silla.");renderLiveGiftRecipients();closeSheets();
     });
     $("seatKick").addEventListener("click",event=>{
-      event.preventDefault();
-      event.stopPropagation();
-      const seat=document.querySelector(`.jl-seat[data-seat="${state.activeSeat}"]`);
-      seat?.classList.remove("occupied","request","muted");
-      state.giftTotals.delete(`seat${state.activeSeat}`);
-      updateLiveGiftBadges();
-      showToast("Participante expulsado durante 15 minutos.");
-      renderLiveGiftRecipients();
-      closeSheets();
+      event.preventDefault();event.stopPropagation();
+      const seat=document.querySelector(`.jl-seat[data-seat="${state.activeSeat}"]`),person=liveSeatData(seat);if(!seat||person.available)return;
+      if(!confirm(`¿Expulsar a ${person.name} durante 1 minuto de prueba?`))return;
+      seat.classList.remove("occupied","request","muted");seat.dataset.bannedUntil=String(Date.now()+60*1000);
+      state.giftTotals.delete(`seat${state.activeSeat}`);updateLiveGiftBadges();showToast("Participante expulsado durante 1 minuto de prueba.");renderLiveGiftRecipients();closeSheets();
     });
 
     let policyPrimaryAction=null;
@@ -2503,8 +2535,13 @@
     });
     $("liveComments").addEventListener("click",()=>{
       state.comments=!state.comments;
-      $("chatLayer").hidden=!state.comments;
-      showToast(state.comments?"Comentarios visibles.":"Comentarios ocultos.");
+      const input=$("chatInput"),send=$("chatForm").querySelector("button");
+      input.disabled=!state.comments;send.disabled=!state.comments;
+      input.placeholder=state.comments?"Escribe un mensaje…":"Chat cerrado por el anfitrión";
+      $("chatForm").closest(".jl-chatbar")?.classList.toggle("chat-closed",!state.comments);
+      $("liveComments").classList.toggle("is-off",!state.comments);
+      addChat(`Sistema: el chat ha sido ${state.comments?"abierto":"cerrado"} por el anfitrión.`);
+      showToast(state.comments?"Chat abierto de nuevo.":"Chat cerrado. Nadie puede escribir.");
     });
     $("roomControls").addEventListener("click",()=>openSheet("safetySheet"));
 

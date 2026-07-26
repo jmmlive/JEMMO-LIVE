@@ -203,15 +203,24 @@
     @media(max-width:350px){body.jemmo-house-room .jr-room-head{grid-template-columns:39px minmax(0,1fr) auto;padding-left:6px;padding-right:6px}.jr-house-info{padding-left:6px!important;padding-right:6px!important}.jr-task-clock{min-width:94px}.jr-house-numbers span:nth-child(3){display:none}body.jemmo-house-room .jr-seats-wrap{padding-left:4px;padding-right:4px}.jemmo-house-room .jr-controls{grid-template-columns:40px 40px minmax(0,1fr) 43px;padding-left:4px;padding-right:4px}}
 
 
-    /* PRUEBA 19 · MARCOS EQUIPADOS VISIBLES SOLO EN LA CUENTA LOCAL */
+    /* PRUEBA 20 · EQUIPAMIENTO GLOBAL, CONTROLES Y MODERACIÓN */
+    html.jemmo-personalization-ready .jr-stage{background:var(--jemmo-equipped-theme-bg,linear-gradient(155deg,#15031d,#09000e 58%,#020003))!important}
     html.jemmo-personalization-ready .jr-room-avatar,
-    html.jemmo-personalization-ready .jr-seat.local-user .jr-seat-avatar{
-      box-shadow:var(--jemmo-equipped-avatar-shadow,0 0 0 3px #7c2f92,0 0 15px #9a37ba55)!important;
-    }
-    html.jemmo-personalization-ready .jr-seat.local-user.audio{
-      border:var(--jemmo-equipped-chair-border,1px solid #6b2b7a)!important;
-      box-shadow:var(--jemmo-equipped-chair-shadow,0 0 12px #a637c733)!important;
-    }
+    html.jemmo-personalization-ready .jr-seat.local-user .jr-seat-avatar{box-shadow:var(--jemmo-equipped-avatar-shadow,0 0 0 3px #7c2f92,0 0 15px #9a37ba55)!important}
+    html.jemmo-personalization-ready .jr-seat.local-user{border:var(--jemmo-equipped-chair-border,1px solid #6b2b7a)!important;box-shadow:var(--jemmo-equipped-chair-shadow,0 0 12px #a637c733)!important}
+    html.jemmo-personalization-ready .jr-chat-line.jemmo-own{background:var(--jemmo-equipped-bubble-bg,linear-gradient(135deg,#26102e,#130519))!important;border:1px solid var(--jemmo-equipped-bubble-border,#7b348e)!important;color:var(--jemmo-equipped-bubble-text,#fff)!important}
+    .jr-room-entry{position:absolute;z-index:20;left:50%;top:18%;transform:translate(-50%,-20px);width:min(88%,390px);padding:11px 14px;border:1px solid var(--jemmo-equipped-theme-accent,#d84dff);border-radius:18px;background:#100217ed;color:#fff;text-align:center;font-size:11px;font-weight:1000;box-shadow:0 14px 45px #000c,0 0 24px color-mix(in srgb,var(--jemmo-equipped-theme-accent,#d84dff) 55%,transparent);opacity:0;pointer-events:none}
+    .jr-room-entry.show{animation:jrEntry 2.8s ease both}.jr-room-entry.wave{background:linear-gradient(90deg,#22052c,#7b23a8,#22052c)}.jr-room-entry.comet{border-color:#ffd65b;background:linear-gradient(110deg,#12020d,#4b2c02,#26002e)}
+    @keyframes jrEntry{0%{opacity:0;transform:translate(-65%,-15px) scale(.9)}18%,72%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-35%,12px) scale(.96)}}
+    .jr-camera-off{position:absolute;inset:0;display:grid;place-content:center;gap:5px;background:linear-gradient(145deg,#140319,#020003);color:#d8c5dd;text-align:center}.jr-camera-off span{font-size:25px}.jr-camera-off b{font-size:8px;letter-spacing:.08em}
+    .jr-chat-closed .jr-compose{opacity:.68}.jr-chat-closed .jr-compose input{cursor:not-allowed}
+    .jr-profile-card{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px;border:1px solid #6d2a80;border-radius:18px;background:linear-gradient(145deg,#21052a,#0c010f)}
+    .jr-profile-card img{width:64px;height:64px;border-radius:50%;object-fit:cover;background:#2b0733}.jr-profile-card h3,.jr-profile-card p{margin:0}.jr-profile-card h3{font-size:15px}.jr-profile-card p{margin-top:4px;color:#c9b9ce;font-size:10px;line-height:1.4}.jr-profile-more{width:42px;height:42px;border:1px solid #7c338f;border-radius:14px;background:#1a0321;color:#fff;font-size:24px;font-weight:1000}
+    .jr-profile-follow{width:100%;min-height:45px;margin-top:10px;border:0;border-radius:14px;background:linear-gradient(90deg,#ffd34f,#d944ff);color:#21031d;font-size:10px;font-weight:1000}.jr-profile-follow.following{background:#24102a;border:1px solid #79408a;color:#fff}
+    .jr-moderation-menu{display:grid;gap:7px;margin-top:9px;padding:9px;border:1px solid #6c2a7d;border-radius:16px;background:#0e0112}.jr-moderation-menu[hidden]{display:none}.jr-moderation-menu button{min-height:43px;border:1px solid #5d276a;border-radius:12px;background:#220629;color:#fff;font-size:10px;font-weight:950}.jr-moderation-menu button.danger{border-color:#a83252;background:#3a0b1a;color:#ffbac9}
+    body.jemmo-house-room .jr-controls{grid-template-columns:40px 40px 40px minmax(0,1fr) 44px!important}
+    body.jemmo-house-room #settingsButton{display:grid!important;grid-column:1}.jemmo-house-room .jr-house-seat{grid-column:2!important}.jemmo-house-room .jr-house-mic{grid-column:3!important}.jemmo-house-room .jr-compose{grid-column:4!important}.jemmo-house-room .jr-control-btn.gifts{grid-column:5!important}
+    @media(max-width:350px){body.jemmo-house-room .jr-controls{grid-template-columns:36px 36px 36px minmax(0,1fr) 40px!important;gap:4px!important}}
 </style>
 </head>
 <body data-jemmo-wallet-native-gifts="true">
@@ -301,6 +310,7 @@
 
     <main class="jr-stage">
       <button class="jr-btn jr-audio-unlock jr-hidden" id="audioUnlockButton" type="button">🔊 TOCA PARA ESCUCHAR</button>
+      <div class="jr-room-entry" id="roomEntranceEffect" aria-live="polite"></div>
       <div class="jr-seats-wrap"><div class="jr-seats" id="seatsGrid"></div></div>
       <section class="jr-chat" id="chatMessages" aria-live="polite">
         <div class="jr-chat-line system"><b>JEMMO:</b> La sala está preparada. Respeta las normas y disfruta.</div>
@@ -337,13 +347,25 @@
 <div class="jr-backdrop jr-hidden" id="backdrop"></div>
 <section class="jr-sheet jr-hidden" id="settingsSheet" aria-label="Ajustes de sala">
   <header class="jr-sheet-head"><strong>Ajustes de la sala</strong><button class="jr-sheet-close" data-close type="button">×</button></header>
-  <button class="jr-setting" type="button" data-action="micro"><span>🎙️</span><b>Micrófono<small>Activar o silenciar tu audio</small></b><i>›</i></button>
+  <button class="jr-setting" id="roomMicSetting" type="button" data-action="micro"><span>🎙️</span><b>Micrófono ON<small>Activar o silenciar tu audio</small></b><i>›</i></button>
+  <button class="jr-setting" id="roomCameraSetting" type="button" data-action="camera"><span>📷</span><b>Cámara ON<small>Apagar o reactivar tu cámara</small></b><i>›</i></button>
   <button class="jr-setting" id="roomMirrorButton" type="button" data-action="mirror"><span>⇆</span><b>Espejo OFF<small>Imagen frontal corregida y sin reflejo</small></b><i>›</i></button>
   <button class="jr-setting" type="button" data-action="invite"><span>＋</span><b>Invitar personas<small>Compartir o enviar invitación</small></b><i>›</i></button>
-  <button class="jr-setting" type="button" data-action="chat"><span>💬</span><b>Control del chat<small>Comentarios y usuarios bloqueados</small></b><i>›</i></button>
+  <button class="jr-setting" id="roomChatSetting" type="button" data-action="chat"><span>💬</span><b>Chat ABIERTO<small>Cerrar o volver a abrir los mensajes</small></b><i>›</i></button>
   <button class="jr-setting" type="button" data-action="minor"><span>🛡️</span><b>Posible menor<small>Proteger, registrar y solicitar revisión</small></b><i>›</i></button>
   <button class="jr-setting" type="button" data-action="permissions"><span>🔒</span><b>Permisos de sillas<small>Solicitudes, invitaciones y cierre</small></b><i>›</i></button>
   <button class="jr-setting danger" type="button" data-action="close"><span>⛔</span><b>Finalizar sala<small>Pide confirmación antes de cerrar</small></b><i>›</i></button>
+</section>
+
+<section class="jr-sheet jr-hidden" id="personSheet" aria-label="Perfil de la persona sentada">
+  <header class="jr-sheet-head"><strong id="personSheetTitle">Perfil de la silla</strong><button class="jr-sheet-close" data-close type="button">×</button></header>
+  <div class="jr-profile-card"><img id="personSheetPhoto" src="jemmo-fish-nav.webp" alt=""><div><h3 id="personSheetName">Usuario JEMMO</h3><p id="personSheetMeta">Silla · Perfil público</p></div><button class="jr-profile-more" id="personMoreButton" type="button" aria-label="Opciones de moderación">⋮</button></div>
+  <button class="jr-profile-follow" id="personFollowButton" type="button">SEGUIR</button>
+  <div class="jr-moderation-menu" id="personModerationMenu" hidden>
+    <button id="personSeatDown" type="button">⬇️ BAJAR DE LA SILLA</button>
+    <button id="personMuteButton" type="button">🔇 SILENCIAR</button>
+    <button class="danger" id="personKickButton" type="button">⛔ EXPULSAR · 1 MINUTO</button>
+  </div>
 </section>
 
 <section class="jr-sheet jr-hidden" id="giftsSheet" aria-label="Regalos">
@@ -358,7 +380,7 @@
   <div class="jr-quantities" id="giftQuantities">
     <button class="jr-btn jr-quantity active" data-quantity="1" type="button">×1</button>
     <button class="jr-btn jr-quantity" data-quantity="10" type="button">×10</button>
-    <button class="jr-btn jr-quantity" data-quantity="15" type="button">×15</button>
+    <button class="jr-btn jr-quantity" data-quantity="20" type="button">×20</button>
     <button class="jr-btn jr-quantity" data-quantity="100" type="button">×100</button>
   </div>
   <div class="jr-gift-summary" id="giftSummary">Selecciona destinatarios y cantidad.</div>
@@ -413,19 +435,43 @@
     remoteStream:null,
     remoteName:'Ruth',
     remotePhoto:'ruth-avatar-test.jpg',
+    remoteUid:'remote-ruth',
     remoteConnected:false,
     ownName:'Jesús',
     ownPhoto:'',
+    ownUid:activeUid(),
     isGuest:false,
     localSeat:1,
     remoteSeat:2,
     inviteMeta:null,
     micEnabled:true,
+    cameraEnabled:true,
+    chatClosed:false,
+    activeSeat:0,
+    activePerson:null,
+    equippedEntrance:null,
     remoteAudioBlocked:false,
     remoteAudioPlaying:false,
     chatSending:false,
-    houseSeatActive:true
+    houseSeatActive:true,
+    moderatedDown:false
   };
+  const ROOM_TEST_BAN_MS=60*1000;
+  const banStorageKey=()=>`jemmo_room_test_bans_v1_${activeUid()}`;
+  function safeBanMap(){
+    let raw='';try{raw=localStorage.getItem(banStorageKey())||''}catch{}if(!raw)try{raw=sessionStorage.getItem(banStorageKey())||''}catch{}
+    try{const parsed=JSON.parse(raw||'{}');return parsed&&typeof parsed==='object'?parsed:{}}catch{return{}}
+  }
+  function saveBanMap(map){try{localStorage.setItem(banStorageKey(),JSON.stringify(map))}catch{try{sessionStorage.setItem(banStorageKey(),JSON.stringify(map))}catch{}}}
+  function personKey(person){return String(person?.uid||person?.name||'').trim().toLowerCase()}
+  function blockedUntil(person){
+    const key=personKey(person);if(!key)return 0;
+    const map=safeBanMap(),until=Number(map[key])||0;
+    if(until&&until<=Date.now()){delete map[key];saveBanMap(map);return 0}
+    return until
+  }
+  function blockPerson(person){const key=personKey(person);if(!key)return 0;const map=safeBanMap(),until=Date.now()+ROOM_TEST_BAN_MS;map[key]=until;saveBanMap(map);return until}
+  function remainingBanSeconds(person){const until=blockedUntil(person);return until?Math.max(1,Math.ceil((until-Date.now())/1000)):0}
   let toastTimer=0;
   let saveTimer=0;
   let roomOpen=false;
@@ -579,21 +625,21 @@
     state.occupants.clear();
     state.giftTotals.clear();
     const hostPerson=state.isGuest
-      ? {name:state.remoteName||'Jesús',role:state.remoteConnected?'Anfitrión conectado':'Anfitrión',photo:state.remotePhoto||'jemmo-fish-nav.webp',host:true,remote:true}
-      : {name:state.ownName||'Jesús',role:'Anfitrión',photo:state.cover||state.ownPhoto||'jemmo-fish-nav.webp',host:true,local:true};
+      ? {uid:state.remoteUid||'remote-host',name:state.remoteName||'Jesús',role:state.remoteConnected?'Anfitrión conectado':'Anfitrión',photo:state.remotePhoto||'jemmo-fish-nav.webp',host:true,remote:true}
+      : {uid:state.ownUid||activeUid(),name:state.ownName||'Jesús',role:'Anfitrión',photo:state.cover||state.ownPhoto||'jemmo-fish-nav.webp',host:true,local:true};
     const guestPerson=state.isGuest
-      ? {name:state.ownName||'Ruth',role:'Invitada',photo:state.ownPhoto||'ruth-avatar-test.jpg',host:false,local:true}
-      : {name:state.remoteName||'Ruth',role:state.remoteConnected?'Conectada en tiempo real':'Esperando invitación',photo:state.remotePhoto||'ruth-avatar-test.jpg',host:false,remote:true};
+      ? {uid:state.ownUid||activeUid(),name:state.ownName||'Ruth',role:'Invitada',photo:state.ownPhoto||'ruth-avatar-test.jpg',host:false,local:true}
+      : {uid:state.remoteUid||'remote-ruth',name:state.remoteName||'Ruth',role:state.remoteConnected?'Conectada en tiempo real':'Esperando invitación',photo:state.remotePhoto||'ruth-avatar-test.jpg',host:false,remote:true};
     if(!houseContext.enabled||!hostPerson.local||state.houseSeatActive)state.occupants.set(1,hostPerson);
-    if(state.count>=2&&(!houseContext.enabled||state.isGuest||state.remoteConnected)){
-      if(!houseContext.enabled||!guestPerson.local||state.houseSeatActive)state.occupants.set(2,guestPerson);
+    if(state.count>=2&&(!houseContext.enabled||state.isGuest||state.remoteConnected)&&!blockedUntil(guestPerson)){
+      if((!houseContext.enabled||!guestPerson.local||state.houseSeatActive)&&!(state.isGuest&&guestPerson.local&&state.moderatedDown))state.occupants.set(2,guestPerson);
     }
     const demo=[
-      {name:'Invitada 3',role:'En silla',photo:'jemmo-fish-nav.webp',host:false},
-      {name:'Invitado 4',role:'En silla',photo:'jemmo-fish-nav.webp',host:false},
-      {name:'Invitada 5',role:'En silla',photo:'jemmo-fish-nav.webp',host:false}
+      {uid:'demo-seat-3',name:'Invitada 3',role:'En silla',photo:'jemmo-fish-nav.webp',host:false},
+      {uid:'demo-seat-4',name:'Invitado 4',role:'En silla',photo:'jemmo-fish-nav.webp',host:false},
+      {uid:'demo-seat-5',name:'Invitada 5',role:'En silla',photo:'jemmo-fish-nav.webp',host:false}
     ];
-    if(!houseContext.enabled)demo.slice(0,Math.max(0,Math.min(state.count,5)-2)).forEach((person,index)=>state.occupants.set(index+3,person));
+    if(!houseContext.enabled)demo.slice(0,Math.max(0,Math.min(state.count,5)-2)).forEach((person,index)=>{if(!blockedUntil(person))state.occupants.set(index+3,person)});
     state.selectedRecipients.clear();
     state.occupants.forEach((_,index)=>state.selectedRecipients.add(index));
   }
@@ -607,9 +653,9 @@
 
   function seatMarkup(index,person){
     if(state.mode==='camera'&&person?.local){
-      return `<video class="jr-seat-video" id="hostCameraVideo" autoplay muted playsinline></video>
-        <div class="jr-seat-overlay"><b>${person.name}</b><small>${person.role}</small></div>
-        <span class="jr-mic">🎥</span><span class="jr-number">${index}</span>${giftBadge(index)}`;
+      const media=state.cameraEnabled?`<video class="jr-seat-video" id="hostCameraVideo" autoplay muted playsinline></video>`:`<div class="jr-camera-off"><span>📷</span><b>CÁMARA APAGADA</b></div>`;
+      return `${media}<div class="jr-seat-overlay"><b>${person.name}</b><small>${state.cameraEnabled?person.role:'Cámara apagada'}</small></div>
+        <span class="jr-mic">${state.cameraEnabled?'🎥':'🚫'}</span><span class="jr-number">${index}</span>${giftBadge(index)}`;
     }
     if(state.mode==='camera'&&person?.remote){
       return `<video class="jr-seat-video" id="remoteRoomVideo" autoplay muted playsinline></video>
@@ -705,15 +751,38 @@
   }
 
   function localHousePerson(){
-    return {name:state.ownName||'Usuario JEMMO',role:state.isGuest?'Emisor/a':'Agente de Casa',photo:state.ownPhoto||state.cover||'jemmo-fish-nav.webp',host:!state.isGuest,local:true};
+    return {uid:state.ownUid||activeUid(),name:state.ownName||'Usuario JEMMO',role:state.isGuest?'Emisor/a':'Agente de Casa',photo:state.ownPhoto||state.cover||'jemmo-fish-nav.webp',host:!state.isGuest,local:true};
   }
 
-  function toggleHouseMicro(force){
-    if(!houseContext.enabled||!state.houseSeatActive)return;
+  function updateRoomControlLabels(){
+    const mic=$('roomMicSetting'),camera=$('roomCameraSetting'),chat=$('roomChatSetting');
+    if(mic){mic.querySelector('b').childNodes[0].textContent=`Micrófono ${state.micEnabled?'ON':'OFF'}`;mic.classList.toggle('active',state.micEnabled)}
+    if(camera){camera.hidden=state.mode!=='camera';camera.querySelector('b').childNodes[0].textContent=`Cámara ${state.cameraEnabled?'ON':'OFF'}`;camera.classList.toggle('active',state.cameraEnabled)}
+    if(chat){chat.querySelector('b').childNodes[0].textContent=`Chat ${state.chatClosed?'CERRADO':'ABIERTO'}`;chat.classList.toggle('active',!state.chatClosed)}
+  }
+  function toggleRoomMicro(force){
+    if(houseContext.enabled&&!state.houseSeatActive){toast('Sube a una silla para activar el micrófono.');return}
     state.micEnabled=typeof force==='boolean'?force:!state.micEnabled;
     state.stream?.getAudioTracks?.().forEach(track=>{track.enabled=state.micEnabled});
-    syncHouseDirectControls();renderSeats();
+    syncHouseDirectControls();updateRoomControlLabels();renderSeats();
     toast(state.micEnabled?'Micrófono activado.':'Micrófono silenciado.');
+  }
+  function toggleRoomCamera(force){
+    if(state.mode!=='camera'){toast('La cámara solo está disponible en Sala con cámara.');return}
+    state.cameraEnabled=typeof force==='boolean'?force:!state.cameraEnabled;
+    state.stream?.getVideoTracks?.().forEach(track=>{track.enabled=state.cameraEnabled});
+    updateRoomControlLabels();renderSeats();attachRoomStreams();
+    toast(state.cameraEnabled?'Cámara reactivada.':'Cámara apagada. Sigues dentro de la sala.');
+  }
+  function toggleRoomChat(force,{silent=false,sync=true}={}){
+    if(sync&&state.isGuest){toast('Solo el anfitrión puede cerrar o abrir el chat.');return}
+    state.chatClosed=typeof force==='boolean'?force:!state.chatClosed;
+    const input=$('chatInput'),send=$('chatSend'),view=$('roomView');
+    if(input){input.disabled=state.chatClosed;input.placeholder=state.chatClosed?'Chat cerrado por el anfitrión':'Escribe un mensaje…'}
+    if(send)send.disabled=state.chatClosed;
+    view?.classList.toggle('jr-chat-closed',state.chatClosed);updateRoomControlLabels();
+    if(sync&&state.realtimeSession?.setChatClosed)void state.realtimeSession.setChatClosed(state.chatClosed).catch(error=>{console.warn('Estado remoto del chat:',error);toast('No se pudo sincronizar el chat con el otro móvil.')});
+    if(!silent){addChat(`JEMMO: El chat ha sido ${state.chatClosed?'cerrado':'abierto'} por el anfitrión.`,'system');toast(state.chatClosed?'Chat cerrado para toda la sala.':'Chat abierto de nuevo.')}
   }
 
   function toggleHouseSeat(){
@@ -736,11 +805,60 @@
   }
 
   function togglePersonAudio(person){
-    if(!person||person.local)return toggleHouseMicro();
+    if(!person||person.local)return toggleRoomMicro();
     person.mutedByMe=!person.mutedByMe;
     if(person.remote&&$('remoteRoomAudio'))$('remoteRoomAudio').muted=Boolean(person.mutedByMe);
     renderSeats();
     toast(person.mutedByMe?'Audio silenciado en este móvil.':'Audio recuperado en este móvil.');
+  }
+
+  function persistentFollowAvailable(person){
+    const uid=String(person?.uid||'');
+    return Boolean(uid&&uid!==activeUid()&&!uid.startsWith('remote-')&&!uid.startsWith('demo-'));
+  }
+  async function refreshPersonFollow(person=state.activePerson){
+    if(!person||!persistentFollowAvailable(person))return;
+    const button=$('personFollowButton');
+    try{
+      const social=await import('./jemmo-social.js');
+      person.following=await social.isFollowing(person.uid,activeUid());
+      if(state.activePerson!==person)return;
+      button.textContent=person.following?'SIGUIENDO':'SEGUIR';button.classList.toggle('following',Boolean(person.following));
+    }catch(error){console.warn('Estado de seguimiento:',error)}
+  }
+
+  function openSeatProfile(index){
+    const person=occupantFor(index);if(!person)return;
+    state.activeSeat=index;state.activePerson=person;
+    $('personSheetTitle').textContent=`Perfil · Silla ${index}`;
+    $('personSheetPhoto').src=person.photo||'jemmo-fish-nav.webp';
+    $('personSheetName').textContent=person.name||'Usuario JEMMO';
+    $('personSheetMeta').textContent=`${person.role||'En silla'} · ${person.host?'Anfitrión':'Perfil público JEMMO'}`;
+    const follow=$('personFollowButton');follow.hidden=Boolean(person.local);follow.textContent=person.following?'SIGUIENDO':'SEGUIR';follow.classList.toggle('following',Boolean(person.following));
+    const more=$('personMoreButton');more.hidden=Boolean(person.local||person.host);
+    $('personModerationMenu').hidden=true;
+    $('personMuteButton').textContent=person.mutedByMe?'🔊 REACTIVAR AUDIO':'🔇 SILENCIAR';
+    openSheet('personSheet');
+    void refreshPersonFollow(person);
+  }
+  function removeActivePerson({kick=false}={}){
+    const index=state.activeSeat,person=state.activePerson;if(!index||!person||person.local||person.host)return;
+    const action=kick?'kick':'down';
+    if(kick)blockPerson(person);
+    if(person.remote&&state.realtimeSession?.sendModerationAction)void state.realtimeSession.sendModerationAction({action,targetUid:person.uid,targetName:person.name,untilMs:kick?Date.now()+ROOM_TEST_BAN_MS:0}).catch(error=>{console.warn('Moderación remota:',error);toast('No se pudo enviar la orden al otro móvil.')});
+    if(person.remote&&$('remoteRoomAudio'))$('remoteRoomAudio').muted=Boolean(kick||person.mutedByMe);
+    state.occupants.delete(index);state.giftTotals.delete(index);state.selectedRecipients.delete(index);
+    renderSeats();renderGiftRecipients();closeSheets(false);
+    toast(kick?`${person.name} expulsada durante 1 minuto de prueba.`:`${person.name} bajó de la silla.`);
+  }
+  function showRoomEntrance(equipped=state.equippedEntrance){
+    const entrance=equipped?.entrance||equipped;if(!entrance||!roomOpen)return;
+    state.equippedEntrance=entrance;
+    const node=$('roomEntranceEffect');if(!node)return;
+    node.className=`jr-room-entry ${entrance.preview?.effect||'base'}`;
+    node.textContent=String(entrance.preview?.label||`${state.ownName||'Usuario'} entró en la sala`).replace('Jesús',state.ownName||'Jesús');
+    void node.offsetWidth;node.classList.add('show');
+    setTimeout(()=>node.classList.remove('show'),2900);
   }
 
   function renderSeats(){
@@ -757,25 +875,15 @@
       seat.dataset.seat=String(i);
       seat.innerHTML=seatMarkup(i,person);
       seat.addEventListener('click',()=>{
+        if(person){openSeatProfile(i);return}
         if(houseContext.enabled){
-          if(person){togglePersonAudio(person);return}
           if(!state.houseSeatActive){toggleHouseSeat();return}
-          toast('Ya estás en una silla. Las sillas libres se ocupan cuando entra otra persona real.');
-          return;
+          toast('Silla libre. Se ocupará cuando entre otra persona real.');return;
         }
-        if(i===1){toast('Esta es la silla del anfitrión.');return}
-        if(state.occupants.has(i)){
-          state.occupants.delete(i);
-          state.giftTotals.delete(i);
-          toast(`La persona de la silla ${i} bajó en esta prueba.`);
-        }else{
-          state.giftTotals.delete(i);
-          state.occupants.set(i,{name:`Invitado ${i}`,role:'En silla',photo:'jemmo-fish-nav.webp',host:false});
-          toast(`Invitado ${i} subió a la silla.`);
-        }
-        renderSeats();
-        renderGiftRecipients();
-        if(state.mode==='camera')startCamera();
+        const demo={uid:`demo-seat-${i}`,name:`Invitado ${i}`,role:'En silla',photo:'jemmo-fish-nav.webp',host:false};
+        const remaining=remainingBanSeconds(demo);if(remaining){toast(`Esta persona no puede volver durante ${remaining} segundos.`);return}
+        state.giftTotals.delete(i);state.occupants.set(i,demo);toast(`Invitado ${i} subió a la silla.`);
+        renderSeats();renderGiftRecipients();
       });
       grid.append(seat);
     }
@@ -831,11 +939,13 @@
       });
       state.stream=stream;
       state.micEnabled=true;
+      if(state.mode!=='camera')state.cameraEnabled=false;
       stream.getAudioTracks().forEach(track=>{
-        track.enabled=true;
+        track.enabled=state.micEnabled;
         try{track.contentHint='speech'}catch{}
       });
-      attachRoomStreams();
+      stream.getVideoTracks().forEach(track=>{track.enabled=state.cameraEnabled});
+      updateRoomControlLabels();attachRoomStreams();
       return stream;
     }catch(error){
       console.warn('Error de audio/cámara:',error);
@@ -879,12 +989,20 @@
   function handleRemoteProfile(profile={}){
     state.remoteName=String(profile.name||state.remoteName||'Ruth');
     state.remotePhoto=String(profile.photo||state.remotePhoto||'ruth-avatar-test.jpg');
-    defaultOccupants();
-    renderSeats();
-    renderGiftRecipients();
+    state.remoteUid=String(profile.uid||profile.userId||state.remoteUid||'remote-ruth');
+    const candidate={uid:state.remoteUid,name:state.remoteName};
+    const remaining=remainingBanSeconds(candidate);
+    if(remaining){
+      state.remoteConnected=false;
+      updateRoomConnection('warning',`EXPULSADA · ${remaining} S`);
+      toast(`${state.remoteName} no puede volver a entrar durante ${remaining} segundos.`);
+    }
+    defaultOccupants();renderSeats();renderGiftRecipients();
   }
 
   function handleRemoteStream(stream){
+    const candidate={uid:state.remoteUid,name:state.remoteName};
+    const remaining=remainingBanSeconds(candidate);if(remaining){updateRoomConnection('warning',`EXPULSADA · ${remaining} S`);toast(`${state.remoteName} sigue expulsada durante ${remaining} segundos.`);return}
     const firstConnection=!state.remoteConnected;
     state.remoteStream=stream;
     state.remoteConnected=true;
@@ -895,6 +1013,38 @@
     updateRoomConnection('connected',state.isGuest?'CONECTADA CON JESÚS':`${(state.remoteName||'RUTH').toUpperCase()} CONECTADA`);
     void playRemoteAudio(false);
     if(firstConnection)addChat(`JEMMO: ${state.remoteName||'Ruth'} se conectó con audio${state.mode==='camera'?' y cámara':''}.`,'system');
+  }
+
+  function handleRemoteChatState(closed){
+    const next=Boolean(closed),changed=state.chatClosed!==next;
+    toggleRoomChat(next,{silent:true,sync:false});
+    if(changed)addChat(`JEMMO: El anfitrión ha ${next?'cerrado':'abierto'} el chat.`,'system');
+  }
+
+  function handleRoomModeration(action={}){
+    if(String(action.targetUid||'')!==String(state.ownUid||activeUid()))return;
+    const type=String(action.action||'').toLowerCase();
+    if(type==='mute'||type==='unmute'){
+      state.micEnabled=type==='unmute';
+      state.stream?.getAudioTracks?.().forEach(track=>{track.enabled=state.micEnabled});
+      syncHouseDirectControls();updateRoomControlLabels();renderSeats();
+      toast(type==='mute'?'El anfitrión ha silenciado tu micrófono.':'El anfitrión ha reactivado tu micrófono.');
+      return;
+    }
+    if(type==='down'){
+      state.moderatedDown=true;state.micEnabled=false;
+      state.stream?.getAudioTracks?.().forEach(track=>{track.enabled=false});
+      state.occupants.delete(state.localSeat);renderSeats();renderGiftRecipients();syncHouseDirectControls();updateRoomControlLabels();
+      toast('El anfitrión te ha bajado de la silla. Sigues dentro de la sala.');
+      return;
+    }
+    if(type==='kick'){
+      const until=Math.max(Date.now()+ROOM_TEST_BAN_MS,Number(action.untilMs)||0);
+      const map=safeBanMap();map[personKey({uid:state.ownUid||activeUid()})]=until;saveBanMap(map);
+      state.micEnabled=false;state.stream?.getTracks?.().forEach(track=>{track.enabled=false});
+      toast('Has sido expulsada durante 1 minuto de prueba.');
+      setTimeout(()=>leaveRoom(false,false),450);
+    }
   }
 
   function handleRealtimeStatus(detail={}){
@@ -917,7 +1067,7 @@
       cover:(!houseContext.enabled&&state.cover&&!String(state.cover).startsWith('data:')&&!String(state.cover).startsWith('blob:'))?String(state.cover).slice(0,1200):'',
       houseId:houseContext.enabled?houseContext.id:'',houseName:houseContext.enabled?(houseContext.name||$('roomTitle').value.trim()):'',permanentHouseRoom:houseContext.enabled,
       onOutgoingMediaNeeded:()=>recoverLocalMedia(true),
-      onRemoteStream:handleRemoteStream,onRemoteProfile:handleRemoteProfile,onLocalProfile:profile=>{state.ownName=profile.name||state.ownName;state.ownPhoto=profile.photo||state.ownPhoto},onStatus:handleRealtimeStatus,onMessage:handleRoomMessage
+      onRemoteStream:handleRemoteStream,onRemoteProfile:handleRemoteProfile,onLocalProfile:profile=>{state.ownUid=profile.uid||state.ownUid;state.ownName=profile.name||state.ownName;state.ownPhoto=profile.photo||state.ownPhoto},onStatus:handleRealtimeStatus,onMessage:handleRoomMessage,onChatState:handleRemoteChatState,onModeration:handleRoomModeration
     });
     updateRoomConnection('waiting',houseContext.enabled?'SALA ABIERTA · ESPERANDO EMISORA':`INVITAR A ${(state.remoteName||'RUTH').toUpperCase()}`);
     return state.realtimeSession;
@@ -961,11 +1111,13 @@
       return;
     }
     state.isGuest=false;
+    state.moderatedDown=false;
     state.localSeat=1;
     state.remoteSeat=2;
     state.remoteName=state.remoteName||'Ruth';
     state.remotePhoto=state.remotePhoto||'ruth-avatar-test.jpg';
     state.remoteConnected=false;
+    state.cameraEnabled=state.mode==='camera';state.chatClosed=false;updateRoomControlLabels();toggleRoomChat(false,{silent:true,sync:false});
     const title=$('roomTitle').value.trim();
     save();
     if(!houseContext.enabled)document.body.classList.remove('jemmo-house-room');
@@ -985,6 +1137,7 @@
     updateRoomConnection('waiting',houseContext.enabled?'ABRIENDO SALA DE CASA…':`PREPARANDO INVITACIÓN PARA ${(state.remoteName||'RUTH').toUpperCase()}`);
     const stream=await startCamera();
     if(!stream){updateRoomConnection('warning','SIN AUDIO/CÁMARA');return}
+    showRoomEntrance();
     try{
       await startRealtimeHost();
       addChat(houseContext.enabled?'JEMMO: Has entrado en la Sala 24/7 de tu Casa. Solo audio y tareas.':`JEMMO: Sala de prueba activada. Pulsa INVITAR A ${(state.remoteName||'RUTH').toUpperCase()} para compartir el enlace.`,'system');
@@ -997,6 +1150,7 @@
 
   async function joinIncomingRoom(meta){
     state.isGuest=true;
+    state.moderatedDown=false;
     state.localSeat=2;
     state.remoteSeat=1;
     state.mode=meta.mode;
@@ -1004,6 +1158,7 @@
     state.remoteName=meta.hostName||'Jesús';
     state.remotePhoto=meta.hostPhoto||'jemmo-fish-nav.webp';
     state.remoteConnected=false;
+    state.cameraEnabled=state.mode==='camera';state.chatClosed=false;updateRoomControlLabels();toggleRoomChat(false,{silent:true,sync:false});
     if(!houseContext.enabled&&meta.cover){
       state.cover=String(meta.cover).slice(0,1400);
       $('roomAvatar').src=state.cover;
@@ -1026,7 +1181,7 @@
     if(!stream){updateRoomConnection('warning','PERMISOS NECESARIOS');return}
     try{
       const api=await waitRealtimeApi();
-      state.realtimeSession=await api.joinGuestSession(meta.roomId,{mode:state.mode,localStream:stream,onRemoteStream:handleRemoteStream,onRemoteProfile:handleRemoteProfile,onLocalProfile:profile=>{state.ownName=profile.name||'Ruth';state.ownPhoto=profile.photo||'ruth-avatar-test.jpg';defaultOccupants();renderSeats()},onStatus:handleRealtimeStatus,onMessage:handleRoomMessage});
+      state.realtimeSession=await api.joinGuestSession(meta.roomId,{mode:state.mode,localStream:stream,onRemoteStream:handleRemoteStream,onRemoteProfile:handleRemoteProfile,onLocalProfile:profile=>{state.ownUid=profile.uid||state.ownUid;state.ownName=profile.name||'Ruth';state.ownPhoto=profile.photo||'ruth-avatar-test.jpg';defaultOccupants();renderSeats()},onStatus:handleRealtimeStatus,onMessage:handleRoomMessage,onChatState:handleRemoteChatState,onModeration:handleRoomModeration});
       addChat(`JEMMO: Has entrado en la sala de ${meta.hostName||'Jesús'}.`,'system');
     }catch(error){
       console.warn('Unión a sala:',error);
@@ -1076,6 +1231,8 @@
     $('backdrop').classList.remove('gift-mode');
     $('backdrop').classList.add('jr-hidden');
     $('settingsSheet').classList.add('jr-hidden');
+    $('personSheet').classList.add('jr-hidden');
+    $('personModerationMenu').hidden=true;
     $('giftsSheet').classList.add('jr-hidden');
   }
 
@@ -1136,7 +1293,8 @@
     const now=Date.now();
     if(last&&last.textContent===text&&now-Number(last.dataset.addedAt||0)<2000)return;
     const line=document.createElement('div');
-    line.className=`jr-chat-line ${kind}`;
+    const own=/^(Tú:|Yo:)/i.test(text);
+    line.className=`jr-chat-line ${kind}${own?' jemmo-own':''}`;
     line.dataset.addedAt=String(now);
     line.textContent=text;
     chat.append(line);
@@ -1328,15 +1486,21 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   $('helpButton').addEventListener('click',()=>toast('Completa los datos, entra y pulsa INVITAR A RUTH para probar audio o cámara en dos móviles.'));
   $('settingsButton').addEventListener('click',()=>openSheet('settingsSheet'));
   $('houseSeatButton').addEventListener('click',toggleHouseSeat);
-  $('houseMicButton').addEventListener('click',()=>toggleHouseMicro());
+  $('houseMicButton').addEventListener('click',()=>toggleRoomMicro());
   $('giftsButton').addEventListener('click',()=>openSheet('giftsSheet'));
   $('backdrop').addEventListener('click',()=>closeSheets(true));
   document.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',()=>closeSheets(true)));
+  $('personMoreButton').addEventListener('click',()=>{$('personModerationMenu').hidden=!$('personModerationMenu').hidden});
+  $('personFollowButton').addEventListener('click',async()=>{const person=state.activePerson;if(!person||person.local)return;const button=$('personFollowButton');button.disabled=true;try{if(persistentFollowAvailable(person)){const social=await import('./jemmo-social.js');person.following=await social.toggleFollow(person.uid,activeUid())}else person.following=!person.following;button.textContent=person.following?'SIGUIENDO':'SEGUIR';button.classList.toggle('following',person.following);toast(person.following?`Ahora sigues a ${person.name}.`:`Has dejado de seguir a ${person.name}.`)}catch(error){console.warn('Seguimiento desde Sala:',error);toast('No se pudo actualizar el seguimiento. Revisa la conexión.')}finally{button.disabled=false}});
+  $('personMuteButton').addEventListener('click',()=>{const person=state.activePerson;if(!person||person.local||person.host)return;person.mutedByMe=!person.mutedByMe;if(person.remote&&$('remoteRoomAudio'))$('remoteRoomAudio').muted=person.mutedByMe;if(person.remote&&state.realtimeSession?.sendModerationAction)void state.realtimeSession.sendModerationAction({action:person.mutedByMe?'mute':'unmute',targetUid:person.uid,targetName:person.name}).catch(error=>{console.warn('Silencio remoto:',error);toast('No se pudo sincronizar el silencio con el otro móvil.')});$('personMuteButton').textContent=person.mutedByMe?'🔊 REACTIVAR AUDIO':'🔇 SILENCIAR';renderSeats();toast(person.mutedByMe?`${person.name} ha sido silenciada.`:`Audio de ${person.name} reactivado.`)});
+  $('personSeatDown').addEventListener('click',()=>removeActivePerson({kick:false}));
+  $('personKickButton').addEventListener('click',()=>{const person=state.activePerson;if(!person)return;if(confirm(`¿Expulsar a ${person.name} durante 1 minuto de prueba?`))removeActivePerson({kick:true})});
 
   $('chatSend').addEventListener('pointerdown',event=>event.preventDefault());
   $('chatForm').addEventListener('submit',async event=>{
     event.preventDefault();
     if(state.chatSending)return;
+    if(state.chatClosed){toast('El chat está cerrado por el anfitrión.');return}
     const input=$('chatInput');
     const text=input.value.trim();
     if(!text)return;
@@ -1395,6 +1559,8 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   },true);
   window.addEventListener('jemmo-wallet-change',updateBalance);
   window.addEventListener('storage',event=>{if(event.key===window.JemmoWallet?.key?.())updateBalance()});
+  window.addEventListener('jemmo-personalization-applied',event=>{state.equippedEntrance=event.detail?.equipped?.entrance||null;if(roomOpen)showRoomEntrance(state.equippedEntrance)});
+  updateRoomControlLabels();
 
   document.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>{
     const action=btn.dataset.action;
@@ -1404,7 +1570,11 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
       closeSheets();
       void shareRoomInvite();
     }else if(action==='micro'){
-      toggleHouseMicro();
+      toggleRoomMicro();
+    }else if(action==='camera'){
+      toggleRoomCamera();
+    }else if(action==='chat'){
+      toggleRoomChat();
     }else if(action==='minor'){
       toast('Posible menor: protección activada y caso preparado para revisión.');
     }else if(action==='close'){
@@ -1486,7 +1656,7 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   window.addEventListener('focus',()=>{if(roomOpen)void recoverLocalMedia(false)});
   window.addEventListener('pageshow',()=>{if(roomOpen)void recoverLocalMedia(true)});
 
-  window.JemmoHouseRoomControls={toggleSeat:toggleHouseSeat,toggleMic:toggleHouseMicro,getState:()=>({houseSeatActive:state.houseSeatActive,micEnabled:state.micEnabled,localSeat:state.localSeat})};
+  window.JemmoHouseRoomControls={toggleSeat:toggleHouseSeat,toggleMic:toggleRoomMicro,getState:()=>({houseSeatActive:state.houseSeatActive,micEnabled:state.micEnabled,localSeat:state.localSeat})};
   window.addEventListener('pagehide',()=>{void save()});
   window.addEventListener('beforeunload',stopCamera);
 })();

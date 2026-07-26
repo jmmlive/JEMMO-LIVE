@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · INICIO UNIVERSO, REGALOS Y PERSISTENCIA PRUEBA 19 */
-const CACHE = 'jemmo-live-v1-universe-persistence-19-20260726';
+/* JEMMO LIVE V1 · UNIVERSO EQUIPADO Y MODERACIÓN DE SALAS PRUEBA 20 */
+const CACHE = 'jemmo-live-v1-universe-equipped-moderation-20-20260726';
 const APP_SHELL = [
   './',
   './index.html',

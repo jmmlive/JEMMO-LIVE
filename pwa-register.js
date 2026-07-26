@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-universe-persistence-19';
+  const VERSION = 'pwa-universe-equipped-moderation-20';
   let installPrompt = null;
 
   const isStandalone = () =>

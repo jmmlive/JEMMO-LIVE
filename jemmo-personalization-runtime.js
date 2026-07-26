@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · PERSONALIZACIÓN VISIBLE PRUEBA 19 */
+/* JEMMO LIVE V1 · UNIVERSO EQUIPADO Y MODERACIÓN DE SALAS PRUEBA 20 */
 import { loadPersonalization, getPersonalization, applyEquippedToRoot } from './jemmo-personalization.js';
 let booted=false;
 function apply(state=getPersonalization()){

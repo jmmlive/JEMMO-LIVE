@@ -1,23 +1,38 @@
-JEMMO LIVE V1 · INICIO UNIVERSO, REGALOS Y PERSISTENCIA PRUEBA 19
+JEMMO LIVE V1 · UNIVERSO EQUIPADO Y MODERACIÓN DE SALAS PRUEBA 20
 Fecha: 26/07/2026
 
 Base:
-- JEMMO LIVE V1 · JEMMO UNIVERSO CATÁLOGO E INVENTARIO PRUEBA 18.
-- Conserva las Salas personales restauradas de PRUEBA 17 y la Sala de Casa.
+- JEMMO LIVE V1 · INICIO UNIVERSO, REGALOS Y PERSISTENCIA PRUEBA 19.
+- Corrección preparada sobre JEMMO-LIVE-main (12).zip.
 
-Correcciones:
-- JEMMO Universo visible directamente en Inicio, además de Perfil, menú y buscador.
-- Popular, Regalos JEMMO, saldo e Inventario accesibles desde Inicio.
-- Catálogo de regalos restaurado en LIVE; el error de constante ausente ya no detiene el script.
-- Título, descripción y portada del LIVE se recuperan antes de cargar módulos secundarios.
-- Diez regalos JEMMO iniciales visibles en LIVE y al principio del catálogo de Salas.
-- Marcos de avatar y marcos de silla equipados visibles sobre la cuenta local dentro de Salas.
-- El Perfil muestra el marco de avatar equipado.
-- Persistencia duradera del perfil e ID mediante localStorage, sessionStorage e IndexedDB.
-- El Perfil reconoce el UID guardado en sessionStorage cuando localStorage está lleno.
-- Corregido el detalle de JEMMO Universo y los enlaces directos a categorías/objetos.
+JEMMO Universo:
+- Universo queda reservado exclusivamente para complementos temporales; los regalos ya no aparecen como productos de la tienda.
+- Entradas / Rider tienen una vigencia de 1 mes desde la adquisición.
+- Marcos de avatar, marcos de silla, burbujas y perfiles / temas tienen una vigencia de 15 días.
+- Los artículos gratuitos base permanecen activos sin caducidad.
+- El inventario muestra vigencia, caducidad y renovación; al caducar, el artículo deja de aplicarse y se recupera el equipamiento base.
 
-Protección:
-- No se modifica la geometría móvil de las Salas ni la Sala de Casa.
-- Temas, burbujas y entradas siguen en el Estudio hasta validarlos por separado.
-- Economía en MODO DE PRUEBAS · SIN COBROS REALES.
+Equipamiento visible:
+- Los perfiles / temas, marcos de avatar, burbujas y entradas equipadas se aplican en transmisión LIVE.
+- Los perfiles / temas, marcos de avatar, marcos de silla, burbujas y entradas equipadas se aplican en Audio Room y Sala con cámara.
+- El marco de avatar continúa visible en Perfil.
+
+Regalos:
+- Los regalos se mantienen dentro de las cajas de regalos de LIVE y Salas.
+- JEMMO Universo no compra ni equipa regalos.
+- Cantidades de envío unificadas en ×1, ×10, ×20 y ×100.
+
+Configuración y moderación de Salas:
+- Controles funcionales para activar/silenciar micrófono, apagar/reactivar cámara y cerrar/reabrir chat.
+- Cerrar o abrir el chat se sincroniza mediante Firestore y se aplica también en el móvil invitado.
+- Al tocar una persona sentada se abre su miniperfil; el seguimiento usa la relación social real cuando existe un UID válido.
+- El menú de tres puntos permite bajar de la silla, silenciar/reactivar y expulsar.
+- Las órdenes sobre una persona conectada se envían al segundo móvil mediante el documento de la sala de prueba.
+- En esta prueba, la expulsión cierra la sala en el móvil expulsado y bloquea la reentrada durante 1 minuto.
+- Para producción queda fijado el bloqueo definitivo de 15 minutos, junto con reglas de seguridad y validación de rol en backend.
+
+Actualización móvil:
+- Nueva versión de caché del service worker y registro PWA para impedir que el móvil conserve archivos de PRUEBA 19.
+
+Economía:
+- MODO DE PRUEBAS · SIN COBROS REALES.

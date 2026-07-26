@@ -1,19 +1,20 @@
-/* JEMMO LIVE V1 · JEMMO UNIVERSO · CATÁLOGO PRUEBA 18 */
-export const STORE_VERSION = '1.0-test';
+/* JEMMO LIVE V1 · JEMMO UNIVERSO · COMPLEMENTOS TEMPORALES PRUEBA 20 */
+export const STORE_VERSION = '1.1-test';
 export const STORE_MODE = 'simulation';
 
 export const CATEGORY_META = Object.freeze({
   popular: { label: 'Popular', icon: '✦', description: 'Selección destacada de JEMMO Universo.' },
-  themes: { label: 'Temas', icon: '▧', description: 'Fondos completos para Audio Room y salas compatibles.' },
+  themes: { label: 'Perfiles / temas', icon: '▧', description: 'Aspectos completos para tu perfil, LIVE, Audio Room y Sala con cámara.' },
   bubbles: { label: 'Burbujas', icon: '◌', description: 'Diseños para tus mensajes dentro del chat.' },
   avatarFrames: { label: 'Marcos avatar', icon: '◎', description: 'Marcos que rodean la foto de perfil.' },
   chairFrames: { label: 'Marcos silla', icon: '⬡', description: 'Marcos alrededor de tu plaza en Audio Room.' },
-  entrances: { label: 'Entradas', icon: '➜', description: 'Animaciones de entrada al acceder a una sala.' },
-  gifts: { label: 'Regalos', icon: '🎁', description: 'Catálogo inicial para LIVE y Salas. No se compran para inventario.' },
+  entrances: { label: 'Entradas / Rider', icon: '➜', description: 'Animaciones de entrada al acceder a LIVE, Audio Room o Sala con cámara.' },
   inventory: { label: 'Inventario', icon: '▣', description: 'Objetos adquiridos y equipados por esta cuenta.' }
 });
 
-const permanent = { durationDays: 0, durationLabel: 'PERMANENTE EN PRUEBAS', simulation: true };
+const permanent = { durationDays: 0, durationLabel: 'PERMANENTE', simulation: true };
+const fifteenDays = { durationDays: 15, durationLabel: '15 DÍAS', simulation: true };
+const thirtyDays = { durationDays: 30, durationLabel: '1 MES', simulation: true };
 
 export const PERSONALIZATION_CATALOG = Object.freeze([
   {
@@ -26,13 +27,13 @@ export const PERSONALIZATION_CATALOG = Object.freeze([
     id: 'theme-noche-chicharrera', category: 'themes', name: 'Noche Chicharrera', icon: '🌌', price: 18000,
     tier: 'POPULAR', featured: true, access: 'purchase',
     description: 'Cielo violeta, luces de costa y destellos inspirados en Tenerife.',
-    preview: { background: 'radial-gradient(circle at 75% 18%,#ffcc4d4d,transparent 22%),radial-gradient(circle at 24% 32%,#9d3eff66,transparent 32%),linear-gradient(160deg,#170228,#04010c 68%,#020005)', accent: '#ffd34f' }, ...permanent
+    preview: { background: 'radial-gradient(circle at 75% 18%,#ffcc4d4d,transparent 22%),radial-gradient(circle at 24% 32%,#9d3eff66,transparent 32%),linear-gradient(160deg,#170228,#04010c 68%,#020005)', accent: '#ffd34f' }, ...fifteenDays
   },
   {
     id: 'theme-galaxia-violeta', category: 'themes', name: 'Galaxia Violeta', icon: '🪐', price: 55000,
     tier: 'ÉLITE', featured: false, access: 'purchase',
     description: 'Nebulosa profunda con órbitas luminosas y acabado premium.',
-    preview: { background: 'radial-gradient(circle at 75% 24%,#ff4bdc66,transparent 25%),radial-gradient(circle at 18% 68%,#4e78ff55,transparent 27%),linear-gradient(145deg,#230044,#090019 55%,#030006)', accent: '#ff55df' }, ...permanent
+    preview: { background: 'radial-gradient(circle at 75% 24%,#ff4bdc66,transparent 25%),radial-gradient(circle at 18% 68%,#4e78ff55,transparent 27%),linear-gradient(145deg,#230044,#090019 55%,#030006)', accent: '#ff55df' }, ...fifteenDays
   },
 
   {
@@ -45,13 +46,13 @@ export const PERSONALIZATION_CATALOG = Object.freeze([
     id: 'bubble-brillo-malva', category: 'bubbles', name: 'Brillo Malva', icon: '💬', price: 6000,
     tier: 'POPULAR', featured: true, access: 'purchase',
     description: 'Burbuja malva con brillo suave y punta redondeada.',
-    preview: { bubble: 'linear-gradient(135deg,#7c23a5,#cf42f0)', border: '#f19cff', text: '#ffffff' }, ...permanent
+    preview: { bubble: 'linear-gradient(135deg,#7c23a5,#cf42f0)', border: '#f19cff', text: '#ffffff' }, ...fifteenDays
   },
   {
     id: 'bubble-elite-dorada', category: 'bubbles', name: 'Élite Dorada', icon: '✨', price: 22000,
     tier: 'ÉLITE', featured: false, access: 'purchase',
     description: 'Mensaje negro y oro con destello premium.',
-    preview: { bubble: 'linear-gradient(135deg,#171005,#4a2d02)', border: '#ffd55a', text: '#fff4c1' }, ...permanent
+    preview: { bubble: 'linear-gradient(135deg,#171005,#4a2d02)', border: '#ffd55a', text: '#fff4c1' }, ...fifteenDays
   },
 
   {
@@ -64,13 +65,13 @@ export const PERSONALIZATION_CATALOG = Object.freeze([
     id: 'avatar-frame-pulso', category: 'avatarFrames', name: 'Pulso JEMMO', icon: '💜', price: 12000,
     tier: 'POPULAR', featured: true, access: 'purchase',
     description: 'Doble aro neón con pulso violeta.',
-    preview: { frame: '0 0 0 3px #e254ff,0 0 0 6px #6e1cf077,0 0 24px #d63dff', radius: '50%' }, ...permanent
+    preview: { frame: '0 0 0 3px #e254ff,0 0 0 6px #6e1cf077,0 0 24px #d63dff', radius: '50%' }, ...fifteenDays
   },
   {
     id: 'avatar-frame-corona', category: 'avatarFrames', name: 'Corona Élite', icon: '♛', price: 38000,
     tier: 'ÉLITE', featured: false, access: 'purchase',
     description: 'Aro dorado con insignia de corona para perfiles destacados.',
-    preview: { frame: '0 0 0 3px #ffd65b,0 0 0 6px #7b4b04,0 0 25px #ffcf52aa', radius: '50%' }, ...permanent
+    preview: { frame: '0 0 0 3px #ffd65b,0 0 0 6px #7b4b04,0 0 25px #ffcf52aa', radius: '50%' }, ...fifteenDays
   },
 
   {
@@ -83,13 +84,13 @@ export const PERSONALIZATION_CATALOG = Object.freeze([
     id: 'chair-frame-neon', category: 'chairFrames', name: 'Anillo Neón', icon: '🔮', price: 15000,
     tier: 'POPULAR', featured: true, access: 'purchase',
     description: 'Anillo violeta luminoso alrededor de la silla.',
-    preview: { frame: '2px solid #e34dff', glow: '0 0 22px #d735ffbb,inset 0 0 16px #b52aff33' }, ...permanent
+    preview: { frame: '2px solid #e34dff', glow: '0 0 22px #d735ffbb,inset 0 0 16px #b52aff33' }, ...fifteenDays
   },
   {
     id: 'chair-frame-trono', category: 'chairFrames', name: 'Trono Universo', icon: '👑', price: 60000,
     tier: 'ÉLITE', featured: false, access: 'purchase',
     description: 'Marco dorado y violeta para una plaza de categoría superior.',
-    preview: { frame: '2px solid #ffd65b', glow: '0 0 0 3px #7e2f91,0 0 28px #ffd15c99,inset 0 0 18px #7f2ea144' }, ...permanent
+    preview: { frame: '2px solid #ffd65b', glow: '0 0 0 3px #7e2f91,0 0 28px #ffd15c99,inset 0 0 18px #7f2ea144' }, ...fifteenDays
   },
 
   {
@@ -102,13 +103,13 @@ export const PERSONALIZATION_CATALOG = Object.freeze([
     id: 'entrance-wave', category: 'entrances', name: 'Onda JEMMO', icon: '🌊', price: 20000,
     tier: 'POPULAR', featured: true, access: 'purchase',
     description: 'Una onda violeta recorre la sala al entrar.',
-    preview: { label: 'Onda JEMMO · Jesús llegó', effect: 'wave' }, ...permanent
+    preview: { label: 'Onda JEMMO · Jesús llegó', effect: 'wave' }, ...thirtyDays
   },
   {
     id: 'entrance-comet', category: 'entrances', name: 'Cometa Élite', icon: '☄️', price: 75000,
     tier: 'ÉLITE', featured: false, access: 'purchase',
     description: 'Cometa dorado y violeta con entrada premium.',
-    preview: { label: 'Cometa Élite · Jesús llegó', effect: 'comet' }, ...permanent
+    preview: { label: 'Cometa Élite · Jesús llegó', effect: 'comet' }, ...thirtyDays
   }
 ]);
 
@@ -125,7 +126,7 @@ export const GIFT_CATALOG = Object.freeze([
   { id:'gift-jemmo-universo', category:'gifts', name:'JEMMO Universo', icon:'🌌', price:200000, tier:'GRANDE', featured:true, animation:'9 s', sound:true, description:'El universo JEMMO cubre la sala con órbitas y estrellas.' }
 ]);
 
-export const ALL_CATALOG_ITEMS = Object.freeze([...PERSONALIZATION_CATALOG, ...GIFT_CATALOG]);
+export const ALL_CATALOG_ITEMS = Object.freeze([...PERSONALIZATION_CATALOG]);
 export const STARTER_ITEM_IDS = Object.freeze(PERSONALIZATION_CATALOG.filter(item => item.starter).map(item => item.id));
 export const DEFAULT_EQUIPPED = Object.freeze({
   themes: 'theme-jemmo-base',
@@ -137,7 +138,7 @@ export const DEFAULT_EQUIPPED = Object.freeze({
 
 export function itemById(id){ return ALL_CATALOG_ITEMS.find(item => item.id === id) || null; }
 export function itemsForCategory(category){
-  if(category === 'popular') return ALL_CATALOG_ITEMS.filter(item => item.featured);
+  if(category === 'popular') return PERSONALIZATION_CATALOG.filter(item => item.featured);
   if(category === 'inventory') return [];
   return ALL_CATALOG_ITEMS.filter(item => item.category === category);
 }

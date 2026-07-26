@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · RECEPCIÓN INVITADA Y SALA DE CASA PRUEBA 15
-   Señalización WebRTC y chat de prueba mediante Firestore. No es infraestructura de producción.
+/* JEMMO LIVE V1 · CONTROLES REMOTOS DE SALA PRUEBA 20
+   Señalización WebRTC, chat y moderación de prueba mediante Firestore. No es infraestructura de producción.
    La invitada enlaza sus pistas a los transceptores ofrecidos por el anfitrión antes de responder. */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
@@ -193,7 +193,36 @@ function configureRoomChat({ roomRef, user, profile, unsubs, onMessage }) {
   };
 }
 
-function makeSession({ role, roomId, roomRef, houseRoomRef, permanentHouseRoom = false, peer, remoteStream, unsubs, onStatus, sendChatMessage, renegotiate, requestRenegotiation, expectVideo }) {
+function configureRoomControls({ roomRef, user }) {
+  async function setChatClosed(closed) {
+    await updateDoc(roomRef, { chatClosed: Boolean(closed), chatUpdatedAtMs: Date.now(), updatedAt: serverTimestamp() });
+  }
+  async function sendModerationAction({ action, targetUid, targetName = '', untilMs = 0 } = {}) {
+    const type = clean(action, 24).toLowerCase();
+    const target = clean(targetUid, 160);
+    if (!['mute', 'unmute', 'down', 'kick'].includes(type) || !target) throw new Error('Acción de moderación no válida.');
+    const now = Date.now();
+    const snapshot = await getDoc(roomRef);
+    const current = snapshot.exists() ? snapshot.data() || {} : {};
+    const testBans = { ...(current.testBans && typeof current.testBans === 'object' ? current.testBans : {}) };
+    Object.keys(testBans).forEach(uid => { if (Number(testBans[uid]) <= now) delete testBans[uid]; });
+    const banUntilMs = type === 'kick' ? Math.max(now + 60 * 1000, Number(untilMs) || 0) : 0;
+    if (banUntilMs) testBans[target] = banUntilMs;
+    const id = `${user.uid}:${now}:${Math.random().toString(36).slice(2, 8)}`;
+    await updateDoc(roomRef, {
+      moderationAction: {
+        id, action: type, targetUid: target, targetName: clean(targetName, 80), actorUid: user.uid,
+        createdAtMs: now, untilMs: banUntilMs, testMode: true
+      },
+      testBans,
+      updatedAt: serverTimestamp()
+    });
+    return { id, action: type, targetUid: target, untilMs: banUntilMs };
+  }
+  return { setChatClosed, sendModerationAction };
+}
+
+function makeSession({ role, roomId, roomRef, houseRoomRef, permanentHouseRoom = false, peer, remoteStream, unsubs, onStatus, sendChatMessage, setChatClosed, sendModerationAction, renegotiate, requestRenegotiation, expectVideo }) {
   let closed = false;
   const close = async ({ endRoom = role === 'host' } = {}) => {
     if (closed) return;
@@ -223,6 +252,8 @@ function makeSession({ role, roomId, roomRef, houseRoomRef, permanentHouseRoom =
     remoteStream,
     hasExpectedRemoteMedia: () => expectedRemoteMedia(remoteStream, Boolean(expectVideo)),
     sendChatMessage,
+    setChatClosed,
+    sendModerationAction,
     async replaceLocalStream(stream) {
       if (!(stream instanceof MediaStream)) return;
       let addedTrack = false;
@@ -328,6 +359,7 @@ async function getRoomPreview(code) {
     title: clean(data.title, 60) || 'Sala de JEMMO',
     description: clean(data.description, 180),
     cover: clean(data.cover, 1200),
+    hostUid: clean(data.hostUid, 160),
     hostName: clean(data.hostName) || 'Anfitrión',
     hostPhoto: clean(data.hostPhoto, 1200),
     houseId: clean(data.houseId, 80),
@@ -385,6 +417,7 @@ async function createHostSession(options = {}) {
   let negotiationBusy = false;
   let repeatOfferSent = false;
   let pendingReason = '';
+  let moderationActionSeen = '';
 
   async function publishOffer(reason = 'refresh') {
     if (peer.signalingState === 'closed') return;
@@ -465,6 +498,10 @@ async function createHostSession(options = {}) {
     offer: serializeDescription(peer.localDescription),
     offerRevision,
     answerRevision: 0,
+    chatClosed: false,
+    chatUpdatedAtMs: Date.now(),
+    testBans: {},
+    moderationAction: null,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
     permanentHouseRoom,
@@ -485,7 +522,13 @@ async function createHostSession(options = {}) {
     if (!snapshot.exists()) return;
     const data = snapshot.data() || {};
     if (data.status === 'ended') options.onStatus?.({ state: 'closed', text: 'La sala finalizó' });
-    if (data.guestName) options.onRemoteProfile?.({ name: clean(data.guestName) || 'Ruth', photo: clean(data.guestPhoto, 1200), verified: Boolean(data.guestVerified) });
+    if (data.guestName) options.onRemoteProfile?.({ uid: clean(data.guestUid, 160), name: clean(data.guestName) || 'Ruth', photo: clean(data.guestPhoto, 1200), verified: Boolean(data.guestVerified) });
+    if (typeof data.chatClosed === 'boolean') options.onChatState?.(Boolean(data.chatClosed));
+    const moderation = data.moderationAction || null;
+    if (moderation?.id && moderation.id !== moderationActionSeen) {
+      moderationActionSeen = moderation.id;
+      if (clean(moderation.targetUid, 160) === user.uid) options.onModeration?.({ ...moderation });
+    }
 
     const answerRevision = Math.max(1, Number(data.answerRevision) || (data.answer ? 1 : 0));
     if (data.answer && answerRevision > answerRevisionApplied) {
@@ -528,11 +571,12 @@ async function createHostSession(options = {}) {
   const sendChatMessage = configureRoomChat({
     roomRef, user, profile, unsubs, onMessage: options.onMessage
   });
+  const { setChatClosed, sendModerationAction } = configureRoomControls({ roomRef, user });
   options.onLocalProfile?.(profile);
   options.onStatus?.({ state: 'waiting', text: 'Esperando a Ruth' });
   const session = makeSession({
     role: 'host', roomId: id, roomRef, houseRoomRef, permanentHouseRoom, peer, remoteStream, unsubs,
-    onStatus: options.onStatus, sendChatMessage,
+    onStatus: options.onStatus, sendChatMessage, setChatClosed, sendModerationAction,
     renegotiate: publishOffer,
     requestRenegotiation: null,
     expectVideo: options.mode === 'camera'
@@ -550,6 +594,8 @@ async function joinGuestSession(code, options = {}) {
   const data = snapshot.data() || {};
   if (!data.offer) throw new Error('La sala todavía no está preparada para recibir personas.');
   if (data.hostUid === user.uid) throw new Error('Abre la sala desde el dispositivo anfitrión.');
+  const activeBanUntil = Number(data.testBans?.[user.uid]) || 0;
+  if (activeBanUntil > Date.now()) throw new Error(`No puedes volver a entrar durante ${Math.max(1, Math.ceil((activeBanUntil - Date.now()) / 1000))} segundos.`);
   const peer = new RTCPeerConnection(RTC_CONFIG);
   const remoteStream = new MediaStream();
   const unsubs = [];
@@ -570,6 +616,7 @@ async function joinGuestSession(code, options = {}) {
   let applyingOffer = false;
   let queuedOffer = null;
   let hostRequestSeen = 0;
+  let moderationActionSeen = '';
   async function applyOffer(offerData, revision) {
     if (!offerData || revision <= appliedOfferRevision) return;
     if (applyingOffer) {
@@ -625,12 +672,19 @@ async function joinGuestSession(code, options = {}) {
     }
   }
 
+  if (typeof data.chatClosed === 'boolean') options.onChatState?.(Boolean(data.chatClosed));
   const initialRevision = Math.max(1, Number(data.offerRevision) || 1);
   await applyOffer(data.offer, initialRevision);
   unsubs.push(onSnapshot(roomRef, roomSnapshot => {
     if (!roomSnapshot.exists()) return;
     const room = roomSnapshot.data() || {};
     if (room.status === 'ended') options.onStatus?.({ state: 'closed', text: 'El anfitrión finalizó la sala' });
+    if (typeof room.chatClosed === 'boolean') options.onChatState?.(Boolean(room.chatClosed));
+    const moderation = room.moderationAction || null;
+    if (moderation?.id && moderation.id !== moderationActionSeen) {
+      moderationActionSeen = moderation.id;
+      if (clean(moderation.targetUid, 160) === user.uid) options.onModeration?.({ ...moderation });
+    }
     const revision = Math.max(1, Number(room.offerRevision) || (room.offer ? 1 : 0));
     if (room.offer && revision > appliedOfferRevision) void applyOffer(room.offer, revision);
     const hostRequest = Number(room.hostNeedsGuestMediaAt) || 0;
@@ -648,12 +702,13 @@ async function joinGuestSession(code, options = {}) {
   const sendChatMessage = configureRoomChat({
     roomRef, user, profile, unsubs, onMessage: options.onMessage
   });
+  const { setChatClosed, sendModerationAction } = configureRoomControls({ roomRef, user });
   options.onLocalProfile?.(profile);
-  options.onRemoteProfile?.({ name: preview.hostName, photo: preview.hostPhoto, verified: Boolean(data.hostVerified) });
+  options.onRemoteProfile?.({ uid: preview.hostUid || clean(data.hostUid, 160), name: preview.hostName, photo: preview.hostPhoto, verified: Boolean(data.hostVerified) });
   options.onStatus?.({ state: 'connecting', text: 'Entrando en la sala…' });
   return makeSession({
     role: 'guest', roomId: preview.roomId, roomRef, peer, remoteStream, unsubs,
-    onStatus: options.onStatus, sendChatMessage,
+    onStatus: options.onStatus, sendChatMessage, setChatClosed, sendModerationAction,
     renegotiate: null,
     requestRenegotiation,
     expectVideo: options.mode === 'camera'
@@ -661,7 +716,7 @@ async function joinGuestSession(code, options = {}) {
 }
 
 window.JemmoRoomRealtime = Object.freeze({
-  version: '1.4.0-test',
+  version: '1.5.0-test',
   getRoomPreview,
   getActiveHouseRoom,
   createHostSession,
