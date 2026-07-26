@@ -1,32 +1,28 @@
-JEMMO LIVE V1 · AUDIO ROOM SIN DUPLICADOS Y AVATARES CORREGIDOS PRUEBA 25
+JEMMO LIVE V1 · AVATARES, NOMBRES EN SILLA Y VALIDACIÓN VIP PRUEBA 26
 Fecha: 26/07/2026
 
 Base acumulada:
-- JEMMO LIVE V1 · MI CASA Y ACCESO DIRECTO A SALA OFICIAL PRUEBA 24.
-- Conserva tareas reales y panel financiero de agentes de PRUEBA 23.
-- Conserva Perfil, navegación, Universo y moderación acumulados de PRUEBAS 20 a 22.
+- JEMMO LIVE V1 · AUDIO ROOM SIN DUPLICADOS Y AVATARES CORREGIDOS PRUEBA 25.
+- Conserva acceso directo a Sala oficial, tareas reales, panel financiero, Perfil, navegación, Universo y moderación acumulados.
 
-Incidencias confirmadas en la prueba con Ruth:
-- La misma cuenta podía aparecer como anfitriona y también como invitada en su propia sala.
-- Las sillas vacías 3 y 4 se mostraban falsamente ocupadas por invitados de demostración.
-- El mensaje del sistema de sala de prueba podía repetirse varias veces.
-- La foto del perfil se recortaba usando la portada o una imagen incorrecta y no llenaba bien el círculo.
-- Una ruta antigua o incompleta podía abrir la Sala oficial con 4 plazas en lugar de 20 sillas.
+Incidencias confirmadas en la prueba real con Ruth:
+- La foto de una persona sentada seguía apareciendo pequeña dentro de una silla circular grande, en lugar de llenar correctamente el círculo.
+- El nombre debía permanecer visible justo debajo del rostro en la silla ocupada y acompañar a la persona cuando eligiera otra posición.
+- Una cuenta no VIP podía conservar o seleccionar 25 plazas como anfitriona.
+- La regla correcta no es bloquear a los invitados no VIP: Ruth sí puede entrar como invitada a una sala de 25 creada por un anfitrión VIP.
 
 Correcciones:
-- Participantes únicos por UID y protección adicional contra la misma cuenta local/remota.
-- La persona anfitriona nunca vuelve a aparecer como invitada o pendiente en la misma sala.
-- Eliminados todos los ocupantes ficticios y los marcadores de demostración de las sillas.
-- Las plazas sin persona real muestran Silla libre y no cuentan como participantes.
-- El mensaje inicial se reinicia por apertura y cada aviso del sistema se deduplica.
-- El avatar se obtiene desde avatarData/photoURL de Firebase y se aplica al anfitrión, invitado, silla y miniperfil.
-- Las fotos circulares usan encuadre centrado, llenan todo el círculo y tienen sustitución segura si falla la imagen.
-- La portada de la sala deja de utilizarse como foto del anfitrión.
-- La entrada directa de Casa recupera el ID y nombre guardados si el móvil conserva una URL antigua.
-- La Sala oficial fuerza 20 sillas y las identifica como sillas, no como 4 plazas.
-- Los textos de invitación dejan de depender de una persona de prueba concreta.
-- Nueva caché PWA PRUEBA 25.
+- En Audio Room, la foto de cada silla ocupada llena completamente el círculo con recorte centrado y degradado inferior para legibilidad.
+- Nombre y rol aparecen en una franja integrada debajo del rostro dentro de la silla.
+- La posición local se conserva: al tocar una silla libre para subir, foto y nombre aparecen exactamente en esa silla.
+- La sala de 25 plazas solo puede ser creada por un anfitrión VIP.
+- Un anfitrión no VIP queda limitado a 15 plazas aunque el móvil conserve una configuración antigua de 25 o se intente forzar el valor.
+- El botón de 25 aparece bloqueado para anfitriones no VIP y explica la regla.
+- Los invitados no VIP pueden entrar normalmente en una sala de 25 mediante invitación, enlace oficial o acceso desde el perfil del anfitrión.
+- La condición VIP se lee desde el perfil Firebase cuando existe y conserva compatibilidad con el indicador local de pruebas.
+- La sala registra si el anfitrión es VIP para auditoría, sin exigir VIP a la persona invitada.
+- Nueva caché PWA PRUEBA 26.
 
 Estado:
 - MODO DE PRUEBAS.
-- Pendiente de prueba real con Ruth: una sola anfitriona, 19 sillas libres, foto centrada y un solo mensaje inicial.
+- Pendiente de prueba real: Ruth como anfitriona no VIP debe tener máximo 15; Ruth como invitada debe poder entrar en una sala VIP de 25 creada por Jesús.

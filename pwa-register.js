@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-audio-room-clean-25';
+  const VERSION = 'pwa-room-avatar-vip-26';
   let installPrompt = null;
 
   const isStandalone = () =>

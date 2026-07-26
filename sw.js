@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · AUDIO ROOM SIN DUPLICADOS Y AVATARES CORREGIDOS PRUEBA 25 */
-const CACHE = 'jemmo-live-v1-audio-room-clean-25-20260726';
+/* JEMMO LIVE V1 · AVATARES, NOMBRES EN SILLA Y VALIDACIÓN VIP PRUEBA 26 */
+const CACHE = 'jemmo-live-v1-room-avatar-vip-26-20260726';
 const APP_SHELL = [
   './',
   './index.html',
@@ -128,31 +128,31 @@ async function injectJemmoScripts(response, url) {
   if (UNREAD_PAGES.has(page)) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="audio-room-clean-25"></script>'
+      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="room-avatar-vip-26"></script>'
     );
   }
   if (page === '/mensajes.html' && !html.includes('jemmo-messages-realtime.js')) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="audio-room-clean-25"></script>'
+      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="room-avatar-vip-26"></script>'
     );
   }
   if (['/yo.html','/mensajes.html','/chili-ia.html'].includes(page) && !html.includes('jemmo-social.js')) {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="audio-room-clean-25"></script>'
+      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="room-avatar-vip-26"></script>'
     );
   }
   if (['/yo.html','/casa-demo.html'].includes(page) && !html.includes('jemmo-role-lab.js')) {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-role-lab.js" data-jemmo-injected="audio-room-clean-25"></script>'
+      '<script type="module" src="./jemmo-role-lab.js" data-jemmo-injected="room-avatar-vip-26"></script>'
     );
   }
   if (page === '/yo.html') {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="audio-room-clean-25"></script>'
+      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="room-avatar-vip-26"></script>'
     );
   }
 
@@ -160,7 +160,7 @@ async function injectJemmoScripts(response, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-version', 'audio-room-clean-25');
+  headers.set('x-jemmo-version', 'room-avatar-vip-26');
 
   return new Response(html, {
     status: response.status,

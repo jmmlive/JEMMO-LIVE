@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · AUDIO ROOM SIN DUPLICADOS PRUEBA 25
+/* JEMMO LIVE V1 · AVATARES, NOMBRES EN SILLA Y VIP PRUEBA 26
    Señalización WebRTC, chat y moderación de prueba mediante Firestore. No es infraestructura de producción.
    La invitada enlaza sus pistas a los transceptores ofrecidos por el anfitrión antes de responder. */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
@@ -147,6 +147,27 @@ function waitForUser(timeout = 12000) {
   });
 }
 
+function timestampMs(value) {
+  if (!value) return 0;
+  if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+  if (typeof value?.toMillis === 'function') return Number(value.toMillis()) || 0;
+  if (typeof value?.seconds === 'number') return Number(value.seconds) * 1000;
+  const parsed = Date.parse(String(value));
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function readVipState(data = {}) {
+  const plan = clean(data.vipPlan || data.subscriptionTier || data.membershipTier || data.plan || data.subscription?.tier || data.membership?.tier, 40).toLowerCase();
+  const known = [
+    'isVip','vipActive','vip','vipStatus','vipPlan','vipUntil','vipExpiresAt','subscriptionTier','membershipTier','plan'
+  ].some(key => Object.prototype.hasOwnProperty.call(data, key)) || Boolean(data.subscription || data.membership);
+  const rawStatus = clean(data.vipStatus || data.subscription?.status || data.membership?.status, 30).toLowerCase();
+  const rawVip = data.isVip === true || data.vipActive === true || data.vip === true || data.vip?.active === true || ['vip','diamond','gold','premium'].includes(plan) || ['active','vip'].includes(rawStatus);
+  const until = timestampMs(data.vipUntil || data.vipExpiresAt || data.vip?.expiresAt || data.subscription?.expiresAt || data.membership?.expiresAt);
+  const active = Boolean(rawVip && (!until || until > Date.now()));
+  return { active, known, until };
+}
+
 async function readProfile(user) {
   let data = {};
   try {
@@ -156,11 +177,15 @@ async function readProfile(user) {
     console.warn('JEMMO Room profile:', error);
   }
   const photo = safeProfilePhoto(data.avatarData || data.photoURL || data.avatar || user.photoURL);
+  const vipState = readVipState(data);
   return {
     uid: user.uid,
     name: clean(data.displayName || data.nombre || user.displayName || user.email?.split('@')[0] || 'Usuario JEMMO'),
     photo,
-    verified: Boolean(data.isVerified || data.verified || data.verificationStatus === 'verified')
+    verified: Boolean(data.isVerified || data.verified || data.verificationStatus === 'verified'),
+    vip: vipState.active,
+    vipKnown: vipState.known,
+    vipUntilMs: vipState.until
   };
 }
 
@@ -520,7 +545,7 @@ async function createHostSession(options = {}) {
       status: 'open', permanent: permanentHouseRoom, open24x7: permanentHouseRoom, sessionStatus: 'active',
       roomId: id, activeRoomId: id, joinUrl, mode: options.mode === 'camera' ? 'camera' : 'audio',
       count: Number(options.count) || 20, capacity: Number(options.count) || 20, title: clean(options.title, 60), description: clean(options.description, 180),
-      hostUid: user.uid, hostName: profile.name, houseId, houseName,
+      hostUid: user.uid, hostName: profile.name, hostVip: Boolean(profile.vip), houseId, houseName,
       openedAt: serverTimestamp(), updatedAt: serverTimestamp(), sessionExpiresAtMs: Date.now() + (permanentHouseRoom ? 8 : 2) * 60 * 60 * 1000
     }, { merge: true });
   }
@@ -723,8 +748,14 @@ async function joinGuestSession(code, options = {}) {
   });
 }
 
+async function getCurrentProfile() {
+  const user = await waitForUser();
+  return readProfile(user);
+}
+
 window.JemmoRoomRealtime = Object.freeze({
-  version: '1.6.0-test',
+  version: '1.7.0-test',
+  getCurrentProfile,
   getRoomPreview,
   getActiveHouseRoom,
   createHostSession,
