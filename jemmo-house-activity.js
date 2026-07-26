@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · ACTIVIDAD Y COBRO POR HORAS DE CASAS PRUEBA 30
+/* JEMMO LIVE V1 · ACTIVIDAD Y COBRO POR HORAS DE CASAS PRUEBA 31
    Registra tiempo LIVE y tiempo real sentado en Sala oficial con sesión, lease e idempotencia.
    Solo funciona para Emisoras formalmente asignadas a una Casa. */
 (() => {
@@ -19,7 +19,27 @@
   const normalize=v=>clean(v,40).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
   const num=v=>Math.max(0,Number(v)||0);
   function testRole(uid){try{return clean(JSON.parse(localStorage.getItem(`jemmo_role_lab_v1_${uid}`)||'null')?.mode,20)}catch{return''}}
-  function emitterEligible(){return clean(member.housePosition,30)==='emitter'}
+  const emitterRoles=new Set(['emitter','emisor','emisora','host','streamer','creator','creador','creadora']);
+  const inactiveStatuses=new Set(['left','removed','inactive','expelled','salio','salida','eliminado','eliminada']);
+  const isEmitterRole=value=>emitterRoles.has(normalize(value));
+  const memberActive=()=>!inactiveStatuses.has(normalize(member.status||profile.houseStatus||'active'));
+  function explicitHousePosition(){
+    const memberPosition=member.housePosition||member.position||member.houseRole||member.house_role;
+    if(clean(memberPosition,40))return memberPosition;
+    const profileMatches=!clean(profile.houseId,80)||clean(profile.houseId,80)===houseId;
+    return profileMatches?(profile.housePosition||profile.houseRole||profile.house_role):'';
+  }
+  function emitterEligible(){return memberActive()&&isEmitterRole(explicitHousePosition())}
+  async function migrateLegacyEmitter(){
+    if(!services||!user||!houseId||isEmitterRole(member.housePosition))return;
+    try{
+      await Promise.all([
+        services.setDoc(services.doc(services.db,'casas',houseId,'miembros',user.uid),{housePosition:'emitter',migratedEmitterPositionAtClient:Date.now(),migratedEmitterPositionAt:services.serverTimestamp(),updatedAt:services.serverTimestamp()},{merge:true}),
+        services.setDoc(services.doc(services.db,'users',user.uid),{houseId,housePosition:'emitter',houseStatus:'active',houseUpdatedAt:services.serverTimestamp()},{merge:true})
+      ]);
+      member.housePosition='emitter';
+    }catch(e){console.warn('JEMMO actividad Casa: migración Emisora',e?.code||e)}
+  }
 
   async function getServices(){if(services)return services;const[a,b,f]=await Promise.all([import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js'),import('https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js'),import('https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js')]);const app=a.getApps()[0]||a.initializeApp(firebaseConfig);services={...f,auth:b.getAuth(app),db:f.getFirestore(app),onAuthStateChanged:b.onAuthStateChanged};return services}
   function waitUser(s,timeout=12000){if(s.auth.currentUser)return Promise.resolve(s.auth.currentUser);return new Promise((resolve,reject)=>{let stop=()=>{};const timer=setTimeout(()=>{stop();reject(new Error('Sesión no disponible.'))},timeout);stop=s.onAuthStateChanged(s.auth,current=>{if(!current)return;clearTimeout(timer);stop();resolve(current)},e=>{clearTimeout(timer);stop();reject(e)})})}
@@ -44,13 +64,20 @@
   async function resolveMembership(){
     const s=await getServices();user=await waitUser(s);
     const userSnap=await s.getDoc(s.doc(s.db,'users',user.uid));profile=userSnap.data()||{};
-    const membershipHouse=clean(profile.houseId,80);houseId=activityType==='house_room'?requestedHouseId:membershipHouse;
-    if(!houseId||activityType==='house_room'&&membershipHouse!==houseId)return false;
-    const [memberSnap,configSnap]=await Promise.all([s.getDoc(s.doc(s.db,'casas',houseId,'miembros',user.uid)),s.getDoc(s.doc(s.db,'casas',houseId,'configuracion','tareas'))]);
+    const membershipHouse=clean(profile.houseId,80);houseId=activityType==='house_room'?(requestedHouseId||membershipHouse):membershipHouse;
+    if(!houseId)return false;
+    const [memberSnap,configSnap,taskSnap]=await Promise.all([
+      s.getDoc(s.doc(s.db,'casas',houseId,'miembros',user.uid)),
+      s.getDoc(s.doc(s.db,'casas',houseId,'configuracion','tareas')),
+      s.getDoc(s.doc(s.db,'casas',houseId,'tareas',user.uid))
+    ]);
     member=memberSnap.data()||{};taskConfig={...taskConfig,...(configSnap.data()||{})};
-    if(!memberSnap.exists()||['left','removed'].includes(clean(member.status||profile.houseStatus,20))){eligible=false;return false;}
-    if(!emitterEligible()){eligible=false;return false;}
+    if(!memberSnap.exists()||!memberActive()){eligible=false;return false;}
+    const explicit=clean(explicitHousePosition(),40);
+    const legacyTask=!explicit&&isEmitterRole(taskSnap.data()?.housePosition||taskSnap.data()?.position)&&!['inactive','cancelled','removed'].includes(normalize(taskSnap.data()?.taskState));
+    if(!isEmitterRole(explicit)&&!legacyTask){eligible=false;return false;}
     eligible=true;
+    if(legacyTask||!isEmitterRole(member.housePosition))await migrateLegacyEmitter();
     window.JemmoWallet?.setMembership?.(user.uid,{hasHouse:true,houseId,houseName:profile.houseName||'',agentUid:member.assignedAgentUid||profile.assignedAgentUid||''});
     await ensureTaskCycle('emitter_activity_started');return true;
   }
@@ -117,7 +144,7 @@
     if(!services||!user||!houseId||membershipUnsub)return;
     membershipUnsub=services.onSnapshot(services.doc(services.db,'casas',houseId,'miembros',user.uid),snap=>{
       const next=snap.data()||{};member=next;
-      const active=snap.exists()&&!['left','removed'].includes(clean(next.status||profile.houseStatus,20))&&clean(next.housePosition,30)==='emitter';
+      const active=snap.exists()&&memberActive()&&emitterEligible();
       if(!active){eligible=false;void stop('membership_inactive');void markTaskInactive('not_formal_house_emitter');return}
       const wasEligible=eligible;eligible=true;if(!wasEligible){void ensureTaskCycle('formal_emitter_assigned').then(sync)}
     },e=>console.warn('JEMMO actividad Casa: membresía',e?.code||e));

@@ -106,8 +106,13 @@
     ]);
     const member = memberSnap.data() || {};
     const house = houseSnap.data() || {};
-    const active = memberSnap.exists() && !['left', 'removed'].includes(clean(member.status, 20));
-    const emitter = clean(member.housePosition, 30) === 'emitter';
+    const normalizeRole = value => clean(value, 40).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const emitterRoles = new Set(['emitter', 'emisor', 'emisora', 'host', 'streamer', 'creator', 'creador', 'creadora']);
+    const inactiveStatuses = new Set(['left', 'removed', 'inactive', 'expelled', 'salio', 'salida', 'eliminado', 'eliminada']);
+    const active = memberSnap.exists() && !inactiveStatuses.has(normalizeRole(member.status || profile.houseStatus || 'active'));
+    const profileMatches = !profileHouseId || profileHouseId === houseId;
+    const housePosition = member.housePosition || member.position || member.houseRole || member.house_role || (profileMatches ? (profile.housePosition || profile.houseRole || profile.house_role) : '');
+    const emitter = emitterRoles.has(normalizeRole(housePosition));
     const hasHouse = Boolean(active && emitter);
     const houseName = clean(house.name || profile.houseName || hint.houseName || 'Casa JEMMO', 80);
     const agentUid = clean(member.assignedAgentUid || profile.assignedAgentUid || house.ownerUid || house.createdBy || house.ownerId, 160);

@@ -1,37 +1,22 @@
-JEMMO LIVE V1 · COBRO POR HORAS Y ESCALA MÓVIL DE SIETE DÍAS PRUEBA 30
+JEMMO LIVE V1 · TAREA DE EMISORA VISIBLE Y COMPATIBILIDAD DE MEMBRESÍA PRUEBA 31
 Fecha: 27/07/2026
+Base instalada requerida: JEMMO LIVE V1 · COBRO POR HORAS Y ESCALA MÓVIL DE SIETE DÍAS PRUEBA 30
 
-Base directa instalada:
-- JEMMO LIVE V1 · SALA DE CASA AMPLIADA, CHAT INFERIOR Y FOTO DE PERFIL PRUEBA 28.
-- PRUEBA 29 queda anulada y no debe instalarse.
+INCIDENCIA REAL CORREGIDA
+- PRUEBA 30 ocultaba por completo la tarea cuando la membresía antigua no contenía exactamente housePosition: emitter.
+- Ruth podía estar asignada como Emisora mediante position, houseRole, datos del Perfil o una tarea activa anterior y, aun así, la tarjeta desaparecía.
+- El contador de actividad también rechazaba la Sala cuando el houseId del Perfil estaba desactualizado aunque el documento real de membresía existiera.
 
-Reglas definitivas incorporadas:
-- Las tareas existen únicamente para Emisoras formalmente asignadas a una Casa/Agencia.
-- Emisora con Casa: regalos 70% Emisora, 20% JEMMO LIVE y 10% Casa/agente.
-- Emisora independiente: sin tareas; regalos 70% Emisora y 30% JEMMO LIVE.
-- El nivel de tarea utiliza solo el 70% neto de regalos de Casa recibidos durante una ventana móvil de siete días naturales.
-- Cada lote diario cuenta desde el día de recepción hasta terminar su séptimo día y después sale automáticamente del cálculo.
+CORRECCIÓN
+- Compatibilidad con emitter, emisor, emisora y campos antiguos de posición de Casa.
+- La membresía real en casas/{houseId}/miembros/{uid} sigue siendo obligatoria y debe estar activa.
+- Recuperación segura desde una tarea activa anterior solo cuando no existe una posición explícita contradictoria.
+- Migración automática del dato antiguo a housePosition: emitter en miembro y Perfil.
+- La tarjeta de tarea ya no desaparece silenciosamente: muestra CARGANDO, tarea activa o motivo exacto de no activación.
+- El contador de LIVE/Audio Room usa la membresía real de Firebase aunque el Perfil conserve temporalmente un houseId antiguo.
+- El reparto económico reconoce los campos compatibles sin convertir a una Emisora independiente en Emisora de Casa.
 
-Cobro por horas:
-- BASE: 2.000 JEMS por hora · 1 hora diaria.
-- I: 3.000 JEMS por hora · 2 horas diarias.
-- H: 5.000 JEMS por hora · 2 horas diarias.
-- G: 9.000 JEMS por hora · 3 horas diarias.
-- F: 12.000 JEMS por hora · 3 horas diarias.
-- E: 18.000 JEMS por hora · 3 horas diarias.
-- D: 28.000 JEMS por hora · 3 horas diarias.
-- C: 35.000 JEMS por hora · 3 horas diarias.
-- B: 40.000 JEMS por hora · 3 horas diarias.
-- A: 50.000 JEMS por hora · 3 horas diarias.
-- S: 70.000 JEMS por hora · 4 horas diarias.
-
-Funcionamiento:
-- Cada bloque completo de 60 minutos se cobra de forma independiente.
-- Completar la primera hora permite cobrarla sin esperar a las horas restantes.
-- Cada hora usa una clave idempotente propia para impedir dobles cobros.
-- LIVE activo y Audio Room oficial en silla suman tiempo; escuchar abajo no suma.
-- El panel Mis tareas muestra horas, cobros, escala, regalos netos y desglose de los siete días.
-
-Estado:
-- MODO DE PRUEBAS: no mueve dinero real.
-- Antes de producción, cálculo, reglas y abonos deben trasladarse a backend/Cloud Functions y protegerse con reglas Firestore por roles.
+INSTALACIÓN
+- Instalar directamente encima de PRUEBA 30.
+- Sustituir todos los archivos incluidos en este ZIP.
+- PRUEBA 29 continúa anulada.

@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · COBRO POR HORAS Y ESCALA MÓVIL DE SIETE DÍAS PRUEBA 30 */
-const CACHE = 'jemmo-live-v1-hourly-tasks-rolling-window-30-20260727';
+/* JEMMO LIVE V1 · TAREA DE EMISORA VISIBLE Y COMPATIBILIDAD DE MEMBRESÍA PRUEBA 31 */
+const CACHE = 'jemmo-live-v1-task-membership-compat-31-20260727';
 const APP_SHELL = [
   './',
   './index.html',

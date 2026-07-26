@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-hourly-tasks-rolling-window-30';
+  const VERSION = 'pwa-task-membership-compat-31';
   let installPrompt = null;
 
   const isStandalone = () =>

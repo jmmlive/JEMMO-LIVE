@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · TAREAS POR HORAS, FINANZAS E IDENTIDAD DE SALA PRUEBA 30
+/* JEMMO LIVE V1 · TAREA DE EMISORA VISIBLE Y COMPATIBILIDAD DE MEMBRESÍA PRUEBA 31
    Escala automática, ventana móvil de 7 días y reparto 70/20/10 para Emisoras de Casa. */
 const firebaseConfig = {
   apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
@@ -118,7 +118,7 @@ function normalizedAccountRole(value) {
   const role = clean(value, 40).toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   if (['owner', 'propietario', 'superadmin'].includes(role)) return 'owner';
   if (['agente', 'agent', 'agency'].includes(role)) return 'agent';
-  if (['emisor', 'emisora', 'host', 'streamer', 'creator', 'creador', 'creadora'].includes(role)) return 'emitter';
+  if (['emitter', 'emisor', 'emisora', 'host', 'streamer', 'creator', 'creador', 'creadora'].includes(role)) return 'emitter';
   return 'user';
 }
 
@@ -143,7 +143,7 @@ function positionLabel(member) {
     return ({ owner: 'PROPIETARIO', agent: 'AGENTE DE CASA', emitter: 'EMISOR/A', member: 'MIEMBRO' })[state.testRole] || 'MIEMBRO';
   }
   const position = clean(member.housePosition || member.position, 30);
-  if (position === 'emitter') return 'EMISOR/A';
+  if (normalizedAccountRole(position) === 'emitter') return 'EMISOR/A';
   if (position === 'agent') return 'AGENTE';
   if (member.role === 'owner') return 'PROPIETARIO';
   if (member.role === 'admin') return 'ADMINISTRADOR';
@@ -152,7 +152,8 @@ function positionLabel(member) {
 
 function isEmitter(member) {
   if (member?.uid === state.user?.uid && state.testRole) return state.testRole === 'emitter';
-  return clean(member?.housePosition, 30) === 'emitter';
+  const value = normalizedAccountRole(member?.housePosition || member?.position || member?.houseRole || member?.accountRole);
+  return value === 'emitter';
 }
 
 function currentTask(uid) {

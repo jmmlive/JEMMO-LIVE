@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · COBRO POR HORAS Y ESCALA MÓVIL DE SIETE DÍAS PRUEBA 30
+/* JEMMO LIVE V1 · TAREA DE EMISORA VISIBLE Y COMPATIBILIDAD DE MEMBRESÍA PRUEBA 31
    Tareas exclusivas de Emisoras formalmente asignadas a una Casa.
    Cada hora se cobra por separado. El nivel usa únicamente el 70% neto de regalos de Casa.
    MODO DE PRUEBAS: antes de producción, cálculo y abono deben validarse en backend. */
@@ -6,7 +6,7 @@
   'use strict';
   if (window.JemmoHostTaskRewards?.version) return;
 
-  const VERSION = '30.0-test';
+  const VERSION = '31.0-test';
   const params = new URLSearchParams(location.search);
   const isHouseRoom = location.pathname.toLowerCase().endsWith('salas.html') && params.get('houseRoom') === '1';
   if (!isHouseRoom) return;
@@ -45,6 +45,9 @@
   let giftNet7d = 0;
   let giftBuckets = [];
   let emitter = false;
+  let memberExists = false;
+  let eligibilityState = 'checking';
+  let migrationRunning = false;
   let claiming = false;
   let attachedHouse = '';
   let lastTierSignature = '';
@@ -99,7 +102,73 @@
     for (let slot = 1; slot <= available; slot += 1) if (!paid.has(slot)) return slot;
     return 0;
   };
-  const isFormalHouseEmitter = () => clean(member.housePosition, 30) === 'emitter';
+  const normalizeRole = value => clean(value, 40).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const emitterRoles = new Set(['emitter', 'emisor', 'emisora', 'host', 'streamer', 'creator', 'creador', 'creadora']);
+  const inactiveStatuses = new Set(['left', 'removed', 'inactive', 'expelled', 'salio', 'salida', 'eliminado', 'eliminada']);
+  const isEmitterRole = value => emitterRoles.has(normalizeRole(value));
+  const isActiveMember = () => memberExists && !inactiveStatuses.has(normalizeRole(member.status || profile.houseStatus || 'active'));
+  const explicitHousePosition = () => {
+    const memberPosition = member.housePosition || member.position || member.houseRole || member.house_role;
+    if (clean(memberPosition, 40)) return memberPosition;
+    const profileHouseMatches = !clean(profile.houseId, 80) || clean(profile.houseId, 80) === houseId;
+    return profileHouseMatches ? (profile.housePosition || profile.houseRole || profile.house_role) : '';
+  };
+  const legacyTaskEvidence = () => !clean(explicitHousePosition(), 40)
+    && isEmitterRole(task.housePosition || task.position)
+    && !['inactive', 'cancelled', 'removed'].includes(normalizeRole(task.taskState));
+  const isFormalHouseEmitter = () => isActiveMember() && (isEmitterRole(explicitHousePosition()) || legacyTaskEvidence());
+
+  function eligibilityMessage() {
+    if (eligibilityState === 'checking') return 'Comprobando tu asignación de Emisora en Firebase…';
+    if (eligibilityState === 'no_membership') return 'No se encontró una membresía activa en esta Casa.';
+    if (eligibilityState === 'inactive') return 'Tu pertenencia a esta Casa no está activa.';
+    return 'La Casa todavía no te ha asignado formalmente como Emisor/a. El agente debe cambiar tu posición a Emisor/a.';
+  }
+
+  async function migrateLegacyEmitter() {
+    if (migrationRunning || !emitter || !user || !houseId || isEmitterRole(member.housePosition)) return;
+    migrationRunning = true;
+    try {
+      const s = await services();
+      await Promise.all([
+        s.setDoc(s.doc(s.db, 'casas', houseId, 'miembros', user.uid), {
+          housePosition: 'emitter',
+          migratedEmitterPositionAtClient: Date.now(),
+          migratedEmitterPositionAt: s.serverTimestamp(),
+          updatedAt: s.serverTimestamp()
+        }, { merge: true }),
+        s.setDoc(s.doc(s.db, 'users', user.uid), {
+          houseId,
+          housePosition: 'emitter',
+          houseStatus: 'active',
+          houseUpdatedAt: s.serverTimestamp()
+        }, { merge: true })
+      ]);
+    } catch (error) {
+      console.warn('JEMMO tareas: migración de Emisora', error?.code || error?.message || error);
+    } finally {
+      migrationRunning = false;
+    }
+  }
+
+  function recomputeEligibility() {
+    const previous = emitter;
+    if (!memberExists) {
+      emitter = false;
+      eligibilityState = 'no_membership';
+    } else if (!isActiveMember()) {
+      emitter = false;
+      eligibilityState = 'inactive';
+    } else {
+      emitter = isFormalHouseEmitter();
+      eligibilityState = emitter ? 'eligible' : 'not_emitter';
+    }
+    render();
+    if (emitter) {
+      void migrateLegacyEmitter();
+      if (!previous) void window.JemmoHouseActivity?.ensureTaskCycle?.('task_rewards_ready');
+    }
+  }
 
   async function services() {
     if (servicesPromise) return servicesPromise;
@@ -173,12 +242,11 @@
   }
 
   function openSheet() {
-    if (!emitter) return;
     injectTaskSheet();
     $('jemmoHostTaskBackdrop').hidden = false;
     $('jemmoHostTaskSheet').hidden = false;
     document.body.classList.add('jr-task-open');
-    void window.JemmoHouseActivity?.ensureTaskCycle?.('task_panel_open');
+    if (emitter) void window.JemmoHouseActivity?.ensureTaskCycle?.('task_panel_open');
     render();
   }
 
@@ -221,16 +289,23 @@
     const count = $('houseTaskCountdown');
     const mini = $('houseTaskProgressMini');
     if (!box || !count || !mini) return;
-    box.hidden = !emitter;
-    if (!emitter) return;
+    box.hidden = false;
+    box.setAttribute('role', 'button');
+    box.setAttribute('tabindex', '0');
+    box.setAttribute('aria-label', emitter ? 'Abrir mis tareas de Emisora' : 'Consultar estado de tareas de Casa');
+    if (!emitter) {
+      box.classList.add('waiting');
+      box.classList.remove('done');
+      if (label) label.textContent = eligibilityState === 'checking' ? 'COMPROBANDO TAREA' : 'TAREA DE CASA';
+      count.textContent = eligibilityState === 'checking' ? 'CARGANDO…' : 'NO ACTIVA';
+      mini.textContent = eligibilityMessage();
+      return;
+    }
     const tier = currentTier(giftNet7d);
     const paid = claimedSlots(task).filter(slot => slot <= tier.hours).length;
     const allPaid = paid >= tier.hours;
     box.classList.remove('waiting');
     box.classList.toggle('done', allPaid);
-    box.setAttribute('role', 'button');
-    box.setAttribute('tabindex', '0');
-    box.setAttribute('aria-label', 'Abrir mis tareas de Emisora');
     if (label) label.textContent = allPaid ? 'TAREA DIARIA COBRADA' : 'MI TAREA · TOCA PARA VER';
     count.textContent = `${fmt(tier.reward)} JEMS/HORA`;
     mini.textContent = `${paid}/${tier.hours} horas cobradas · Nivel ${tier.code}`;
@@ -241,7 +316,7 @@
     const target = $('jemmoHostTaskContent');
     if (!target) return;
     if (!emitter) {
-      target.innerHTML = '<div class="jr-task-empty">Las tareas se habilitan únicamente cuando una Casa te asigna formalmente como Emisor/a. Una Emisora independiente no tiene tareas por horas.</div>';
+      target.innerHTML = `<div class="jr-task-empty"><b>Estado de la tarea</b><br>${eligibilityMessage()}<br><br>Las tareas existen únicamente para Emisoras vinculadas a una Casa. Una Emisora independiente conserva el reparto 70/30, pero no tiene tareas por horas.</div>`;
       return;
     }
 
@@ -504,7 +579,9 @@
     giftNet7d = 0;
     task = {};
     member = {};
+    memberExists = false;
     emitter = false;
+    eligibilityState = 'checking';
   }
 
   function attachHouse(s) {
@@ -512,15 +589,18 @@
     clearHouseListeners();
     attachedHouse = houseId;
     houseUnsubscribers.push(s.onSnapshot(s.doc(s.db, 'casas', houseId, 'miembros', user.uid), snapshot => {
+      memberExists = snapshot.exists();
       member = snapshot.data() || {};
-      emitter = snapshot.exists() && !['left', 'removed'].includes(clean(member.status || profile.houseStatus, 20)) && isFormalHouseEmitter();
+      recomputeEligibility();
+    }, error => {
+      eligibilityState = 'error';
       render();
-      if (emitter) void window.JemmoHouseActivity?.ensureTaskCycle?.('task_rewards_ready');
+      console.warn('JEMMO tareas: membresía', error?.code || error?.message || error);
     }));
     houseUnsubscribers.push(s.onSnapshot(s.doc(s.db, 'casas', houseId, 'tareas', user.uid), snapshot => {
       task = snapshot.data() || {};
+      recomputeEligibility();
       syncClaimedRewardsToWallet();
-      render();
       void syncTierSnapshot();
     }));
     const giftsQuery = s.query(
@@ -568,6 +648,7 @@
           clearHouseListeners();
         }
         if (houseId) attachHouse(s);
+        else { eligibilityState = 'no_membership'; render(); }
       }));
       clearInterval(windowTimer);
       windowTimer = setInterval(() => recalculateGiftWindow(false), 60000);
