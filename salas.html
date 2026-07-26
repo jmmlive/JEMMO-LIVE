@@ -9,7 +9,7 @@
   <link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="favicon-64.png">
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <title>JEMMO LIVE · SALAS PERSONALES RESTAURADAS · PRUEBA 17</title>
+  <title>JEMMO LIVE · AUDIO ROOM SIN DUPLICADOS · PRUEBA 25</title>
   <style>html.jemmo-auth-pending body{visibility:hidden}</style>
   <style>
     :root{
@@ -64,7 +64,7 @@
     .jr-room{height:100svh;min-height:570px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:
       radial-gradient(circle at 50% 8%,#57066d 0,#24032f 27%,#09000d 70%);overflow:hidden}
     .jr-room-head{padding:calc(11px + var(--safe-top)) 16px 9px;display:flex;align-items:center;gap:11px;border-bottom:1px solid #5d1a75aa;background:#0d0111aa;backdrop-filter:blur(12px)}
-    .jr-room-avatar{width:58px;height:58px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow:0 0 17px #ffd34e44;background:#24052e}
+    .jr-room-avatar{width:58px;height:58px;border-radius:50%;display:block;object-fit:cover;object-position:50% 50%;border:2px solid var(--gold);box-shadow:0 0 17px #ffd34e44;background:#24052e}
     .jr-room-meta{min-width:0;flex:1}.jr-room-meta small{display:block;color:var(--gold);font-weight:950;font-size:11px;letter-spacing:.05em}.jr-room-meta strong{display:block;font-size:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.jr-room-meta span{display:block;color:#c9b8ce;font-size:12px;margin-top:2px}
     .jr-live-chip{min-height:38px;padding:7px 10px;border:1px solid #ff7cac;border-radius:99px;background:#8e1749;color:#ffe0eb;font-size:9px;font-weight:1000;white-space:nowrap;box-shadow:0 0 14px #f02b7240}.jr-live-chip.waiting{border-color:#ffd34e;background:#392507;color:#ffe782}.jr-live-chip.connected{border-color:#45e58f;background:#0b3a25;color:#caffdf}.jr-live-chip.warning{border-color:#ff9a3d;background:#49200a;color:#ffd5aa}
     .jr-close{width:48px;height:48px;border-radius:18px;background:#8e1630;border:1px solid #ff6c8c;color:#fff;font-size:31px;line-height:1}
@@ -86,7 +86,7 @@
     .jr-camera-error{position:absolute;z-index:2;inset:8px;display:grid;place-items:center;text-align:center;padding:8px;border-radius:14px;background:#16051dcc;color:#ffe1ea;font-size:10px;font-weight:900}
     .jr-seat.audio{width:100%;height:auto;max-height:100%;aspect-ratio:1;align-self:center;justify-self:center;border-radius:50%}.jr-seat.camera{width:100%;height:100%;border-radius:21%}
     .jr-seat.host{border-color:var(--gold);box-shadow:inset 0 0 20px #ffd34e1d,0 0 16px #ffd34e66}.jr-seat.hot{border-color:#ff9b45;box-shadow:0 0 18px #ff9b4566}
-    .jr-seat-avatar{width:var(--avatar);height:var(--avatar);border-radius:50%;display:grid;place-items:center;background:#300039;color:#d36bff;font-size:calc(var(--avatar)*.45);font-weight:900;overflow:hidden;flex:0 0 auto}.jr-seat-avatar img{width:100%;height:100%;object-fit:cover}
+    .jr-seat-avatar{width:var(--avatar);height:var(--avatar);border-radius:50%;display:grid;place-items:center;background:#300039;color:#d36bff;font-size:calc(var(--avatar)*.45);font-weight:900;overflow:hidden;flex:0 0 auto}.jr-seat-avatar img{width:100%;height:100%;display:block;object-fit:cover;object-position:50% 50%;border-radius:50%;background:#300039}
     .jr-seat b{max-width:90%;font-size:var(--seat-font);line-height:1.05;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.jr-seat small{max-width:93%;font-size:var(--seat-small);line-height:1.05;color:#cfbed4;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .jr-number{position:absolute;right:2px;bottom:2px;min-width:24px;height:24px;padding:0 5px;border-radius:99px;background:#22042c;border:1px solid #b13cdf;display:grid;place-items:center;font-size:10px;font-weight:950}.jr-mic{position:absolute;left:3px;bottom:3px;font-size:13px}.jr-status-dot{position:absolute;right:6px;top:5px;width:12px;height:12px;border-radius:50%;background:var(--orange);box-shadow:0 0 11px var(--orange)}
     .jr-gift-total{position:absolute!important;z-index:5!important;right:4px;top:4px;min-width:31px;height:25px;padding:0 7px;border-radius:99px;background:linear-gradient(135deg,#ffd34e,#ff8c38);border:1px solid #fff1a0;color:#2a0b05;display:grid;place-items:center;font-size:10px;font-weight:1000;box-shadow:0 0 15px #ffb23f88}
@@ -215,7 +215,7 @@
     .jr-camera-off{position:absolute;inset:0;display:grid;place-content:center;gap:5px;background:linear-gradient(145deg,#140319,#020003);color:#d8c5dd;text-align:center}.jr-camera-off span{font-size:25px}.jr-camera-off b{font-size:8px;letter-spacing:.08em}
     .jr-chat-closed .jr-compose{opacity:.68}.jr-chat-closed .jr-compose input{cursor:not-allowed}
     .jr-profile-card{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px;border:1px solid #6d2a80;border-radius:18px;background:linear-gradient(145deg,#21052a,#0c010f)}
-    .jr-profile-card img{width:64px;height:64px;border-radius:50%;object-fit:cover;background:#2b0733}.jr-profile-card h3,.jr-profile-card p{margin:0}.jr-profile-card h3{font-size:15px}.jr-profile-card p{margin-top:4px;color:#c9b9ce;font-size:10px;line-height:1.4}.jr-profile-more{width:42px;height:42px;border:1px solid #7c338f;border-radius:14px;background:#1a0321;color:#fff;font-size:24px;font-weight:1000}
+    .jr-profile-card img{width:64px;height:64px;border-radius:50%;display:block;object-fit:cover;object-position:50% 50%;background:#2b0733}.jr-profile-card h3,.jr-profile-card p{margin:0}.jr-profile-card h3{font-size:15px}.jr-profile-card p{margin-top:4px;color:#c9b9ce;font-size:10px;line-height:1.4}.jr-profile-more{width:42px;height:42px;border:1px solid #7c338f;border-radius:14px;background:#1a0321;color:#fff;font-size:24px;font-weight:1000}
     .jr-profile-follow{width:100%;min-height:45px;margin-top:10px;border:0;border-radius:14px;background:linear-gradient(90deg,#ffd34f,#d944ff);color:#21031d;font-size:10px;font-weight:1000}.jr-profile-follow.following{background:#24102a;border:1px solid #79408a;color:#fff}
     .jr-moderation-menu{display:grid;gap:7px;margin-top:9px;padding:9px;border:1px solid #6c2a7d;border-radius:16px;background:#0e0112}.jr-moderation-menu[hidden]{display:none}.jr-moderation-menu button{min-height:43px;border:1px solid #5d276a;border-radius:12px;background:#220629;color:#fff;font-size:10px;font-weight:950}.jr-moderation-menu button.danger{border-color:#a83252;background:#3a0b1a;color:#ffbac9}
     body.jemmo-house-room .jr-controls{grid-template-columns:40px 40px 40px minmax(0,1fr) 44px!important}
@@ -294,7 +294,7 @@
     <header class="jr-room-head">
       <img class="jr-room-avatar" id="roomAvatar" src="jemmo-fish-nav.webp" alt="Portada">
       <div class="jr-room-meta"><small id="roomModeLabel">AUDIO ROOM</small><strong id="roomTitleLabel">Sala de Jesús</strong><span id="roomCapacityLabel">4 plazas</span></div>
-      <button class="jr-btn jr-live-chip" id="roomConnectionButton" type="button">INVITAR A RUTH</button>
+      <button class="jr-btn jr-live-chip" id="roomConnectionButton" type="button">INVITAR</button>
       <button class="jr-btn jr-close" id="leaveRoom" type="button" aria-label="Salir">×</button>
     </header>
     <section class="jr-house-info" id="houseRoomInfo" aria-label="Datos de la Casa">
@@ -338,7 +338,7 @@
       <div><b id="incomingInviteHost">Anfitrión</b><span>Te invita</span></div>
     </div>
     <div class="jr-invite-actions">
-      <button class="jr-btn jr-invite-join" id="acceptRoomInvite" type="button">ENTRAR CON RUTH</button>
+      <button class="jr-btn jr-invite-join" id="acceptRoomInvite" type="button">ENTRAR A LA SALA</button>
       <button class="jr-btn jr-invite-cancel" id="cancelRoomInvite" type="button">CANCELAR</button>
     </div>
   </section>
@@ -401,15 +401,18 @@
   const $=id=>document.getElementById(id);
   const activeUid=()=>{try{return String(window.__jemmoAuthenticatedUid||localStorage.getItem('jemmo_active_uid')||sessionStorage.getItem('jemmo_active_uid')||'local-user')}catch{return 'local-user'}};
   const pageParams=new URLSearchParams(location.search);
-  const requestedHouseRoom=pageParams.get('houseRoom')==='1';
-  const requestedHouseId=String(pageParams.get('house')||'').trim().slice(0,80);
+  const safeStoredHouseId=()=>{try{return String(localStorage.getItem('jemmo_house_id')||sessionStorage.getItem('jemmo_house_id')||'').trim().slice(0,80)}catch{return''}};
+  const safeStoredHouseName=()=>{try{return String(localStorage.getItem('jemmo_house_name')||sessionStorage.getItem('jemmo_house_name')||'').trim().slice(0,60)}catch{return''}};
   const requestedHouseDirect=pageParams.get('direct')==='1';
   const requestedJoin=String(pageParams.get('join')||'').trim();
+  const storedHouseId=safeStoredHouseId();
+  const requestedHouseId=String(pageParams.get('house')||((pageParams.get('houseRoom')==='1'||requestedHouseDirect)?storedHouseId:'')||'').trim().slice(0,80);
+  const requestedHouseRoom=pageParams.get('houseRoom')==='1'||Boolean(requestedHouseDirect&&requestedHouseId);
   const validHouseEntry=requestedHouseRoom&&Boolean(requestedHouseId)&&(requestedHouseDirect||Boolean(requestedJoin));
   const houseContext={
     enabled:validHouseEntry,
     id:validHouseEntry?requestedHouseId:'',
-    name:validHouseEntry?String(pageParams.get('houseName')||'').trim().slice(0,60):'',
+    name:validHouseEntry?String(pageParams.get('houseName')||safeStoredHouseName()||'').trim().slice(0,60):'',
     direct:validHouseEntry&&requestedHouseDirect
   };
   if(requestedHouseRoom&&!validHouseEntry){
@@ -434,9 +437,9 @@
     mirrorPreview:false,
     realtimeSession:null,
     remoteStream:null,
-    remoteName:'Ruth',
-    remotePhoto:'ruth-avatar-test.jpg',
-    remoteUid:'remote-ruth',
+    remoteName:'',
+    remotePhoto:'jemmo-fish-nav.webp',
+    remoteUid:'',
     remoteConnected:false,
     ownName:'Jesús',
     ownPhoto:'',
@@ -457,6 +460,7 @@
     houseSeatActive:true,
     moderatedDown:false
   };
+  const systemChatKeys=new Set();
   const ROOM_TEST_BAN_MS=60*1000;
   const banStorageKey=()=>`jemmo_room_test_bans_v1_${activeUid()}`;
   function safeBanMap(){
@@ -572,8 +576,8 @@
     if(!state.cover){state.cover='jemmo-fish-nav.webp';$('coverPreview').src=state.cover;$('roomAvatar').src=state.cover}
     $('roomModeLabel').textContent='AUDIO ROOM DE LA CASA';
     document.body.classList.add('jemmo-house-room');
-    $('roomConnectionButton').textContent='AUDIO';
-    $('roomConnectionButton').setAttribute('aria-label','Estado de conexión de audio');
+    $('roomConnectionButton').textContent='INVITAR';
+    $('roomConnectionButton').setAttribute('aria-label','Invitar a una persona a la Audio Room');
     syncHouseDirectControls();
     const closeSetting=document.querySelector('[data-action="close"] b');if(closeSetting)closeSetting.innerHTML='Salir de la Sala de Casa<small>La sala 24/7 seguirá disponible</small>';
   }
@@ -622,25 +626,49 @@
     return 5;
   }
 
+  function normalizedPersonId(person={}){
+    const uid=String(person.uid||'').trim().toLowerCase();
+    if(uid&&!uid.startsWith('remote-')&&!uid.startsWith('demo-'))return`uid:${uid}`;
+    const name=String(person.name||'').trim().toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    return name?`name:${name}`:'';
+  }
+
+  function samePerson(first,second){
+    const a=normalizedPersonId(first),b=normalizedPersonId(second);
+    return Boolean(a&&b&&a===b);
+  }
+
   function defaultOccupants(){
     state.occupants.clear();
     state.giftTotals.clear();
+    const ownPerson={
+      uid:state.ownUid||activeUid(),
+      name:state.ownName||'Usuario JEMMO',
+      role:state.isGuest?'Invitada':'Anfitrión',
+      photo:state.ownPhoto||'jemmo-fish-nav.webp',
+      host:!state.isGuest,local:true
+    };
     const hostPerson=state.isGuest
-      ? {uid:state.remoteUid||'remote-host',name:state.remoteName||'Jesús',role:state.remoteConnected?'Anfitrión conectado':'Anfitrión',photo:state.remotePhoto||'jemmo-fish-nav.webp',host:true,remote:true}
-      : {uid:state.ownUid||activeUid(),name:state.ownName||'Jesús',role:'Anfitrión',photo:state.cover||state.ownPhoto||'jemmo-fish-nav.webp',host:true,local:true};
-    const guestPerson=state.isGuest
-      ? {uid:state.ownUid||activeUid(),name:state.ownName||'Ruth',role:'Invitada',photo:state.ownPhoto||'ruth-avatar-test.jpg',host:false,local:true}
-      : {uid:state.remoteUid||'remote-ruth',name:state.remoteName||'Ruth',role:state.remoteConnected?'Conectada en tiempo real':'Esperando invitación',photo:state.remotePhoto||'ruth-avatar-test.jpg',host:false,remote:true};
-    if(!houseContext.enabled||!hostPerson.local||state.houseSeatActive)state.occupants.set(1,hostPerson);
-    if(state.count>=2&&(!houseContext.enabled||state.isGuest||state.remoteConnected)&&!blockedUntil(guestPerson)){
-      if((!houseContext.enabled||!guestPerson.local||state.houseSeatActive)&&!(state.isGuest&&guestPerson.local&&state.moderatedDown))state.occupants.set(2,guestPerson);
+      ? {uid:state.remoteUid||'remote-host',name:state.remoteName||'Anfitrión',role:state.remoteConnected?'Anfitrión conectado':'Anfitrión',photo:state.remotePhoto||'jemmo-fish-nav.webp',host:true,remote:true}
+      : ownPerson;
+    const remoteGuest=!state.isGuest&&state.remoteConnected
+      ? {uid:state.remoteUid||'',name:state.remoteName||'Invitada',role:'Conectada en tiempo real',photo:state.remotePhoto||'jemmo-fish-nav.webp',host:false,remote:true}
+      : null;
+
+    const addUnique=(index,person)=>{
+      if(!person||blockedUntil(person))return;
+      if([...state.occupants.values()].some(existing=>samePerson(existing,person)))return;
+      state.occupants.set(index,person);
+    };
+
+    if(state.isGuest){
+      addUnique(1,hostPerson);
+      if(!state.moderatedDown&&(!houseContext.enabled||state.houseSeatActive))addUnique(2,ownPerson);
+    }else{
+      if(!houseContext.enabled||state.houseSeatActive)addUnique(1,hostPerson);
+      addUnique(2,remoteGuest);
     }
-    const demo=[
-      {uid:'demo-seat-3',name:'Invitada 3',role:'En silla',photo:'jemmo-fish-nav.webp',host:false},
-      {uid:'demo-seat-4',name:'Invitado 4',role:'En silla',photo:'jemmo-fish-nav.webp',host:false},
-      {uid:'demo-seat-5',name:'Invitada 5',role:'En silla',photo:'jemmo-fish-nav.webp',host:false}
-    ];
-    if(!houseContext.enabled)demo.slice(0,Math.max(0,Math.min(state.count,5)-2)).forEach((person,index)=>{if(!blockedUntil(person))state.occupants.set(index+3,person)});
+
     state.selectedRecipients.clear();
     state.occupants.forEach((_,index)=>state.selectedRecipients.add(index));
   }
@@ -665,7 +693,7 @@
     }
     if(person){
       const audioIcon=person.local?(state.micEnabled?'🎙':'🔇'):(person.mutedByMe?'🔇':person.remote&&!state.remoteConnected?'⌛':person.host?'🎙':'🔊');
-      return `<span class="jr-seat-avatar"><img src="${person.photo}" alt=""></span>
+      return `<span class="jr-seat-avatar"><img src="${person.photo||'jemmo-fish-nav.webp'}" alt="Foto de ${person.name||'usuario'}" loading="eager" decoding="async" onerror="this.onerror=null;this.src='jemmo-fish-nav.webp'"></span>
         <b>${person.name}</b><small>${person.local&&!state.micEnabled?'Micrófono silenciado':person.mutedByMe?'Audio silenciado en este móvil':person.role}</small>
         <span class="jr-mic">${audioIcon}</span><span class="jr-number">${index}</span>${giftBadge(index)}`;
     }
@@ -752,7 +780,7 @@
   }
 
   function localHousePerson(){
-    return {uid:state.ownUid||activeUid(),name:state.ownName||'Usuario JEMMO',role:state.isGuest?'Emisor/a':'Agente de Casa',photo:state.ownPhoto||state.cover||'jemmo-fish-nav.webp',host:!state.isGuest,local:true};
+    return {uid:state.ownUid||activeUid(),name:state.ownName||'Usuario JEMMO',role:state.isGuest?'Emisor/a':'Agente de Casa',photo:state.ownPhoto||'jemmo-fish-nav.webp',host:!state.isGuest,local:true};
   }
 
   function updateRoomControlLabels(){
@@ -877,14 +905,8 @@
       seat.innerHTML=seatMarkup(i,person);
       seat.addEventListener('click',()=>{
         if(person){openSeatProfile(i);return}
-        if(houseContext.enabled){
-          if(!state.houseSeatActive){toggleHouseSeat();return}
-          toast('Silla libre. Se ocupará cuando entre otra persona real.');return;
-        }
-        const demo={uid:`demo-seat-${i}`,name:`Invitado ${i}`,role:'En silla',photo:'jemmo-fish-nav.webp',host:false};
-        const remaining=remainingBanSeconds(demo);if(remaining){toast(`Esta persona no puede volver durante ${remaining} segundos.`);return}
-        state.giftTotals.delete(i);state.occupants.set(i,demo);toast(`Invitado ${i} subió a la silla.`);
-        renderSeats();renderGiftRecipients();
+        if(houseContext.enabled&&!state.houseSeatActive){toggleHouseSeat();return}
+        toast('Silla libre. Solo se ocupará cuando entre una persona real.');
       });
       grid.append(seat);
     }
@@ -977,7 +999,7 @@
     });
   }
 
-  function updateRoomConnection(status='waiting',text='INVITAR A RUTH'){
+  function updateRoomConnection(status='waiting',text='INVITAR'){
     const button=$('roomConnectionButton');
     if(!button)return;
     button.classList.remove('waiting','connected','warning');
@@ -988,9 +1010,12 @@
   }
 
   function handleRemoteProfile(profile={}){
-    state.remoteName=String(profile.name||state.remoteName||'Ruth');
-    state.remotePhoto=String(profile.photo||state.remotePhoto||'ruth-avatar-test.jpg');
-    state.remoteUid=String(profile.uid||profile.userId||state.remoteUid||'remote-ruth');
+    const incomingUid=String(profile.uid||profile.userId||'').trim();
+    if(incomingUid&&incomingUid===String(state.ownUid||activeUid()))return;
+    state.remoteName=String(profile.name||state.remoteName||'Invitada');
+    state.remotePhoto=String(profile.photo||state.remotePhoto||'jemmo-fish-nav.webp');
+    state.remoteUid=incomingUid||String(state.remoteUid||'');
+    if(state.isGuest&&state.remotePhoto)$('roomAvatar').src=state.remotePhoto;
     const candidate={uid:state.remoteUid,name:state.remoteName};
     const remaining=remainingBanSeconds(candidate);
     if(remaining){
@@ -1003,6 +1028,7 @@
 
   function handleRemoteStream(stream){
     const candidate={uid:state.remoteUid,name:state.remoteName};
+    if(samePerson(candidate,{uid:state.ownUid||activeUid(),name:state.ownName})){console.warn('JEMMO Sala: se ignoró un stream remoto de la misma cuenta.');return}
     const remaining=remainingBanSeconds(candidate);if(remaining){updateRoomConnection('warning',`EXPULSADA · ${remaining} S`);toast(`${state.remoteName} sigue expulsada durante ${remaining} segundos.`);return}
     const firstConnection=!state.remoteConnected;
     state.remoteStream=stream;
@@ -1011,9 +1037,9 @@
     defaultOccupants();
     renderSeats();
     renderGiftRecipients();
-    updateRoomConnection('connected',state.isGuest?'CONECTADA CON JESÚS':`${(state.remoteName||'RUTH').toUpperCase()} CONECTADA`);
+    updateRoomConnection('connected',state.isGuest?`CONECTADA CON ${(state.remoteName||'ANFITRIÓN').toUpperCase()}`:`${(state.remoteName||'INVITADA').toUpperCase()} CONECTADA`);
     void playRemoteAudio(false);
-    if(firstConnection)addChat(`JEMMO: ${state.remoteName||'Ruth'} se conectó con audio${state.mode==='camera'?' y cámara':''}.`,'system');
+    if(firstConnection)addChat(`JEMMO: ${state.remoteName||'Invitada'} se conectó con audio${state.mode==='camera'?' y cámara':''}.`,'system');
   }
 
   function handleRemoteChatState(closed){
@@ -1050,11 +1076,11 @@
 
   function handleRealtimeStatus(detail={}){
     if(detail.state==='connected'){
-      updateRoomConnection('connected',state.isGuest?'CONECTADA CON JESÚS':`${(state.remoteName||'RUTH').toUpperCase()} CONECTADA`);
+      updateRoomConnection('connected',state.isGuest?`CONECTADA CON ${(state.remoteName||'ANFITRIÓN').toUpperCase()}`:`${(state.remoteName||'INVITADA').toUpperCase()} CONECTADA`);
     }else if(detail.state==='warning'||detail.state==='closed'){
       updateRoomConnection('warning',detail.state==='closed'?'SALA DESCONECTADA':'REVISAR CONEXIÓN');
     }else{
-      updateRoomConnection('waiting',state.isGuest?'CONECTANDO…':(houseContext.enabled?'SALA ABIERTA · ESPERANDO EMISORA':`INVITAR A ${(state.remoteName||'RUTH').toUpperCase()}`));
+      updateRoomConnection('waiting',state.isGuest?'CONECTANDO…':(houseContext.enabled?'SALA ABIERTA · ESPERANDO EMISORA':state.remoteName?`INVITAR A ${state.remoteName.toUpperCase()}`:'INVITAR'));
     }
   }
 
@@ -1068,9 +1094,9 @@
       cover:(!houseContext.enabled&&state.cover&&!String(state.cover).startsWith('data:')&&!String(state.cover).startsWith('blob:'))?String(state.cover).slice(0,1200):'',
       houseId:houseContext.enabled?houseContext.id:'',houseName:houseContext.enabled?(houseContext.name||$('roomTitle').value.trim()):'',permanentHouseRoom:houseContext.enabled,
       onOutgoingMediaNeeded:()=>recoverLocalMedia(true),
-      onRemoteStream:handleRemoteStream,onRemoteProfile:handleRemoteProfile,onLocalProfile:profile=>{state.ownUid=profile.uid||state.ownUid;state.ownName=profile.name||state.ownName;state.ownPhoto=profile.photo||state.ownPhoto},onStatus:handleRealtimeStatus,onMessage:handleRoomMessage,onChatState:handleRemoteChatState,onModeration:handleRoomModeration
+      onRemoteStream:handleRemoteStream,onRemoteProfile:handleRemoteProfile,onLocalProfile:profile=>{state.ownUid=profile.uid||state.ownUid;state.ownName=profile.name||state.ownName;state.ownPhoto=profile.photo||state.ownPhoto;if(state.ownPhoto)$('roomAvatar').src=state.ownPhoto;defaultOccupants();renderSeats();renderGiftRecipients()},onStatus:handleRealtimeStatus,onMessage:handleRoomMessage,onChatState:handleRemoteChatState,onModeration:handleRoomModeration
     });
-    updateRoomConnection('waiting',houseContext.enabled?'SALA ABIERTA · ESPERANDO EMISORA':`INVITAR A ${(state.remoteName||'RUTH').toUpperCase()}`);
+    updateRoomConnection('waiting',houseContext.enabled?'SALA ABIERTA · ESPERANDO EMISORA':state.remoteName?`INVITAR A ${state.remoteName.toUpperCase()}`:'INVITAR');
     return state.realtimeSession;
   }
 
@@ -1115,17 +1141,19 @@
     state.moderatedDown=false;
     state.localSeat=1;
     state.remoteSeat=2;
-    state.remoteName=state.remoteName||'Ruth';
-    state.remotePhoto=state.remotePhoto||'ruth-avatar-test.jpg';
+    state.remoteName=state.remoteName||'';
+    state.remotePhoto=state.remotePhoto||'jemmo-fish-nav.webp';
     state.remoteConnected=false;
     state.cameraEnabled=state.mode==='camera';state.chatClosed=false;updateRoomControlLabels();toggleRoomChat(false,{silent:true,sync:false});
     const title=$('roomTitle').value.trim();
+    resetRoomChat();
+    $('roomAvatar').src=state.ownPhoto||'jemmo-fish-nav.webp';
     save();
     if(!houseContext.enabled)document.body.classList.remove('jemmo-house-room');
     syncRoomCover();
     $('roomModeLabel').textContent=state.mode==='audio'?'AUDIO ROOM':'SALA CON CÁMARA';
     $('roomTitleLabel').textContent=title;
-    $('roomCapacityLabel').textContent=`${state.count}${state.count===25?' VIP':''} plazas`;
+    $('roomCapacityLabel').textContent=houseContext.enabled?`${state.count} sillas`:`${state.count}${state.count===25?' VIP':''} plazas`;
     defaultOccupants();
     renderSeats();
     renderGiftRecipients();
@@ -1135,13 +1163,13 @@
     document.body.style.overflow='hidden';
     roomOpen=true;
     if(!history.state?.jemmoRoom)history.pushState({...(history.state||{}),jemmoRoom:true},'');
-    updateRoomConnection('waiting',houseContext.enabled?'ABRIENDO SALA DE CASA…':`PREPARANDO INVITACIÓN PARA ${(state.remoteName||'RUTH').toUpperCase()}`);
+    updateRoomConnection('waiting',houseContext.enabled?'ABRIENDO SALA DE CASA…':state.remoteName?`PREPARANDO INVITACIÓN PARA ${state.remoteName.toUpperCase()}`:'PREPARANDO INVITACIÓN');
     const stream=await startCamera();
     if(!stream){updateRoomConnection('warning','SIN AUDIO/CÁMARA');return}
     showRoomEntrance();
     try{
       await startRealtimeHost();
-      addChat(houseContext.enabled?'JEMMO: Has entrado en la Sala 24/7 de tu Casa. Solo audio y tareas.':`JEMMO: Sala de prueba activada. Pulsa INVITAR A ${(state.remoteName||'RUTH').toUpperCase()} para compartir el enlace.`,'system');
+      addChat(houseContext.enabled?'JEMMO: Has entrado en la Sala 24/7 de tu Casa. Solo audio y tareas.':'JEMMO: Sala de prueba activada. Pulsa INVITAR para compartir el enlace.','system');
     }catch(error){
       console.warn('Inicio de sala en tiempo real:',error);
       updateRoomConnection('warning','PRUEBA LOCAL');
@@ -1160,16 +1188,15 @@
     state.remotePhoto=meta.hostPhoto||'jemmo-fish-nav.webp';
     state.remoteConnected=false;
     state.cameraEnabled=state.mode==='camera';state.chatClosed=false;updateRoomControlLabels();toggleRoomChat(false,{silent:true,sync:false});
-    if(!houseContext.enabled&&meta.cover){
-      state.cover=String(meta.cover).slice(0,1400);
-      $('roomAvatar').src=state.cover;
-    }
+    if(!houseContext.enabled&&meta.cover)state.cover=String(meta.cover).slice(0,1400);
+    $('roomAvatar').src=meta.hostPhoto||'jemmo-fish-nav.webp';
     if(!houseContext.enabled)document.body.classList.remove('jemmo-house-room');
+    resetRoomChat();
     syncRoomCover();
     $('incomingInviteDialog').hidden=true;
     $('roomModeLabel').textContent=state.mode==='audio'?'AUDIO ROOM':'SALA CON CÁMARA';
     $('roomTitleLabel').textContent=meta.title||'Sala de JEMMO';
-    $('roomCapacityLabel').textContent=`${state.count}${state.count===25?' VIP':''} plazas`;
+    $('roomCapacityLabel').textContent=houseContext.enabled?`${state.count} sillas`:`${state.count}${state.count===25?' VIP':''} plazas`;
     $('prepareView').classList.add('jr-hidden');
     $('prepareNav').classList.add('jr-hidden');
     $('roomView').classList.remove('jr-hidden');
@@ -1182,7 +1209,7 @@
     if(!stream){updateRoomConnection('warning','PERMISOS NECESARIOS');return}
     try{
       const api=await waitRealtimeApi();
-      state.realtimeSession=await api.joinGuestSession(meta.roomId,{mode:state.mode,localStream:stream,onRemoteStream:handleRemoteStream,onRemoteProfile:handleRemoteProfile,onLocalProfile:profile=>{state.ownUid=profile.uid||state.ownUid;state.ownName=profile.name||'Ruth';state.ownPhoto=profile.photo||'ruth-avatar-test.jpg';defaultOccupants();renderSeats()},onStatus:handleRealtimeStatus,onMessage:handleRoomMessage,onChatState:handleRemoteChatState,onModeration:handleRoomModeration});
+      state.realtimeSession=await api.joinGuestSession(meta.roomId,{mode:state.mode,localStream:stream,onRemoteStream:handleRemoteStream,onRemoteProfile:handleRemoteProfile,onLocalProfile:profile=>{state.ownUid=profile.uid||state.ownUid;state.ownName=profile.name||state.ownName||'Usuario JEMMO';state.ownPhoto=profile.photo||state.ownPhoto||'jemmo-fish-nav.webp';defaultOccupants();renderSeats();renderGiftRecipients()},onStatus:handleRealtimeStatus,onMessage:handleRoomMessage,onChatState:handleRemoteChatState,onModeration:handleRoomModeration});
       addChat(`JEMMO: Has entrado en la sala de ${meta.hostName||'Jesús'}.`,'system');
     }catch(error){
       console.warn('Unión a sala:',error);
@@ -1288,19 +1315,30 @@
     }
   }
 
-  function addChat(text,kind=''){
+  function resetRoomChat(){
     const chat=$('chatMessages');
-    const last=chat?.lastElementChild;
+    if(!chat)return;
+    systemChatKeys.clear();
+    chat.innerHTML='<div class="jr-chat-line system"><b>JEMMO:</b> La sala está preparada. Respeta las normas y disfruta.</div>';
+  }
+
+  function addChat(text,kind='',dedupeKey=''){
+    const chat=$('chatMessages');
+    if(!chat)return;
+    const normalizedKey=String(dedupeKey||(kind==='system'?text:'')).trim().toLocaleLowerCase('es');
+    if(normalizedKey&&systemChatKeys.has(normalizedKey))return;
+    const last=chat.lastElementChild;
     const now=Date.now();
-    if(last&&last.textContent===text&&now-Number(last.dataset.addedAt||0)<2000)return;
+    if(last&&last.textContent===text&&now-Number(last.dataset.addedAt||0)<5000)return;
+    if(normalizedKey)systemChatKeys.add(normalizedKey);
     const line=document.createElement('div');
     const own=/^(Tú:|Yo:)/i.test(text);
     line.className=`jr-chat-line ${kind}${own?' jemmo-own':''}`;
     line.dataset.addedAt=String(now);
     line.textContent=text;
     chat.append(line);
-    while($('chatMessages').children.length>12)$('chatMessages').removeChild($('chatMessages').children[1]);
-    $('chatMessages').scrollTop=$('chatMessages').scrollHeight;
+    while(chat.children.length>12)chat.removeChild(chat.children[1]);
+    chat.scrollTop=chat.scrollHeight;
   }
 
   function selectedRecipientIndexes(){
@@ -1492,7 +1530,7 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
 
   $('startRoom').addEventListener('click',enterRoom);
   $('leaveRoom').addEventListener('click',()=>leaveRoom(true));
-  $('helpButton').addEventListener('click',()=>toast('Completa los datos, entra y pulsa INVITAR A RUTH para probar audio o cámara en dos móviles.'));
+  $('helpButton').addEventListener('click',()=>toast('Completa los datos, entra y pulsa INVITAR para probar audio o cámara en otro móvil.'));
   $('settingsButton').addEventListener('click',()=>openSheet('settingsSheet'));
   $('houseSeatButton').addEventListener('click',toggleHouseSeat);
   $('houseMicButton').addEventListener('click',()=>toggleRoomMicro());

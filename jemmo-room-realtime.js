@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · CONTROLES REMOTOS DE SALA PRUEBA 20
+/* JEMMO LIVE V1 · AUDIO ROOM SIN DUPLICADOS PRUEBA 25
    Señalización WebRTC, chat y moderación de prueba mediante Firestore. No es infraestructura de producción.
    La invitada enlaza sus pistas a los transceptores ofrecidos por el anfitrión antes de responder. */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
@@ -37,6 +37,14 @@ const RTC_CONFIG = {
 
 function clean(value, max = 80) {
   return String(value || '').trim().slice(0, max);
+}
+
+function safeProfilePhoto(value) {
+  const raw = String(value || '').trim();
+  if (/^https:\/\//i.test(raw)) return raw.slice(0, 2200);
+  if (/^data:image\/(?:png|jpe?g|webp);base64,/i.test(raw) && raw.length <= 260000) return raw;
+  if (/^blob:/i.test(raw)) return raw.slice(0, 2200);
+  return '';
 }
 
 function roomCode(value) {
@@ -147,8 +155,7 @@ async function readProfile(user) {
   } catch (error) {
     console.warn('JEMMO Room profile:', error);
   }
-  const rawPhoto = clean(data.photoURL || user.photoURL || data.avatar, 1200);
-  const photo = /^https:\/\//i.test(rawPhoto) ? rawPhoto : '';
+  const photo = safeProfilePhoto(data.avatarData || data.photoURL || data.avatar || user.photoURL);
   return {
     uid: user.uid,
     name: clean(data.displayName || data.nombre || user.displayName || user.email?.split('@')[0] || 'Usuario JEMMO'),
@@ -361,7 +368,7 @@ async function getRoomPreview(code) {
     cover: clean(data.cover, 1200),
     hostUid: clean(data.hostUid, 160),
     hostName: clean(data.hostName) || 'Anfitrión',
-    hostPhoto: clean(data.hostPhoto, 1200),
+    hostPhoto: safeProfilePhoto(data.hostPhoto),
     houseId: clean(data.houseId, 80),
     houseName: clean(data.houseName, 60),
     status: clean(data.status) || 'open'
@@ -522,7 +529,8 @@ async function createHostSession(options = {}) {
     if (!snapshot.exists()) return;
     const data = snapshot.data() || {};
     if (data.status === 'ended') options.onStatus?.({ state: 'closed', text: 'La sala finalizó' });
-    if (data.guestName) options.onRemoteProfile?.({ uid: clean(data.guestUid, 160), name: clean(data.guestName) || 'Ruth', photo: clean(data.guestPhoto, 1200), verified: Boolean(data.guestVerified) });
+    const guestUid = clean(data.guestUid, 160);
+    if (guestUid && guestUid !== user.uid && data.guestName) options.onRemoteProfile?.({ uid: guestUid, name: clean(data.guestName) || 'Invitada', photo: safeProfilePhoto(data.guestPhoto), verified: Boolean(data.guestVerified) });
     if (typeof data.chatClosed === 'boolean') options.onChatState?.(Boolean(data.chatClosed));
     const moderation = data.moderationAction || null;
     if (moderation?.id && moderation.id !== moderationActionSeen) {
@@ -573,7 +581,7 @@ async function createHostSession(options = {}) {
   });
   const { setChatClosed, sendModerationAction } = configureRoomControls({ roomRef, user });
   options.onLocalProfile?.(profile);
-  options.onStatus?.({ state: 'waiting', text: 'Esperando a Ruth' });
+  options.onStatus?.({ state: 'waiting', text: 'Esperando participantes' });
   const session = makeSession({
     role: 'host', roomId: id, roomRef, houseRoomRef, permanentHouseRoom, peer, remoteStream, unsubs,
     onStatus: options.onStatus, sendChatMessage, setChatClosed, sendModerationAction,
@@ -704,7 +712,7 @@ async function joinGuestSession(code, options = {}) {
   });
   const { setChatClosed, sendModerationAction } = configureRoomControls({ roomRef, user });
   options.onLocalProfile?.(profile);
-  options.onRemoteProfile?.({ uid: preview.hostUid || clean(data.hostUid, 160), name: preview.hostName, photo: preview.hostPhoto, verified: Boolean(data.hostVerified) });
+  options.onRemoteProfile?.({ uid: preview.hostUid || clean(data.hostUid, 160), name: preview.hostName, photo: safeProfilePhoto(preview.hostPhoto), verified: Boolean(data.hostVerified) });
   options.onStatus?.({ state: 'connecting', text: 'Entrando en la sala…' });
   return makeSession({
     role: 'guest', roomId: preview.roomId, roomRef, peer, remoteStream, unsubs,
@@ -716,7 +724,7 @@ async function joinGuestSession(code, options = {}) {
 }
 
 window.JemmoRoomRealtime = Object.freeze({
-  version: '1.5.0-test',
+  version: '1.6.0-test',
   getRoomPreview,
   getActiveHouseRoom,
   createHostSession,
