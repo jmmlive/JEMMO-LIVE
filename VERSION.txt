@@ -1,47 +1,43 @@
-JEMMO LIVE V1 · SALA DE CASA MÓVIL Y TAREAS AUTOMÁTICAS 24H PRUEBA 16
+JEMMO LIVE V1 · SALAS PERSONALES RESTAURADAS Y FONDO COMPLETO PRUEBA 17
 Fecha: 26/07/2026
 
 Base verificada:
-- JEMMO LIVE V1 · SALA DE CASA 24/7 Y ROLES DE PRUEBA PRUEBA 15.
-- Conserva Casa Padre, roles de prueba, solicitudes reales, panel de emisores, WebRTC/referidos y economía de pruebas.
+- JEMMO LIVE V1 · SALA DE CASA MÓVIL Y TAREAS AUTOMÁTICAS 24H PRUEBA 16.
+- Conserva intactas la Sala oficial de Casa Padre, sus 20 sillas, tareas automáticas, roles de prueba, Casa Padre y correcciones WebRTC.
 
-Sala de Casa prioritaria:
-- Diseño completamente adaptado al móvil, sin desbordamiento horizontal.
-- Veinte sillas compactas: cuatro columnas por cinco filas en móviles estrechos y cinco por cuatro en pantallas amplias.
-- Cabecero premium con nombre completo de la Casa, fecha de creación, antigüedad, miembros, puntos, rango y medallas reales cuando existan.
-- Control de Batalla visible únicamente cuando la Casa tenga una Batalla activa registrada.
-- Sin panel de ajustes dentro de la Sala de Casa.
-- Controles directos inferiores para subir/bajar de silla, activar/silenciar micrófono, chat y regalos.
-- Tocar la propia silla activa o silencia el micrófono directamente.
-- Tocar una persona conectada permite silenciar o recuperar su audio únicamente en el móvil actual; la moderación remota multiusuario queda pendiente del SFU.
-- Solo audio y acceso directo; la cámara permanece desactivada.
+Incidencia confirmada:
+- Al salir o retroceder desde la Sala de Casa, los parámetros `houseRoom=1` podían permanecer activos.
+- Audio Room personal y Sala con cámara heredaban entonces el título, la cuadrícula y el formato de la Sala 24/7 de Casa Padre.
+- Los tamaños 4, 8, 12, 15 y 25 quedaban cortados lateralmente porque la columna principal de la sala crecía más que el ancho móvil.
+- El fondo del pez se repetía dentro de cada silla y dificultaba la lectura.
 
-Tareas automáticas de 24 horas:
-- Al aceptar a una cuenta que ya es Emisor/a se crea inmediatamente su tarea activa.
-- Al asignar la función interna Emisor/a también se activa la tarea.
-- Al elegir el rol de prueba Emisor/a en la cuenta propietaria se activa una tarea de prueba real en Casa Padre.
-- Cada ciclo dura exactamente 24 horas desde su activación.
-- El panel muestra una cuenta atrás en horas, minutos y segundos.
-- Se mantienen los objetivos de LIVE y Sala de Casa.
-- Al vencer el ciclo, el sistema archiva el resumen anterior y abre automáticamente un nuevo ciclo de 24 horas cuando la emisora vuelve a realizar actividad.
-- El tiempo solo se registra para miembros con función Emisor/a o para el modo de prueba Emisor/a de Jesús.
-- Las tareas no generan JEMS ni pagos automáticos.
+Correcciones:
+- Separación estricta entre Sala oficial de Casa y salas personales.
+- El modo Casa solo se activa con una entrada válida: `houseRoom=1`, ID de Casa y acceso directo o invitación real.
+- Los parámetros antiguos o incompletos de Casa se eliminan automáticamente antes de abrir una sala personal.
+- Al salir de la Sala de Casa se vuelve a Mi Casa, sin mostrar la preparación personal bajo el contexto de Casa.
+- Audio Room personal recupera sus tamaños 4, 8, 12, 15 y 25 VIP.
+- Sala con cámara recupera sus tamaños 4, 8, 12 y 15; 25 continúa reservado a Audio Room VIP.
+- La columna principal queda limitada al ancho real del móvil y desaparece el corte lateral.
+- El fondo repetido dentro de cada silla se elimina únicamente en las salas personales.
+- La portada elegida pasa a ocupar el fondo completo de la sala personal con una capa oscura para conservar la legibilidad.
+- Las sillas, cámara, chat, ajustes y regalos permanecen dentro de la pantalla.
+- Se bloquean mensajes de sistema duplicados enviados en menos de dos segundos.
 
-Limitación técnica:
-- Las veinte sillas quedan listas visual y operativamente para turnos.
-- El motor actual sigue siendo una prueba WebRTC entre anfitrión e invitada.
-- Veinte audios simultáneos reales requieren un servidor SFU y backend seguro de tokens antes de producción.
+Sala de Casa protegida:
+- No se modifican su cabecero, datos, medallas, tarea, Batalla, 20 sillas ni controles directos.
+- Continúa siendo solo audio, 24/7 y separada de los Audio Room personales.
 
 PWA:
-- Caché: jemmo-live-v1-house-room-mobile-tasks-24h-16-20260726.
-- Registro: pwa-house-room-mobile-tasks-24h-16.
+- Caché: jemmo-live-v1-personal-rooms-restored-17-20260726.
+- Registro: pwa-personal-rooms-restored-17.
 - No es necesario desinstalar la PWA.
 
 Pruebas móviles obligatorias:
-1. Abrir la Sala de Casa y confirmar que no existe desplazamiento lateral.
-2. Confirmar las 20 sillas completas dentro de la pantalla.
-3. Probar subir/bajar de silla y silenciar tocando la propia foto.
-4. Cambiar a rol Emisor/a y confirmar la activación inmediata de la tarea de 24 horas.
-5. Entrar en la Sala y comprobar que aumenta el tiempo de Sala de Casa.
-6. Abrir LIVE y comprobar que aumenta el tiempo de LIVE.
-7. Probar el circuito con Ruth y completar la prueba WebRTC pendiente.
+1. Abrir Salas desde la botonera principal, sin entrar desde Casa.
+2. Probar Audio Room con 4, 8, 12, 15 y 25 plazas.
+3. Probar Sala con cámara con 4, 8, 12 y 15 plazas.
+4. Confirmar que ninguna columna se corta ni existe desplazamiento lateral.
+5. Confirmar que la portada ocupa el fondo completo y no se repite dentro de las sillas.
+6. Entrar después en Sala de Casa y comprobar que conserva exactamente su diseño de PRUEBA 16.
+7. Completar la prueba real de audio y cámara con Ruth.

@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · SALA DE CASA MÓVIL Y TAREAS 24H PRUEBA 16 */
-const CACHE = 'jemmo-live-v1-house-room-mobile-tasks-24h-16-20260726';
+/* JEMMO LIVE V1 · SALAS PERSONALES RESTAURADAS PRUEBA 17 */
+const CACHE = 'jemmo-live-v1-personal-rooms-restored-17-20260726';
 const APP_SHELL = [
   './',
   './index.html',

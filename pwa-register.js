@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-house-room-mobile-tasks-24h-16';
+  const VERSION = 'pwa-personal-rooms-restored-17';
   let installPrompt = null;
 
   const isStandalone = () =>
