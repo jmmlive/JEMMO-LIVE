@@ -1,25 +1,37 @@
-JEMMO LIVE V1 · SALA DE CASA AMPLIADA, CHAT INFERIOR Y FOTO DE PERFIL PRUEBA 28
-Fecha: 26/07/2026
+JEMMO LIVE V1 · COBRO POR HORAS Y ESCALA MÓVIL DE SIETE DÍAS PRUEBA 30
+Fecha: 27/07/2026
 
-Base acumulada:
-- JEMMO LIVE V1 · ACCESO COMO OYENTE E IDENTIDAD DE SALA DE CASA PRUEBA 27.
-- Conserva tareas reales, panel financiero de agentes, acceso directo a Mi Casa, moderación, regalos, Perfil y navegación acumulados.
+Base directa instalada:
+- JEMMO LIVE V1 · SALA DE CASA AMPLIADA, CHAT INFERIOR Y FOTO DE PERFIL PRUEBA 28.
+- PRUEBA 29 queda anulada y no debe instalarse.
 
-Incidencias confirmadas en la prueba real:
-- Las 20 sillas de la Sala oficial quedaban demasiado comprimidas y desaprovechaban parte de la pantalla.
-- El chat aparecía demasiado alto, dejando una zona vacía antes de los controles inferiores.
-- La foto de Ruth se ampliaba como fondo rectangular de la silla y no se mostraba como su avatar circular real.
+Reglas definitivas incorporadas:
+- Las tareas existen únicamente para Emisoras formalmente asignadas a una Casa/Agencia.
+- Emisora con Casa: regalos 70% Emisora, 20% JEMMO LIVE y 10% Casa/agente.
+- Emisora independiente: sin tareas; regalos 70% Emisora y 30% JEMMO LIVE.
+- El nivel de tarea utiliza solo el 70% neto de regalos de Casa recibidos durante una ventana móvil de siete días naturales.
+- Cada lote diario cuenta desde el día de recepción hasta terminar su séptimo día y después sale automáticamente del cálculo.
 
-Correcciones:
-- La Sala oficial distribuye el escenario en dos zonas reales: sillas arriba y chat inmediatamente debajo.
-- El chat deja de estar posicionado de forma absoluta y queda pegado a los controles inferiores, sin hueco negro intermedio.
-- Los avisos del sistema ocupan el ancho disponible y el chat conserva desplazamiento cuando existen varios mensajes.
-- Las sillas aprovechan más altura y anchura, con separación y textos legibles.
-- En una silla ocupada, la foto personal se muestra como avatar circular centrado, no como fondo ampliado.
-- El nombre y el rol permanecen debajo del avatar dentro de la silla.
-- Se amplían los campos compatibles de Firebase para recuperar la foto real del perfil: avatarData, profilePhoto, fotoPerfil, profileImage, photoURL, photo y avatar.
-- La identidad de la cabecera continúa perteneciendo a la Casa/Agencia.
+Cobro por horas:
+- BASE: 2.000 JEMS por hora · 1 hora diaria.
+- I: 3.000 JEMS por hora · 2 horas diarias.
+- H: 5.000 JEMS por hora · 2 horas diarias.
+- G: 9.000 JEMS por hora · 3 horas diarias.
+- F: 12.000 JEMS por hora · 3 horas diarias.
+- E: 18.000 JEMS por hora · 3 horas diarias.
+- D: 28.000 JEMS por hora · 3 horas diarias.
+- C: 35.000 JEMS por hora · 3 horas diarias.
+- B: 40.000 JEMS por hora · 3 horas diarias.
+- A: 50.000 JEMS por hora · 3 horas diarias.
+- S: 70.000 JEMS por hora · 4 horas diarias.
+
+Funcionamiento:
+- Cada bloque completo de 60 minutos se cobra de forma independiente.
+- Completar la primera hora permite cobrarla sin esperar a las horas restantes.
+- Cada hora usa una clave idempotente propia para impedir dobles cobros.
+- LIVE activo y Audio Room oficial en silla suman tiempo; escuchar abajo no suma.
+- El panel Mis tareas muestra horas, cobros, escala, regalos netos y desglose de los siete días.
 
 Estado:
-- MODO DE PRUEBAS.
-- Pendiente de prueba real en el móvil de Ruth para confirmar encuadre del avatar, tamaño de sillas y posición inferior del chat.
+- MODO DE PRUEBAS: no mueve dinero real.
+- Antes de producción, cálculo, reglas y abonos deben trasladarse a backend/Cloud Functions y protegerse con reglas Firestore por roles.

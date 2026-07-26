@@ -1,11 +1,11 @@
-/* JEMMO LIVE V1 · ECONOMÍA DE CASAS Y AGENTES PRUEBA 23
+/* JEMMO LIVE V1 · ECONOMÍA DE CASAS, INDEPENDIENTES Y AGENTES PRUEBA 30
    Sincroniza regalos, reparto 70/20/10 y auditoría en Firestore.
    MODO DE PRUEBAS: no mueve dinero real. */
 (() => {
   'use strict';
   if (window.JemmoHouseFinance?.version) return;
 
-  const VERSION = '23.0-test';
+  const VERSION = '30.0-test';
   const QUEUE_KEY = 'jemmo_cloud_gift_queue_v1';
   const firebaseConfig = {
     apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
@@ -95,7 +95,7 @@
     const hintedHouseId = clean(hint.houseId, 80);
     const profileHouseId = clean(profile.houseId, 80);
     const houseId = hintedHouseId || profileHouseId;
-    if (!houseId || ['left', 'removed'].includes(clean(profile.houseStatus, 20))) {
+    if (!houseId) {
       window.JemmoWallet?.setMembership?.(recipientUid, { hasHouse: false, houseId: '', houseName: '' });
       return { hasHouse: false, houseId: '', houseName: '', agentUid: '', recipientProfile: profile };
     }
@@ -107,7 +107,7 @@
     const member = memberSnap.data() || {};
     const house = houseSnap.data() || {};
     const active = memberSnap.exists() && !['left', 'removed'].includes(clean(member.status, 20));
-    const emitter = clean(member.housePosition, 30) === 'emitter' || clean(profile.housePosition, 30) === 'emitter' || isEmitterRole(member.accountRole || profile.role || profile.rol || profile.accountRole);
+    const emitter = clean(member.housePosition, 30) === 'emitter';
     const hasHouse = Boolean(active && emitter);
     const houseName = clean(house.name || profile.houseName || hint.houseName || 'Casa JEMMO', 80);
     const agentUid = clean(member.assignedAgentUid || profile.assignedAgentUid || house.ownerUid || house.createdBy || house.ownerId, 160);
@@ -193,6 +193,11 @@
         houseId: membership.houseId,
         houseName: membership.houseName,
         agentUid: membership.agentUid,
+        distributionModel: membership.hasHouse ? 'house-70-20-10' : 'independent-70-30',
+        emitterSharePercent: 70,
+        appSharePercent: membership.hasHouse ? 20 : 30,
+        agentSharePercent: membership.hasHouse ? 10 : 0,
+        membershipResolvedAtClient: Date.now(),
         status: split.status,
         releaseAtClient,
         createdAtClient,

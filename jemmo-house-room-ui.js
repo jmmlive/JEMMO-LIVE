@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · IDENTIDAD OFICIAL DE SALA DE CASA PRUEBA 27
+/* JEMMO LIVE V1 · IDENTIDAD Y TAREAS POR HORAS DE SALA DE CASA PRUEBA 30
    La cabecera pertenece a la Casa y usa la identidad configurada por sus responsables. */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
@@ -50,12 +50,15 @@ if(params.get('houseRoom')==='1'){
     if($('houseBattleScore'))$('houseBattleScore').textContent=`${fmt(house.battleScore)} · ${fmt(house.battleOpponentScore)}`;
   }
   function renderTask(){
+    if(window.JemmoHostTaskRewards?.getState?.().emitter)return;
     const box=$('houseTaskClock'),count=$('houseTaskCountdown'),mini=$('houseTaskProgressMini');if(!box||!count||!mini)return;
     const end=number(task.cycleEndsAtClient),active=clean(task.taskState,20)==='active'&&end>Date.now();
     box.classList.toggle('waiting',!active);
     if(!active){count.textContent=task.taskState==='expired'?'CICLO VENCIDO':'PENDIENTE';mini.textContent='Se activa al ingresar como Emisor/a';return}
-    count.textContent=duration(end-Date.now());
-    mini.textContent=`LIVE ${Math.floor(number(task.liveSeconds)/60)} min · SALA ${Math.floor(number(task.houseRoomSeconds)/60)} min`;
+    const hours=Math.max(1,number(task.dailyHours||Math.ceil(number(task.totalTargetMinutes||60)/60)));
+    const paid=Array.isArray(task.claimedHourSlots)?task.claimedHourSlots.filter(slot=>number(slot)<=hours).length:0;
+    count.textContent=`${fmt(task.hourlyRewardJems||2000)} JEMS/HORA`;
+    mini.textContent=`${paid}/${hours} horas cobradas · Nivel ${clean(task.taskTierCode||'BASE',10)}`;
   }
   async function boot(){
     try{

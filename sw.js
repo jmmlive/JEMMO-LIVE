@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · SALA DE CASA AMPLIADA, CHAT INFERIOR Y FOTO DE PERFIL PRUEBA 28 */
-const CACHE = 'jemmo-live-v1-house-room-layout-profile-28-20260726';
+/* JEMMO LIVE V1 · COBRO POR HORAS Y ESCALA MÓVIL DE SIETE DÍAS PRUEBA 30 */
+const CACHE = 'jemmo-live-v1-hourly-tasks-rolling-window-30-20260727';
 const APP_SHELL = [
   './',
   './index.html',
@@ -29,6 +29,7 @@ const APP_SHELL = [
   './jemmo-houses.js',
   './jemmo-house-operations.js',
   './jemmo-house-activity.js',
+  './jemmo-host-task-rewards.js',
   './jemmo-house-finance.js',
   './jemmo-house-room-ui.js',
   './jemmo-my-house.js',

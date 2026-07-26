@@ -6,7 +6,7 @@
   'use strict';
   if (window.JemmoWallet?.version) return;
 
-  const VERSION = '7.4.0-test';
+  const VERSION = '7.4.2-test';
   const FINANCE_KEY = 'jemmo_finance_v1';
   const CLOUD_GIFT_QUEUE_KEY = 'jemmo_cloud_gift_queue_v1';
   const STORAGE_DB = 'jemmo_live_durable_v1';
@@ -950,6 +950,11 @@
     amount = Math.max(0, Math.floor(Number(amount) || 0));
     if (!amount) return getWallet();
     const wallet = getWallet();
+    const idempotencyKey = String(meta.idempotencyKey || '').trim();
+    if (idempotencyKey) {
+      const existing = wallet.ledger.find(item => item.idempotencyKey === idempotencyKey);
+      if (existing) return wallet;
+    }
     wallet.jemsConfirmed += amount;
     wallet.jems = wallet.jemsConfirmed + wallet.jemsPending;
     wallet.earnings = wallet.jems;
@@ -959,7 +964,7 @@
       amountJems: amount, tone: 'positive'
     });
     pushLedger(wallet, meta.type || 'gift-received', meta.title || 'JEMS añadidos', {
-      amountJems: amount, detail: meta.detail || '', status: 'confirmed'
+      amountJems: amount, detail: meta.detail || '', status: 'confirmed', idempotencyKey
     });
     return saveWallet(wallet, meta.source || 'add-jems');
   }

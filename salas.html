@@ -1958,12 +1958,13 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   window.addEventListener('focus',()=>{if(roomOpen)void recoverLocalMedia(false)});
   window.addEventListener('pageshow',()=>{if(roomOpen)void recoverLocalMedia(true)});
 
-  window.JemmoHouseRoomControls={toggleSeat:toggleHouseSeat,toggleMic:toggleRoomMicro,getState:()=>({houseSeatActive:state.houseSeatActive,micEnabled:state.micEnabled,localSeat:state.localSeat})};
+  window.JemmoHouseRoomControls={toggleSeat:toggleHouseSeat,toggleMic:toggleRoomMicro,getState:()=>({houseSeatActive:state.houseSeatActive,micEnabled:state.micEnabled,localSeat:state.localSeat,sessionActive:Boolean(roomOpen&&state.realtimeSession)})};
   window.addEventListener('pagehide',()=>{void save()});
   window.addEventListener('beforeunload',stopCamera);
 })();
 </script>
 <script type="module" src="jemmo-house-room-ui.js"></script>
 <script src="jemmo-house-activity.js"></script>
+<script src="jemmo-host-task-rewards.js"></script>
 </body>
 </html>

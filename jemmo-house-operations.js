@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · TAREAS, FINANZAS E IDENTIDAD DE SALA PRUEBA 27
-   Sala oficial, tareas auditables, emisoras asignadas y reparto 70/20/10. */
+/* JEMMO LIVE V1 · TAREAS POR HORAS, FINANZAS E IDENTIDAD DE SALA PRUEBA 30
+   Escala automática, ventana móvil de 7 días y reparto 70/20/10 para Emisoras de Casa. */
 const firebaseConfig = {
   apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
   authDomain: 'jemmo-live.firebaseapp.com',
@@ -43,8 +43,9 @@ const countdown = value => { const total = Math.max(0, Math.ceil(number(value) /
 
 const DEFAULT_TASK_CONFIG = {
   enabled: true,
-  liveTargetMinutes: 60,
-  houseRoomTargetMinutes: 60,
+  totalTargetMinutes: 60,
+  liveTargetMinutes: 0,
+  houseRoomTargetMinutes: 0,
   cycleHours: 24,
   minActiveDays: 1
 };
@@ -146,17 +147,12 @@ function positionLabel(member) {
   if (position === 'agent') return 'AGENTE';
   if (member.role === 'owner') return 'PROPIETARIO';
   if (member.role === 'admin') return 'ADMINISTRADOR';
-  const profile = state.profiles.get(member.uid) || {};
-  const accountRole = normalizedAccountRole(profile.role || profile.rol || member.accountRole);
-  if (accountRole === 'emitter') return 'EMISOR/A';
-  if (accountRole === 'agent') return 'AGENTE';
   return 'MIEMBRO';
 }
 
 function isEmitter(member) {
   if (member?.uid === state.user?.uid && state.testRole) return state.testRole === 'emitter';
-  const profile = state.profiles.get(member.uid) || {};
-  return clean(member.housePosition, 30) === 'emitter' || normalizedAccountRole(profile.role || profile.rol || member.accountRole) === 'emitter';
+  return clean(member?.housePosition, 30) === 'emitter';
 }
 
 function currentTask(uid) {
@@ -165,11 +161,25 @@ function currentTask(uid) {
 }
 
 function taskStatus(task) {
-  const liveDone = minutes(task.liveSeconds) >= number(state.taskConfig.liveTargetMinutes);
-  const roomDone = minutes(task.houseRoomSeconds) >= number(state.taskConfig.houseRoomTargetMinutes);
+  const dailyHours = Math.max(1, number(task.dailyHours || Math.ceil(number(task.totalTargetMinutes || 60) / 60)));
+  const totalTargetMinutes = dailyHours * 60;
+  const totalSeconds = number(task.liveSeconds) + number(task.houseRoomSeconds);
+  const paidSlots = Array.isArray(task.claimedHourSlots) ? [...new Set(task.claimedHourSlots.map(number).filter(slot => slot >= 1 && slot <= 4))] : [];
   const end = Number(task.cycleEndsAtClient || 0);
   const active = clean(task.taskState, 20) === 'active' && end > Date.now();
-  return { liveDone, roomDone, complete: liveDone && roomDone, active, expired: Boolean(end && end <= Date.now()), remainingMs: Math.max(0, end - Date.now()) };
+  return {
+    liveDone: number(task.liveSeconds) > 0,
+    roomDone: number(task.houseRoomSeconds) > 0,
+    complete: totalSeconds >= totalTargetMinutes * 60,
+    allPaid: paidSlots.filter(slot => slot <= dailyHours).length >= dailyHours,
+    paidHours: paidSlots.filter(slot => slot <= dailyHours).length,
+    totalSeconds,
+    totalTargetMinutes,
+    dailyHours,
+    active,
+    expired: Boolean(end && end <= Date.now()),
+    remainingMs: Math.max(0, end - Date.now())
+  };
 }
 
 function memberAgentUid(member) {
@@ -369,8 +379,9 @@ function subscribeHouse(houseId) {
     state.taskConfig = {
       ...DEFAULT_TASK_CONFIG,
       ...data,
-      liveTargetMinutes: Math.max(0, Number(data.liveTargetMinutes ?? DEFAULT_TASK_CONFIG.liveTargetMinutes)),
-      houseRoomTargetMinutes: Math.max(0, Number(data.houseRoomTargetMinutes ?? DEFAULT_TASK_CONFIG.houseRoomTargetMinutes)),
+      totalTargetMinutes: Math.max(1, Number(data.totalTargetMinutes ?? DEFAULT_TASK_CONFIG.totalTargetMinutes)),
+      liveTargetMinutes: 0,
+      houseRoomTargetMinutes: 0,
       cycleHours: 24,
       minActiveDays: Math.max(1, Number(data.minActiveDays ?? 1))
     };
@@ -453,14 +464,20 @@ function renderRoom() {
 function renderOwnTasks() {
   const target = $('#houseOwnTasks');
   if (!target || !state.user) return;
+  const selfMember = state.members.find(item => item.uid === state.user.uid);
+  if (!isEmitter(selfMember)) {
+    target.innerHTML = '<div class="house-workspace-empty">Las tareas retribuidas son exclusivas de Emisoras formalmente asignadas a esta Casa. Las Emisoras independientes no tienen tareas.</div>';
+    return;
+  }
   const task = currentTask(state.user.uid), status = taskStatus(task);
-  const livePercent = progress(minutes(task.liveSeconds), state.taskConfig.liveTargetMinutes), roomPercent = progress(minutes(task.houseRoomSeconds), state.taskConfig.houseRoomTargetMinutes);
+  const totalPercent = progress(Math.floor(status.totalSeconds / 60), status.totalTargetMinutes);
   const headline = status.active ? countdown(status.remainingMs) : status.expired ? 'CICLO VENCIDO' : 'PENDIENTE DE ACTIVAR';
+  const reward = number(task.hourlyRewardJems || 2000), tier = clean(task.taskTierCode || 'BASE', 10), giftNet = number(task.giftNet7d);
   target.innerHTML = `
-    <div class="house-task-deadline ${status.active ? 'active' : ''}"><div><small>TAREA AUTOMÁTICA DE 24 HORAS</small><b data-task-countdown="${number(task.cycleEndsAtClient)}">${headline}</b><span>${status.active ? 'El contador comenzó al activarse como Emisor/a.' : 'Se activa al ingresar o ser asignado como Emisor/a.'}</span></div><em class="${status.complete ? 'done' : ''}">${status.complete ? 'OBJETIVOS COMPLETOS' : status.active ? 'EN CURSO' : 'SIN INICIAR'}</em></div>
-    <article class="house-task-progress"><div><span>🔴</span><div><b>LIVE</b><small>${formatMinutes(task.liveSeconds)} de ${formatNumber(state.taskConfig.liveTargetMinutes)} min</small></div><em>${livePercent}%</em></div><i><span style="width:${livePercent}%"></span></i><p>Cuenta únicamente mientras el LIVE permanece activo.</p></article>
-    <article class="house-task-progress"><div><span>🎙</span><div><b>SALA DE LA CASA</b><small>${formatMinutes(task.houseRoomSeconds)} de ${formatNumber(state.taskConfig.houseRoomTargetMinutes)} min</small></div><em>${roomPercent}%</em></div><i><span style="width:${roomPercent}%"></span></i><p>Solo cuenta dentro de la Sala oficial 24/7 de la Casa.</p></article>
-    <div class="house-task-review"><span>REVISIÓN DE LA CASA</span><b>${task.reviewStatus === 'approved' ? 'APROBADA' : task.reviewStatus === 'rejected' ? 'REVISAR' : 'PENDIENTE'}</b><small>Última actividad: ${escapeHtml(formatDate(task.lastActivityAt || task.lastActivityAtClient))}</small></div>`;
+    <div class="house-task-deadline ${status.active ? 'active' : ''}"><div><small>TAREA DIARIA · ${status.dailyHours} HORA${status.dailyHours===1?'':'S'}</small><b data-task-countdown="${number(task.cycleEndsAtClient)}">${headline}</b><span>Cada bloque completo de 60 minutos se cobra por separado.</span></div><em class="${status.allPaid ? 'done' : ''}">${status.allPaid ? 'TODO COBRADO' : `${status.paidHours}/${status.dailyHours} HORAS COBRADAS`}</em></div>
+    <article class="house-task-progress"><div><span>⏱</span><div><b>TIEMPO TOTAL</b><small>${formatDuration(status.totalSeconds)} de ${String(status.dailyHours).padStart(2,'0')}:00:00</small></div><em>${totalPercent}%</em></div><i><span style="width:${totalPercent}%"></span></i><p>Cuenta LIVE activo y Audio Room oficial solo mientras ocupa una silla.</p></article>
+    <div class="house-emitter-metrics four"><span><small>LIVE</small><b>${formatDuration(task.liveSeconds)}</b></span><span><small>SALA EN SILLA</small><b>${formatDuration(task.houseRoomSeconds)}</b></span><span><small>NIVEL</small><b>${escapeHtml(tier)}</b></span><span><small>PAGO POR HORA</small><b>${formatJems(reward)}</b></span></div>
+    <div class="house-task-review"><span>REGALOS NETOS · 7 DÍAS NATURALES</span><b>${formatJems(giftNet)}</b><small>Solo cuenta el 70% neto de regalos recibidos como Emisora de esta Casa. Los lotes diarios salen de la ventana al terminar su séptimo día.</small></div>`;
 }
 
 function renderEmitters() {
@@ -480,7 +497,7 @@ function renderEmitters() {
       <section class="house-agent-person"><span>${escapeHtml((selected.displayName||profile.displayName||'JM').slice(0,2).toUpperCase())}</span><div><small>EMISORA ASIGNADA</small><h3>${escapeHtml(selected.displayName||profile.displayName||'Usuario JEMMO')}</h3><p>${escapeHtml(selected.publicId||profile.publicId||'ID pendiente')} · ${positionLabel(selected)} · Agente: ${escapeHtml(memberAgentName(selected))}</p></div><em class="${status.complete?'done':''}">${status.complete?'TAREA COMPLETA':status.active?'EN CURSO':'PENDIENTE'}</em></section>
       <div class="house-agent-detail-kpis"><div><small>VALOR BRUTO</small><b>${formatJems(finance.gross)}</b></div><div><small>EMISORA · 70%</small><b>${formatJems(finance.emitter)}</b></div><div><small>JEMMO · 20%</small><b>${formatJems(finance.app)}</b></div><div><small>AGENTE/CASA · 10%</small><b>${formatJems(finance.agent)}</b></div></div>
       <div class="house-agent-confirmation"><span><small>COMISIÓN CONFIRMADA</small><b>${formatJems(finance.agentConfirmed)}</b></span><span><small>COMISIÓN PENDIENTE</small><b>${formatJems(finance.agentPending)}</b></span></div>
-      <section class="house-agent-task-detail"><div class="house-workspace-title"><h2>TAREA ACTUAL</h2><span>${status.active?`Quedan ${countdown(status.remainingMs)}`:'Sin ciclo activo'}</span></div><div class="house-emitter-metrics four"><span><small>LIVE</small><b>${formatDuration(task.liveSeconds)}</b></span><span><small>SALA OFICIAL</small><b>${formatDuration(task.houseRoomSeconds)}</b></span><span><small>OBJETIVO LIVE</small><b>${formatNumber(state.taskConfig.liveTargetMinutes)} min</b></span><span><small>OBJETIVO SALA</small><b>${formatNumber(state.taskConfig.houseRoomTargetMinutes)} min</b></span></div>${state.isAdmin?`<div class="house-emitter-actions"><button type="button" data-review-task="approved" data-task-uid="${escapeHtml(selected.uid)}">APROBAR TAREA</button><button type="button" class="secondary" data-reset-task="${escapeHtml(selected.uid)}">NUEVO CICLO 24H</button></div>`:''}</section>
+      <section class="house-agent-task-detail"><div class="house-workspace-title"><h2>TAREA ACTUAL</h2><span>${status.active?`Quedan ${countdown(status.remainingMs)}`:'Sin ciclo activo'}</span></div><div class="house-emitter-metrics four"><span><small>LIVE</small><b>${formatDuration(task.liveSeconds)}</b></span><span><small>SALA OFICIAL</small><b>${formatDuration(task.houseRoomSeconds)}</b></span><span><small>HORAS DIARIAS</small><b>${formatNumber(status.dailyHours)}</b></span><span><small>PAGO POR HORA</small><b>${formatJems(task.hourlyRewardJems||2000)}</b></span></div>${state.isAdmin?`<div class="house-emitter-actions"><button type="button" data-review-task="approved" data-task-uid="${escapeHtml(selected.uid)}">APROBAR TAREA</button><button type="button" class="secondary" data-reset-task="${escapeHtml(selected.uid)}">NUEVO CICLO 24H</button></div>`:''}</section>
       <section class="house-agent-history"><div class="house-workspace-title"><h2>MOVIMIENTOS ECONÓMICOS</h2><span>${formatNumber(movementList.length)} registros</span></div>${movementList.length?movementList.map(item=>`<article><div><b>${escapeHtml(item.giftName||'Regalo JEMMO')}</b><small>${escapeHtml(item.context||'JEMMO LIVE')} · ${escapeHtml(formatDate(item.createdAt||item.createdAtClient))}</small></div><span><b>+${formatJems(item.agentTotal)}</b><small class="${item.status==='pending'?'pending':'confirmed'}">${item.status==='pending'?'PENDIENTE':'CONFIRMADO'}</small></span></article>`).join(''):'<div class="house-workspace-empty">No hay regalos registrados para esta emisora en el periodo seleccionado.</div>'}</section>
       <section class="house-agent-history"><div class="house-workspace-title"><h2>HISTORIAL DE CICLOS</h2><span>${formatNumber(history.length)} ciclos archivados</span></div>${history.length?history.slice(0,20).map(item=>`<article><div><b>Ciclo ${formatDate(item.cycleStartedAtClient)}</b><small>${formatDuration(item.liveSeconds)} LIVE · ${formatDuration(item.houseRoomSeconds)} Sala</small></div><span><b>${item.reviewStatus==='approved'?'APROBADO':'ARCHIVADO'}</b><small>${escapeHtml(item.archiveReason||'ciclo finalizado')}</small></span></article>`).join(''):'<div class="house-workspace-empty">Todavía no hay ciclos anteriores archivados.</div>'}</section>`;
     return;
@@ -501,7 +518,7 @@ function renderEmitters() {
 function renderTaskAdmin() {
   const target = $('#houseTaskAdmin'); if (!target) return;
   target.hidden = !state.isAdmin; if (!state.isAdmin) return;
-  target.innerHTML = `<div class="house-workspace-title"><h2>CONFIGURACIÓN DE TAREAS</h2><span>Cada emisora dispone de un ciclo individual de 24 horas</span></div><form id="houseTaskConfigForm" class="house-task-config"><label>Minutos de LIVE<input name="liveTargetMinutes" type="number" min="0" max="10000" value="${number(state.taskConfig.liveTargetMinutes)}"></label><label>Minutos en Sala de Casa<input name="houseRoomTargetMinutes" type="number" min="0" max="10000" value="${number(state.taskConfig.houseRoomTargetMinutes)}"></label><label>Duración del ciclo<input value="24 horas" disabled></label><button type="submit">GUARDAR OBJETIVOS</button></form><p class="house-module-note">La tarea se activa automáticamente al ingresar o ser asignado como Emisor/a. Al vencer, el siguiente acceso a LIVE o Sala abre un nuevo ciclo y conserva un resumen del anterior. La tarea acredita actividad real, pero no concede salario automático. Las ganancias del agente proceden del 10% de regalos registrados para sus emisoras.</p>`;
+  target.innerHTML = `<div class="house-workspace-title"><h2>REGLAS AUTOMÁTICAS DE TAREAS</h2><span>Ciclo individual de 24 horas</span></div><div class="house-task-config"><label>Quién tiene tarea<input value="Solo Emisor/a formal de la Casa" disabled></label><label>Cobro<input value="Cada bloque completo de 60 minutos" disabled></label><label>Nivel<input value="70% neto de regalos · 7 días naturales" disabled></label></div><p class="house-module-note">BASE: 2.000 JEMS/h y 1 hora. Niveles I y H: 2 horas. Desde G hasta A: 3 horas. Nivel S: 4 horas. El nivel sube o baja automáticamente al entrar o salir cada lote diario de la ventana de siete días. Una Emisora independiente no tiene tarea y sus regalos se reparten 70% Emisora / 30% JEMMO LIVE.</p>`;
 }
 
 function renderAssignments() {
@@ -536,8 +553,10 @@ async function saveTaskConfig(event) {
   const data = new FormData(event.currentTarget);
   const next = {
     enabled: true,
-    liveTargetMinutes: Math.max(0, Number(data.get('liveTargetMinutes')) || 0),
-    houseRoomTargetMinutes: Math.max(0, Number(data.get('houseRoomTargetMinutes')) || 0),
+    totalTargetMinutes: Math.max(1, Number(data.get('totalTargetMinutes')) || 60),
+    liveTargetMinutes: 0,
+    houseRoomTargetMinutes: 0,
+    giftWindowDays: 7,
     minActiveDays: 1,
     cycleHours: 24,
     updatedBy: state.user.uid,
@@ -545,8 +564,8 @@ async function saveTaskConfig(event) {
   };
   try {
     await state.services.setDoc(state.services.doc(state.services.db, 'casas', state.houseId, 'configuracion', 'tareas'), next, { merge: true });
-    await writeAudit('task_config_updated', '', { liveTargetMinutes: next.liveTargetMinutes, houseRoomTargetMinutes: next.houseRoomTargetMinutes, cycleHours: 24 });
-    toast('Objetivos de tareas guardados.', 'success');
+    await writeAudit('task_config_updated', '', { totalTargetMinutes: next.totalTargetMinutes, giftWindowDays: 7, cycleHours: 24 });
+    toast('La escala de tareas es automática.', 'success');
   } catch (error) { toast('No se pudieron guardar los objetivos.', 'error'); }
 }
 

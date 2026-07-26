@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-house-room-layout-profile-28';
+  const VERSION = 'pwa-hourly-tasks-rolling-window-30';
   let installPrompt = null;
 
   const isStandalone = () =>
