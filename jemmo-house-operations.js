@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · PANEL OPERATIVO DE CASAS PRUEBA 15
+/* JEMMO LIVE V1 · PANEL OPERATIVO Y TAREAS 24H PRUEBA 16
    Sala oficial, objetivos de tareas y control de emisores/emisoras. */
 const firebaseConfig = {
   apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
@@ -36,17 +36,15 @@ const formatDate = value => {
   try { return new Intl.DateTimeFormat('es-ES', { dateStyle: 'short', timeStyle: 'short' }).format(new Date(millis)); }
   catch { return new Date(millis).toLocaleString('es-ES'); }
 };
-const cycleKey = () => {
-  const date = new Date();
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-};
+const DAY_MS = 24 * 60 * 60 * 1000;
+const countdown = value => { const total = Math.max(0, Math.ceil(number(value) / 1000)); const h = Math.floor(total / 3600), m = Math.floor(total % 3600 / 60), s = total % 60; return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; };
 
 const DEFAULT_TASK_CONFIG = {
   enabled: true,
   liveTargetMinutes: 60,
   houseRoomTargetMinutes: 60,
-  minActiveDays: 1,
-  cycleKey: cycleKey()
+  cycleHours: 24,
+  minActiveDays: 1
 };
 const DEFAULT_ROOM_CONFIG = {
   capacity: 20,
@@ -145,14 +143,15 @@ function isEmitter(member) {
 
 function currentTask(uid) {
   const task = state.tasks.get(uid) || {};
-  if (clean(task.cycleKey, 20) !== state.taskConfig.cycleKey) return { uid, cycleKey: state.taskConfig.cycleKey, liveSeconds: 0, houseRoomSeconds: 0, reviewStatus: 'pending' };
-  return task;
+  return { uid, taskState: 'waiting', liveSeconds: 0, houseRoomSeconds: 0, reviewStatus: 'pending', ...task };
 }
 
 function taskStatus(task) {
   const liveDone = minutes(task.liveSeconds) >= number(state.taskConfig.liveTargetMinutes);
   const roomDone = minutes(task.houseRoomSeconds) >= number(state.taskConfig.houseRoomTargetMinutes);
-  return { liveDone, roomDone, complete: liveDone && roomDone };
+  const end = Number(task.cycleEndsAtClient || 0);
+  const active = clean(task.taskState, 20) === 'active' && end > Date.now();
+  return { liveDone, roomDone, complete: liveDone && roomDone, active, expired: Boolean(end && end <= Date.now()), remainingMs: Math.max(0, end - Date.now()) };
 }
 
 function progress(value, target) {
@@ -216,9 +215,9 @@ function subscribeHouse(houseId) {
     state.taskConfig = {
       ...DEFAULT_TASK_CONFIG,
       ...data,
-      cycleKey: clean(data.cycleKey || cycleKey(), 20),
       liveTargetMinutes: Math.max(0, Number(data.liveTargetMinutes ?? DEFAULT_TASK_CONFIG.liveTargetMinutes)),
       houseRoomTargetMinutes: Math.max(0, Number(data.houseRoomTargetMinutes ?? DEFAULT_TASK_CONFIG.houseRoomTargetMinutes)),
+      cycleHours: 24,
       minActiveDays: Math.max(1, Number(data.minActiveDays ?? 1))
     };
     renderAll();
@@ -291,40 +290,30 @@ function renderRoom() {
 function renderOwnTasks() {
   const target = $('#houseOwnTasks');
   if (!target || !state.user) return;
-  const task = currentTask(state.user.uid);
-  const status = taskStatus(task);
-  const livePercent = progress(minutes(task.liveSeconds), state.taskConfig.liveTargetMinutes);
-  const roomPercent = progress(minutes(task.houseRoomSeconds), state.taskConfig.houseRoomTargetMinutes);
+  const task = currentTask(state.user.uid), status = taskStatus(task);
+  const livePercent = progress(minutes(task.liveSeconds), state.taskConfig.liveTargetMinutes), roomPercent = progress(minutes(task.houseRoomSeconds), state.taskConfig.houseRoomTargetMinutes);
+  const headline = status.active ? countdown(status.remainingMs) : status.expired ? 'CICLO VENCIDO' : 'PENDIENTE DE ACTIVAR';
   target.innerHTML = `
-    <div class="house-task-cycle"><span>CICLO ${escapeHtml(state.taskConfig.cycleKey)}</span><b class="${status.complete ? 'done' : ''}">${status.complete ? 'COMPLETADO' : 'EN PROGRESO'}</b></div>
-    <article class="house-task-progress"><div><span>🔴</span><div><b>LIVE</b><small>${formatMinutes(task.liveSeconds)} de ${formatNumber(state.taskConfig.liveTargetMinutes)} min</small></div><em>${livePercent}%</em></div><i><span style="width:${livePercent}%"></span></i><p>El tiempo se registra mientras el LIVE permanece activo.</p></article>
-    <article class="house-task-progress"><div><span>🎙</span><div><b>SALA DE LA CASA</b><small>${formatMinutes(task.houseRoomSeconds)} de ${formatNumber(state.taskConfig.houseRoomTargetMinutes)} min</small></div><em>${roomPercent}%</em></div><i><span style="width:${roomPercent}%"></span></i><p>Solo cuenta el tiempo realizado dentro de la Audio Room oficial de tu Casa.</p></article>
+    <div class="house-task-deadline ${status.active ? 'active' : ''}"><div><small>TAREA AUTOMÁTICA DE 24 HORAS</small><b data-task-countdown="${number(task.cycleEndsAtClient)}">${headline}</b><span>${status.active ? 'El contador comenzó al activarse como Emisor/a.' : 'Se activa al ingresar o ser asignado como Emisor/a.'}</span></div><em class="${status.complete ? 'done' : ''}">${status.complete ? 'OBJETIVOS COMPLETOS' : status.active ? 'EN CURSO' : 'SIN INICIAR'}</em></div>
+    <article class="house-task-progress"><div><span>🔴</span><div><b>LIVE</b><small>${formatMinutes(task.liveSeconds)} de ${formatNumber(state.taskConfig.liveTargetMinutes)} min</small></div><em>${livePercent}%</em></div><i><span style="width:${livePercent}%"></span></i><p>Cuenta únicamente mientras el LIVE permanece activo.</p></article>
+    <article class="house-task-progress"><div><span>🎙</span><div><b>SALA DE LA CASA</b><small>${formatMinutes(task.houseRoomSeconds)} de ${formatNumber(state.taskConfig.houseRoomTargetMinutes)} min</small></div><em>${roomPercent}%</em></div><i><span style="width:${roomPercent}%"></span></i><p>Solo cuenta dentro de la Sala oficial 24/7 de la Casa.</p></article>
     <div class="house-task-review"><span>REVISIÓN DE LA CASA</span><b>${task.reviewStatus === 'approved' ? 'APROBADA' : task.reviewStatus === 'rejected' ? 'REVISAR' : 'PENDIENTE'}</b><small>Última actividad: ${escapeHtml(formatDate(task.lastActivityAt || task.lastActivityAtClient))}</small></div>`;
 }
 
 function renderEmitters() {
-  const target = $('#houseEmittersDashboard');
-  if (!target) return;
-  const emitters = state.members.filter(isEmitter);
-  const completed = emitters.filter(member => taskStatus(currentTask(member.uid)).complete).length;
-  const totalLive = emitters.reduce((sum, member) => sum + minutes(currentTask(member.uid).liveSeconds), 0);
-  const totalRoom = emitters.reduce((sum, member) => sum + minutes(currentTask(member.uid).houseRoomSeconds), 0);
-  target.innerHTML = `
-    <div class="house-emitter-kpis"><div><b>${formatNumber(emitters.length)}</b><small>EMISORES/AS</small></div><div><b>${formatNumber(completed)}</b><small>TAREA COMPLETA</small></div><div><b>${formatNumber(totalLive)}</b><small>MIN LIVE</small></div><div><b>${formatNumber(totalRoom)}</b><small>MIN SALA</small></div></div>
-    <div class="house-emitter-list">${emitters.length ? emitters.map(member => {
-      const task = currentTask(member.uid);
-      const status = taskStatus(task);
-      const profile = state.profiles.get(member.uid) || {};
-      return `<article class="house-emitter-row"><div class="house-emitter-head"><span>${escapeHtml((member.displayName || profile.displayName || 'JM').slice(0, 2).toUpperCase())}</span><div><b>${escapeHtml(member.displayName || profile.displayName || 'Usuario JEMMO')}</b><small>${escapeHtml(member.publicId || profile.publicId || 'ID pendiente')} · ${positionLabel(member)}</small></div><em class="${status.complete ? 'done' : ''}">${status.complete ? 'COMPLETA' : 'PENDIENTE'}</em></div><div class="house-emitter-metrics"><span><small>LIVE</small><b>${formatMinutes(task.liveSeconds)}</b></span><span><small>SALA CASA</small><b>${formatMinutes(task.houseRoomSeconds)}</b></span><span><small>REVISIÓN</small><b>${task.reviewStatus === 'approved' ? 'APROBADA' : 'PENDIENTE'}</b></span></div>${state.isAdmin ? `<div class="house-emitter-actions"><button type="button" data-review-task="approved" data-task-uid="${escapeHtml(member.uid)}">APROBAR</button><button type="button" class="secondary" data-review-task="pending" data-task-uid="${escapeHtml(member.uid)}">REABRIR</button></div>` : ''}</article>`;
-    }).join('') : '<div class="house-workspace-empty">Todavía no hay emisores o emisoras asignados a esta Casa. Desde Administración puedes marcar a un miembro como EMISOR/A.</div>'}</div>`;
+  const target = $('#houseEmittersDashboard'); if (!target) return;
+  const emitters = state.members.filter(isEmitter), completed = emitters.filter(member => taskStatus(currentTask(member.uid)).complete).length;
+  const totalLive = emitters.reduce((sum, member) => sum + minutes(currentTask(member.uid).liveSeconds), 0), totalRoom = emitters.reduce((sum, member) => sum + minutes(currentTask(member.uid).houseRoomSeconds), 0);
+  target.innerHTML = `<div class="house-emitter-kpis"><div><b>${formatNumber(emitters.length)}</b><small>EMISORES/AS</small></div><div><b>${formatNumber(completed)}</b><small>TAREA COMPLETA</small></div><div><b>${formatNumber(totalLive)}</b><small>MIN LIVE</small></div><div><b>${formatNumber(totalRoom)}</b><small>MIN SALA</small></div></div><div class="house-emitter-list">${emitters.length ? emitters.map(member => {
+    const task=currentTask(member.uid),status=taskStatus(task),profile=state.profiles.get(member.uid)||{},time=status.active?countdown(status.remainingMs):status.expired?'VENCIDA':'SIN ACTIVAR';
+    return `<article class="house-emitter-row"><div class="house-emitter-head"><span>${escapeHtml((member.displayName||profile.displayName||'JM').slice(0,2).toUpperCase())}</span><div><b>${escapeHtml(member.displayName||profile.displayName||'Usuario JEMMO')}</b><small>${escapeHtml(member.publicId||profile.publicId||'ID pendiente')} · ${positionLabel(member)}</small></div><em class="${status.complete?'done':''}">${status.complete?'COMPLETA':status.active?'EN CURSO':'PENDIENTE'}</em></div><div class="house-emitter-metrics four"><span><small>LIVE</small><b>${formatMinutes(task.liveSeconds)}</b></span><span><small>SALA CASA</small><b>${formatMinutes(task.houseRoomSeconds)}</b></span><span><small>QUEDA</small><b data-task-countdown="${number(task.cycleEndsAtClient)}">${time}</b></span><span><small>REVISIÓN</small><b>${task.reviewStatus==='approved'?'APROBADA':'PENDIENTE'}</b></span></div>${state.isAdmin?`<div class="house-emitter-actions"><button type="button" data-review-task="approved" data-task-uid="${escapeHtml(member.uid)}">APROBAR</button><button type="button" class="secondary" data-reset-task="${escapeHtml(member.uid)}">NUEVO CICLO 24H</button></div>`:''}</article>`;
+  }).join(''):'<div class="house-workspace-empty">Todavía no hay emisores o emisoras asignados. Al marcar a un miembro como EMISOR/A se activará automáticamente su tarea de 24 horas.</div>'}</div>`;
 }
 
 function renderTaskAdmin() {
-  const target = $('#houseTaskAdmin');
-  if (!target) return;
-  target.hidden = !state.isAdmin;
-  if (!state.isAdmin) return;
-  target.innerHTML = `<div class="house-workspace-title"><h2>CONFIGURACIÓN DE TAREAS</h2><span>Objetivos del ciclo</span></div><form id="houseTaskConfigForm" class="house-task-config"><label>Minutos de LIVE<input name="liveTargetMinutes" type="number" min="0" max="10000" value="${number(state.taskConfig.liveTargetMinutes)}"></label><label>Minutos en Sala de Casa<input name="houseRoomTargetMinutes" type="number" min="0" max="10000" value="${number(state.taskConfig.houseRoomTargetMinutes)}"></label><label>Ciclo<input name="cycleKey" maxlength="20" value="${escapeHtml(state.taskConfig.cycleKey)}"></label><button type="submit">GUARDAR OBJETIVOS</button></form><p class="house-module-note">Estos datos sirven para seguimiento y revisión. No generan pagos automáticos ni JEMS sin aprobación del sistema económico.</p>`;
+  const target = $('#houseTaskAdmin'); if (!target) return;
+  target.hidden = !state.isAdmin; if (!state.isAdmin) return;
+  target.innerHTML = `<div class="house-workspace-title"><h2>CONFIGURACIÓN DE TAREAS</h2><span>Cada emisora dispone de un ciclo individual de 24 horas</span></div><form id="houseTaskConfigForm" class="house-task-config"><label>Minutos de LIVE<input name="liveTargetMinutes" type="number" min="0" max="10000" value="${number(state.taskConfig.liveTargetMinutes)}"></label><label>Minutos en Sala de Casa<input name="houseRoomTargetMinutes" type="number" min="0" max="10000" value="${number(state.taskConfig.houseRoomTargetMinutes)}"></label><label>Duración del ciclo<input value="24 horas" disabled></label><button type="submit">GUARDAR OBJETIVOS</button></form><p class="house-module-note">La tarea se activa automáticamente al ingresar o ser asignado como Emisor/a. Al vencer, el siguiente acceso a LIVE o Sala abre un nuevo ciclo y conserva un resumen del anterior. No genera JEMS ni pagos automáticos.</p>`;
 }
 
 function renderAssignments() {
@@ -359,7 +348,7 @@ async function saveTaskConfig(event) {
     liveTargetMinutes: Math.max(0, Number(data.get('liveTargetMinutes')) || 0),
     houseRoomTargetMinutes: Math.max(0, Number(data.get('houseRoomTargetMinutes')) || 0),
     minActiveDays: 1,
-    cycleKey: clean(data.get('cycleKey') || cycleKey(), 20),
+    cycleHours: 24,
     updatedBy: state.user.uid,
     updatedAt: state.services.serverTimestamp()
   };
@@ -391,7 +380,6 @@ async function reviewTask(uid, status) {
   try {
     await state.services.setDoc(state.services.doc(state.services.db, 'casas', state.houseId, 'tareas', uid), {
       uid,
-      cycleKey: state.taskConfig.cycleKey,
       reviewStatus: status,
       reviewedBy: state.user.uid,
       reviewedByName: clean(state.profile.displayName || state.user.displayName || 'Administración', 48),
@@ -402,6 +390,31 @@ async function reviewTask(uid, status) {
   } catch { toast('No se pudo actualizar la revisión.', 'error'); }
 }
 
+function newTaskCycle(uid, reason, current = {}) {
+  const now = Date.now();
+  return { uid, taskState: 'active', cycleDurationHours: 24, cycleStartedAtClient: now, cycleEndsAtClient: now + DAY_MS, cycleKey: `24h-${now}`, cycleNumber: Math.max(1, Number(current.cycleNumber || 0) + 1), liveSeconds: 0, houseRoomSeconds: 0, reviewStatus: 'pending', activatedReason: reason, activatedAtClient: Number(current.activatedAtClient || now), updatedAt: state.services.serverTimestamp() };
+}
+
+async function activateTask(uid, reason = 'emitter_assigned', force = false) {
+  if (!state.services || !state.houseId || !uid) return;
+  const s = state.services, ref = s.doc(s.db, 'casas', state.houseId, 'tareas', uid), now = Date.now();
+  await s.runTransaction(s.db, async transaction => {
+    const snapshot = await transaction.get(ref), current = snapshot.data() || {}, active = clean(current.taskState, 20) === 'active' && Number(current.cycleEndsAtClient || 0) > now;
+    if (active && !force) return;
+    if (Number(current.cycleStartedAtClient || 0)) {
+      const history = s.doc(s.db, 'casas', state.houseId, 'historialTareas', `${uid}_${Number(current.cycleStartedAtClient)}`);
+      transaction.set(history, { ...current, uid, houseId: state.houseId, archivedAtClient: now, archivedAt: s.serverTimestamp(), archiveReason: force ? 'manual_reset' : 'automatic_rollover' }, { merge: true });
+    }
+    transaction.set(ref, newTaskCycle(uid, reason, current), { merge: true });
+  });
+}
+
+async function resetTask(uid) {
+  if (!state.isAdmin || !uid) return;
+  try { await activateTask(uid, 'admin_manual_24h_reset', true); toast('Nuevo ciclo de 24 horas activado.', 'success'); }
+  catch { toast('No se pudo reiniciar la tarea.', 'error'); }
+}
+
 async function changePosition(uid, position) {
   if (!state.isAdmin || !uid) return;
   try {
@@ -410,7 +423,9 @@ async function changePosition(uid, position) {
       s.setDoc(s.doc(s.db, 'casas', state.houseId, 'miembros', uid), { housePosition: position, updatedAt: s.serverTimestamp() }, { merge: true }),
       s.setDoc(s.doc(s.db, 'users', uid), { housePosition: position, houseUpdatedAt: s.serverTimestamp() }, { merge: true })
     ]);
-    toast('Función interna actualizada.', 'success');
+    if (position === 'emitter') await activateTask(uid, 'emitter_assigned');
+    else await s.setDoc(s.doc(s.db, 'casas', state.houseId, 'tareas', uid), { taskState: 'paused', pausedReason: 'house_position_changed', pausedAt: s.serverTimestamp(), updatedAt: s.serverTimestamp() }, { merge: true });
+    toast(position === 'emitter' ? 'Función Emisor/a asignada y tarea de 24 horas activada.' : 'Función interna actualizada.', 'success');
   } catch { toast('No se pudo cambiar la función.', 'error'); }
 }
 
@@ -422,6 +437,8 @@ function bind() {
   document.addEventListener('click', event => {
     const review = event.target.closest('[data-review-task]');
     if (review) { review.disabled = true; void reviewTask(review.dataset.taskUid, review.dataset.reviewTask).finally(() => { review.disabled = false; }); return; }
+    const reset = event.target.closest('[data-reset-task]');
+    if (reset) { reset.disabled = true; void resetTask(reset.dataset.resetTask).finally(() => { reset.disabled = false; }); return; }
   });
   document.addEventListener('change', event => {
     const select = event.target.closest('[data-house-position]');
@@ -451,13 +468,14 @@ async function boot() {
     } catch {}
     refreshAuthority();
     bind();
-    window.addEventListener('jemmo-test-role-change', () => { refreshAuthority(); renderAll(); });
+    window.addEventListener('jemmo-test-role-change', event => { refreshAuthority(); renderAll(); if (event.detail?.mode === 'emitter') void activateTask(state.user.uid, 'owner_role_lab'); });
     const workspace = $('#houseWorkspace');
     new MutationObserver(() => void attachCurrentWorkspace()).observe(workspace, { attributes: true, attributeFilter: ['hidden', 'data-house-id'] });
     document.addEventListener('click', event => {
       if (event.target.closest('[data-open-my-house],[data-workspace-tab],[data-house-action]')) setTimeout(() => void attachCurrentWorkspace(), 40);
     });
     await attachCurrentWorkspace();
+    setInterval(() => { document.querySelectorAll('[data-task-countdown]').forEach(element => { const end = Number(element.dataset.taskCountdown || 0); if (end > Date.now()) element.textContent = countdown(end - Date.now()); }); }, 1000);
   } catch (error) {
     console.warn('JEMMO Casa operaciones:', error?.message || error);
   }

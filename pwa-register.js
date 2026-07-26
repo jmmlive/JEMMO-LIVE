@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-house-room-24x7-role-lab-15';
+  const VERSION = 'pwa-house-room-mobile-tasks-24h-16';
   let installPrompt = null;
 
   const isStandalone = () =>

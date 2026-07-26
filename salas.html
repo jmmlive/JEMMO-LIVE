@@ -9,7 +9,7 @@
   <link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="favicon-64.png">
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <title>JEMMO LIVE · SALAS · CONEXIÓN BIDIRECCIONAL 10</title>
+  <title>JEMMO LIVE · SALA DE CASA MÓVIL · PRUEBA 16</title>
   <style>html.jemmo-auth-pending body{visibility:hidden}</style>
   <style>
     :root{
@@ -144,6 +144,48 @@
     .jr-setting.active{border-color:var(--gold);background:#332009}.jr-setting.active small{color:#ffe49b}
     .jr-gifts-grid{max-height:205px;overflow:auto;padding-right:2px;grid-template-columns:repeat(4,1fr)}
     .jr-gift{min-height:70px;border-radius:13px;padding:5px}.jr-gift span{font-size:22px}.jr-gift b{font-size:8px;line-height:1.05}.jr-gift small{font-size:7px}
+
+    /* PRUEBA 16 · SALA DE CASA MÓVIL PRIORITARIA */
+    body.jemmo-house-room{overflow:hidden;background:#050007}
+    body.jemmo-house-room .jr-app{width:100%;max-width:520px;height:100svh;min-height:100svh}
+    body.jemmo-house-room .jr-room{height:100svh;min-height:520px;grid-template-rows:auto auto auto minmax(0,1fr) auto;overflow:hidden}
+    body.jemmo-house-room .jr-room-head{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:8px;padding:calc(7px + var(--safe-top)) 9px 6px;background:linear-gradient(180deg,#18031fd9,#09000ff2);border-bottom:0}
+    body.jemmo-house-room .jr-room-avatar{width:44px;height:44px}
+    body.jemmo-house-room .jr-room-meta small{font-size:8px;letter-spacing:.06em}
+    body.jemmo-house-room .jr-room-meta strong{font-size:14px;line-height:1.12;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    body.jemmo-house-room .jr-room-meta span{font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    body.jemmo-house-room .jr-live-chip{grid-column:3;grid-row:1;align-self:center;min-height:32px;max-width:72px;padding:5px 7px;font-size:7px;overflow:hidden;text-overflow:ellipsis}
+    body.jemmo-house-room .jr-close{grid-column:3;grid-row:1;width:34px;height:34px;justify-self:end;border-radius:12px;font-size:24px}
+    body.jemmo-house-room .jr-live-chip{margin-right:40px}
+    .jr-house-info{display:none}
+    body.jemmo-house-room .jr-house-info{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;padding:7px 9px;border-top:1px solid #5e2370;border-bottom:1px solid #5e2370;background:radial-gradient(circle at 90% 0,#ffd24d20,transparent 42%),linear-gradient(90deg,#19041f,#0b0110)}
+    .jr-house-summary{min-width:0;display:grid;gap:4px}.jr-house-summary-line{display:flex;align-items:center;gap:5px;min-width:0;overflow:hidden}.jr-house-summary-line b{font-size:9px;white-space:nowrap}.jr-house-summary-line small{font-size:7px;color:#bdaec3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.jr-house-medals{display:flex;align-items:center;gap:3px}.jr-house-medal{display:grid;place-items:center;min-width:21px;height:21px;padding:0 4px;border:1px solid #b57b27;border-radius:999px;background:#342007;color:#ffe18a;font-size:9px;font-weight:1000}.jr-house-medal.empty{border-color:#5e4266;background:#1a0a20;color:#a894ad}.jr-house-numbers{display:flex;gap:5px;overflow:hidden}.jr-house-numbers span{min-width:0;padding:4px 6px;border:1px solid #4d2059;border-radius:9px;background:#100315;color:#d7c8dc;font-size:6.5px;white-space:nowrap}.jr-house-numbers b{color:#fff;font-size:7px}
+    .jr-task-clock{min-width:104px;padding:6px 7px;border:1px solid #70501d;border-radius:12px;background:linear-gradient(145deg,#2d1c05,#24072e);text-align:center}.jr-task-clock small,.jr-task-clock b,.jr-task-clock span{display:block}.jr-task-clock small{color:#d7bd83;font-size:6px;font-weight:1000}.jr-task-clock b{margin-top:3px;color:#ffe16e;font-size:13px;letter-spacing:.04em}.jr-task-clock span{margin-top:2px;color:#c9b9cf;font-size:6px}.jr-task-clock.waiting{border-color:#5b2a6d;background:#16031e}.jr-task-clock.waiting b{color:#d1a7dc;font-size:8px}
+    .jr-house-battle{display:none}.jr-house-battle.active{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:7px;padding:6px 9px;border-bottom:1px solid #df4e81;background:linear-gradient(90deg,#55112d,#260420);box-shadow:0 6px 18px #0008}.jr-house-battle>span{font-size:18px}.jr-house-battle div{min-width:0}.jr-house-battle small,.jr-house-battle b{display:block}.jr-house-battle small{color:#ffb4cf;font-size:6px;font-weight:1000}.jr-house-battle b{font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.jr-house-battle em{font-style:normal;color:#ffe071;font-size:9px;font-weight:1000}
+    body.jemmo-house-room .jr-stage{overflow:hidden}
+    body.jemmo-house-room .jr-stage::before{background-size:min(60vw,250px);opacity:.07}
+    body.jemmo-house-room .jr-seats-wrap{height:100%;padding:5px 6px 88px;overflow:hidden}
+    body.jemmo-house-room .jr-seats{grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-template-rows:repeat(5,minmax(0,1fr))!important;gap:4px!important;min-width:0}
+    body.jemmo-house-room .jr-seat.audio{width:100%;height:100%;min-width:0;min-height:0;max-height:none;aspect-ratio:auto;border-radius:15px;padding:3px 2px;border-width:1px}
+    body.jemmo-house-room .jr-seat::before{inset:12%;background-size:58%;opacity:.22}
+    body.jemmo-house-room .jr-seat-avatar{width:clamp(24px,7.8vw,34px);height:clamp(24px,7.8vw,34px);font-size:13px}
+    body.jemmo-house-room .jr-seat b{max-width:94%;margin-top:2px;font-size:clamp(6.5px,1.9vw,8.5px)}
+    body.jemmo-house-room .jr-seat small{max-width:94%;margin-top:1px;font-size:clamp(5px,1.45vw,6.5px)}
+    body.jemmo-house-room .jr-number{right:2px;bottom:2px;min-width:17px;height:17px;padding:0 3px;font-size:6px}
+    body.jemmo-house-room .jr-mic{left:3px;bottom:3px;font-size:8px}
+    body.jemmo-house-room .jr-status-dot{right:4px;top:4px;width:8px;height:8px}
+    body.jemmo-house-room .jr-seat.local-muted{border-color:#e16483;box-shadow:inset 0 0 12px #e1648330}.jr-seat.local-muted .jr-seat-avatar{filter:grayscale(.75);opacity:.68}
+    body.jemmo-house-room .jr-chat{height:82px;padding:14px 8px 4px}.jemmo-house-room .jr-chat-line{max-width:94%;margin-top:3px;padding:5px 7px;border-radius:10px;font-size:9px}
+    body.jemmo-house-room .jr-controls{grid-template-columns:43px 43px minmax(0,1fr) 47px;gap:5px;padding:5px 6px calc(6px + var(--safe-bottom))}
+    body.jemmo-house-room .jr-control-btn{height:45px;border-radius:14px;font-size:18px}
+    .jr-house-control{display:none}.jr-house-control small{display:block;margin-top:1px;font-size:5px;font-weight:1000;letter-spacing:.03em}
+    body.jemmo-house-room .jr-house-control{display:grid}
+    body.jemmo-house-room #settingsButton{display:none}
+    body.jemmo-house-room .jr-house-seat{grid-column:1}.jemmo-house-room .jr-house-mic{grid-column:2}.jemmo-house-room .jr-compose{grid-column:3;grid-row:1;height:45px;grid-template-columns:minmax(0,1fr) 42px;border-radius:14px}.jemmo-house-room .jr-compose input{padding:0 9px;font-size:10px}.jemmo-house-room .jr-send{font-size:20px}.jemmo-house-room .jr-control-btn.gifts{grid-column:4;height:45px}
+    body.jemmo-house-room .jr-sheet{max-height:65svh}
+    @media(min-width:431px){body.jemmo-house-room .jr-seats{grid-template-columns:repeat(5,minmax(0,1fr))!important;grid-template-rows:repeat(4,minmax(0,1fr))!important}body.jemmo-house-room .jr-seat-avatar{width:34px;height:34px}}
+    @media(max-width:350px){body.jemmo-house-room .jr-room-head{grid-template-columns:39px minmax(0,1fr) auto;padding-left:6px;padding-right:6px}.jr-house-info{padding-left:6px!important;padding-right:6px!important}.jr-task-clock{min-width:94px}.jr-house-numbers span:nth-child(3){display:none}body.jemmo-house-room .jr-seats-wrap{padding-left:4px;padding-right:4px}.jemmo-house-room .jr-controls{grid-template-columns:40px 40px minmax(0,1fr) 43px;padding-left:4px;padding-right:4px}}
+
 </style>
 </head>
 <body data-jemmo-wallet-native-gifts="true">
@@ -220,6 +262,16 @@
       <button class="jr-btn jr-live-chip" id="roomConnectionButton" type="button">INVITAR A RUTH</button>
       <button class="jr-btn jr-close" id="leaveRoom" type="button" aria-label="Salir">×</button>
     </header>
+    <section class="jr-house-info" id="houseRoomInfo" aria-label="Datos de la Casa">
+      <div class="jr-house-summary">
+        <div class="jr-house-summary-line"><div class="jr-house-medals" id="houseRoomMedals"><span class="jr-house-medal empty">—</span></div><small id="houseRoomCreated">Cargando datos reales de la Casa…</small></div>
+        <div class="jr-house-numbers"><span>MIEMBROS <b id="houseRoomMembers">—</b></span><span>PUNTOS <b id="houseRoomPoints">—</b></span><span>RANGO <b id="houseRoomRank">—</b></span></div>
+      </div>
+      <div class="jr-task-clock waiting" id="houseTaskClock"><small>TAREA DE EMISOR/A</small><b id="houseTaskCountdown">PENDIENTE</b><span id="houseTaskProgressMini">Se activa al ingresar como Emisor/a</span></div>
+    </section>
+    <section class="jr-house-battle" id="houseBattleStrip" aria-live="polite">
+      <span>⚔️</span><div><small>BATALLA DE LA CASA</small><b id="houseBattleOpponent">Batalla activa</b></div><em id="houseBattleScore">0 · 0</em>
+    </section>
 
     <main class="jr-stage">
       <button class="jr-btn jr-audio-unlock jr-hidden" id="audioUnlockButton" type="button">🔊 TOCA PARA ESCUCHAR</button>
@@ -231,6 +283,8 @@
 
     <footer class="jr-controls">
       <button class="jr-btn jr-control-btn settings" id="settingsButton" type="button" aria-label="Ajustes">⚙️</button>
+      <button class="jr-btn jr-control-btn jr-house-control jr-house-seat" id="houseSeatButton" type="button" aria-label="Subir o bajar de la silla">🪑<small>BAJAR</small></button>
+      <button class="jr-btn jr-control-btn jr-house-control jr-house-mic" id="houseMicButton" type="button" aria-label="Activar o silenciar micrófono">🎙<small>MICRO</small></button>
       <form class="jr-compose" id="chatForm"><input id="chatInput" maxlength="160" autocomplete="off" placeholder="Escribe un mensaje…" aria-label="Mensaje"><button class="jr-send" id="chatSend" type="submit" aria-label="Enviar">➤</button></form>
       <button class="jr-btn jr-control-btn gifts" id="giftsButton" type="button" aria-label="Regalos">🎁</button>
     </footer>
@@ -332,7 +386,8 @@
     micEnabled:true,
     remoteAudioBlocked:false,
     remoteAudioPlaying:false,
-    chatSending:false
+    chatSending:false,
+    houseSeatActive:true
   };
   let toastTimer=0;
   let saveTimer=0;
@@ -417,7 +472,10 @@
     $('roomDescription').value=String(description).slice(0,180);
     if(!state.cover){state.cover='jemmo-fish-nav.webp';$('coverPreview').src=state.cover;$('roomAvatar').src=state.cover}
     $('roomModeLabel').textContent='AUDIO ROOM DE LA CASA';
-    $('roomConnectionButton').textContent='SALA DE CASA · SOLO AUDIO';
+    document.body.classList.add('jemmo-house-room');
+    $('roomConnectionButton').textContent='AUDIO';
+    $('roomConnectionButton').setAttribute('aria-label','Estado de conexión de audio');
+    syncHouseDirectControls();
     const closeSetting=document.querySelector('[data-action="close"] b');if(closeSetting)closeSetting.innerHTML='Salir de la Sala de Casa<small>La sala 24/7 seguirá disponible</small>';
   }
 
@@ -474,8 +532,10 @@
     const guestPerson=state.isGuest
       ? {name:state.ownName||'Ruth',role:'Invitada',photo:state.ownPhoto||'ruth-avatar-test.jpg',host:false,local:true}
       : {name:state.remoteName||'Ruth',role:state.remoteConnected?'Conectada en tiempo real':'Esperando invitación',photo:state.remotePhoto||'ruth-avatar-test.jpg',host:false,remote:true};
-    state.occupants.set(1,hostPerson);
-    if(state.count>=2&&(!houseContext.enabled||state.isGuest||state.remoteConnected))state.occupants.set(2,guestPerson);
+    if(!houseContext.enabled||!hostPerson.local||state.houseSeatActive)state.occupants.set(1,hostPerson);
+    if(state.count>=2&&(!houseContext.enabled||state.isGuest||state.remoteConnected)){
+      if(!houseContext.enabled||!guestPerson.local||state.houseSeatActive)state.occupants.set(2,guestPerson);
+    }
     const demo=[
       {name:'Invitada 3',role:'En silla',photo:'jemmo-fish-nav.webp',host:false},
       {name:'Invitado 4',role:'En silla',photo:'jemmo-fish-nav.webp',host:false},
@@ -505,9 +565,10 @@
         <span class="jr-mic">${state.remoteConnected?'🎥':'⌛'}</span><span class="jr-number">${index}</span>${giftBadge(index)}`;
     }
     if(person){
+      const audioIcon=person.local?(state.micEnabled?'🎙':'🔇'):(person.mutedByMe?'🔇':person.remote&&!state.remoteConnected?'⌛':person.host?'🎙':'🔊');
       return `<span class="jr-seat-avatar"><img src="${person.photo}" alt=""></span>
-        <b>${person.name}</b><small>${person.role}</small>
-        <span class="jr-mic">${person.remote&&!state.remoteConnected?'⌛':person.host?'🎙':'🔊'}</span><span class="jr-number">${index}</span>${giftBadge(index)}`;
+        <b>${person.name}</b><small>${person.local&&!state.micEnabled?'Micrófono silenciado':person.mutedByMe?'Audio silenciado en este móvil':person.role}</small>
+        <span class="jr-mic">${audioIcon}</span><span class="jr-number">${index}</span>${giftBadge(index)}`;
     }
     return `<span class="jr-seat-avatar">+</span><b>Silla libre</b><small>Toca para subir</small><span class="jr-mic">＋</span><span class="jr-number">${index}</span>`;
   }
@@ -584,6 +645,52 @@
     }
   }
 
+  function syncHouseDirectControls(){
+    if(!houseContext.enabled)return;
+    const seatButton=$('houseSeatButton'),micButton=$('houseMicButton');
+    if(seatButton){seatButton.innerHTML=`${state.houseSeatActive?'⬇️':'⬆️'}<small>${state.houseSeatActive?'BAJAR':'SUBIR'}</small>`;seatButton.classList.toggle('active',state.houseSeatActive)}
+    if(micButton){micButton.innerHTML=`${state.micEnabled?'🎙':'🔇'}<small>${state.micEnabled?'MICRO':'MUDO'}</small>`;micButton.classList.toggle('active',state.micEnabled);micButton.disabled=!state.houseSeatActive}
+  }
+
+  function localHousePerson(){
+    return {name:state.ownName||'Usuario JEMMO',role:state.isGuest?'Emisor/a':'Agente de Casa',photo:state.ownPhoto||state.cover||'jemmo-fish-nav.webp',host:!state.isGuest,local:true};
+  }
+
+  function toggleHouseMicro(force){
+    if(!houseContext.enabled||!state.houseSeatActive)return;
+    state.micEnabled=typeof force==='boolean'?force:!state.micEnabled;
+    state.stream?.getAudioTracks?.().forEach(track=>{track.enabled=state.micEnabled});
+    syncHouseDirectControls();renderSeats();
+    toast(state.micEnabled?'Micrófono activado.':'Micrófono silenciado.');
+  }
+
+  function toggleHouseSeat(){
+    if(!houseContext.enabled)return;
+    if(state.houseSeatActive){
+      [...state.occupants.entries()].forEach(([index,person])=>{if(person?.local)state.occupants.delete(index)});
+      state.houseSeatActive=false;state.micEnabled=false;
+      state.stream?.getAudioTracks?.().forEach(track=>{track.enabled=false});
+      toast('Has bajado de la silla. Sigues dentro de la Sala de Casa.');
+    }else{
+      const preferred=state.isGuest?2:1;
+      const index=!state.occupants.has(preferred)?preferred:[...Array(state.count)].map((_,i)=>i+1).find(i=>!state.occupants.has(i));
+      if(!index){toast('No hay sillas libres en este momento.');return}
+      state.houseSeatActive=true;state.micEnabled=true;state.localSeat=index;
+      state.occupants.set(index,localHousePerson());
+      state.stream?.getAudioTracks?.().forEach(track=>{track.enabled=true});
+      toast(`Has subido a la silla ${index}.`);
+    }
+    syncHouseDirectControls();renderSeats();renderGiftRecipients();
+  }
+
+  function togglePersonAudio(person){
+    if(!person||person.local)return toggleHouseMicro();
+    person.mutedByMe=!person.mutedByMe;
+    if(person.remote&&$('remoteRoomAudio'))$('remoteRoomAudio').muted=Boolean(person.mutedByMe);
+    renderSeats();
+    toast(person.mutedByMe?'Audio silenciado en este móvil.':'Audio recuperado en este móvil.');
+  }
+
   function renderSeats(){
     const grid=$('seatsGrid');
     grid.innerHTML='';
@@ -594,14 +701,14 @@
       const person=occupantFor(i);
       const seat=document.createElement('button');
       seat.type='button';
-      seat.className=`jr-btn jr-seat ${state.mode} ${person?.host?'host':''} ${person&&!person.host?'hot':''} ${person?.remote&&!state.remoteConnected?'remote-waiting':''} ${person?.remote&&state.remoteConnected?'remote-connected':''}`;
+      seat.className=`jr-btn jr-seat ${state.mode} ${person?.host?'host':''} ${person&&!person.host?'hot':''} ${person?.remote&&!state.remoteConnected?'remote-waiting':''} ${person?.remote&&state.remoteConnected?'remote-connected':''} ${person?.local&&!state.micEnabled?'local-muted':''} ${person?.mutedByMe?'local-muted':''}`;
       seat.dataset.seat=String(i);
       seat.innerHTML=seatMarkup(i,person);
       seat.addEventListener('click',()=>{
         if(houseContext.enabled){
-          if(person?.local&&!person.host)toast('Para bajar de la silla, sal de la Sala de Casa. La sala seguirá abierta 24/7.');
-          else if(person)toast('Esta silla está ocupada por una persona conectada.');
-          else toast('La silla se ocupará cuando entre una emisora real. No se añaden personas ficticias.');
+          if(person){togglePersonAudio(person);return}
+          if(!state.houseSeatActive){toggleHouseSeat();return}
+          toast('Ya estás en una silla. Las sillas libres se ocupan cuando entra otra persona real.');
           return;
         }
         if(i===1){toast('Esta es la silla del anfitrión.');return}
@@ -1144,6 +1251,8 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   $('leaveRoom').addEventListener('click',()=>leaveRoom(true));
   $('helpButton').addEventListener('click',()=>toast('Completa los datos, entra y pulsa INVITAR A RUTH para probar audio o cámara en dos móviles.'));
   $('settingsButton').addEventListener('click',()=>openSheet('settingsSheet'));
+  $('houseSeatButton').addEventListener('click',toggleHouseSeat);
+  $('houseMicButton').addEventListener('click',()=>toggleHouseMicro());
   $('giftsButton').addEventListener('click',()=>openSheet('giftsSheet'));
   $('backdrop').addEventListener('click',()=>closeSheets(true));
   document.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',()=>closeSheets(true)));
@@ -1219,9 +1328,7 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
       closeSheets();
       void shareRoomInvite();
     }else if(action==='micro'){
-      state.micEnabled=!state.micEnabled;
-      state.stream?.getAudioTracks().forEach(track=>track.enabled=state.micEnabled);
-      toast(state.micEnabled?'Micrófono activado.':'Micrófono silenciado.');
+      toggleHouseMicro();
     }else if(action==='minor'){
       toast('Posible menor: protección activada y caso preparado para revisión.');
     }else if(action==='close'){
@@ -1303,10 +1410,12 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   window.addEventListener('focus',()=>{if(roomOpen)void recoverLocalMedia(false)});
   window.addEventListener('pageshow',()=>{if(roomOpen)void recoverLocalMedia(true)});
 
+  window.JemmoHouseRoomControls={toggleSeat:toggleHouseSeat,toggleMic:toggleHouseMicro,getState:()=>({houseSeatActive:state.houseSeatActive,micEnabled:state.micEnabled,localSeat:state.localSeat})};
   window.addEventListener('pagehide',()=>{void save()});
   window.addEventListener('beforeunload',stopCamera);
 })();
 </script>
+<script type="module" src="jemmo-house-room-ui.js"></script>
 <script src="jemmo-house-activity.js"></script>
 </body>
 </html>

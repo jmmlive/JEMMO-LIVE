@@ -1,206 +1,35 @@
-/* JEMMO LIVE V1 · ACTIVIDAD DE CASAS PRUEBA 15
-   Registra tiempo real de LIVE y de la Sala oficial de la Casa.
-   No concede premios: solo aporta datos de control para administración. */
+/* JEMMO LIVE V1 · ACTIVIDAD Y TAREAS 24H DE CASAS PRUEBA 16
+   Activa y registra ciclos individuales de 24 horas para emisores/as.
+   No concede premios ni pagos automáticos. */
 (() => {
   'use strict';
-
-  const firebaseConfig = {
-    apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
-    authDomain: 'jemmo-live.firebaseapp.com',
-    projectId: 'jemmo-live',
-    storageBucket: 'jemmo-live.firebasestorage.app',
-    messagingSenderId: '355540892255',
-    appId: '1:355540892255:web:d15a8dd03b2915e31939ea'
-  };
-
-  const path = location.pathname.toLowerCase();
-  const params = new URLSearchParams(location.search);
-  const activityType = path.endsWith('/live.html') || path.endsWith('live.html')
-    ? 'live'
-    : (path.endsWith('/salas.html') || path.endsWith('salas.html')) && params.get('houseRoom') === '1'
-      ? 'house_room'
-      : '';
-  if (!activityType) return;
-
-  const requestedHouseId = String(params.get('house') || '').trim().slice(0, 80);
-  const targetId = activityType === 'live' ? 'broadcastScreen' : 'roomView';
-  let services = null;
-  let user = null;
-  let profile = {};
-  let houseId = '';
-  let running = false;
-  let startedAt = 0;
-  let pendingSeconds = 0;
-  let flushTimer = 0;
-  let observer = null;
-  let destroyed = false;
-
-  const clean = (value, max = 120) => String(value || '').trim().slice(0, max);
-  const cycleKey = () => {
-    const date = new Date();
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-  };
-
-  async function getServices() {
-    if (services) return services;
-    const [appModule, authModule, firestore] = await Promise.all([
-      import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js'),
-      import('https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js'),
-      import('https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js')
-    ]);
-    const app = appModule.getApps()[0] || appModule.initializeApp(firebaseConfig);
-    services = { ...firestore, auth: authModule.getAuth(app), db: firestore.getFirestore(app), onAuthStateChanged: authModule.onAuthStateChanged };
-    return services;
+  const firebaseConfig={apiKey:'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',authDomain:'jemmo-live.firebaseapp.com',projectId:'jemmo-live',storageBucket:'jemmo-live.firebasestorage.app',messagingSenderId:'355540892255',appId:'1:355540892255:web:d15a8dd03b2915e31939ea'};
+  const path=location.pathname.toLowerCase(),params=new URLSearchParams(location.search);
+  const activityType=path.endsWith('live.html')?'live':path.endsWith('salas.html')&&params.get('houseRoom')==='1'?'house_room':'';
+  if(!activityType)return;
+  const DAY_MS=24*60*60*1000,requestedHouseId=String(params.get('house')||'').trim().slice(0,80),targetId=activityType==='live'?'broadcastScreen':'roomView';
+  let services=null,user=null,profile={},member={},houseId='',running=false,starting=false,startedAt=0,pendingSeconds=0,flushTimer=0,observer=null,destroyed=false,cycleEndMs=0;
+  const clean=(v,m=120)=>String(v||'').trim().slice(0,m);
+  const normalize=v=>clean(v,40).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  function testRole(uid){try{return clean(JSON.parse(localStorage.getItem(`jemmo_role_lab_v1_${uid}`)||'null')?.mode,20)}catch{return''}}
+  function emitterEligible(){const role=normalize(profile.role||profile.rol||profile.accountRole||member.accountRole);return testRole(user?.uid)==='emitter'||clean(member.housePosition,30)==='emitter'||['emisor','emisora','emitter','host','streamer','creator','creador','creadora'].includes(role)}
+  async function getServices(){if(services)return services;const[a,b,f]=await Promise.all([import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js'),import('https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js'),import('https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js')]);const app=a.getApps()[0]||a.initializeApp(firebaseConfig);services={...f,auth:b.getAuth(app),db:f.getFirestore(app),onAuthStateChanged:b.onAuthStateChanged};return services}
+  function waitUser(s,timeout=12000){if(s.auth.currentUser)return Promise.resolve(s.auth.currentUser);return new Promise((resolve,reject)=>{let stop=()=>{};const timer=setTimeout(()=>{stop();reject(new Error('Sesión no disponible.'))},timeout);stop=s.onAuthStateChanged(s.auth,current=>{if(!current)return;clearTimeout(timer);stop();resolve(current)},e=>{clearTimeout(timer);stop();reject(e)})})}
+  function targetRunning(){const target=document.getElementById(targetId);if(!target)return false;if(activityType==='live')return !target.hidden&&getComputedStyle(target).display!=='none';return !target.classList.contains('jr-hidden')&&getComputedStyle(target).display!=='none'}
+  function cyclePayload(now,reason,current={}){return{uid:user.uid,displayName:clean(profile.displayName||user.displayName||user.email?.split('@')[0]||'Usuario JEMMO',48),publicId:clean(profile.publicId,48),accountRole:clean(profile.role||profile.rol||member.accountRole||'emisor',30),housePosition:'emitter',taskState:'active',cycleDurationHours:24,cycleStartedAtClient:now,cycleEndsAtClient:now+DAY_MS,cycleKey:`24h-${now}`,cycleNumber:Math.max(1,Number(current.cycleNumber||0)+1),liveSeconds:0,houseRoomSeconds:0,reviewStatus:'pending',activatedReason:reason,activatedAtClient:Number(current.activatedAtClient||now),updatedAt:services.serverTimestamp()}}
+  async function archiveAndReset(transaction,taskRef,current,now,reason){const oldStart=Number(current.cycleStartedAtClient||0);if(oldStart){const historyRef=services.doc(services.db,'casas',houseId,'historialTareas',`${user.uid}_${oldStart}`);transaction.set(historyRef,{...current,uid:user.uid,houseId,archivedAtClient:now,archivedAt:services.serverTimestamp(),archiveReason:reason},{merge:true})}const next=cyclePayload(now,reason,current);transaction.set(taskRef,next,{merge:true});cycleEndMs=next.cycleEndsAtClient;return next}
+  async function ensureTaskCycle(reason='activity_entry'){
+    const s=services||await getServices(),now=Date.now(),taskRef=s.doc(s.db,'casas',houseId,'tareas',user.uid);let result=null;
+    await s.runTransaction(s.db,async transaction=>{const snap=await transaction.get(taskRef),current=snap.data()||{},end=Number(current.cycleEndsAtClient||0),active=clean(current.taskState,20)==='active'&&end>now;if(active){cycleEndMs=end;result=current;return}result=await archiveAndReset(transaction,taskRef,current,now,end&&end<=now?'automatic_24h_rollover':reason)});
+    window.dispatchEvent(new CustomEvent('jemmo-house-task-cycle',{detail:{houseId,uid:user.uid,cycleEndsAtClient:cycleEndMs,reason}}));return result;
   }
-
-  function waitForUser(s, timeout = 12000) {
-    if (s.auth.currentUser) return Promise.resolve(s.auth.currentUser);
-    return new Promise((resolve, reject) => {
-      let stop = () => {};
-      const timer = setTimeout(() => { stop(); reject(new Error('Sesión no disponible.')); }, timeout);
-      stop = s.onAuthStateChanged(s.auth, current => {
-        if (!current) return;
-        clearTimeout(timer);
-        stop();
-        resolve(current);
-      }, error => { clearTimeout(timer); stop(); reject(error); });
-    });
-  }
-
-  function targetRunning() {
-    const target = document.getElementById(targetId);
-    if (!target) return false;
-    if (activityType === 'live') return !target.hidden && getComputedStyle(target).display !== 'none';
-    return !target.classList.contains('jr-hidden') && getComputedStyle(target).display !== 'none';
-  }
-
-  async function resolveMembership() {
-    const s = await getServices();
-    user = await waitForUser(s);
-    const userSnap = await s.getDoc(s.doc(s.db, 'users', user.uid));
-    profile = userSnap.exists() ? (userSnap.data() || {}) : {};
-    const membershipHouse = clean(profile.houseId, 80);
-    if (activityType === 'house_room') {
-      if (!requestedHouseId || membershipHouse !== requestedHouseId) return false;
-      houseId = requestedHouseId;
-    } else {
-      houseId = membershipHouse;
-    }
-    return Boolean(houseId && profile.houseStatus !== 'left' && profile.houseStatus !== 'removed');
-  }
-
-  async function markPresence(status) {
-    if (!services || !user || !houseId) return;
-    const s = services;
-    try {
-      await s.setDoc(s.doc(s.db, 'casas', houseId, 'actividad', user.uid), {
-        uid: user.uid,
-        displayName: clean(profile.displayName || user.displayName || user.email?.split('@')[0] || 'Usuario JEMMO', 48),
-        publicId: clean(profile.publicId, 48),
-        type: activityType,
-        status,
-        page: activityType === 'live' ? 'live.html' : 'salas.html',
-        updatedAtClient: Date.now(),
-        updatedAt: s.serverTimestamp()
-      }, { merge: true });
-    } catch (error) {
-      console.warn('JEMMO actividad Casa: presencia', error?.code || error);
-    }
-  }
-
-  async function flush(force = false) {
-    if (!running && !force) return;
-    if (running && startedAt) {
-      const now = Date.now();
-      pendingSeconds += Math.max(0, Math.floor((now - startedAt) / 1000));
-      startedAt = now;
-    }
-    if (pendingSeconds < (force ? 1 : 20) || !services || !user || !houseId || !navigator.onLine) return;
-    const seconds = pendingSeconds;
-    pendingSeconds = 0;
-    const s = services;
-    const ref = s.doc(s.db, 'casas', houseId, 'tareas', user.uid);
-    try {
-      await s.runTransaction(s.db, async transaction => {
-        const snapshot = await transaction.get(ref);
-        const current = snapshot.exists() ? (snapshot.data() || {}) : {};
-        const key = cycleKey();
-        const reset = clean(current.cycleKey, 20) !== key;
-        const liveSeconds = reset ? 0 : Number(current.liveSeconds || 0);
-        const houseRoomSeconds = reset ? 0 : Number(current.houseRoomSeconds || 0);
-        transaction.set(ref, {
-          uid: user.uid,
-          displayName: clean(profile.displayName || user.displayName || user.email?.split('@')[0] || 'Usuario JEMMO', 48),
-          publicId: clean(profile.publicId, 48),
-          accountRole: clean(window.JemmoRoleLab?.get?.().accountRole || profile.role || profile.rol || profile.accountRole || 'usuario', 30),
-          testRoleMode: clean(window.JemmoRoleLab?.get?.().mode, 20),
-          cycleKey: key,
-          liveSeconds: liveSeconds + (activityType === 'live' ? seconds : 0),
-          houseRoomSeconds: houseRoomSeconds + (activityType === 'house_room' ? seconds : 0),
-          lastActivityType: activityType,
-          lastActivityAtClient: Date.now(),
-          lastActivityAt: s.serverTimestamp(),
-          updatedAt: s.serverTimestamp(),
-          reviewStatus: reset ? 'pending' : clean(current.reviewStatus || 'pending', 20)
-        }, { merge: true });
-      });
-    } catch (error) {
-      pendingSeconds += seconds;
-      console.warn('JEMMO actividad Casa: no se pudo guardar', error?.code || error);
-    }
-  }
-
-  function start() {
-    if (running || destroyed || !houseId) return;
-    running = true;
-    startedAt = Date.now();
-    clearInterval(flushTimer);
-    flushTimer = setInterval(() => void flush(false), 30000);
-    void markPresence('active');
-    window.dispatchEvent(new CustomEvent('jemmo-house-activity', { detail: { type: activityType, status: 'active', houseId } }));
-  }
-
-  async function stop(reason = 'stopped') {
-    if (!running) return;
-    await flush(true);
-    running = false;
-    startedAt = 0;
-    clearInterval(flushTimer);
-    flushTimer = 0;
-    await markPresence(reason);
-    window.dispatchEvent(new CustomEvent('jemmo-house-activity', { detail: { type: activityType, status: reason, houseId } }));
-  }
-
-  function sync() {
-    if (targetRunning()) start();
-    else void stop('inactive');
-  }
-
-  async function boot() {
-    try {
-      if (!await resolveMembership()) return;
-      const target = document.getElementById(targetId);
-      if (!target) return;
-      observer = new MutationObserver(sync);
-      observer.observe(target, { attributes: true, attributeFilter: ['hidden', 'class', 'style'] });
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) void stop('background');
-        else sync();
-      });
-      window.addEventListener('offline', () => void stop('offline'));
-      window.addEventListener('online', sync);
-      window.addEventListener('pagehide', () => { destroyed = true; void stop('closed'); });
-      sync();
-    } catch (error) {
-      console.warn('JEMMO actividad Casa:', error?.message || error);
-    }
-  }
-
-  window.JemmoHouseActivity = {
-    getState: () => ({ type: activityType, houseId, running, pendingSeconds }),
-    flush: () => flush(true)
-  };
-
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
-  else void boot();
+  async function resolveMembership(){const s=await getServices();user=await waitUser(s);const userSnap=await s.getDoc(s.doc(s.db,'users',user.uid));profile=userSnap.data()||{};const membershipHouse=clean(profile.houseId,80);houseId=activityType==='house_room'?requestedHouseId:membershipHouse;if(!houseId||activityType==='house_room'&&membershipHouse!==houseId)return false;const memberSnap=await s.getDoc(s.doc(s.db,'casas',houseId,'miembros',user.uid));member=memberSnap.data()||{};if(!memberSnap.exists()||['left','removed'].includes(clean(member.status||profile.houseStatus,20)))return false;if(!emitterEligible())return false;await ensureTaskCycle('emitter_activity_started');return true}
+  async function markPresence(status){if(!services||!user||!houseId)return;try{await services.setDoc(services.doc(services.db,'casas',houseId,'actividad',user.uid),{uid:user.uid,displayName:clean(profile.displayName||user.displayName||'Usuario JEMMO',48),publicId:clean(profile.publicId,48),type:activityType,status,taskCycleEndsAtClient:cycleEndMs,page:activityType==='live'?'live.html':'salas.html',updatedAtClient:Date.now(),updatedAt:services.serverTimestamp()},{merge:true})}catch(e){console.warn('JEMMO actividad Casa: presencia',e?.code||e)}}
+  async function flush(force=false){if(!running&&!force)return;if(running&&startedAt){const now=Date.now();pendingSeconds+=Math.max(0,Math.floor((now-startedAt)/1000));startedAt=now}if(pendingSeconds<(force?1:20)||!services||!user||!houseId||!navigator.onLine)return;const seconds=pendingSeconds;pendingSeconds=0;const s=services,now=Date.now(),ref=s.doc(s.db,'casas',houseId,'tareas',user.uid);try{await s.runTransaction(s.db,async transaction=>{const snap=await transaction.get(ref);let current=snap.data()||{};if(clean(current.taskState,20)!=='active'||Number(current.cycleEndsAtClient||0)<=now)current=await archiveAndReset(transaction,ref,current,now,'automatic_24h_rollover');cycleEndMs=Number(current.cycleEndsAtClient||now+DAY_MS);transaction.set(ref,{uid:user.uid,displayName:clean(profile.displayName||user.displayName||'Usuario JEMMO',48),publicId:clean(profile.publicId,48),accountRole:clean(profile.role||profile.rol||member.accountRole||'emisor',30),housePosition:'emitter',taskState:'active',liveSeconds:Number(current.liveSeconds||0)+(activityType==='live'?seconds:0),houseRoomSeconds:Number(current.houseRoomSeconds||0)+(activityType==='house_room'?seconds:0),lastActivityType:activityType,lastActivityAtClient:now,lastActivityAt:s.serverTimestamp(),updatedAt:s.serverTimestamp(),reviewStatus:clean(current.reviewStatus||'pending',20)},{merge:true})})}catch(e){pendingSeconds+=seconds;console.warn('JEMMO actividad Casa: no se pudo guardar',e?.code||e)}}
+  async function start(){if(running||starting||destroyed||!houseId)return;starting=true;try{await ensureTaskCycle('activity_resumed');running=true;startedAt=Date.now();clearInterval(flushTimer);flushTimer=setInterval(()=>void flush(false),30000);void markPresence('active');window.dispatchEvent(new CustomEvent('jemmo-house-activity',{detail:{type:activityType,status:'active',houseId,cycleEndsAtClient:cycleEndMs}}))}finally{starting=false}}
+  async function stop(reason='stopped'){if(!running)return;await flush(true);running=false;startedAt=0;clearInterval(flushTimer);flushTimer=0;await markPresence(reason);window.dispatchEvent(new CustomEvent('jemmo-house-activity',{detail:{type:activityType,status:reason,houseId}}))}
+  function sync(){if(targetRunning())void start();else void stop('inactive')}
+  async function boot(){try{if(!await resolveMembership())return;const target=document.getElementById(targetId);if(!target)return;observer=new MutationObserver(sync);observer.observe(target,{attributes:true,attributeFilter:['hidden','class','style']});document.addEventListener('visibilitychange',()=>{if(document.hidden)void stop('background');else sync()});window.addEventListener('offline',()=>void stop('offline'));window.addEventListener('online',sync);window.addEventListener('pagehide',()=>{destroyed=true;void stop('closed')});sync()}catch(e){console.warn('JEMMO actividad Casa:',e?.message||e)}}
+  window.JemmoHouseActivity={getState:()=>({type:activityType,houseId,running,pendingSeconds,cycleEndMs}),flush:()=>flush(true),ensureTaskCycle};
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else void boot();
 })();

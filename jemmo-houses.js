@@ -1124,34 +1124,41 @@ async function reviewJoinRequest(applicantUid, decision) {
   try {
     await verifyHouseAdmin(house.id);
     const s = state.services;
+    const acceptedAtClient = Date.now();
     await s.runTransaction(s.db, async transaction => {
       const inboxRef = s.doc(s.db, 'casas', house.id, 'solicitudes', applicantUid);
       const globalRef = s.doc(s.db, 'solicitudesCasa', applicantUid);
       const houseRef = s.doc(s.db, 'casas', house.id);
       const memberRef = s.doc(s.db, 'casas', house.id, 'miembros', applicantUid);
       const userRef = s.doc(s.db, 'users', applicantUid);
+      const taskRef = s.doc(s.db, 'casas', house.id, 'tareas', applicantUid);
       const inboxSnap = await transaction.get(inboxRef);
       const houseSnap = await transaction.get(houseRef);
       const memberSnap = await transaction.get(memberRef);
       const userSnap = await transaction.get(userRef);
+      const taskSnap = await transaction.get(taskRef);
       if (!inboxSnap.exists() || inboxSnap.data()?.status !== 'pending') throw new Error('La solicitud ya no está pendiente.');
       const request = inboxSnap.data() || {};
       const userData = userSnap.data() || {};
       if (decision === 'accept') {
         if (cleanText(userData.houseId, 80) && userData.houseId !== house.id) throw new Error('ALREADY_MEMBER');
+        const initialPosition = ['emisor','emisora','emitter','host','streamer','creator','creador','creadora'].includes(lower(userData.role || userData.rol || userData.accountRole)) ? 'emitter' : 'member';
         transaction.set(memberRef, {
           uid: applicantUid, displayName: cleanText(request.applicantName || userData.displayName || 'Usuario JEMMO', 48),
           publicId: cleanText(request.applicantPublicId || userData.publicId, 48), role: 'member', status: 'active',
-          accountRole: cleanText(userData.role || userData.rol || 'usuario', 30),
-          housePosition: ['emisor','emisora','host','streamer'].includes(lower(userData.role || userData.rol)) ? 'emitter' : 'member',
+          accountRole: cleanText(userData.role || userData.rol || 'usuario', 30), housePosition: initialPosition,
           joinedAt: memberSnap.exists() ? (memberSnap.data()?.joinedAt || s.serverTimestamp()) : s.serverTimestamp(),
           approvedBy: state.uid, updatedAt: s.serverTimestamp()
         }, { merge: true });
         transaction.set(userRef, {
-          houseId: house.id, houseName: house.name, houseRole: 'member', houseStatus: 'active',
+          houseId: house.id, houseName: house.name, houseRole: 'member', houseStatus: 'active', housePosition: initialPosition,
           houseJoinedAt: s.serverTimestamp(), houseUpdatedAt: s.serverTimestamp(),
           houseRequestId: s.deleteField(), houseRequestName: s.deleteField(), houseRequestStatus: s.deleteField()
         }, { merge: true });
+        if (initialPosition === 'emitter') {
+          const previousTask = taskSnap.data() || {};
+          transaction.set(taskRef, { uid: applicantUid, displayName: cleanText(request.applicantName || userData.displayName || 'Emisora JEMMO', 48), publicId: cleanText(request.applicantPublicId || userData.publicId, 48), taskState: 'active', cycleDurationHours: 24, cycleStartedAtClient: acceptedAtClient, cycleEndsAtClient: acceptedAtClient + 86400000, cycleKey: `24h-${acceptedAtClient}`, cycleNumber: Math.max(1, Number(previousTask.cycleNumber || 0) + 1), liveSeconds: 0, houseRoomSeconds: 0, reviewStatus: 'pending', activatedReason: 'membership_accepted_as_emitter', activatedAtClient: acceptedAtClient, updatedAt: s.serverTimestamp() }, { merge: true });
+        }
         transaction.set(houseRef, {
           memberCount: number(houseSnap.data()?.memberCount ?? houseSnap.data()?.members) + (memberSnap.exists() ? 0 : 1), updatedAt: s.serverTimestamp()
         }, { merge: true });
@@ -1169,7 +1176,7 @@ async function reviewJoinRequest(applicantUid, decision) {
         }, { merge: true });
       }
     });
-    toast(decision === 'accept' ? 'Solicitud aceptada. El usuario ya es miembro.' : 'Solicitud rechazada.', 'success');
+    toast(decision === 'accept' ? 'Solicitud aceptada. Si la cuenta es Emisor/a, su tarea de 24 horas ya está activa.' : 'Solicitud rechazada.', 'success');
     if (decision === 'accept') await addSystemMessage(`${state.identity.displayName} aceptó a un nuevo miembro en ${house.name}.`);
   } catch (error) { toast(friendlyError(error), 'error'); }
 }

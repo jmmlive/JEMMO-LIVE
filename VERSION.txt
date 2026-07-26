@@ -1,48 +1,47 @@
-JEMMO LIVE V1 · SALA DE CASA 24/7 Y ROLES DE PRUEBA PRUEBA 15
+JEMMO LIVE V1 · SALA DE CASA MÓVIL Y TAREAS AUTOMÁTICAS 24H PRUEBA 16
 Fecha: 26/07/2026
 
 Base verificada:
-- JEMMO LIVE V1 · CASA PADRE, SALA Y CONTROL DE EMISORES PRUEBA 14.
-- Conserva Casa Padre, tareas, panel de emisores, WebRTC/referidos y regalos de Batalla.
+- JEMMO LIVE V1 · SALA DE CASA 24/7 Y ROLES DE PRUEBA PRUEBA 15.
+- Conserva Casa Padre, roles de prueba, solicitudes reales, panel de emisores, WebRTC/referidos y economía de pruebas.
 
-Sala permanente de la Casa:
-- La Sala de Casa deja de abrirse y cerrarse como una sala personal.
-- Permanece disponible 24 horas al día y 7 días a la semana.
-- Es exclusivamente Audio Room; no permite cámara.
-- Capacidad visual y organizativa: 20 sillas.
-- Acceso directo desde Mi Casa, sin asistente de portada, título ni descripción.
-- La primera persona conectada prepara la sesión WebRTC disponible; las siguientes entran directamente cuando la sesión está activa.
-- Al salir el anfitrión termina únicamente esa sesión técnica, pero la Sala de Casa sigue abierta y disponible.
-- No se muestran ocupantes ficticios en la Sala oficial.
-- El tiempo dentro de la Sala sigue contando en la tarea de Casa.
+Sala de Casa prioritaria:
+- Diseño completamente adaptado al móvil, sin desbordamiento horizontal.
+- Veinte sillas compactas: cuatro columnas por cinco filas en móviles estrechos y cinco por cuatro en pantallas amplias.
+- Cabecero premium con nombre completo de la Casa, fecha de creación, antigüedad, miembros, puntos, rango y medallas reales cuando existan.
+- Control de Batalla visible únicamente cuando la Casa tenga una Batalla activa registrada.
+- Sin panel de ajustes dentro de la Sala de Casa.
+- Controles directos inferiores para subir/bajar de silla, activar/silenciar micrófono, chat y regalos.
+- Tocar la propia silla activa o silencia el micrófono directamente.
+- Tocar una persona conectada permite silenciar o recuperar su audio únicamente en el móvil actual; la moderación remota multiusuario queda pendiente del SFU.
+- Solo audio y acceso directo; la cámara permanece desactivada.
 
-Perfil y Mi Casa:
-- La tarjeta Mi Casa del Perfil muestra la Casa y la función de prueba activa.
-- En modo Emisor/a el botón lleva directamente a la Sala de la Casa.
-- En modo Agente o Propietario lleva al panel de gestión de Casa y emisores.
+Tareas automáticas de 24 horas:
+- Al aceptar a una cuenta que ya es Emisor/a se crea inmediatamente su tarea activa.
+- Al asignar la función interna Emisor/a también se activa la tarea.
+- Al elegir el rol de prueba Emisor/a en la cuenta propietaria se activa una tarea de prueba real en Casa Padre.
+- Cada ciclo dura exactamente 24 horas desde su activación.
+- El panel muestra una cuenta atrás en horas, minutos y segundos.
+- Se mantienen los objetivos de LIVE y Sala de Casa.
+- Al vencer el ciclo, el sistema archiva el resumen anterior y abre automáticamente un nuevo ciclo de 24 horas cuando la emisora vuelve a realizar actividad.
+- El tiempo solo se registra para miembros con función Emisor/a o para el modo de prueba Emisor/a de Jesús.
+- Las tareas no generan JEMS ni pagos automáticos.
 
-Selector exclusivo de roles de prueba:
-- Nuevo laboratorio de roles visible únicamente para la cuenta propietaria reconocida.
-- Modos: Propietario, Agente de Casa, Emisor/a y Miembro.
-- Cambia la presentación y los módulos visibles para poder probar cada recorrido.
-- No elimina ni modifica la propiedad real de Jesús.
-- Se guarda localmente y se intenta sincronizar en el perfil Firestore.
-
-Limitación técnica verificada:
-- El WebRTC actual continúa siendo una conexión de prueba anfitrión-invitada.
-- Las 20 sillas y la rotación pueden probarse visualmente, pero 20 audios simultáneos reales requieren un servidor SFU (por ejemplo LiveKit/Agora/Twilio) y no deben simularse como producción con una malla móvil.
-- Antes de Play Store debe integrarse el proveedor SFU y un servicio seguro de tokens.
+Limitación técnica:
+- Las veinte sillas quedan listas visual y operativamente para turnos.
+- El motor actual sigue siendo una prueba WebRTC entre anfitrión e invitada.
+- Veinte audios simultáneos reales requieren un servidor SFU y backend seguro de tokens antes de producción.
 
 PWA:
-- Caché: jemmo-live-v1-house-room-24x7-role-lab-15-20260726.
-- Registro: pwa-house-room-24x7-role-lab-15.
+- Caché: jemmo-live-v1-house-room-mobile-tasks-24h-16-20260726.
+- Registro: pwa-house-room-mobile-tasks-24h-16.
 - No es necesario desinstalar la PWA.
 
-Pruebas móviles:
-1. En Perfil, cambiar a Emisor/a y confirmar la presentación.
-2. Pulsar IR A LA SALA DE MI CASA y comprobar entrada directa.
-3. Confirmar 20 sillas y cámara desactivada.
-4. Salir y comprobar que la Sala de Casa continúa disponible.
-5. Cambiar a Agente y comprobar panel de emisores y tareas.
-6. Cambiar a Propietario y comprobar Administración completa.
-7. Completar la prueba pendiente de cámara/micrófono WebRTC con Ruth en el flujo existente.
+Pruebas móviles obligatorias:
+1. Abrir la Sala de Casa y confirmar que no existe desplazamiento lateral.
+2. Confirmar las 20 sillas completas dentro de la pantalla.
+3. Probar subir/bajar de silla y silenciar tocando la propia foto.
+4. Cambiar a rol Emisor/a y confirmar la activación inmediata de la tarea de 24 horas.
+5. Entrar en la Sala y comprobar que aumenta el tiempo de Sala de Casa.
+6. Abrir LIVE y comprobar que aumenta el tiempo de LIVE.
+7. Probar el circuito con Ruth y completar la prueba WebRTC pendiente.
