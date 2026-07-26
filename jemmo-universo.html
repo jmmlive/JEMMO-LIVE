@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html class="jemmo-auth-pending" lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#09000f">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <title>JEMMO LIVE · JEMMO Universo</title>
+  <link rel="stylesheet" href="jemmo-universo.css">
+  <style>html.jemmo-auth-pending body{visibility:hidden}</style>
+  <script>setTimeout(()=>{if(!document.documentElement.classList.contains('jemmo-auth-pending'))return;let uid='';try{uid=localStorage.getItem('jemmo_active_uid')||sessionStorage.getItem('jemmo_active_uid')||''}catch{}if(uid)document.documentElement.classList.remove('jemmo-auth-pending');else location.replace('acceso.html?sesion=universo')},5500)</script>
+</head>
+<body class="store-page">
+  <main class="store-shell">
+    <header class="store-header">
+      <a class="store-back" href="yo.html" aria-label="Volver al Perfil">‹</a>
+      <div class="store-brand"><small>JEMMO LIVE</small><b>JEMMO <span>Universo</span></b></div>
+      <button class="store-wallet" id="storeWallet" type="button"><span>🪙</span><b data-store-balance>0</b></button>
+    </header>
+
+    <section class="store-hero">
+      <span class="store-kicker">TIENDA Y PERSONALIZACIÓN</span>
+      <h1>Tu estilo dentro de <span>JEMMO</span></h1>
+      <p>Compra, guarda y equipa objetos originales. Esta primera fase construye el catálogo y el inventario sin modificar todavía las Salas que ya funcionan.</p>
+      <span class="store-test-pill">MODO DE PRUEBAS · SIN COBROS REALES</span>
+      <div class="store-summary">
+        <article><b id="inventoryCount">0</b><span>EN INVENTARIO</span></article>
+        <article><b id="equippedCount">0</b><span>EQUIPADOS</span></article>
+        <article><b id="purchaseCount">0</b><span>COMPRAS PRUEBA</span></article>
+      </div>
+    </section>
+
+    <section class="store-preview">
+      <div class="store-preview-head"><div><b>Estudio de prueba</b><span>Previsualiza sin tocar una Sala real</span></div><span id="storePreviewTheme">JEMMO Base</span></div>
+      <div class="store-preview-scene" id="storePreviewScene">
+        <div class="store-preview-room-title"><b>Audio Room JEMMO</b><span>SOLO AUDIO</span></div>
+        <div class="store-preview-seat" id="storePreviewSeat"><div class="store-preview-avatar" id="storePreviewAvatar">J</div><b>Jesús</b><small>Emisor/a</small></div>
+        <div class="store-preview-bubble" id="storePreviewBubble">Hola, bienvenidos a mi sala ✨</div>
+        <div class="store-preview-entry base" id="storePreviewEntry">Jesús entró en la sala</div>
+      </div>
+    </section>
+
+    <section class="store-toolbar">
+      <label class="store-search"><span>⌕</span><input id="storeSearch" type="search" placeholder="Buscar temas, marcos, regalos..." autocomplete="off"></label>
+      <div class="store-tabs" id="storeTabs" aria-label="Categorías de JEMMO Universo"></div>
+    </section>
+
+    <div class="store-category-head"><div><h2 id="storeCategoryTitle">Popular</h2><p id="storeCategoryCopy">Selección destacada de JEMMO Universo.</p></div><span id="storeCount">0 elementos</span></div>
+    <section class="store-grid" id="storeGrid" aria-live="polite"></section>
+
+    <p class="store-note"><b>Fase 1:</b> los objetos se compran únicamente con JEMMOS de prueba y quedan guardados en el inventario de esta cuenta. Los regalos se muestran como catálogo, pero se envían desde LIVE o Salas. La aplicación real de temas, burbujas, marcos y entradas se conectará por módulos para no romper las salas existentes.</p>
+  </main>
+
+  <section class="store-detail" id="storeDetail" hidden role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+    <div class="store-detail-backdrop" id="storeDetailBackdrop"></div>
+    <article class="store-detail-card">
+      <button class="store-detail-close" id="storeDetailClose" type="button" aria-label="Cerrar">×</button>
+      <div class="store-detail-visual" id="detailVisual"></div>
+      <div class="store-detail-copy"><small id="detailTier">BASE</small><h2 id="detailTitle">Objeto JEMMO</h2><p id="detailDescription"></p></div>
+      <div class="store-detail-meta" id="detailMeta"></div>
+      <div class="store-detail-actions">
+        <button class="detail-buy" id="detailBuy" type="button">COMPRAR</button>
+        <button class="detail-equip" id="detailEquip" type="button">EQUIPAR AHORA</button>
+        <button class="detail-remove" id="detailRemove" type="button">VOLVER AL MODELO BASE</button>
+        <button class="detail-recharge" id="detailRecharge" type="button">RECARGAR JEMMOS</button>
+      </div>
+      <p class="store-gift-note" id="detailGiftNote" hidden>Este regalo no se compra para el inventario. Se utilizará desde la caja de regalos de LIVE y Salas cuando se conecte el catálogo general.</p>
+    </article>
+  </section>
+
+  <div class="store-toast" id="storeToast" role="status" aria-live="polite"></div>
+  <nav class="bottom-nav" data-current="yo">
+    <a data-tab="inicio" href="inicio.html"><span class="nav-icon">⌂</span><b>Inicio</b></a>
+    <a data-tab="live" href="live.html"><span class="nav-icon">▣</span><b>Live</b></a>
+    <a data-tab="salas" href="salas.html"><span class="nav-icon">🎙</span><b>Salas</b></a>
+    <a data-tab="mensajes" href="mensajes.html"><span class="nav-icon">◌</span><b>Mensajes</b></a>
+    <a data-tab="yo" href="yo.html"><span class="nav-icon">♙</span><b>Yo</b></a>
+  </nav>
+  <script type="module" src="jemmo-session.js"></script>
+  <script src="pwa-register.js"></script>
+  <script src="jemmo-wallet.js"></script>
+  <script src="app.js"></script>
+  <script type="module" src="jemmo-universo.js"></script>
+</body>
+</html>

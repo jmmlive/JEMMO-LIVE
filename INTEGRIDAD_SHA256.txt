@@ -1,9 +1,19 @@
-JEMMO LIVE V1 · SALAS PERSONALES RESTAURADAS Y FONDO COMPLETO PRUEBA 17
-SHA-256 de los archivos que deben sustituirse
+JEMMO LIVE V1 · JEMMO UNIVERSO CATÁLOGO E INVENTARIO PRUEBA 18
+Fecha: 26/07/2026
 
-e21859519ecbf1f38624450fa26b83681a423bf952ddda839772405fe7246362  VERSION.txt
-afb4b125a189c009a5b1059b0c678b07ce74417ad6e857165114217097fd578c  jemmo-room-realtime.js
-aed522fba277a43bfa236dc8787d4119d0632a67037e20a3ee933e4a795af78a  manifest.webmanifest
-e3d7e6324863b307e1df156a47808afe43be57056bcaa2759b92037ae74ae054  pwa-register.js
-2cb87dbfb3d22e2d6dc75db39d01caf085b48349227767b17441751109f22f7e  salas.html
-7f3a37eabec626847c0e483168aeaceb9f78e588ada0c17bd4ee9b4212f06533  sw.js
+SHA-256 de los archivos de esta entrega incremental:
+09ec4e4bb146e4728728378ce6f0c4cf7b425d8c3d46e994dc44068cbcc46ba2  VERSION.txt
+045dddcc822564231cd9eb7bbff72c9c200757790826342fc7cca2cc49856bfa  app.js
+6293821dffa74d05fd72e1e301d60c0099583edc7e2f13f6ec780a178b2fff3b  jemmo-personalization.js
+1158eed26bca8b1aa2f9524d1f5f0026c3de96e8754e555ac27eeff44be9425a  jemmo-store-catalog.js
+b304e2e7687aa3f994f3aeb573f80723cefb552cdb14c3a4ca984fcf7e6ba68d  jemmo-universo.css
+c45e8f97a9fc92886908243dc75abfc0d97105cd43f60d1c0aec47a0cff6c427  jemmo-universo.html
+1f179b6a4d141e4e1363ec5d38519b82cf16d2d54cad3eb30a621b611d224d21  jemmo-universo.js
+3da17963fe519798c44efa89db484f5a14cc108f0f470999d487b5066a8a2626  jemmo-wallet.js
+a355793aaf9d02f66a0ce42c84a85e03575340acc3733d39cc41264147a12c2f  manifest.webmanifest
+b72808b7012bec2a03bda03e77df93fb0b55b1b3f2915f501990409ded4dbbbd  pwa-register.js
+320e0edbd969a57cc58cb531b3bc13b6f8ee91adfed544b17b0c052441dedd1c  sw.js
+c845664319087e30c15d8226dbe6e25b06b5385edcce3ebdceb312eb069e89df  yo.html
+
+El ZIP contiene únicamente los archivos que deben sustituirse o añadirse.
+Toda la economía permanece en MODO DE PRUEBAS · SIN COBROS REALES.

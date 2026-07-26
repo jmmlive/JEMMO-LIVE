@@ -1,43 +1,61 @@
-JEMMO LIVE V1 · SALAS PERSONALES RESTAURADAS Y FONDO COMPLETO PRUEBA 17
+JEMMO LIVE V1 · JEMMO UNIVERSO CATÁLOGO E INVENTARIO PRUEBA 18
 Fecha: 26/07/2026
 
 Base verificada:
-- JEMMO LIVE V1 · SALA DE CASA MÓVIL Y TAREAS AUTOMÁTICAS 24H PRUEBA 16.
-- Conserva intactas la Sala oficial de Casa Padre, sus 20 sillas, tareas automáticas, roles de prueba, Casa Padre y correcciones WebRTC.
+- JEMMO LIVE V1 · SALAS PERSONALES RESTAURADAS Y FONDO COMPLETO PRUEBA 17.
+- Conserva la Sala de Casa, las Salas personales restauradas, tareas 24H, Casa Padre, referidos y WebRTC pendientes de validación real.
 
-Incidencia confirmada:
-- Al salir o retroceder desde la Sala de Casa, los parámetros `houseRoom=1` podían permanecer activos.
-- Audio Room personal y Sala con cámara heredaban entonces el título, la cuadrícula y el formato de la Sala 24/7 de Casa Padre.
-- Los tamaños 4, 8, 12, 15 y 25 quedaban cortados lateralmente porque la columna principal de la sala crecía más que el ancho móvil.
-- El fondo del pez se repetía dentro de cada silla y dificultaba la lectura.
+Objetivo de esta entrega:
+- Empezar JEMMO Universo con una arquitectura aislada y segura para no romper Salas, LIVE ni Casa Padre.
+- Mantener toda la economía en MODO DE PRUEBAS y sin cobros reales.
 
-Correcciones:
-- Separación estricta entre Sala oficial de Casa y salas personales.
-- El modo Casa solo se activa con una entrada válida: `houseRoom=1`, ID de Casa y acceso directo o invitación real.
-- Los parámetros antiguos o incompletos de Casa se eliminan automáticamente antes de abrir una sala personal.
-- Al salir de la Sala de Casa se vuelve a Mi Casa, sin mostrar la preparación personal bajo el contexto de Casa.
-- Audio Room personal recupera sus tamaños 4, 8, 12, 15 y 25 VIP.
-- Sala con cámara recupera sus tamaños 4, 8, 12 y 15; 25 continúa reservado a Audio Room VIP.
-- La columna principal queda limitada al ancho real del móvil y desaparece el corte lateral.
-- El fondo repetido dentro de cada silla se elimina únicamente en las salas personales.
-- La portada elegida pasa a ocupar el fondo completo de la sala personal con una capa oscura para conservar la legibilidad.
-- Las sillas, cámara, chat, ajustes y regalos permanecen dentro de la pantalla.
-- Se bloquean mensajes de sistema duplicados enviados en menos de dos segundos.
+Nueva página JEMMO Universo:
+- Categorías: Popular, Temas, Burbujas, Marcos avatar, Marcos silla, Entradas, Regalos e Inventario.
+- Estudio visual interno para previsualizar objetos sin modificar una Sala real.
+- Buscador, fichas, detalles, saldo, compra, equipamiento y restauración del modelo base.
+- Acceso desde Perfil, menú, buscador global y acceso directo PWA.
 
-Sala de Casa protegida:
-- No se modifican su cabecero, datos, medallas, tarea, Batalla, 20 sillas ni controles directos.
-- Continúa siendo solo audio, 24/7 y separada de los Audio Room personales.
+Catálogo inicial:
+- 3 temas de sala.
+- 3 burbujas de chat.
+- 3 marcos de avatar.
+- 3 marcos de silla.
+- 3 entradas.
+- 10 regalos JEMMO entre 500 y 200.000 JEMMOS.
+- Los regalos son catálogo de uso futuro en LIVE/Salas y no se compran para inventario.
+
+Inventario y equipamiento:
+- Cinco objetos base gratuitos se conceden automáticamente.
+- Los objetos comprados se guardan por UID en localStorage, IndexedDB y Firestore cuando hay conexión.
+- Una cuenta solo puede comprar cada objeto permanente una vez.
+- Se puede equipar un solo objeto por categoría y volver al modelo base.
+- Las compras pendientes se reconcilian contra el libro mayor del monedero para evitar cobros perdidos o duplicados.
+
+Monedero:
+- Nueva operación genérica spendJemmos para compras de tienda.
+- No usa el reparto 70/20/10 de regalos y no acredita JEMS a ninguna persona.
+- Registra historial, libro mayor, lotes utilizados, objeto, categoría e idempotencia.
+
+Protección de módulos existentes:
+- Esta fase no aplica todavía los temas, burbujas, marcos o entradas dentro de Salas reales.
+- No se modifica salas.html, jemmo-room-realtime.js, Sala de Casa ni el diseño restaurado en PRUEBA 17.
+- La integración visual en Salas se realizará por categorías y con regresión separada.
 
 PWA:
-- Caché: jemmo-live-v1-personal-rooms-restored-17-20260726.
-- Registro: pwa-personal-rooms-restored-17.
+- Caché: jemmo-live-v1-jemmo-universo-18-20260726.
+- Registro: pwa-jemmo-universo-catalog-inventory-18.
 - No es necesario desinstalar la PWA.
 
-Pruebas móviles obligatorias:
-1. Abrir Salas desde la botonera principal, sin entrar desde Casa.
-2. Probar Audio Room con 4, 8, 12, 15 y 25 plazas.
-3. Probar Sala con cámara con 4, 8, 12 y 15 plazas.
-4. Confirmar que ninguna columna se corta ni existe desplazamiento lateral.
-5. Confirmar que la portada ocupa el fondo completo y no se repite dentro de las sillas.
-6. Entrar después en Sala de Casa y comprobar que conserva exactamente su diseño de PRUEBA 16.
-7. Completar la prueba real de audio y cámara con Ruth.
+Pruebas obligatorias:
+1. Abrir Perfil y entrar en JEMMO Universo.
+2. Confirmar los cinco objetos base en Inventario.
+3. Recargar JEMMOS de prueba y comprar un objeto.
+4. Comprobar que solo se cobra una vez.
+5. Equipar el objeto y revisar el Estudio de prueba.
+6. Volver al modelo base.
+7. Cerrar y abrir la PWA y comprobar que inventario y equipamiento persisten.
+8. Verificar después que Audio Room, Sala con cámara y Sala de Casa conservan PRUEBA 17.
+
+Seguridad:
+- Firestore sigue con reglas temporales y permisivas.
+- Antes de producción, compras, inventario, equipamiento y catálogo deberán validarse mediante Cloud Functions o servidor confiable.

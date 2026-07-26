@@ -2,10 +2,10 @@
   "id": "./",
   "name": "JEMMO LIVE",
   "short_name": "JEMMO",
-  "description": "JEMMO LIVE: transmisiones en vivo, salas, comunidad, perfiles y Chili IA.",
+  "description": "JEMMO LIVE: transmisiones, salas, Casas, comunidad y personalización con JEMMO Universo.",
   "lang": "es-ES",
   "dir": "ltr",
-  "start_url": "./index.html?source=pwa-personal-rooms-restored-17",
+  "start_url": "./index.html?source=pwa-jemmo-universo-18",
   "scope": "./",
   "display": "standalone",
   "display_override": [
@@ -68,6 +68,17 @@
       "name": "Casas",
       "short_name": "Casas",
       "url": "./casa-demo.html?source=shortcut",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "JEMMO Universo",
+      "short_name": "Universo",
+      "url": "./jemmo-universo.html?source=shortcut",
       "icons": [
         {
           "src": "icon-192.png",

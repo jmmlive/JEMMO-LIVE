@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · SALAS PERSONALES RESTAURADAS PRUEBA 17 */
-const CACHE = 'jemmo-live-v1-personal-rooms-restored-17-20260726';
+/* JEMMO LIVE V1 · JEMMO UNIVERSO CATÁLOGO E INVENTARIO PRUEBA 18 */
+const CACHE = 'jemmo-live-v1-jemmo-universo-18-20260726';
 const APP_SHELL = [
   './',
   './index.html',
@@ -13,12 +13,17 @@ const APP_SHELL = [
   './chili-ia.html',
   './perfil-publico.html',
   './yo.html',
+  './jemmo-universo.html',
   './offline.html',
   './app.css',
+  './jemmo-universo.css',
   './inicio.css',
   './directos.css',
   './jemmo.css',
   './app.js',
+  './jemmo-store-catalog.js',
+  './jemmo-personalization.js',
+  './jemmo-universo.js',
   './jemmo-houses.js',
   './jemmo-house-operations.js',
   './jemmo-house-activity.js',
@@ -68,7 +73,8 @@ const UNREAD_PAGES = new Set([
   '/live.html',
   '/salas.html',
   '/mensajes.html',
-  '/yo.html'
+  '/yo.html',
+  '/jemmo-universo.html'
 ]);
 
 self.addEventListener('install', event => {
@@ -117,31 +123,31 @@ async function injectJemmoScripts(response, url) {
   if (UNREAD_PAGES.has(page)) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="house-room-mobile-tasks-24h-16"></script>'
+      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="jemmo-universo-18"></script>'
     );
   }
   if (page === '/mensajes.html' && !html.includes('jemmo-messages-realtime.js')) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="house-room-mobile-tasks-24h-16"></script>'
+      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="jemmo-universo-18"></script>'
     );
   }
   if (['/yo.html','/mensajes.html','/chili-ia.html'].includes(page) && !html.includes('jemmo-social.js')) {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="house-room-mobile-tasks-24h-16"></script>'
+      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="jemmo-universo-18"></script>'
     );
   }
   if (['/yo.html','/casa-demo.html'].includes(page) && !html.includes('jemmo-role-lab.js')) {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-role-lab.js" data-jemmo-injected="house-room-mobile-tasks-24h-16"></script>'
+      '<script type="module" src="./jemmo-role-lab.js" data-jemmo-injected="jemmo-universo-18"></script>'
     );
   }
   if (page === '/yo.html') {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="house-room-mobile-tasks-24h-16"></script>'
+      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="jemmo-universo-18"></script>'
     );
   }
 
@@ -149,7 +155,7 @@ async function injectJemmoScripts(response, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-version', 'house-room-mobile-tasks-24h-16');
+  headers.set('x-jemmo-version', 'jemmo-universo-18');
 
   return new Response(html, {
     status: response.status,

@@ -6,7 +6,7 @@
   'use strict';
   if (window.JemmoWallet?.version) return;
 
-  const VERSION = '7.2.1-test';
+  const VERSION = '7.3.0-test';
   const FINANCE_KEY = 'jemmo_finance_v1';
   const STORAGE_DB = 'jemmo_live_durable_v1';
   const STORAGE_DB_VERSION = 1;
@@ -841,6 +841,39 @@
     };
   }
 
+
+  function spendJemmos(amount, meta = {}) {
+    amount = Math.max(0, Math.floor(Number(amount) || 0));
+    const wallet = getWallet();
+    const idempotencyKey = String(meta.idempotencyKey || '').trim();
+    if (idempotencyKey) {
+      const existing = wallet.ledger.find(item => item.type === 'store_purchase' && item.idempotencyKey === idempotencyKey);
+      if (existing) return { ok: false, duplicate: true, wallet, operationId: existing.id || existing.operationId };
+    }
+    if (!amount || wallet.jemmos < amount) {
+      return { ok: false, wallet, missing: Math.max(0, amount - wallet.jemmos) };
+    }
+    const allocations = consumeLots(wallet, amount);
+    if (!allocations) return { ok: false, wallet, missing: amount };
+    wallet.jemmos -= amount;
+    wallet.coins = wallet.jemmos;
+    const operationId = nowId('store');
+    const title = String(meta.title || 'Compra en JEMMO Universo');
+    const detail = String(meta.detail || meta.itemId || 'Objeto de personalización');
+    pushHistory(wallet, {
+      id: operationId, type: 'store-purchase', title, detail,
+      amount: `-${formatNumber(amount)} JEMMOS`, amountJemmos: -amount, tone: 'negative'
+    });
+    pushLedger(wallet, 'store_purchase', title, {
+      id: operationId, operationId, idempotencyKey,
+      itemId: String(meta.itemId || ''), category: String(meta.category || ''),
+      context: String(meta.context || 'JEMMO Universo'), allocations,
+      amountJemmos: -amount, status: 'confirmed', simulation: true
+    });
+    const saved = saveWallet(wallet, meta.source || 'store-purchase');
+    return { ok: true, wallet: saved, operationId };
+  }
+
   function addJems(amount, meta = {}) {
     amount = Math.max(0, Math.floor(Number(amount) || 0));
     if (!amount) return getWallet();
@@ -1129,7 +1162,7 @@
     return ({
       recharge: '🪙', gift: '🎁', gift_sent: '🎁', gift_received: '💗',
       'gift-received': '💗', exchange: '⇄', withdraw: '↗', withdrawal: '↗',
-      method: '⚙️', adjustment: '✦', crystals: '💎', confirm: '✓'
+      method: '⚙️', adjustment: '✦', crystals: '💎', confirm: '✓', 'store-purchase': '🛍️', store_purchase: '🛍️'
     }[type] || '•');
   }
 
@@ -1630,6 +1663,7 @@
     save: saveWallet,
     addCoins,
     spendCoins,
+    spendJemmos,
     addJems,
     addDiamonds: addJems,
     addCrystals,

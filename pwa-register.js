@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-personal-rooms-restored-17';
+  const VERSION = 'pwa-jemmo-universo-catalog-inventory-18';
   let installPrompt = null;
 
   const isStandalone = () =>
