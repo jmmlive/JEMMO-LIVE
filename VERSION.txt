@@ -1,61 +1,23 @@
-JEMMO LIVE V1 · JEMMO UNIVERSO CATÁLOGO E INVENTARIO PRUEBA 18
+JEMMO LIVE V1 · INICIO UNIVERSO, REGALOS Y PERSISTENCIA PRUEBA 19
 Fecha: 26/07/2026
 
-Base verificada:
-- JEMMO LIVE V1 · SALAS PERSONALES RESTAURADAS Y FONDO COMPLETO PRUEBA 17.
-- Conserva la Sala de Casa, las Salas personales restauradas, tareas 24H, Casa Padre, referidos y WebRTC pendientes de validación real.
+Base:
+- JEMMO LIVE V1 · JEMMO UNIVERSO CATÁLOGO E INVENTARIO PRUEBA 18.
+- Conserva las Salas personales restauradas de PRUEBA 17 y la Sala de Casa.
 
-Objetivo de esta entrega:
-- Empezar JEMMO Universo con una arquitectura aislada y segura para no romper Salas, LIVE ni Casa Padre.
-- Mantener toda la economía en MODO DE PRUEBAS y sin cobros reales.
+Correcciones:
+- JEMMO Universo visible directamente en Inicio, además de Perfil, menú y buscador.
+- Popular, Regalos JEMMO, saldo e Inventario accesibles desde Inicio.
+- Catálogo de regalos restaurado en LIVE; el error de constante ausente ya no detiene el script.
+- Título, descripción y portada del LIVE se recuperan antes de cargar módulos secundarios.
+- Diez regalos JEMMO iniciales visibles en LIVE y al principio del catálogo de Salas.
+- Marcos de avatar y marcos de silla equipados visibles sobre la cuenta local dentro de Salas.
+- El Perfil muestra el marco de avatar equipado.
+- Persistencia duradera del perfil e ID mediante localStorage, sessionStorage e IndexedDB.
+- El Perfil reconoce el UID guardado en sessionStorage cuando localStorage está lleno.
+- Corregido el detalle de JEMMO Universo y los enlaces directos a categorías/objetos.
 
-Nueva página JEMMO Universo:
-- Categorías: Popular, Temas, Burbujas, Marcos avatar, Marcos silla, Entradas, Regalos e Inventario.
-- Estudio visual interno para previsualizar objetos sin modificar una Sala real.
-- Buscador, fichas, detalles, saldo, compra, equipamiento y restauración del modelo base.
-- Acceso desde Perfil, menú, buscador global y acceso directo PWA.
-
-Catálogo inicial:
-- 3 temas de sala.
-- 3 burbujas de chat.
-- 3 marcos de avatar.
-- 3 marcos de silla.
-- 3 entradas.
-- 10 regalos JEMMO entre 500 y 200.000 JEMMOS.
-- Los regalos son catálogo de uso futuro en LIVE/Salas y no se compran para inventario.
-
-Inventario y equipamiento:
-- Cinco objetos base gratuitos se conceden automáticamente.
-- Los objetos comprados se guardan por UID en localStorage, IndexedDB y Firestore cuando hay conexión.
-- Una cuenta solo puede comprar cada objeto permanente una vez.
-- Se puede equipar un solo objeto por categoría y volver al modelo base.
-- Las compras pendientes se reconcilian contra el libro mayor del monedero para evitar cobros perdidos o duplicados.
-
-Monedero:
-- Nueva operación genérica spendJemmos para compras de tienda.
-- No usa el reparto 70/20/10 de regalos y no acredita JEMS a ninguna persona.
-- Registra historial, libro mayor, lotes utilizados, objeto, categoría e idempotencia.
-
-Protección de módulos existentes:
-- Esta fase no aplica todavía los temas, burbujas, marcos o entradas dentro de Salas reales.
-- No se modifica salas.html, jemmo-room-realtime.js, Sala de Casa ni el diseño restaurado en PRUEBA 17.
-- La integración visual en Salas se realizará por categorías y con regresión separada.
-
-PWA:
-- Caché: jemmo-live-v1-jemmo-universo-18-20260726.
-- Registro: pwa-jemmo-universo-catalog-inventory-18.
-- No es necesario desinstalar la PWA.
-
-Pruebas obligatorias:
-1. Abrir Perfil y entrar en JEMMO Universo.
-2. Confirmar los cinco objetos base en Inventario.
-3. Recargar JEMMOS de prueba y comprar un objeto.
-4. Comprobar que solo se cobra una vez.
-5. Equipar el objeto y revisar el Estudio de prueba.
-6. Volver al modelo base.
-7. Cerrar y abrir la PWA y comprobar que inventario y equipamiento persisten.
-8. Verificar después que Audio Room, Sala con cámara y Sala de Casa conservan PRUEBA 17.
-
-Seguridad:
-- Firestore sigue con reglas temporales y permisivas.
-- Antes de producción, compras, inventario, equipamiento y catálogo deberán validarse mediante Cloud Functions o servidor confiable.
+Protección:
+- No se modifica la geometría móvil de las Salas ni la Sala de Casa.
+- Temas, burbujas y entradas siguen en el Estudio hasta validarlos por separado.
+- Economía en MODO DE PRUEBAS · SIN COBROS REALES.

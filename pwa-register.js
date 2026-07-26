@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-jemmo-universo-catalog-inventory-18';
+  const VERSION = 'pwa-universe-persistence-19';
   let installPrompt = null;
 
   const isStandalone = () =>

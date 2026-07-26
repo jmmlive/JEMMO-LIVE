@@ -1,9 +1,10 @@
-/* JEMMO LIVE V1 · JEMMO UNIVERSO UI PRUEBA 18 */
+/* JEMMO LIVE V1 · JEMMO UNIVERSO UI Y ENLACES DIRECTOS PRUEBA 19 */
 import { CATEGORY_META, PERSONALIZATION_CATALOG, GIFT_CATALOG, ALL_CATALOG_ITEMS, itemById, itemsForCategory, formatJemmos } from './jemmo-store-catalog.js';
 import { loadPersonalization, getPersonalization, ownsItem, equippedItem, beginPurchase, finishPurchase, cancelPendingPurchase, equipItem, equipBase, inventoryItems, applyEquippedToRoot } from './jemmo-personalization.js';
 
 const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>[...r.querySelectorAll(s)];
-let activeCategory='popular';let selectedItem=null;let busy=false;
+const storeParams=new URLSearchParams(location.search);
+let activeCategory=Object.hasOwn(CATEGORY_META,storeParams.get('category'))?storeParams.get('category'):'popular';let selectedItem=null;let busy=false;
 const formatDate=value=>{try{return new Intl.DateTimeFormat('es-ES',{dateStyle:'short',timeStyle:'short'}).format(new Date(value))}catch{return''}};
 const escapeHtml=value=>String(value||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
 function toast(text){const node=$('#storeToast');node.textContent=text;node.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>node.classList.remove('show'),2600)}
@@ -61,7 +62,7 @@ function openDetail(item){
 }
 function closeDetail(){selectedItem=null;$('#storeDetail').hidden=true;document.body.classList.remove('store-modal-open');previewState();}
 function configureDetailActions(item){
-  const state=getPersonalization();const owned=ownsItem(item.id,state);const equipped=state.equipped?.[item.category]===item.id;const buy=$('#detailBuy'),equip=$('#detailEquip'),remove=$('#detailRemove'),recharge=$('#detailRecharge');
+  const state=getPersonalization();const status=itemStatus(item,state);const owned=ownsItem(item.id,state);const equipped=state.equipped?.[item.category]===item.id;const buy=$('#detailBuy'),equip=$('#detailEquip'),remove=$('#detailRemove'),recharge=$('#detailRecharge');
   buy.hidden=item.category==='gifts'||owned||item.price===0;buy.textContent=`COMPRAR · ${formatJemmos(item.price)} JEMMOS`;
   if(item.category!=='gifts'){const meta=$$('#detailMeta span b');if(meta[2])meta[2].textContent=status.label;}
   equip.hidden=item.category==='gifts'||!owned||equipped;equip.textContent='EQUIPAR AHORA';
@@ -94,7 +95,15 @@ function bind(){
   window.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#storeDetail').hidden)closeDetail()});
 }
 async function boot(){
-  bind();await loadPersonalization({cloud:true});renderAll();document.documentElement.classList.remove('jemmo-auth-pending');
+  bind();
+  await loadPersonalization({cloud:true});
+  renderAll();
+  document.documentElement.classList.remove('jemmo-auth-pending');
+  const requestedItem=storeParams.get('item');
+  if(requestedItem){
+    const item=itemById(requestedItem);
+    if(item){ openDetail(item); }
+  }
   const pending=getPersonalization().pendingPurchase;if(pending)toast('Se revisó una compra pendiente anterior.');
 }
 boot().catch(error=>{console.error('JEMMO Universo boot',error);document.documentElement.classList.remove('jemmo-auth-pending');toast('JEMMO Universo está disponible en modo local.')});

@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · INVENTARIO Y EQUIPAMIENTO PRUEBA 18 */
+/* JEMMO LIVE V1 · INVENTARIO Y EQUIPAMIENTO PERSISTENTE PRUEBA 19 */
 import { STARTER_ITEM_IDS, DEFAULT_EQUIPPED, itemById } from './jemmo-store-catalog.js';
 
 const firebaseConfig={apiKey:'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',authDomain:'jemmo-live.firebaseapp.com',projectId:'jemmo-live',storageBucket:'jemmo-live.firebasestorage.app',messagingSenderId:'355540892255',appId:'1:355540892255:web:d15a8dd03b2915e31939ea'};
@@ -16,7 +16,8 @@ export function activeUid(){
 function key(uid=activeUid()){return `jemmo_personalization_v1_${uid||'guest'}`;}
 function safeJson(raw,fallback=null){try{return JSON.parse(raw)||fallback}catch{return fallback}}
 function localRead(uid=activeUid()){
-  try{return safeJson(localStorage.getItem(key(uid)),null)}catch{return null}
+  try{const local=safeJson(localStorage.getItem(key(uid)),null);if(local)return local}catch{}
+  try{return safeJson(sessionStorage.getItem(key(uid)),null)}catch{return null}
 }
 function localWrite(uid,state){
   try{localStorage.setItem(key(uid),JSON.stringify(state));return true}catch{
@@ -24,7 +25,7 @@ function localWrite(uid,state){
   }
 }
 function openDb(){
-  if(!('indexedDB' in window))return Promise.resolve(null);
+  if(!window.indexedDB)return Promise.resolve(null);
   return new Promise((resolve,reject)=>{
     const req=indexedDB.open(DB_NAME,DB_VERSION);
     req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(STORE))db.createObjectStore(STORE,{keyPath:'uid'});};
@@ -131,5 +132,10 @@ export function inventoryItems(state=getPersonalization()){
 export function applyEquippedToRoot(root=document.documentElement,state=getPersonalization()){
   const theme=equippedItem('themes',state),bubble=equippedItem('bubbles',state),avatar=equippedItem('avatarFrames',state),chair=equippedItem('chairFrames',state),entrance=equippedItem('entrances',state);
   root.dataset.jemmoTheme=theme?.id||'';root.dataset.jemmoBubble=bubble?.id||'';root.dataset.jemmoAvatarFrame=avatar?.id||'';root.dataset.jemmoChairFrame=chair?.id||'';root.dataset.jemmoEntrance=entrance?.id||'';
+  root.style.setProperty('--jemmo-equipped-avatar-shadow',avatar?.preview?.frame||'0 0 0 3px #7c2f92,0 0 15px #9a37ba55');
+  root.style.setProperty('--jemmo-equipped-chair-border',chair?.preview?.frame||'1px solid #6b2b7a');
+  root.style.setProperty('--jemmo-equipped-chair-shadow',chair?.preview?.glow||'0 0 12px #a637c733');
+  root.style.setProperty('--jemmo-equipped-bubble-bg',bubble?.preview?.bubble||'linear-gradient(135deg,#26102e,#130519)');
+  root.style.setProperty('--jemmo-equipped-bubble-border',bubble?.preview?.border||'#7b348e');
   return{theme,bubble,avatar,chair,entrance};
 }

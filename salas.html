@@ -202,6 +202,16 @@
     @media(min-width:431px){body.jemmo-house-room .jr-seats{grid-template-columns:repeat(5,minmax(0,1fr))!important;grid-template-rows:repeat(4,minmax(0,1fr))!important}body.jemmo-house-room .jr-seat-avatar{width:34px;height:34px}}
     @media(max-width:350px){body.jemmo-house-room .jr-room-head{grid-template-columns:39px minmax(0,1fr) auto;padding-left:6px;padding-right:6px}.jr-house-info{padding-left:6px!important;padding-right:6px!important}.jr-task-clock{min-width:94px}.jr-house-numbers span:nth-child(3){display:none}body.jemmo-house-room .jr-seats-wrap{padding-left:4px;padding-right:4px}.jemmo-house-room .jr-controls{grid-template-columns:40px 40px minmax(0,1fr) 43px;padding-left:4px;padding-right:4px}}
 
+
+    /* PRUEBA 19 · MARCOS EQUIPADOS VISIBLES SOLO EN LA CUENTA LOCAL */
+    html.jemmo-personalization-ready .jr-room-avatar,
+    html.jemmo-personalization-ready .jr-seat.local-user .jr-seat-avatar{
+      box-shadow:var(--jemmo-equipped-avatar-shadow,0 0 0 3px #7c2f92,0 0 15px #9a37ba55)!important;
+    }
+    html.jemmo-personalization-ready .jr-seat.local-user.audio{
+      border:var(--jemmo-equipped-chair-border,1px solid #6b2b7a)!important;
+      box-shadow:var(--jemmo-equipped-chair-shadow,0 0 12px #a637c733)!important;
+    }
 </style>
 </head>
 <body data-jemmo-wallet-native-gifts="true">
@@ -361,6 +371,7 @@
 <script src="jemmo-wallet.js"></script>
 <script src="jemmo-prep-storage.js"></script>
 <script type="module" src="jemmo-room-realtime.js"></script>
+<script type="module" src="jemmo-personalization-runtime.js"></script>
 <script>
 (()=>{
   'use strict';
@@ -742,7 +753,7 @@
       const person=occupantFor(i);
       const seat=document.createElement('button');
       seat.type='button';
-      seat.className=`jr-btn jr-seat ${state.mode} ${person?.host?'host':''} ${person&&!person.host?'hot':''} ${person?.remote&&!state.remoteConnected?'remote-waiting':''} ${person?.remote&&state.remoteConnected?'remote-connected':''} ${person?.local&&!state.micEnabled?'local-muted':''} ${person?.mutedByMe?'local-muted':''}`;
+      seat.className=`jr-btn jr-seat ${state.mode} ${person?.host?'host':''} ${person&&!person.host?'hot':''} ${person?.remote&&!state.remoteConnected?'remote-waiting':''} ${person?.remote&&state.remoteConnected?'remote-connected':''} ${person?.local&&!state.micEnabled?'local-muted':''} ${person?.mutedByMe?'local-muted':''} ${person?.local?'local-user':''}`;
       seat.dataset.seat=String(i);
       seat.innerHTML=seatMarkup(i,person);
       seat.addEventListener('click',()=>{
@@ -1260,7 +1271,8 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
     release();
   }
 
-  const ROOM_GIFT_CATALOG=[{"icon":"👍","name":"Like","cost":1},{"icon":"🌹","name":"Rosa","cost":2},{"icon":"💜","name":"Corazón violeta","cost":3},{"icon":"⭐","name":"Estrella","cost":5},{"icon":"🔥","name":"Fuego","cost":8},{"icon":"🎈","name":"Globo","cost":10},{"icon":"🍀","name":"Trébol","cost":12},{"icon":"🌻","name":"Girasol","cost":15},{"icon":"🍓","name":"Fresa","cost":18},{"icon":"🍫","name":"Chocolate","cost":20},{"icon":"☕","name":"Café","cost":25},{"icon":"🎂","name":"Tarta","cost":30},{"icon":"🦋","name":"Mariposa","cost":35},{"icon":"🐬","name":"Delfín","cost":40},{"icon":"🐟","name":"Chicharro","cost":50},{"icon":"🦄","name":"Unicornio","cost":60},{"icon":"💎","name":"Diamante","cost":75},{"icon":"🎤","name":"Micrófono","cost":90},{"icon":"🚀","name":"Cohete","cost":100},{"icon":"👑","name":"Corona","cost":120},{"icon":"🏆","name":"Trofeo","cost":150},{"icon":"🌙","name":"Luna","cost":180},{"icon":"☀️","name":"Sol","cost":200},{"icon":"🌈","name":"Arcoíris","cost":220},{"icon":"🛥️","name":"Yate","cost":250},{"icon":"🏍️","name":"Moto","cost":280},{"icon":"🚗","name":"Coche","cost":300},{"icon":"✈️","name":"Avión","cost":350},{"icon":"🏝️","name":"Isla","cost":400},{"icon":"🗼","name":"Torre","cost":450},{"icon":"🏰","name":"Castillo","cost":500},{"icon":"🐉","name":"Dragón","cost":600},{"icon":"🦁","name":"León","cost":700},{"icon":"🐯","name":"Tigre","cost":800},{"icon":"🦅","name":"Águila","cost":900},{"icon":"🌊","name":"Ola JEMMO","cost":1000},{"icon":"⚡","name":"Rayo","cost":1200},{"icon":"🎆","name":"Fuegos","cost":1500},{"icon":"🌌","name":"Galaxia","cost":1800},{"icon":"🪐","name":"Planeta","cost":2000},{"icon":"🚁","name":"Helicóptero","cost":2500},{"icon":"⛵","name":"Velero","cost":3000},{"icon":"🏎️","name":"Supercoche","cost":3500},{"icon":"💍","name":"Anillo","cost":4000},{"icon":"🛸","name":"Nave espacial","cost":5000},{"icon":"🐳","name":"Ballena","cost":6000},{"icon":"🗿","name":"Guardián","cost":7000},{"icon":"🎡","name":"Parque","cost":8000},{"icon":"🌋","name":"Volcán","cost":9000},{"icon":"👸","name":"Reina JEMMO","cost":10000},{"icon":"🤴","name":"Rey JEMMO","cost":12000},{"icon":"🏯","name":"Palacio","cost":15000},{"icon":"🌍","name":"Mundo JEMMO","cost":20000},{"icon":"✨","name":"Universo","cost":25000}];
+  const JEMMO_ROOM_GIFTS=[{"icon":"☕","name":"JEMMO Café","cost":500},{"icon":"💋","name":"JEMMO Besito","cost":1000},{"icon":"🌹","name":"JEMMO Rosa Neón","cost":2000},{"icon":"⭐","name":"JEMMO Estrella","cost":5000},{"icon":"🐟","name":"JEMMO Chicharro","cost":10000},{"icon":"💖","name":"JEMMO Beso Especial","cost":18000},{"icon":"💥","name":"JEMMO Boom","cost":25000},{"icon":"👑","name":"JEMMO Corona","cost":50000},{"icon":"💎","name":"JEMMO Élite","cost":100000},{"icon":"🌌","name":"JEMMO Universo","cost":200000}];
+  const ROOM_GIFT_CATALOG=[...JEMMO_ROOM_GIFTS,...[{"icon":"👍","name":"Like","cost":1},{"icon":"🌹","name":"Rosa","cost":2},{"icon":"💜","name":"Corazón violeta","cost":3},{"icon":"⭐","name":"Estrella","cost":5},{"icon":"🔥","name":"Fuego","cost":8},{"icon":"🎈","name":"Globo","cost":10},{"icon":"🍀","name":"Trébol","cost":12},{"icon":"🌻","name":"Girasol","cost":15},{"icon":"🍓","name":"Fresa","cost":18},{"icon":"🍫","name":"Chocolate","cost":20},{"icon":"☕","name":"Café","cost":25},{"icon":"🎂","name":"Tarta","cost":30},{"icon":"🦋","name":"Mariposa","cost":35},{"icon":"🐬","name":"Delfín","cost":40},{"icon":"🐟","name":"Chicharro","cost":50},{"icon":"🦄","name":"Unicornio","cost":60},{"icon":"💎","name":"Diamante","cost":75},{"icon":"🎤","name":"Micrófono","cost":90},{"icon":"🚀","name":"Cohete","cost":100},{"icon":"👑","name":"Corona","cost":120},{"icon":"🏆","name":"Trofeo","cost":150},{"icon":"🌙","name":"Luna","cost":180},{"icon":"☀️","name":"Sol","cost":200},{"icon":"🌈","name":"Arcoíris","cost":220},{"icon":"🛥️","name":"Yate","cost":250},{"icon":"🏍️","name":"Moto","cost":280},{"icon":"🚗","name":"Coche","cost":300},{"icon":"✈️","name":"Avión","cost":350},{"icon":"🏝️","name":"Isla","cost":400},{"icon":"🗼","name":"Torre","cost":450},{"icon":"🏰","name":"Castillo","cost":500},{"icon":"🐉","name":"Dragón","cost":600},{"icon":"🦁","name":"León","cost":700},{"icon":"🐯","name":"Tigre","cost":800},{"icon":"🦅","name":"Águila","cost":900},{"icon":"🌊","name":"Ola JEMMO","cost":1000},{"icon":"⚡","name":"Rayo","cost":1200},{"icon":"🎆","name":"Fuegos","cost":1500},{"icon":"🌌","name":"Galaxia","cost":1800},{"icon":"🪐","name":"Planeta","cost":2000},{"icon":"🚁","name":"Helicóptero","cost":2500},{"icon":"⛵","name":"Velero","cost":3000},{"icon":"🏎️","name":"Supercoche","cost":3500},{"icon":"💍","name":"Anillo","cost":4000},{"icon":"🛸","name":"Nave espacial","cost":5000},{"icon":"🐳","name":"Ballena","cost":6000},{"icon":"🗿","name":"Guardián","cost":7000},{"icon":"🎡","name":"Parque","cost":8000},{"icon":"🌋","name":"Volcán","cost":9000},{"icon":"👸","name":"Reina JEMMO","cost":10000},{"icon":"🤴","name":"Rey JEMMO","cost":12000},{"icon":"🏯","name":"Palacio","cost":15000},{"icon":"🌍","name":"Mundo JEMMO","cost":20000},{"icon":"✨","name":"Universo","cost":25000}]];
   function renderRoomGiftCatalog(){
     $('roomGiftCatalog').innerHTML=ROOM_GIFT_CATALOG.map(gift=>`<button class="jr-gift" data-gift="${gift.icon} ${gift.name}" data-price="${gift.cost}" type="button"><span>${gift.icon}</span><b>${gift.name}</b><small>${gift.cost.toLocaleString('es-ES')} J</small></button>`).join('');
   }

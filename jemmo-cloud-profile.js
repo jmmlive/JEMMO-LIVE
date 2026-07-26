@@ -53,23 +53,29 @@ function profileKey(uid) {
 }
 
 function readLocalProfile(uid) {
-  try {
-    const raw = localStorage.getItem(profileKey(uid));
-    const parsed = raw ? JSON.parse(raw) : {};
-    return parsed && typeof parsed === 'object' ? parsed : {};
-  } catch {
-    return {};
+  const durable = window.JemmoProfileStorage?.peek?.(uid);
+  if (durable && Object.keys(durable).length) return durable;
+  for (const storage of [localStorage, sessionStorage]) {
+    try {
+      const raw = storage.getItem(profileKey(uid));
+      const parsed = raw ? JSON.parse(raw) : {};
+      if (parsed && typeof parsed === 'object' && Object.keys(parsed).length) return parsed;
+    } catch {}
   }
+  return {};
 }
 
 function writeLocalProfile(uid, profile) {
-  try {
-    localStorage.setItem(profileKey(uid), JSON.stringify(profile));
-    return true;
-  } catch (error) {
-    console.warn('[JEMMO perfil] No se pudo actualizar el perfil local.', error);
-    return false;
+  let saved = false;
+  const serialized = JSON.stringify(profile);
+  try { localStorage.setItem(profileKey(uid), serialized); saved = true; } catch {}
+  try { sessionStorage.setItem(profileKey(uid), serialized); saved = true; } catch {}
+  if (window.JemmoProfileStorage?.save) {
+    window.JemmoProfileStorage.save(uid, profile).catch(error => console.warn('[JEMMO perfil] Respaldo duradero falló.', error));
+    saved = true;
   }
+  if (!saved) console.warn('[JEMMO perfil] No se pudo actualizar el perfil local.');
+  return saved;
 }
 
 function openMediaDb() {

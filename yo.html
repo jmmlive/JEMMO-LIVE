@@ -542,6 +542,11 @@
     /* JEMMO LIVE V1 · INVITAR AMIGOS PRUEBA 11 */
     .invite-friends-card{margin:14px 0 0;padding:14px;border:1px solid #7d317f;border-radius:21px;background:radial-gradient(circle at 86% 12%,#ffd34e24,transparent 28%),linear-gradient(155deg,#21052b,#0c010f 72%);box-shadow:0 12px 30px #0007,0 0 24px #bd32ff1c}
     .invite-friends-head{display:flex;align-items:center;gap:11px}.invite-friends-icon{width:47px;height:47px;flex:0 0 47px;border:1px solid #ffd34e;border-radius:15px;background:linear-gradient(145deg,#4e154e,#19031e);display:grid;place-items:center;font-size:24px;box-shadow:0 0 18px #ffd34e2d}.invite-friends-copy{min-width:0}.invite-friends-copy h2{margin:0;color:#ffe270;font-size:16px}.invite-friends-copy p{margin:4px 0 0;color:#d6c7db;font-size:9.5px;line-height:1.4}.invite-friends-actions{display:grid;grid-template-columns:1fr 1.15fr;gap:8px;margin-top:11px}.invite-friends-actions button{min-height:46px;border:1px solid #6a2b7b;border-radius:14px;background:#15021c;color:#fff;font-size:9px;font-weight:1000}.invite-friends-actions .share{border:0;background:linear-gradient(90deg,#ffd34e,#ff9c42,#d23eff);color:#230219}.invite-friends-actions button:disabled{opacity:.55}
+
+    /* PRUEBA 19 · MARCO DE AVATAR EQUIPADO */
+    html.jemmo-personalization-ready .avatar-button{
+      box-shadow:0 0 0 5px #08000c,var(--jemmo-equipped-avatar-shadow,0 0 26px #c136ff6b)!important;
+    }
 </style>
   <script>
     document.documentElement.classList.add('jemmo-auth-pending');
@@ -868,12 +873,13 @@
   <script type="module" src="jemmo-session.js"></script>
   <script type="module" src="jemmo-social.js"></script>
   <script src="pwa-register.js"></script>
+  <script src="jemmo-profile-storage.js"></script>
   <script src="jemmo-wallet.js"></script>
   <script src="app.js"></script>
   <script>
   (()=>{
     'use strict';
-    const uid=localStorage.getItem('jemmo_active_uid')||'local-user';
+    const uid=(()=>{try{return String(window.__jemmoAuthenticatedUid||localStorage.getItem('jemmo_active_uid')||sessionStorage.getItem('jemmo_active_uid')||'local-user')}catch{try{return String(sessionStorage.getItem('jemmo_active_uid')||'local-user')}catch{return'local-user'}}})();
     const walletKey=id=>`jemmo_wallet_v1_${id}`;
     const FINANCE_KEY='jemmo_finance_v1';
     const OWNER_KEY='jemmo_owner_security_v1';
@@ -1230,7 +1236,7 @@
     (()=>{
       'use strict';
       const $=id=>document.getElementById(id);
-      const uid=localStorage.getItem('jemmo_active_uid')||'local-user';
+      const uid=(()=>{try{return String(window.__jemmoAuthenticatedUid||localStorage.getItem('jemmo_active_uid')||sessionStorage.getItem('jemmo_active_uid')||'local-user')}catch{try{return String(sessionStorage.getItem('jemmo_active_uid')||'local-user')}catch{return'local-user'}}})();
       const KEY=`jemmo_profile_v1_${uid}`;
       const statsKey=`jemmo_profile_stats_v1_${uid}`;
       const MEDIA_DB='jemmo-profile-media-v1';
@@ -1284,8 +1290,9 @@
       };
       const clampPercent=value=>Math.max(0,Math.min(100,Number.isFinite(Number(value))?Number(value):50));
       const normalizeCoverPosition=value=>({x:clampPercent(value?.x),y:clampPercent(value?.y)});
-      const defaultProfile={name:'Usuario JEMMO',username:'usuariojemmo',bio:'Construyendo mi historia en JEMMO LIVE.',country:'España',city:'',age:'',phone:'',instagram:'',tiktok:'',youtube:'',facebook:'',avatar:'',cover:'',coverPosition:{x:50,y:50},id:makeId(),level:Number(localStorage.getItem('jemmo_transmission_level')||1),verified:localStorage.getItem('jemmo_verified')==='true'};
-      const readJSON=(key,fallback)=>{try{return {...fallback,...JSON.parse(localStorage.getItem(key)||'{}')}}catch{return {...fallback}}};
+      const safeLocal=value=>{try{return localStorage.getItem(value)||sessionStorage.getItem(value)||''}catch{try{return sessionStorage.getItem(value)||''}catch{return''}}};
+      const defaultProfile={name:'Usuario JEMMO',username:'usuariojemmo',bio:'Construyendo mi historia en JEMMO LIVE.',country:'España',city:'',age:'',phone:'',instagram:'',tiktok:'',youtube:'',facebook:'',avatar:'',cover:'',coverPosition:{x:50,y:50},id:makeId(),level:Number(safeLocal('jemmo_transmission_level')||1),verified:safeLocal('jemmo_verified')==='true'};
+      const readJSON=(key,fallback)=>{try{const durable=key===KEY?window.JemmoProfileStorage?.peek?.(uid):null;const local=JSON.parse(localStorage.getItem(key)||sessionStorage.getItem(key)||'{}');return {...fallback,...local,...(durable||{})}}catch{return {...fallback,...(key===KEY?window.JemmoProfileStorage?.peek?.(uid)||{}:{})}}};
       let profile=readJSON(KEY,defaultProfile);
       coverPosition=normalizeCoverPosition(profile.coverPosition);
       pendingCoverPosition={...coverPosition};
@@ -1495,7 +1502,7 @@
       const finishCoverDrag=event=>{if(!coverDrag||event.pointerId!==coverDrag.pointerId)return;coverPreview.releasePointerCapture?.(event.pointerId);coverPreview.classList.remove('dragging');coverDrag=null};
       coverPreview?.addEventListener('pointerup',finishCoverDrag);
       coverPreview?.addEventListener('pointercancel',finishCoverDrag);
-      $('saveProfile')?.addEventListener('click',async()=>{const button=$('saveProfile'),name=$('editName').value.trim(),username=safeUsername($('editUsername').value),bio=limitWords($('editBio').value.trim(),15),country=$('editCountry').value.trim(),city=$('editCity').value.trim(),age=$('editAge').value.trim(),phone=$('editPhone').value.trim(),instagram=cleanSocial($('editInstagram').value),tiktok=cleanSocial($('editTiktok').value),youtube=cleanSocial($('editYoutube').value),facebook=cleanSocial($('editFacebook').value);if(name.length<2){toast('Escribe un nombre válido.');return}if(age&&(Number(age)<13||Number(age)>120)){toast('Revisa la edad indicada.');return}if(countWords(bio)>15){toast('La frase puede tener un máximo de 15 palabras.');return}button.disabled=true;button.textContent='GUARDANDO…';try{await Promise.all([mediaWrite(avatarMediaKey,pendingAvatar),mediaWrite(coverMediaKey,pendingCover)]);avatarData=pendingAvatar;coverData=pendingCover;coverPosition=normalizeCoverPosition(pendingCoverPosition);profile={...profile,name,username,bio:bio||defaultProfile.bio,country:country||'Sin país',city,age,phone,instagram,tiktok,youtube,facebook,avatar:avatarData?'indexeddb':'',cover:coverData?'indexeddb':'',coverPosition,id:profile.id||makeId(),updatedAt:Date.now()};localStorage.removeItem(KEY);localStorage.setItem(KEY,JSON.stringify(profile));render();closeEdit();toast('Datos personales y fotos guardados correctamente.')}catch(error){console.error('JEMMO profile save',error);toast('No se pudo guardar. Vuelve a intentarlo.')}finally{button.disabled=false;button.textContent='GUARDAR CAMBIOS'}});
+      $('saveProfile')?.addEventListener('click',async()=>{const button=$('saveProfile'),name=$('editName').value.trim(),username=safeUsername($('editUsername').value),bio=limitWords($('editBio').value.trim(),15),country=$('editCountry').value.trim(),city=$('editCity').value.trim(),age=$('editAge').value.trim(),phone=$('editPhone').value.trim(),instagram=cleanSocial($('editInstagram').value),tiktok=cleanSocial($('editTiktok').value),youtube=cleanSocial($('editYoutube').value),facebook=cleanSocial($('editFacebook').value);if(name.length<2){toast('Escribe un nombre válido.');return}if(age&&(Number(age)<13||Number(age)>120)){toast('Revisa la edad indicada.');return}if(countWords(bio)>15){toast('La frase puede tener un máximo de 15 palabras.');return}button.disabled=true;button.textContent='GUARDANDO…';try{await Promise.all([mediaWrite(avatarMediaKey,pendingAvatar),mediaWrite(coverMediaKey,pendingCover)]);avatarData=pendingAvatar;coverData=pendingCover;coverPosition=normalizeCoverPosition(pendingCoverPosition);profile={...profile,name,username,bio:bio||defaultProfile.bio,country:country||'Sin país',city,age,phone,instagram,tiktok,youtube,facebook,avatar:avatarData?'indexeddb':'',cover:coverData?'indexeddb':'',coverPosition,id:profile.publicId||profile.id||makeId(),publicId:profile.publicId||profile.id||'',updatedAt:Date.now()};const saved=await window.JemmoProfileStorage?.save?.(uid,profile);if(saved&&!saved.ok)throw new Error('profile-storage-failed');render();closeEdit();toast('Datos personales, ID y fotos guardados correctamente.')}catch(error){console.error('JEMMO profile save',error);toast('No se pudo guardar. Vuelve a intentarlo.')}finally{button.disabled=false;button.textContent='GUARDAR CAMBIOS'}});
 
       const runFriendInvite=async action=>{const copyButton=$('copyInviteLink'),shareButton=$('shareInviteLink');copyButton.disabled=true;shareButton.disabled=true;try{const referrals=await import('./jemmo-referrals.js');if(action==='copy'){const result=await referrals.copyMyInvite();toast(result.copied?'Enlace personal copiado.':'No se pudo copiar el enlace.')}else{const result=await referrals.shareMyInvite(profile.name);if(result.cancelled)return;toast(result.shared?'Invitación compartida.':result.copied?'Enlace copiado para compartir.':'No se pudo compartir la invitación.')}}catch(error){console.warn('Invitar amigos:',error);toast('No se pudo preparar tu enlace de invitación.')}finally{copyButton.disabled=false;shareButton.disabled=false}};
       $('copyInviteLink')?.addEventListener('click',()=>void runFriendInvite('copy'));
@@ -1531,15 +1538,16 @@
 
       const bootstrap=async()=>{
         try{
+          const durableProfile=await window.JemmoProfileStorage?.load?.(uid);
+          if(durableProfile&&Object.keys(durableProfile).length)profile={...defaultProfile,...profile,...durableProfile};
           const legacyAvatar=isImageData(profile.avatar)?profile.avatar:'';
           const legacyCover=isImageData(profile.cover)?profile.cover:'';
           avatarData=legacyAvatar||await mediaRead(avatarMediaKey).catch(()=> '');
           coverData=legacyCover||await mediaRead(coverMediaKey).catch(()=> '');
           if(legacyAvatar||legacyCover){
             await Promise.all([legacyAvatar?mediaWrite(avatarMediaKey,legacyAvatar):Promise.resolve(),legacyCover?mediaWrite(coverMediaKey,legacyCover):Promise.resolve()]);
-            profile={...profile,avatar:avatarData?'indexeddb':'',cover:coverData?'indexeddb':''};
-            localStorage.removeItem(KEY);
-            localStorage.setItem(KEY,JSON.stringify(profile));
+            profile={...profile,avatar:avatarData?'indexeddb':'',cover:coverData?'indexeddb':'',updatedAt:Math.max(Date.now(),Number(profile.updatedAt)||0)};
+            await window.JemmoProfileStorage?.save?.(uid,profile);
           }
         }catch(error){console.warn('JEMMO profile media load',error);avatarData=isImageData(profile.avatar)?profile.avatar:'';coverData=isImageData(profile.cover)?profile.cover:''}
         coverPosition=normalizeCoverPosition(profile.coverPosition);pendingCoverPosition={...coverPosition};
@@ -1548,6 +1556,7 @@
       bootstrap();
     })();
   </script>
+  <script type="module" src="jemmo-personalization-runtime.js"></script>
   <script type="module" src="jemmo-role-lab.js"></script>
 </body>
 </html>

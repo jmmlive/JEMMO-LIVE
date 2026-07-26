@@ -39,7 +39,7 @@
   function openDb() {
     if (dbPromise) return dbPromise;
     dbPromise = new Promise((resolve, reject) => {
-      if (!('indexedDB' in window)) {
+      if (!window.indexedDB) {
         reject(new Error('indexeddb-unavailable'));
         return;
       }

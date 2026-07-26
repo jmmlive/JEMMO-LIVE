@@ -1426,7 +1426,10 @@
       liveHistoryGuard:false,
       pendingExitUrl:null
     };
-    const TASK_KEY = `jemmo_live_task_v08:${localStorage.getItem("jemmo_active_uid")||sessionStorage.getItem("jemmo_active_uid")||"local"}:${new Date().toISOString().slice(0,10)}`;
+    const LIVE_GIFT_CATALOG=[
+      {icon:'☕',name:'JEMMO Café',cost:500},{icon:'💋',name:'JEMMO Besito',cost:1000},{icon:'🌹',name:'JEMMO Rosa Neón',cost:2000},{icon:'⭐',name:'JEMMO Estrella',cost:5000},{icon:'🐟',name:'JEMMO Chicharro',cost:10000},{icon:'💖',name:'JEMMO Beso Especial',cost:18000},{icon:'💥',name:'JEMMO Boom',cost:25000},{icon:'👑',name:'JEMMO Corona',cost:50000},{icon:'💎',name:'JEMMO Élite',cost:100000},{icon:'🌌',name:'JEMMO Universo',cost:200000}
+    ];
+    const TASK_KEY = `jemmo_live_task_v08:${activeUid()}:${new Date().toISOString().slice(0,10)}`;
     const TASK_WINDOW_MS = 24*60*60*1000;
     const MIC_GRACE_MS = 3*60*1000;
     const INACTIVITY_SOFT_MS = 2*60*1000;
@@ -1943,6 +1946,8 @@
       await persistProfile({silent:false});
       updateChecks();
     });
+    // Recupera título, descripción y portada antes de iniciar módulos secundarios.
+    void loadProfile();
 
     function hasCamera(){
       return Boolean(state.mainStream?.getVideoTracks().some(t=>t.readyState==="live"));
@@ -2566,7 +2571,6 @@
       updateChecks();
     });
 
-    void loadProfile();
     applyFilter("natural");
     updateBattle();
     updateBalanceUI();

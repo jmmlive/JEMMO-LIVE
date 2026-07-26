@@ -57,12 +57,14 @@ function safeLocalProfile(uid) {
 }
 
 function persistLocalPublicId(uid, publicId) {
-  const { key, profile } = safeLocalProfile(uid);
-  try {
-    localStorage.setItem(key, JSON.stringify({ ...profile, id: publicId, publicId }));
-  } catch (error) {
-    console.warn('[JEMMO ID] No se pudo actualizar la copia local.', error);
-  }
+  const { key, profile: localProfile } = safeLocalProfile(uid);
+  let profile = { ...(window.JemmoProfileStorage?.peek?.(uid) || {}), ...localProfile };
+  try { profile = { ...profile, ...(JSON.parse(sessionStorage.getItem(key) || '{}') || {}) }; } catch {}
+  const next = { ...profile, id: publicId, publicId, updatedAt: Math.max(Date.now(), Number(profile.updatedAt) || 0) };
+  try { localStorage.setItem(key, JSON.stringify(next)); } catch {}
+  try { sessionStorage.setItem(key, JSON.stringify(next)); } catch {}
+  const durableSave = window.JemmoProfileStorage?.save?.(uid, next);
+  durableSave?.catch(error => console.warn('[JEMMO ID] Respaldo duradero falló.', error));
 }
 
 function patchOwnProfileUi(publicId) {
