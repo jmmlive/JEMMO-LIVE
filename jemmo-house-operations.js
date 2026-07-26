@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · PANEL OPERATIVO DE CASAS PRUEBA 14
+/* JEMMO LIVE V1 · PANEL OPERATIVO DE CASAS PRUEBA 15
    Sala oficial, objetivos de tareas y control de emisores/emisoras. */
 const firebaseConfig = {
   apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
@@ -49,7 +49,7 @@ const DEFAULT_TASK_CONFIG = {
   cycleKey: cycleKey()
 };
 const DEFAULT_ROOM_CONFIG = {
-  capacity: 25,
+  capacity: 20,
   mode: 'audio',
   seatPolicy: 'members',
   minLevel: 1,
@@ -64,7 +64,9 @@ const state = {
   house: {},
   memberRole: 'member',
   platformOwner: false,
+  actualAdmin: false,
   isAdmin: false,
+  testRole: '',
   members: [],
   profiles: new Map(),
   tasks: new Map(),
@@ -106,7 +108,23 @@ function normalizedAccountRole(value) {
   return 'user';
 }
 
+function readTestRole() {
+  if (!state.platformOwner || !state.user?.uid) return '';
+  try {
+    const saved = JSON.parse(localStorage.getItem(`jemmo_role_lab_v1_${state.user.uid}`) || 'null');
+    return ['owner', 'agent', 'emitter', 'member'].includes(saved?.mode) ? saved.mode : 'owner';
+  } catch { return 'owner'; }
+}
+function refreshAuthority() {
+  state.testRole = readTestRole();
+  state.actualAdmin = state.platformOwner || ['owner', 'admin'].includes(state.memberRole);
+  state.isAdmin = state.testRole ? ['owner', 'agent'].includes(state.testRole) : state.actualAdmin;
+}
+
 function positionLabel(member) {
+  if (member?.uid === state.user?.uid && state.testRole) {
+    return ({ owner: 'PROPIETARIO', agent: 'AGENTE DE CASA', emitter: 'EMISOR/A', member: 'MIEMBRO' })[state.testRole] || 'MIEMBRO';
+  }
   const position = clean(member.housePosition || member.position, 30);
   if (position === 'emitter') return 'EMISOR/A';
   if (position === 'agent') return 'AGENTE';
@@ -120,6 +138,7 @@ function positionLabel(member) {
 }
 
 function isEmitter(member) {
+  if (member?.uid === state.user?.uid && state.testRole) return state.testRole === 'emitter';
   const profile = state.profiles.get(member.uid) || {};
   return clean(member.housePosition, 30) === 'emitter' || normalizedAccountRole(profile.role || profile.rol || member.accountRole) === 'emitter';
 }
@@ -174,8 +193,9 @@ function subscribeHouse(houseId) {
   state.unsubscribers.push(s.onSnapshot(s.doc(s.db, 'casas', houseId, 'miembros', state.user.uid), snapshot => {
     const data = snapshot.data() || {};
     state.memberRole = clean(data.role || state.profile.houseRole || 'member', 20);
-    state.isAdmin = state.platformOwner || ['owner', 'admin'].includes(state.memberRole);
+    refreshAuthority();
     renderAll();
+    if (state.actualAdmin) void ensurePermanentRoom();
   }));
 
   state.unsubscribers.push(s.onSnapshot(s.collection(s.db, 'casas', houseId, 'miembros'), snapshot => {
@@ -215,38 +235,57 @@ function subscribeHouse(houseId) {
   }, error => console.warn('JEMMO Casa operaciones: sala', error?.code || error)));
 }
 
+function permanentRoomUrl() {
+  const houseName = clean(state.house.name || $('#workspaceName')?.textContent || 'Mi Casa', 60);
+  const url = new URL('salas.html', location.href);
+  url.searchParams.set('houseRoom', '1');
+  url.searchParams.set('direct', '1');
+  url.searchParams.set('house', state.houseId);
+  url.searchParams.set('houseName', houseName);
+  url.searchParams.set('mode', 'audio');
+  url.searchParams.set('count', '20');
+  url.searchParams.set('title', `Sala 24/7 de ${houseName}`);
+  url.searchParams.set('description', 'Audio Room permanente para tareas y organización de emisores y emisoras de la Casa.');
+  return url.href;
+}
+
+async function ensurePermanentRoom() {
+  if (!state.actualAdmin || !state.services || !state.houseId) return;
+  const s = state.services;
+  try {
+    await s.setDoc(s.doc(s.db, 'casas', state.houseId, 'configuracion', 'sala'), {
+      capacity: 20, mode: 'audio', permanent: true, open24x7: true,
+      seatPolicy: clean(state.roomConfig.seatPolicy || 'members', 20),
+      minLevel: Math.min(100, Math.max(1, Number(state.roomConfig.minLevel) || 1)),
+      updatedBy: state.user.uid, updatedAt: s.serverTimestamp()
+    }, { merge: true });
+    await s.setDoc(s.doc(s.db, 'casas', state.houseId, 'salaActual', 'estado'), {
+      status: 'open', permanent: true, open24x7: true, mode: 'audio', capacity: 20, count: 20,
+      houseId: state.houseId, houseName: clean(state.house.name || 'Casa Padre JEMMO', 60),
+      directUrl: permanentRoomUrl(), updatedAt: s.serverTimestamp()
+    }, { merge: true });
+  } catch (error) { console.warn('JEMMO Casa: sala permanente', error?.code || error); }
+}
+
 function renderRoom() {
   const target = $('#houseRoomPanel');
   if (!target) return;
-  const open = clean(state.room.status, 20) === 'open' && (!state.room.expiresAtMs || Number(state.room.expiresAtMs) > Date.now());
   const houseName = clean(state.house.name || $('#workspaceName')?.textContent || 'Mi Casa', 60);
-  const startUrl = new URL('salas.html', location.href);
-  startUrl.searchParams.set('houseRoom', '1');
-  startUrl.searchParams.set('house', state.houseId);
-  startUrl.searchParams.set('houseName', houseName);
-  startUrl.searchParams.set('mode', 'audio');
-  startUrl.searchParams.set('count', '25');
-  startUrl.searchParams.set('title', `Sala oficial de ${houseName}`);
-  startUrl.searchParams.set('description', 'Audio Room oficial para miembros, tareas y actividades de la Casa.');
-  const joinUrl = clean(state.room.joinUrl, 1400) || (state.room.roomId ? `salas.html?join=${encodeURIComponent(state.room.roomId)}&houseRoom=1&house=${encodeURIComponent(state.houseId)}` : '');
+  const directUrl = permanentRoomUrl();
+  const sessionActive = clean(state.room.sessionStatus, 20) === 'active' && Number(state.room.sessionExpiresAtMs || state.room.expiresAtMs || 0) > Date.now();
   const policy = ({ members: 'Solo miembros', fans: 'Fans y miembros', followers: 'Seguidores, fans y miembros', admins: 'Solo responsables', manual: 'Invitación manual' })[state.roomConfig.seatPolicy] || 'Solo miembros';
-
   target.innerHTML = `
-    <div class="house-room-hero ${open ? 'is-live' : ''}">
+    <div class="house-room-hero is-live is-permanent">
       <span class="house-room-icon">🎙</span>
-      <div><small>${open ? 'SALA ABIERTA AHORA' : 'AUDIO ROOM OFICIAL · 25 SILLAS'}</small><h2>${escapeHtml(open ? (state.room.title || `Sala oficial de ${houseName}`) : `Sala de ${houseName}`)}</h2><p>${open ? `Anfitrión: ${escapeHtml(state.room.hostName || 'Administración')}` : 'La tarea de Audio Room se contabiliza únicamente dentro de esta sala oficial.'}</p></div>
-      <span class="house-room-status">${open ? 'EN VIVO' : 'CERRADA'}</span>
+      <div><small>SALA DE CASA ABIERTA 24/7 · SOLO AUDIO</small><h2>Sala de ${escapeHtml(houseName)}</h2><p>${sessionActive ? `Hay una conexión activa dirigida por ${escapeHtml(state.room.hostName || 'la Casa')}.` : 'Entra directamente. La primera persona conectada prepara la sesión de audio de prueba.'}</p></div>
+      <span class="house-room-status">24/7</span>
     </div>
     <div class="house-room-data">
-      <div><small>CAPACIDAD</small><b>25</b></div><div><small>ACCESO A SILLA</small><b>${escapeHtml(policy)}</b></div><div><small>NIVEL MÍNIMO</small><b>${formatNumber(state.roomConfig.minLevel || 1)}</b></div>
+      <div><small>CAPACIDAD</small><b>20</b></div><div><small>ACCESO A SILLA</small><b>${escapeHtml(policy)}</b></div><div><small>CÁMARA</small><b>DESACTIVADA</b></div>
     </div>
-    <div class="house-room-actions">
-      ${open ? `<a class="primary" href="${escapeHtml(joinUrl)}">ENTRAR EN LA SALA</a>` : ''}
-      ${state.isAdmin && !open ? `<a class="primary" href="${escapeHtml(startUrl.href)}">ABRIR SALA OFICIAL</a>` : ''}
-      ${state.isAdmin && open ? '<button type="button" class="danger" data-close-house-room>CERRAR SALA</button>' : ''}
-    </div>
+    <div class="house-room-actions"><a class="primary" href="${escapeHtml(directUrl)}">ENTRAR DIRECTAMENTE</a></div>
     ${state.isAdmin ? `<form class="house-room-config" id="houseRoomConfigForm"><label>Quién puede subir a silla<select name="seatPolicy"><option value="members" ${state.roomConfig.seatPolicy === 'members' ? 'selected' : ''}>Solo miembros</option><option value="fans" ${state.roomConfig.seatPolicy === 'fans' ? 'selected' : ''}>Fans y miembros</option><option value="followers" ${state.roomConfig.seatPolicy === 'followers' ? 'selected' : ''}>Seguidores, fans y miembros</option><option value="admins" ${state.roomConfig.seatPolicy === 'admins' ? 'selected' : ''}>Solo responsables</option><option value="manual" ${state.roomConfig.seatPolicy === 'manual' ? 'selected' : ''}>Invitación manual</option></select></label><label>Nivel mínimo<input name="minLevel" type="number" min="1" max="100" value="${number(state.roomConfig.minLevel || 1)}"></label><button type="submit">GUARDAR AJUSTES</button></form>` : ''}
-    <p class="house-module-note">La sala se abre desde Salas con el nombre de la Casa, Audio Room y 25 plazas. Al iniciar, el enlace aparece aquí para todos los miembros.</p>`;
+    <p class="house-module-note">Esta sala pertenece a la Casa, no al perfil personal de una emisora. Permanece disponible aunque una persona salga. Las emisoras entran desde Mi Casa o desde su perfil y el tiempo cuenta para la tarea.</p>`;
 }
 
 function renderOwnTasks() {
@@ -298,6 +337,7 @@ function renderAssignments() {
 }
 
 function renderAll() {
+  refreshAuthority();
   const workspace = $('#houseWorkspace');
   if (!workspace || workspace.hidden || !state.houseId) return;
   document.querySelectorAll('[data-workspace-tab="emitters"]').forEach(element => { element.hidden = !state.isAdmin; });
@@ -335,7 +375,7 @@ async function saveRoomConfig(event) {
   const data = new FormData(event.currentTarget);
   try {
     await state.services.setDoc(state.services.doc(state.services.db, 'casas', state.houseId, 'configuracion', 'sala'), {
-      capacity: 25,
+      capacity: 20,
       mode: 'audio',
       seatPolicy: clean(data.get('seatPolicy'), 20) || 'members',
       minLevel: Math.min(100, Math.max(1, Number(data.get('minLevel')) || 1)),
@@ -374,20 +414,6 @@ async function changePosition(uid, position) {
   } catch { toast('No se pudo cambiar la función.', 'error'); }
 }
 
-async function closeRoom() {
-  if (!state.isAdmin) return;
-  if (!confirm('¿Cerrar la Sala oficial de la Casa? Los miembros dejarán de verla como activa.')) return;
-  try {
-    const s = state.services;
-    const operations = [s.setDoc(s.doc(s.db, 'casas', state.houseId, 'salaActual', 'estado'), {
-      status: 'ended', closedBy: state.user.uid, closedAt: s.serverTimestamp(), updatedAt: s.serverTimestamp()
-    }, { merge: true })];
-    if (state.room.roomId) operations.push(s.setDoc(s.doc(s.db, 'salasPruebaWebRTC', state.room.roomId), { status: 'ended', endedAt: s.serverTimestamp(), updatedAt: s.serverTimestamp() }, { merge: true }));
-    await Promise.all(operations);
-    toast('Sala oficial cerrada.', 'success');
-  } catch { toast('No se pudo cerrar la sala.', 'error'); }
-}
-
 function bind() {
   document.addEventListener('submit', event => {
     if (event.target.id === 'houseTaskConfigForm') void saveTaskConfig(event);
@@ -396,7 +422,6 @@ function bind() {
   document.addEventListener('click', event => {
     const review = event.target.closest('[data-review-task]');
     if (review) { review.disabled = true; void reviewTask(review.dataset.taskUid, review.dataset.reviewTask).finally(() => { review.disabled = false; }); return; }
-    if (event.target.closest('[data-close-house-room]')) { void closeRoom(); }
   });
   document.addEventListener('change', event => {
     const select = event.target.closest('[data-house-position]');
@@ -424,7 +449,9 @@ async function boot() {
       const security = JSON.parse(localStorage.getItem('jemmo_owner_security_v1') || 'null');
       if (security?.ownerUid === state.user.uid) state.platformOwner = true;
     } catch {}
+    refreshAuthority();
     bind();
+    window.addEventListener('jemmo-test-role-change', () => { refreshAuthority(); renderAll(); });
     const workspace = $('#houseWorkspace');
     new MutationObserver(() => void attachCurrentWorkspace()).observe(workspace, { attributes: true, attributeFilter: ['hidden', 'data-house-id'] });
     document.addEventListener('click', event => {
@@ -438,7 +465,7 @@ async function boot() {
 
 window.JemmoHouseOperations = {
   refresh: () => attachCurrentWorkspace(),
-  getState: () => ({ houseId: state.houseId, isAdmin: state.isAdmin, memberRole: state.memberRole, room: { ...state.room }, taskConfig: { ...state.taskConfig } })
+  getState: () => ({ houseId: state.houseId, isAdmin: state.isAdmin, actualAdmin: state.actualAdmin, testRole: state.testRole, memberRole: state.memberRole, room: { ...state.room }, taskConfig: { ...state.taskConfig } })
 };
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });

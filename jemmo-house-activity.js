@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · ACTIVIDAD DE CASAS PRUEBA 14
+/* JEMMO LIVE V1 · ACTIVIDAD DE CASAS PRUEBA 15
    Registra tiempo real de LIVE y de la Sala oficial de la Casa.
    No concede premios: solo aporta datos de control para administración. */
 (() => {
@@ -132,7 +132,8 @@
           uid: user.uid,
           displayName: clean(profile.displayName || user.displayName || user.email?.split('@')[0] || 'Usuario JEMMO', 48),
           publicId: clean(profile.publicId, 48),
-          accountRole: clean(profile.role || profile.rol || profile.accountRole || 'usuario', 30),
+          accountRole: clean(window.JemmoRoleLab?.get?.().accountRole || profile.role || profile.rol || profile.accountRole || 'usuario', 30),
+          testRoleMode: clean(window.JemmoRoleLab?.get?.().mode, 20),
           cycleKey: key,
           liveSeconds: liveSeconds + (activityType === 'live' ? seconds : 0),
           houseRoomSeconds: houseRoomSeconds + (activityType === 'house_room' ? seconds : 0),

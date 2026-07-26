@@ -5,7 +5,7 @@
   "description": "JEMMO LIVE: transmisiones en vivo, salas, comunidad, perfiles y Chili IA.",
   "lang": "es-ES",
   "dir": "ltr",
-  "start_url": "./index.html?source=pwa-house-father-operations-14",
+  "start_url": "./index.html?source=pwa-house-room-24x7-role-lab-15",
   "scope": "./",
   "display": "standalone",
   "display_override": [
@@ -68,6 +68,17 @@
       "name": "Casas",
       "short_name": "Casas",
       "url": "./casa-demo.html?source=shortcut",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Sala de Casa",
+      "short_name": "Sala Casa",
+      "url": "./casa-demo.html?miCasa=1&tab=room",
       "icons": [
         {
           "src": "icon-192.png",

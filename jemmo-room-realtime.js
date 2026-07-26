@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · RECEPCIÓN INVITADA Y SALA DE CASA PRUEBA 14
+/* JEMMO LIVE V1 · RECEPCIÓN INVITADA Y SALA DE CASA PRUEBA 15
    Señalización WebRTC y chat de prueba mediante Firestore. No es infraestructura de producción.
    La invitada enlaza sus pistas a los transceptores ofrecidos por el anfitrión antes de responder. */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
@@ -193,7 +193,7 @@ function configureRoomChat({ roomRef, user, profile, unsubs, onMessage }) {
   };
 }
 
-function makeSession({ role, roomId, roomRef, houseRoomRef, peer, remoteStream, unsubs, onStatus, sendChatMessage, renegotiate, requestRenegotiation, expectVideo }) {
+function makeSession({ role, roomId, roomRef, houseRoomRef, permanentHouseRoom = false, peer, remoteStream, unsubs, onStatus, sendChatMessage, renegotiate, requestRenegotiation, expectVideo }) {
   let closed = false;
   const close = async ({ endRoom = role === 'host' } = {}) => {
     if (closed) return;
@@ -205,7 +205,10 @@ function makeSession({ role, roomId, roomRef, houseRoomRef, peer, remoteStream, 
     if (endRoom) {
       try {
         await updateDoc(roomRef, { status: 'ended', endedAt: serverTimestamp(), updatedAt: serverTimestamp() });
-        if (houseRoomRef) await setDoc(houseRoomRef, { status: 'ended', endedAt: serverTimestamp(), updatedAt: serverTimestamp() }, { merge: true });
+        if (houseRoomRef) {
+          if (permanentHouseRoom) await setDoc(houseRoomRef, { status: 'open', permanent: true, open24x7: true, sessionStatus: 'idle', activeRoomId: '', roomId: '', joinUrl: '', lastSessionEndedAt: serverTimestamp(), updatedAt: serverTimestamp() }, { merge: true });
+          else await setDoc(houseRoomRef, { status: 'ended', endedAt: serverTimestamp(), updatedAt: serverTimestamp() }, { merge: true });
+        }
       } catch (error) {
         console.warn('JEMMO Room close:', error);
       }
@@ -321,7 +324,7 @@ async function getRoomPreview(code) {
   return {
     roomId: id,
     mode: data.mode === 'camera' ? 'camera' : 'audio',
-    count: [4, 8, 12, 15, 25].includes(Number(data.count)) ? Number(data.count) : 4,
+    count: [4, 8, 12, 15, 20, 25].includes(Number(data.count)) ? Number(data.count) : 4,
     title: clean(data.title, 60) || 'Sala de JEMMO',
     description: clean(data.description, 180),
     hostName: clean(data.hostName) || 'Anfitrión',
@@ -332,6 +335,22 @@ async function getRoomPreview(code) {
   };
 }
 
+async function getActiveHouseRoom(houseIdValue) {
+  const houseId = clean(houseIdValue, 80);
+  if (!houseId) return null;
+  const stateSnap = await getDoc(doc(db, 'casas', houseId, 'salaActual', 'estado'));
+  if (!stateSnap.exists()) return null;
+  const roomState = stateSnap.data() || {};
+  const id = roomCode(roomState.activeRoomId || roomState.roomId);
+  if (!id || roomState.sessionStatus !== 'active' || Number(roomState.sessionExpiresAtMs || roomState.expiresAtMs || 0) <= Date.now()) return null;
+  const roomSnap = await getDoc(doc(db, ROOM_COLLECTION, id));
+  if (!roomSnap.exists()) return null;
+  const data = roomSnap.data() || {};
+  if (data.status === 'ended' || Number(data.expiresAtMs || 0) <= Date.now()) return null;
+  const preview = await getRoomPreview(id);
+  return { ...preview, hostUid: clean(data.hostUid, 160), permanent: true };
+}
+
 async function createHostSession(options = {}) {
   const user = await waitForUser();
   const profile = await readProfile(user);
@@ -340,6 +359,7 @@ async function createHostSession(options = {}) {
   const houseId = clean(options.houseId, 80);
   const houseName = clean(options.houseName, 60);
   const houseRoomRef = houseId ? doc(db, 'casas', houseId, 'salaActual', 'estado') : null;
+  const permanentHouseRoom = Boolean(options.permanentHouseRoom && houseId);
   const peer = new RTCPeerConnection(RTC_CONFIG);
   const remoteStream = new MediaStream();
   const unsubs = [];
@@ -445,15 +465,17 @@ async function createHostSession(options = {}) {
     answerRevision: 0,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-    expiresAtMs: Date.now() + 2 * 60 * 60 * 1000
+    permanentHouseRoom,
+    expiresAtMs: Date.now() + (permanentHouseRoom ? 8 : 2) * 60 * 60 * 1000
   });
   if (houseRoomRef) {
     const joinUrl = new URL(`salas.html?join=${encodeURIComponent(id)}&houseRoom=1&house=${encodeURIComponent(houseId)}&houseName=${encodeURIComponent(houseName)}`, location.href).href;
     await setDoc(houseRoomRef, {
-      status: 'open', roomId: id, joinUrl, mode: options.mode === 'camera' ? 'camera' : 'audio',
-      count: Number(options.count) || 25, title: clean(options.title, 60), description: clean(options.description, 180),
+      status: 'open', permanent: permanentHouseRoom, open24x7: permanentHouseRoom, sessionStatus: 'active',
+      roomId: id, activeRoomId: id, joinUrl, mode: options.mode === 'camera' ? 'camera' : 'audio',
+      count: Number(options.count) || 20, capacity: Number(options.count) || 20, title: clean(options.title, 60), description: clean(options.description, 180),
       hostUid: user.uid, hostName: profile.name, houseId, houseName,
-      openedAt: serverTimestamp(), updatedAt: serverTimestamp(), expiresAtMs: Date.now() + 2 * 60 * 60 * 1000
+      openedAt: serverTimestamp(), updatedAt: serverTimestamp(), sessionExpiresAtMs: Date.now() + (permanentHouseRoom ? 8 : 2) * 60 * 60 * 1000
     }, { merge: true });
   }
 
@@ -507,7 +529,7 @@ async function createHostSession(options = {}) {
   options.onLocalProfile?.(profile);
   options.onStatus?.({ state: 'waiting', text: 'Esperando a Ruth' });
   const session = makeSession({
-    role: 'host', roomId: id, roomRef, houseRoomRef, peer, remoteStream, unsubs,
+    role: 'host', roomId: id, roomRef, houseRoomRef, permanentHouseRoom, peer, remoteStream, unsubs,
     onStatus: options.onStatus, sendChatMessage,
     renegotiate: publishOffer,
     requestRenegotiation: null,
@@ -637,8 +659,9 @@ async function joinGuestSession(code, options = {}) {
 }
 
 window.JemmoRoomRealtime = Object.freeze({
-  version: '1.3.0-test',
+  version: '1.4.0-test',
   getRoomPreview,
+  getActiveHouseRoom,
   createHostSession,
   joinGuestSession
 });

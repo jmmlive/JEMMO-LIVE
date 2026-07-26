@@ -1,79 +1,48 @@
-JEMMO LIVE V1 · CASA PADRE, SALA Y CONTROL DE EMISORES PRUEBA 14
+JEMMO LIVE V1 · SALA DE CASA 24/7 Y ROLES DE PRUEBA PRUEBA 15
 Fecha: 26/07/2026
 
 Base verificada:
-- JEMMO LIVE V1 · CASAS FUNCIONALES PRUEBA 13.
-- Conserva solicitudes, aceptación/rechazo, Mi Casa, avisos, chat, miembros y administración.
-- Conserva WebRTC y referidos de PRUEBA 11 y regalos de Batalla de PRUEBA 12.
+- JEMMO LIVE V1 · CASA PADRE, SALA Y CONTROL DE EMISORES PRUEBA 14.
+- Conserva Casa Padre, tareas, panel de emisores, WebRTC/referidos y regalos de Batalla.
 
-Corrección de identidad:
-- El nombre oficial se corrige de “Casa Madre JEMMO” a “Casa Padre JEMMO”.
-- La Casa oficial pasa a usar el identificador canónico `padre` en las nuevas instalaciones.
-- El texto de ayuda de Chili IA también usa Casa Padre.
+Sala permanente de la Casa:
+- La Sala de Casa deja de abrirse y cerrarse como una sala personal.
+- Permanece disponible 24 horas al día y 7 días a la semana.
+- Es exclusivamente Audio Room; no permite cámara.
+- Capacidad visual y organizativa: 20 sillas.
+- Acceso directo desde Mi Casa, sin asistente de portada, título ni descripción.
+- La primera persona conectada prepara la sesión WebRTC disponible; las siguientes entran directamente cuando la sesión está activa.
+- Al salir el anfitrión termina únicamente esa sesión técnica, pero la Sala de Casa sigue abierta y disponible.
+- No se muestran ocupantes ficticios en la Sala oficial.
+- El tiempo dentro de la Sala sigue contando en la tarea de Casa.
 
-Sala oficial de la Casa:
-- Nueva pestaña SALA dentro de Mi Casa.
-- Audio Room oficial de 25 sillas.
-- Propietario o administrador abre la sala desde el panel.
-- Al comenzar la sala se publica su estado en `casas/{houseId}/salaActual/estado`.
-- Los miembros ven el botón ENTRAR EN LA SALA mientras esté abierta.
-- El panel muestra anfitrión, capacidad, política de acceso a silla y nivel mínimo.
-- Administración puede cerrar el estado de la sala.
-- La Sala oficial utiliza el WebRTC existente de Salas y mantiene la prueba pendiente entre Jesús y Ruth.
+Perfil y Mi Casa:
+- La tarjeta Mi Casa del Perfil muestra la Casa y la función de prueba activa.
+- En modo Emisor/a el botón lleva directamente a la Sala de la Casa.
+- En modo Agente o Propietario lleva al panel de gestión de Casa y emisores.
 
-Control de tareas:
-- Nueva pestaña MIS TAREAS para cada miembro.
-- Objetivos separados de LIVE y Sala oficial de la Casa.
-- El tiempo de LIVE se registra mientras la pantalla de emisión permanece activa.
-- El tiempo de Audio Room solo cuenta cuando se entra mediante la Sala oficial de la Casa.
-- Datos guardados en `casas/{houseId}/tareas/{uid}` por ciclo.
-- Las tareas no generan JEMS ni pagos automáticos: requieren revisión y conexión posterior con el sistema económico.
+Selector exclusivo de roles de prueba:
+- Nuevo laboratorio de roles visible únicamente para la cuenta propietaria reconocida.
+- Modos: Propietario, Agente de Casa, Emisor/a y Miembro.
+- Cambia la presentación y los módulos visibles para poder probar cada recorrido.
+- No elimina ni modifica la propiedad real de Jesús.
+- Se guarda localmente y se intenta sincronizar en el perfil Firestore.
 
-Panel de emisores y emisoras:
-- Nueva pestaña EMISORES/AS visible para propietario y administradores.
-- Resumen de número de emisores, tareas completas, minutos LIVE y minutos en Sala de Casa.
-- Ficha por emisor/a con progreso, última actividad y estado de revisión.
-- Administración puede aprobar o reabrir la revisión de una tarea.
-- En Administración se asigna la función interna: miembro, emisor/a, agente o apoyo administrativo.
-- La función interna no sustituye el rol global de la cuenta.
+Limitación técnica verificada:
+- El WebRTC actual continúa siendo una conexión de prueba anfitrión-invitada.
+- Las 20 sillas y la rotación pueden probarse visualmente, pero 20 audios simultáneos reales requieren un servidor SFU (por ejemplo LiveKit/Agora/Twilio) y no deben simularse como producción con una malla móvil.
+- Antes de Play Store debe integrarse el proveedor SFU y un servicio seguro de tokens.
 
-Configuración:
-- Administración define minutos objetivo de LIVE y Sala de Casa para cada ciclo.
-- Configura quién puede subir a silla y el nivel mínimo de la Sala oficial.
-- Valores iniciales de prueba: 60 minutos LIVE y 60 minutos Sala de Casa.
-
-Archivos modificados o añadidos:
-- `casa-demo.html`
-- `app.css`
-- `jemmo-houses.js`
-- `jemmo-house-operations.js` (nuevo)
-- `jemmo-house-activity.js` (nuevo)
-- `salas.html`
-- `jemmo-room-realtime.js`
-- `live.html`
-- `jemmo-chili-knowledge.js`
-- `sw.js`
-- `pwa-register.js`
-- `manifest.webmanifest`
-- `VERSION.txt`
-- `INTEGRIDAD_SHA256.txt`
-
-Actualización PWA:
-- Caché: `jemmo-live-v1-house-father-operations-14-20260726`.
-- Registro: `pwa-house-father-operations-14`.
+PWA:
+- Caché: jemmo-live-v1-house-room-24x7-role-lab-15-20260726.
+- Registro: pwa-house-room-24x7-role-lab-15.
 - No es necesario desinstalar la PWA.
 
-Pruebas móviles obligatorias:
-1. Confirmar que todas las pantallas dicen Casa Padre JEMMO.
-2. Entrar en Mi Casa y revisar SALA, MIS TAREAS, EMISORES/AS y ADMINISTRACIÓN.
-3. Marcar una cuenta de prueba como EMISOR/A.
-4. Abrir la Sala oficial desde Jesús y entrar desde Ruth.
-5. Mantenerse un minuto y confirmar que aumenta Sala de Casa.
-6. Abrir un LIVE desde una cuenta miembro y confirmar que aumenta LIVE.
-7. Aprobar y reabrir una tarea desde el panel.
-8. Completar la prueba WebRTC real pendiente de cámara y micrófono.
-
-Límites y seguridad:
-- Los objetivos son configurables de prueba y no activan recompensas monetarias.
-- Las reglas Firestore temporales siguen siendo permisivas; deben endurecerse antes de producción.
-- Para producción, contadores, aprobaciones y pagos deberán validarse mediante Cloud Functions o servidor confiable.
+Pruebas móviles:
+1. En Perfil, cambiar a Emisor/a y confirmar la presentación.
+2. Pulsar IR A LA SALA DE MI CASA y comprobar entrada directa.
+3. Confirmar 20 sillas y cámara desactivada.
+4. Salir y comprobar que la Sala de Casa continúa disponible.
+5. Cambiar a Agente y comprobar panel de emisores y tareas.
+6. Cambiar a Propietario y comprobar Administración completa.
+7. Completar la prueba pendiente de cámara/micrófono WebRTC con Ruth en el flujo existente.

@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · CASA PADRE Y OPERACIONES PRUEBA 14 */
+/* JEMMO LIVE V1 · CASA PADRE Y OPERACIONES PRUEBA 15 */
 const firebaseConfig = {
   apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
   authDomain: 'jemmo-live.firebaseapp.com',
@@ -188,6 +188,9 @@ const state = {
   creationRequests: [],
   houseAdmin: false,
   houseOwner: false,
+  actualHouseOwner: false,
+  actualHouseAdmin: false,
+  simulatedRole: '',
   cloudReady: false,
   bootstrappedMother: false,
   chatLastSentAt: 0,
@@ -831,12 +834,31 @@ function currentMember() {
   return state.members.find(member => member.uid === state.uid) || null;
 }
 
+function currentTestRole() {
+  if (!state.platformAdmin || !state.uid) return '';
+  try {
+    const value = JSON.parse(localStorage.getItem(`jemmo_role_lab_v1_${state.uid}`) || 'null');
+    return ['owner', 'agent', 'emitter', 'member'].includes(value?.mode) ? value.mode : 'owner';
+  } catch { return 'owner'; }
+}
+function testRoleLabel(role) {
+  return ({ owner: 'PROPIETARIO · PRUEBA', agent: 'AGENTE DE CASA · PRUEBA', emitter: 'EMISOR/A · PRUEBA', member: 'MIEMBRO · PRUEBA' })[role] || '';
+}
+
 function calculatePermissions(house = state.workspaceHouse) {
   const member = currentMember();
   const membershipRole = state.membership?.houseId === house?.id ? state.membership?.role : '';
   const role = cleanText(member?.role || membershipRole, 20);
-  state.houseOwner = role === 'owner' || house?.ownerUid === state.uid;
-  state.houseAdmin = state.workspaceAsPlatformAdmin || state.houseOwner || role === 'admin' || house?.adminUids?.includes(state.uid);
+  state.actualHouseOwner = role === 'owner' || house?.ownerUid === state.uid;
+  state.actualHouseAdmin = state.workspaceAsPlatformAdmin || state.actualHouseOwner || role === 'admin' || house?.adminUids?.includes(state.uid);
+  state.simulatedRole = currentTestRole();
+  if (state.simulatedRole) {
+    state.houseOwner = state.simulatedRole === 'owner';
+    state.houseAdmin = ['owner', 'agent'].includes(state.simulatedRole);
+  } else {
+    state.houseOwner = state.actualHouseOwner;
+    state.houseAdmin = state.actualHouseAdmin;
+  }
 }
 
 function openWorkspace(house = houseById(state.membership?.houseId), asPlatformAdmin = false) {
@@ -954,7 +976,7 @@ function renderWorkspace() {
   $('#workspaceEmblem').textContent = house.emblem || house.short || '♛';
   $('#workspaceName').textContent = house.name;
   $('#workspaceLocation').textContent = `${house.flag || ''} ${house.city || house.country}`.trim();
-  const workspaceRole = state.workspaceAsPlatformAdmin ? 'ADMIN JEMMO' : roleLabel(currentMember()?.role || (state.membership?.houseId === house.id ? state.membership?.role : 'member'));
+  const workspaceRole = state.simulatedRole ? testRoleLabel(state.simulatedRole) : (state.workspaceAsPlatformAdmin ? 'ADMIN JEMMO' : roleLabel(currentMember()?.role || (state.membership?.houseId === house.id ? state.membership?.role : 'member')));
   $('#workspaceRole').textContent = workspaceRole;
   $('#workspaceMemberCount').textContent = formatNumber(house.members || state.members.length);
   $('#workspaceScore').textContent = formatNumber(house.score);
@@ -1367,6 +1389,13 @@ function bind() {
   $('#houseNoticeComposer')?.addEventListener('submit', createNotice);
   $('#houseChatForm')?.addEventListener('submit', sendHouseMessage);
   window.addEventListener('keydown', event => { if (event.key === 'Escape') closeAllModals(); });
+  window.addEventListener('jemmo-test-role-change', event => {
+    state.simulatedRole = event.detail?.mode || currentTestRole();
+    calculatePermissions();
+    if (!state.houseAdmin && ['emitters', 'admin'].includes(state.workspaceTab)) state.workspaceTab = state.simulatedRole === 'emitter' ? 'tasks' : 'home';
+    renderWorkspace();
+    setTimeout(() => window.JemmoHouseOperations?.refresh?.(), 30);
+  });
   window.addEventListener('online', async () => {
     state.services = await firebaseServices();
     await loadIdentity();
@@ -1390,7 +1419,11 @@ async function boot() {
   subscribeOwnState();
   renderAll();
   const params = new URL(location.href).searchParams;
-  if (params.get('miCasa') === '1' && state.membership?.houseId) openWorkspace();
+  if (params.get('miCasa') === '1' && state.membership?.houseId) {
+    openWorkspace();
+    const requestedTab = params.get('tab');
+    if (['home','room','tasks','emitters','chat','members','admin'].includes(requestedTab)) { state.workspaceTab = requestedTab; renderWorkspace(); }
+  }
   const requestedId = params.get('casa');
   if (requestedId && $('#houseExplorerGrid')) {
     const house = houseById(requestedId);
