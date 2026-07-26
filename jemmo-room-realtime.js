@@ -1,6 +1,6 @@
-/* JEMMO LIVE V1 · OYENTES E IDENTIDAD OFICIAL DE CASA PRUEBA 27
+/* JEMMO LIVE V1 · SALA DE CASA AMPLIADA Y FOTO DE PERFIL PRUEBA 28
    Señalización WebRTC, chat y moderación de prueba mediante Firestore. No es infraestructura de producción.
-   En Salas de Casa, miembros y emisores entran como oyentes; solo responsables autorizados abren la sesión. */
+   La Sala de Casa usa el avatar real del perfil, sillas ampliadas y chat colocado en la zona inferior. */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
 import {
@@ -176,7 +176,7 @@ async function readProfile(user) {
   } catch (error) {
     console.warn('JEMMO Room profile:', error);
   }
-  const photo = safeProfilePhoto(data.avatarData || data.photoURL || data.avatar || user.photoURL);
+  const photo = safeProfilePhoto(data.avatarData || data.profilePhoto || data.fotoPerfil || data.profileImage || data.photoURL || data.photo || data.avatar || user.photoURL);
   const vipState = readVipState(data);
   return {
     uid: user.uid,
@@ -835,7 +835,7 @@ async function getCurrentProfile() {
 }
 
 window.JemmoRoomRealtime = Object.freeze({
-  version: '1.8.0-test',
+  version: '1.8.1-test',
   getCurrentProfile,
   getHouseRoomAccess,
   getRoomPreview,

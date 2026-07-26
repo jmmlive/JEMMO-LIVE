@@ -9,7 +9,7 @@
   <link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="favicon-64.png">
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <title>JEMMO LIVE · OYENTES E IDENTIDAD DE SALA DE CASA · PRUEBA 27</title>
+  <title>JEMMO LIVE · SALA DE CASA AMPLIADA, CHAT INFERIOR Y FOTO DE PERFIL · PRUEBA 28</title>
   <style>html.jemmo-auth-pending body{visibility:hidden}</style>
   <style>
     :root{
@@ -183,20 +183,70 @@
     .jr-house-summary{min-width:0;display:grid;gap:4px}.jr-house-summary-line{display:flex;align-items:center;gap:5px;min-width:0;overflow:hidden}.jr-house-summary-line b{font-size:9px;white-space:nowrap}.jr-house-summary-line small{font-size:7px;color:#bdaec3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.jr-house-medals{display:flex;align-items:center;gap:3px}.jr-house-medal{display:grid;place-items:center;min-width:21px;height:21px;padding:0 4px;border:1px solid #b57b27;border-radius:999px;background:#342007;color:#ffe18a;font-size:9px;font-weight:1000}.jr-house-medal.empty{border-color:#5e4266;background:#1a0a20;color:#a894ad}.jr-house-numbers{display:flex;gap:5px;overflow:hidden}.jr-house-numbers span{min-width:0;padding:4px 6px;border:1px solid #4d2059;border-radius:9px;background:#100315;color:#d7c8dc;font-size:6.5px;white-space:nowrap}.jr-house-numbers b{color:#fff;font-size:7px}
     .jr-task-clock{min-width:104px;padding:6px 7px;border:1px solid #70501d;border-radius:12px;background:linear-gradient(145deg,#2d1c05,#24072e);text-align:center}.jr-task-clock small,.jr-task-clock b,.jr-task-clock span{display:block}.jr-task-clock small{color:#d7bd83;font-size:6px;font-weight:1000}.jr-task-clock b{margin-top:3px;color:#ffe16e;font-size:13px;letter-spacing:.04em}.jr-task-clock span{margin-top:2px;color:#c9b9cf;font-size:6px}.jr-task-clock.waiting{border-color:#5b2a6d;background:#16031e}.jr-task-clock.waiting b{color:#d1a7dc;font-size:8px}
     .jr-house-battle{display:none}.jr-house-battle.active{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:7px;padding:6px 9px;border-bottom:1px solid #df4e81;background:linear-gradient(90deg,#55112d,#260420);box-shadow:0 6px 18px #0008}.jr-house-battle>span{font-size:18px}.jr-house-battle div{min-width:0}.jr-house-battle small,.jr-house-battle b{display:block}.jr-house-battle small{color:#ffb4cf;font-size:6px;font-weight:1000}.jr-house-battle b{font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.jr-house-battle em{font-style:normal;color:#ffe071;font-size:9px;font-weight:1000}
-    body.jemmo-house-room .jr-stage{overflow:hidden}
+    /* PRUEBA 28 · Sala oficial con sillas aprovechadas y chat realmente abajo */
+    body.jemmo-house-room .jr-stage{
+      min-height:0;overflow:hidden;display:grid;grid-template-rows:minmax(0,1fr) auto;background:#070009
+    }
     body.jemmo-house-room .jr-stage::before{background-size:min(60vw,250px);opacity:.07}
-    body.jemmo-house-room .jr-seats-wrap{height:100%;padding:5px 6px 88px;overflow:hidden}
-    body.jemmo-house-room .jr-seats{grid-template-columns:repeat(4,minmax(0,1fr))!important;grid-template-rows:repeat(5,minmax(0,1fr))!important;gap:4px!important;min-width:0}
-    body.jemmo-house-room .jr-seat.audio{width:100%;height:100%;min-width:0;min-height:0;max-height:none;aspect-ratio:auto;border-radius:15px;padding:3px 2px;border-width:1px}
-    body.jemmo-house-room .jr-seat::before{inset:12%;background-size:58%;opacity:.22}
-    body.jemmo-house-room .jr-seat-avatar{width:clamp(24px,7.8vw,34px);height:clamp(24px,7.8vw,34px);font-size:13px}
-    body.jemmo-house-room .jr-seat b{max-width:94%;margin-top:2px;font-size:clamp(6.5px,1.9vw,8.5px)}
-    body.jemmo-house-room .jr-seat small{max-width:94%;margin-top:1px;font-size:clamp(5px,1.45vw,6.5px)}
-    body.jemmo-house-room .jr-number{right:2px;bottom:2px;min-width:17px;height:17px;padding:0 3px;font-size:6px}
-    body.jemmo-house-room .jr-mic{left:3px;bottom:3px;font-size:8px}
+    body.jemmo-house-room .jr-seats-wrap{
+      grid-row:1;min-height:0;height:100%;padding:7px 7px 5px;overflow:hidden;align-items:stretch
+    }
+    body.jemmo-house-room .jr-seats{
+      grid-template-columns:repeat(4,minmax(0,1fr))!important;
+      grid-template-rows:repeat(5,minmax(58px,1fr))!important;
+      gap:6px!important;min-width:0;min-height:0
+    }
+    body.jemmo-house-room .jr-seat.audio{
+      width:100%;height:100%;min-width:0;min-height:58px;max-height:none;aspect-ratio:auto;
+      border-radius:18px;padding:5px 3px 4px;border-width:1px
+    }
+    body.jemmo-house-room .jr-seat::before{inset:12%;background-size:54%;opacity:.20}
+    body.jemmo-house-room .jr-seat-avatar{
+      width:clamp(30px,9.6vw,45px);height:clamp(30px,9.6vw,45px);font-size:15px
+    }
+    body.jemmo-house-room .jr-seat b{max-width:94%;margin-top:3px;font-size:clamp(7.5px,2.2vw,10px)}
+    body.jemmo-house-room .jr-seat small{max-width:94%;margin-top:2px;font-size:clamp(5.8px,1.65vw,7.5px)}
+    body.jemmo-house-room .jr-number{right:3px;bottom:3px;min-width:19px;height:19px;padding:0 4px;font-size:7px}
+    body.jemmo-house-room .jr-mic{left:4px;bottom:4px;font-size:9px}
     body.jemmo-house-room .jr-status-dot{right:4px;top:4px;width:8px;height:8px}
-    body.jemmo-house-room .jr-seat.local-muted{border-color:#e16483;box-shadow:inset 0 0 12px #e1648330}.jr-seat.local-muted .jr-seat-avatar{filter:grayscale(.75);opacity:.68}
-    body.jemmo-house-room .jr-chat{height:82px;padding:14px 8px 4px}.jemmo-house-room .jr-chat-line{max-width:94%;margin-top:3px;padding:5px 7px;border-radius:10px;font-size:9px}
+    body.jemmo-house-room .jr-seat.local-muted{border-color:#e16483;box-shadow:inset 0 0 12px #e1648330}
+    body.jemmo-house-room .jr-seat.local-muted .jr-seat-avatar{filter:grayscale(.75);opacity:.68}
+
+    /* En la Sala de Casa la foto personal vuelve a ser un avatar circular real.
+       Nunca se usa como fondo rectangular ampliado de la silla. */
+    body.jemmo-house-room .jr-seat.audio.occupied{
+      padding:5px 3px 4px;background:linear-gradient(160deg,#391046e8,#16021ef2 72%);justify-content:center
+    }
+    body.jemmo-house-room .jr-seat.audio.occupied .jr-seat-avatar{
+      position:relative;z-index:1;inset:auto;width:clamp(38px,11.5vw,54px);height:clamp(38px,11.5vw,54px);
+      border-radius:50%;overflow:hidden;flex:0 0 auto;border:1.5px solid #cd58f4;
+      box-shadow:0 0 12px #b93bdf55;background:#25032d
+    }
+    body.jemmo-house-room .jr-seat.audio.occupied.host .jr-seat-avatar{border-color:#ffd34e;box-shadow:0 0 14px #ffd34e55}
+    body.jemmo-house-room .jr-seat.audio.occupied .jr-seat-avatar::after{display:none}
+    body.jemmo-house-room .jr-seat.audio.occupied .jr-seat-avatar img{
+      width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:50% 50%;transform:none
+    }
+    body.jemmo-house-room .jr-seat.audio.occupied .jr-seat-person-label{
+      position:relative;z-index:3;left:auto;right:auto;bottom:auto;display:grid;justify-items:center;
+      width:94%;max-width:94%;margin-top:3px;padding:0;background:none;border-radius:0;text-align:center;text-shadow:0 1px 4px #000
+    }
+    body.jemmo-house-room .jr-seat.audio.occupied .jr-seat-person-label b{
+      width:100%;max-width:100%;font-size:clamp(7.5px,2.2vw,10px);line-height:1.05
+    }
+    body.jemmo-house-room .jr-seat.audio.occupied .jr-seat-person-label small{
+      width:100%;max-width:100%;margin-top:2px;font-size:clamp(5.8px,1.65vw,7.5px);line-height:1.05
+    }
+
+    body.jemmo-house-room .jr-chat{
+      position:relative;grid-row:2;left:auto;right:auto;bottom:auto;width:100%;height:auto;min-height:64px;max-height:118px;
+      padding:5px 8px 7px;overflow-y:auto;overflow-x:hidden;mask-image:none;-webkit-mask-image:none;
+      border-top:1px solid #4e185e;background:linear-gradient(180deg,#09000b8a,#09000df5)
+    }
+    body.jemmo-house-room .jr-chat-line{
+      max-width:96%;margin-top:4px;padding:6px 8px;border-radius:11px;font-size:9.5px;line-height:1.25
+    }
+    body.jemmo-house-room .jr-chat-line.system{width:100%;max-width:100%}
     body.jemmo-house-room .jr-controls{grid-template-columns:43px 43px minmax(0,1fr) 47px;gap:5px;padding:5px 6px calc(6px + var(--safe-bottom))}
     body.jemmo-house-room .jr-control-btn{height:45px;border-radius:14px;font-size:18px}
     .jr-house-control{display:none}.jr-house-control small{display:block;margin-top:1px;font-size:5px;font-weight:1000;letter-spacing:.03em}
@@ -204,8 +254,24 @@
     body.jemmo-house-room #settingsButton{display:none}
     body.jemmo-house-room .jr-house-seat{grid-column:1}.jemmo-house-room .jr-house-mic{grid-column:2}.jemmo-house-room .jr-compose{grid-column:3;grid-row:1;height:45px;grid-template-columns:minmax(0,1fr) 42px;border-radius:14px}.jemmo-house-room .jr-compose input{padding:0 9px;font-size:10px}.jemmo-house-room .jr-send{font-size:20px}.jemmo-house-room .jr-control-btn.gifts{grid-column:4;height:45px}
     body.jemmo-house-room .jr-sheet{max-height:65svh}
-    @media(min-width:431px){body.jemmo-house-room .jr-seats{grid-template-columns:repeat(5,minmax(0,1fr))!important;grid-template-rows:repeat(4,minmax(0,1fr))!important}body.jemmo-house-room .jr-seat-avatar{width:34px;height:34px}}
-    @media(max-width:350px){body.jemmo-house-room .jr-room-head{grid-template-columns:39px minmax(0,1fr) auto;padding-left:6px;padding-right:6px}.jr-house-info{padding-left:6px!important;padding-right:6px!important}.jr-task-clock{min-width:94px}.jr-house-numbers span:nth-child(3){display:none}body.jemmo-house-room .jr-seats-wrap{padding-left:4px;padding-right:4px}.jemmo-house-room .jr-controls{grid-template-columns:40px 40px minmax(0,1fr) 43px;padding-left:4px;padding-right:4px}}
+    @media(min-width:431px){
+      body.jemmo-house-room .jr-seats{grid-template-columns:repeat(5,minmax(0,1fr))!important;grid-template-rows:repeat(4,minmax(68px,1fr))!important}
+      body.jemmo-house-room .jr-seat-avatar{width:45px;height:45px}
+    }
+    @media(max-height:720px){
+      body.jemmo-house-room .jr-house-info{padding-top:5px;padding-bottom:5px}
+      body.jemmo-house-room .jr-seats{grid-template-rows:repeat(5,minmax(48px,1fr))!important;gap:4px!important}
+      body.jemmo-house-room .jr-seat.audio{min-height:48px;padding-top:3px;padding-bottom:3px}
+      body.jemmo-house-room .jr-seat.audio.occupied .jr-seat-avatar{width:34px;height:34px}
+      body.jemmo-house-room .jr-chat{min-height:54px;max-height:90px;padding-top:3px;padding-bottom:4px}
+    }
+    @media(max-width:350px){
+      body.jemmo-house-room .jr-room-head{grid-template-columns:39px minmax(0,1fr) auto;padding-left:6px;padding-right:6px}
+      .jr-house-info{padding-left:6px!important;padding-right:6px!important}.jr-task-clock{min-width:94px}.jr-house-numbers span:nth-child(3){display:none}
+      body.jemmo-house-room .jr-seats-wrap{padding-left:4px;padding-right:4px}
+      body.jemmo-house-room .jr-seats{gap:4px!important}
+      .jemmo-house-room .jr-controls{grid-template-columns:40px 40px minmax(0,1fr) 43px;padding-left:4px;padding-right:4px}
+    }
 
 
     /* PRUEBA 20 · EQUIPAMIENTO GLOBAL, CONTROLES Y MODERACIÓN */

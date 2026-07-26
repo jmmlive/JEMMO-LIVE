@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-house-listener-identity-27';
+  const VERSION = 'pwa-house-room-layout-profile-28';
   let installPrompt = null;
 
   const isStandalone = () =>

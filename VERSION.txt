@@ -1,32 +1,25 @@
-JEMMO LIVE V1 · ACCESO COMO OYENTE E IDENTIDAD DE SALA DE CASA PRUEBA 27
+JEMMO LIVE V1 · SALA DE CASA AMPLIADA, CHAT INFERIOR Y FOTO DE PERFIL PRUEBA 28
 Fecha: 26/07/2026
 
 Base acumulada:
-- JEMMO LIVE V1 · AVATARES, NOMBRES EN SILLA Y VALIDACIÓN VIP PRUEBA 26.
+- JEMMO LIVE V1 · ACCESO COMO OYENTE E IDENTIDAD DE SALA DE CASA PRUEBA 27.
 - Conserva tareas reales, panel financiero de agentes, acceso directo a Mi Casa, moderación, regalos, Perfil y navegación acumulados.
 
 Incidencias confirmadas en la prueba real:
-- Ruth, como Emisora de una Casa, entraba ocupando automáticamente la silla 1 de la Sala oficial.
-- La cabecera y la identidad visual de la Sala oficial podían sustituirse por la foto y los datos personales de la persona que entraba.
-- La Sala oficial pertenece a la Casa/Agencia y debe conservar sus propios datos, configurados por el agente o propietario.
+- Las 20 sillas de la Sala oficial quedaban demasiado comprimidas y desaprovechaban parte de la pantalla.
+- El chat aparecía demasiado alto, dejando una zona vacía antes de los controles inferiores.
+- La foto de Ruth se ampliaba como fondo rectangular de la silla y no se mostraba como su avatar circular real.
 
-Correcciones funcionales:
-- Miembros, Emisores/as e invitados entran primero abajo como oyentes, sin ocupar ninguna silla.
-- Para subir, la persona toca una silla libre; su foto, nombre y rol aparecen únicamente en esa posición.
-- Al bajar, vuelve a la zona de oyentes y el micrófono deja de transmitirse.
-- Si el responsable todavía no ha abierto la sesión de audio, la persona puede esperar abajo o reservar una silla; el audio se conecta cuando se abre la sesión.
-- Solo el propietario, agente o administrador autorizado de esa Casa abre la sesión como anfitrión y ocupa la silla principal.
-- La condición de responsable se valida con el documento de membresía, la posición de Casa y el propietario real de la Casa.
-- El anfitrión ve a una persona conectada como oyente fuera de las sillas; solo aparece en una silla cuando informa estado `seated` y número de silla.
-- La conexión WebRTC admite entrada en modo escucha: inicialmente no envía micrófono y activa la salida al subir a una silla.
-
-Identidad oficial de Sala de Casa:
-- Nombre, descripción y foto de la Sala se leen de `casas/{houseId}/configuracion/sala` y, como respaldo, de los datos de la Casa.
-- La cabecera ya no utiliza la foto del último miembro o Emisor/a que entra.
-- El agente, propietario o administrador puede configurar nombre, descripción, foto oficial, política de sillas y nivel mínimo desde el panel de la Casa.
-- La identidad se guarda en Firebase y también se registra en el estado de la Sala oficial para mantenerla estable.
+Correcciones:
+- La Sala oficial distribuye el escenario en dos zonas reales: sillas arriba y chat inmediatamente debajo.
+- El chat deja de estar posicionado de forma absoluta y queda pegado a los controles inferiores, sin hueco negro intermedio.
+- Los avisos del sistema ocupan el ancho disponible y el chat conserva desplazamiento cuando existen varios mensajes.
+- Las sillas aprovechan más altura y anchura, con separación y textos legibles.
+- En una silla ocupada, la foto personal se muestra como avatar circular centrado, no como fondo ampliado.
+- El nombre y el rol permanecen debajo del avatar dentro de la silla.
+- Se amplían los campos compatibles de Firebase para recuperar la foto real del perfil: avatarData, profilePhoto, fotoPerfil, profileImage, photoURL, photo y avatar.
+- La identidad de la cabecera continúa perteneciendo a la Casa/Agencia.
 
 Estado:
 - MODO DE PRUEBAS.
-- Pendiente de prueba real: el agente abre la Sala; Ruth entra abajo como oyente; Ruth toca una silla libre y entonces aparece en ella con su perfil.
-- La captura automatizada con navegador local no pudo ejecutarse por una restricción administrativa del entorno. Se realizaron validaciones de sintaxis, estructura y pruebas unitarias.
+- Pendiente de prueba real en el móvil de Ruth para confirmar encuadre del avatar, tamaño de sillas y posición inferior del chat.
