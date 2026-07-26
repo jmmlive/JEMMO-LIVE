@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · PANEL OPERATIVO Y TAREAS 24H PRUEBA 16
-   Sala oficial, objetivos de tareas y control de emisores/emisoras. */
+/* JEMMO LIVE V1 · TAREAS REALES Y PANEL FINANCIERO DE AGENTES PRUEBA 23
+   Sala oficial, tareas auditables, emisoras asignadas y reparto 70/20/10. */
 const firebaseConfig = {
   apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
   authDomain: 'jemmo-live.firebaseapp.com',
@@ -30,6 +30,8 @@ const number = value => Math.max(0, Number(value) || 0);
 const formatNumber = value => Math.round(number(value)).toLocaleString('es-ES');
 const minutes = seconds => Math.floor(number(seconds) / 60);
 const formatMinutes = seconds => `${minutes(seconds).toLocaleString('es-ES')} min`;
+const formatDuration = seconds => { const total=Math.max(0,Math.floor(number(seconds))); const h=Math.floor(total/3600),m=Math.floor(total%3600/60),sec=total%60; return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`; };
+const formatJems = value => `${formatNumber(value)} JEMS`;
 const formatDate = value => {
   const millis = value?.toMillis?.() || (value?.seconds ? value.seconds * 1000 : Number(value || 0));
   if (!millis) return 'Sin actividad';
@@ -61,13 +63,23 @@ const state = {
   houseId: '',
   house: {},
   memberRole: 'member',
+  selfHousePosition: 'member',
   platformOwner: false,
   actualAdmin: false,
+  actualAgent: false,
   isAdmin: false,
+  canViewAgentPanel: false,
   testRole: '',
   members: [],
   profiles: new Map(),
   tasks: new Map(),
+  taskHistory: [],
+  financeMovements: [],
+  financeFilter: '30d',
+  financeSearch: '',
+  financeFrom: '',
+  financeTo: '',
+  selectedEmitterUid: '',
   taskConfig: { ...DEFAULT_TASK_CONFIG },
   roomConfig: { ...DEFAULT_ROOM_CONFIG },
   room: {},
@@ -116,7 +128,9 @@ function readTestRole() {
 function refreshAuthority() {
   state.testRole = readTestRole();
   state.actualAdmin = state.platformOwner || ['owner', 'admin'].includes(state.memberRole);
+  state.actualAgent = state.selfHousePosition === 'agent' || normalizedAccountRole(state.profile.role || state.profile.rol || state.profile.accountRole) === 'agent';
   state.isAdmin = state.testRole ? ['owner', 'agent'].includes(state.testRole) : state.actualAdmin;
+  state.canViewAgentPanel = Boolean(state.isAdmin || state.actualAgent);
 }
 
 function positionLabel(member) {
@@ -154,6 +168,128 @@ function taskStatus(task) {
   return { liveDone, roomDone, complete: liveDone && roomDone, active, expired: Boolean(end && end <= Date.now()), remainingMs: Math.max(0, end - Date.now()) };
 }
 
+function memberAgentUid(member) {
+  const profile = state.profiles.get(member?.uid) || {};
+  return clean(member?.assignedAgentUid || profile.assignedAgentUid, 160);
+}
+
+function memberAgentName(member) {
+  const profile = state.profiles.get(member?.uid) || {};
+  const direct = clean(member?.assignedAgentName || profile.assignedAgentName, 80);
+  if (direct) return direct;
+  const uid = memberAgentUid(member);
+  const agent = state.members.find(item => item.uid === uid);
+  const agentProfile = state.profiles.get(uid) || {};
+  return clean(agent?.displayName || agentProfile.displayName || (uid ? 'Agente asignado' : 'Sin agente'), 80);
+}
+
+function availableAgents() {
+  const seen = new Set();
+  const list = [];
+  state.members.forEach(member => {
+    const profile = state.profiles.get(member.uid) || {};
+    const position = clean(member.housePosition || member.position, 30);
+    const role = clean(member.role, 20);
+    const accountRole = normalizedAccountRole(profile.role || profile.rol || member.accountRole);
+    if (!(position === 'agent' || role === 'owner' || role === 'admin' || accountRole === 'agent')) return;
+    if (!member.uid || seen.has(member.uid)) return;
+    seen.add(member.uid);
+    list.push({
+      uid: member.uid,
+      name: clean(member.displayName || profile.displayName || (role === 'owner' ? 'Casa / Propietario' : 'Agente JEMMO'), 80),
+      label: role === 'owner' ? 'PROPIETARIO' : position === 'agent' || accountRole === 'agent' ? 'AGENTE' : 'ADMINISTRACIÓN'
+    });
+  });
+  if (state.user?.uid && !seen.has(state.user.uid) && (state.platformOwner || state.actualAdmin || state.actualAgent)) {
+    list.unshift({ uid: state.user.uid, name: clean(state.profile.displayName || state.user.displayName || 'Responsable de la Casa', 80), label: state.actualAgent ? 'AGENTE' : 'PROPIETARIO' });
+  }
+  return list;
+}
+
+function defaultAgentUid() {
+  if (state.actualAgent && state.user?.uid) return state.user.uid;
+  const agents = availableAgents();
+  return clean(agents.find(item => item.label === 'AGENTE')?.uid || agents.find(item => item.label === 'PROPIETARIO')?.uid || agents[0]?.uid || state.user?.uid, 160);
+}
+
+async function writeAudit(action, subjectUid = '', details = {}) {
+  if (!state.services || !state.houseId || !state.user?.uid) return;
+  const s = state.services;
+  try {
+    await s.addDoc(s.collection(s.db, 'casas', state.houseId, 'auditoria'), {
+      action: clean(action, 80),
+      subjectUid: clean(subjectUid, 160),
+      actorUid: state.user.uid,
+      actorName: clean(state.profile.displayName || state.user.displayName || 'Usuario JEMMO', 80),
+      details,
+      createdAtClient: Date.now(),
+      createdAt: s.serverTimestamp(),
+      simulation: true,
+      schemaVersion: 1
+    });
+  } catch (error) {
+    console.warn('JEMMO auditoría Casa:', error?.code || error?.message || error);
+  }
+}
+
+function visibleEmitters() {
+  const emitters = state.members.filter(isEmitter);
+  if (state.testRole === 'owner') return emitters;
+  if (state.testRole === 'agent') return emitters.filter(member => memberAgentUid(member) === state.user?.uid);
+  if (state.platformOwner || state.actualAdmin) return emitters;
+  if (state.actualAgent) return emitters.filter(member => memberAgentUid(member) === state.user?.uid);
+  return [];
+}
+
+function movementTime(movement) {
+  return Number(movement?.createdAtClient || movement?.createdAt?.toMillis?.() || (movement?.createdAt?.seconds ? movement.createdAt.seconds * 1000 : 0));
+}
+
+function periodBounds() {
+  const now = new Date(), end = Date.now() + 1000;
+  if (state.financeFilter === 'today') { const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime(); return { start, end }; }
+  if (state.financeFilter === '7d') return { start: Date.now() - 7 * DAY_MS, end };
+  if (state.financeFilter === 'month') return { start: new Date(now.getFullYear(), now.getMonth(), 1).getTime(), end };
+  if (state.financeFilter === 'custom') {
+    const start = state.financeFrom ? new Date(`${state.financeFrom}T00:00:00`).getTime() : 0;
+    const customEnd = state.financeTo ? new Date(`${state.financeTo}T23:59:59.999`).getTime() : end;
+    return { start: Number.isFinite(start) ? start : 0, end: Number.isFinite(customEnd) ? customEnd : end };
+  }
+  return { start: Date.now() - 30 * DAY_MS, end };
+}
+
+function visibleMovements() {
+  const bounds = periodBounds();
+  const allowed = new Set(visibleEmitters().map(member => member.uid));
+  return state.financeMovements.filter(item => allowed.has(item.recipientUid) && movementTime(item) >= bounds.start && movementTime(item) <= bounds.end && (!state.actualAgent || state.platformOwner || !item.agentUid || item.agentUid === state.user?.uid));
+}
+
+function emitterFinance(uid) {
+  const list = visibleMovements().filter(item => item.recipientUid === uid);
+  return list.reduce((sum, item) => ({
+    giftCount: sum.giftCount + 1,
+    gross: sum.gross + number(item.totalJemmos),
+    emitter: sum.emitter + number(item.emitterTotal),
+    app: sum.app + number(item.appTotal),
+    agent: sum.agent + number(item.agentTotal),
+    agentConfirmed: sum.agentConfirmed + number(item.agentConfirmed),
+    agentPending: sum.agentPending + number(item.agentPending),
+    emitterConfirmed: sum.emitterConfirmed + number(item.emitterConfirmed),
+    emitterPending: sum.emitterPending + number(item.emitterPending)
+  }), { giftCount:0,gross:0,emitter:0,app:0,agent:0,agentConfirmed:0,agentPending:0,emitterConfirmed:0,emitterPending:0 });
+}
+
+function emitterMatches(member) {
+  const query = clean(state.financeSearch, 80).toLocaleLowerCase('es');
+  if (!query) return true;
+  const profile = state.profiles.get(member.uid) || {};
+  return [member.displayName, member.publicId, profile.displayName, profile.publicId].some(value => clean(value, 100).toLocaleLowerCase('es').includes(query));
+}
+
+function taskHistoryFor(uid) {
+  return state.taskHistory.filter(item => item.uid === uid).sort((a,b) => Number(b.cycleStartedAtClient||0)-Number(a.cycleStartedAtClient||0));
+}
+
 function progress(value, target) {
   if (!target) return 100;
   return Math.min(100, Math.round(number(value) / Math.max(1, number(target)) * 100));
@@ -182,6 +318,9 @@ function subscribeHouse(houseId) {
   state.houseId = houseId;
   state.members = [];
   state.tasks = new Map();
+  state.taskHistory = [];
+  state.financeMovements = [];
+  state.selectedEmitterUid = '';
   state.room = {};
 
   state.unsubscribers.push(s.onSnapshot(s.doc(s.db, 'casas', houseId), snapshot => {
@@ -192,6 +331,7 @@ function subscribeHouse(houseId) {
   state.unsubscribers.push(s.onSnapshot(s.doc(s.db, 'casas', houseId, 'miembros', state.user.uid), snapshot => {
     const data = snapshot.data() || {};
     state.memberRole = clean(data.role || state.profile.houseRole || 'member', 20);
+    state.selfHousePosition = clean(data.housePosition || state.profile.housePosition || 'member', 30);
     refreshAuthority();
     renderAll();
     if (state.actualAdmin) void ensurePermanentRoom();
@@ -209,6 +349,16 @@ function subscribeHouse(houseId) {
     state.tasks = new Map(snapshot.docs.map(document => [document.id, { uid: document.id, ...document.data() }]));
     renderAll();
   }, error => console.warn('JEMMO Casa operaciones: tareas', error?.code || error)));
+
+  state.unsubscribers.push(s.onSnapshot(s.collection(s.db, 'casas', houseId, 'historialTareas'), snapshot => {
+    state.taskHistory = snapshot.docs.map(document => ({ id: document.id, ...document.data() }));
+    renderAll();
+  }, error => console.warn('JEMMO Casa operaciones: historial de tareas', error?.code || error)));
+
+  state.unsubscribers.push(s.onSnapshot(s.collection(s.db, 'casas', houseId, 'movimientos'), snapshot => {
+    state.financeMovements = snapshot.docs.map(document => ({ id: document.id, ...document.data() })).sort((a,b) => movementTime(b)-movementTime(a));
+    renderAll();
+  }, error => console.warn('JEMMO Casa operaciones: movimientos', error?.code || error)));
 
   state.unsubscribers.push(s.onSnapshot(s.doc(s.db, 'casas', houseId, 'configuracion', 'tareas'), snapshot => {
     const data = snapshot.data() || {};
@@ -302,26 +452,54 @@ function renderOwnTasks() {
 
 function renderEmitters() {
   const target = $('#houseEmittersDashboard'); if (!target) return;
-  const emitters = state.members.filter(isEmitter), completed = emitters.filter(member => taskStatus(currentTask(member.uid)).complete).length;
-  const totalLive = emitters.reduce((sum, member) => sum + minutes(currentTask(member.uid).liveSeconds), 0), totalRoom = emitters.reduce((sum, member) => sum + minutes(currentTask(member.uid).houseRoomSeconds), 0);
-  target.innerHTML = `<div class="house-emitter-kpis"><div><b>${formatNumber(emitters.length)}</b><small>EMISORES/AS</small></div><div><b>${formatNumber(completed)}</b><small>TAREA COMPLETA</small></div><div><b>${formatNumber(totalLive)}</b><small>MIN LIVE</small></div><div><b>${formatNumber(totalRoom)}</b><small>MIN SALA</small></div></div><div class="house-emitter-list">${emitters.length ? emitters.map(member => {
-    const task=currentTask(member.uid),status=taskStatus(task),profile=state.profiles.get(member.uid)||{},time=status.active?countdown(status.remainingMs):status.expired?'VENCIDA':'SIN ACTIVAR';
-    return `<article class="house-emitter-row"><div class="house-emitter-head"><span>${escapeHtml((member.displayName||profile.displayName||'JM').slice(0,2).toUpperCase())}</span><div><b>${escapeHtml(member.displayName||profile.displayName||'Usuario JEMMO')}</b><small>${escapeHtml(member.publicId||profile.publicId||'ID pendiente')} · ${positionLabel(member)}</small></div><em class="${status.complete?'done':''}">${status.complete?'COMPLETA':status.active?'EN CURSO':'PENDIENTE'}</em></div><div class="house-emitter-metrics four"><span><small>LIVE</small><b>${formatMinutes(task.liveSeconds)}</b></span><span><small>SALA CASA</small><b>${formatMinutes(task.houseRoomSeconds)}</b></span><span><small>QUEDA</small><b data-task-countdown="${number(task.cycleEndsAtClient)}">${time}</b></span><span><small>REVISIÓN</small><b>${task.reviewStatus==='approved'?'APROBADA':'PENDIENTE'}</b></span></div>${state.isAdmin?`<div class="house-emitter-actions"><button type="button" data-review-task="approved" data-task-uid="${escapeHtml(member.uid)}">APROBAR</button><button type="button" class="secondary" data-reset-task="${escapeHtml(member.uid)}">NUEVO CICLO 24H</button></div>`:''}</article>`;
-  }).join(''):'<div class="house-workspace-empty">Todavía no hay emisores o emisoras asignados. Al marcar a un miembro como EMISOR/A se activará automáticamente su tarea de 24 horas.</div>'}</div>`;
+  if (!state.canViewAgentPanel) {
+    target.innerHTML = '<div class="house-workspace-empty">Este panel está reservado para propietarios, administradores y agentes autorizados.</div>';
+    return;
+  }
+  const emitters = visibleEmitters().filter(emitterMatches);
+  const movements = visibleMovements();
+  const totals = movements.reduce((sum,item)=>({gross:sum.gross+number(item.totalJemmos),agent:sum.agent+number(item.agentTotal),confirmed:sum.confirmed+number(item.agentConfirmed),pending:sum.pending+number(item.agentPending)}),{gross:0,agent:0,confirmed:0,pending:0});
+  const selected = state.selectedEmitterUid ? emitters.find(member => member.uid === state.selectedEmitterUid) : null;
+
+  if (selected) {
+    const profile=state.profiles.get(selected.uid)||{},task=currentTask(selected.uid),status=taskStatus(task),finance=emitterFinance(selected.uid),history=taskHistoryFor(selected.uid),movementList=movements.filter(item=>item.recipientUid===selected.uid).slice(0,80);
+    target.innerHTML=`<button class="house-agent-back" type="button" data-agent-back>‹ VOLVER AL EQUIPO</button>
+      <section class="house-agent-person"><span>${escapeHtml((selected.displayName||profile.displayName||'JM').slice(0,2).toUpperCase())}</span><div><small>EMISORA ASIGNADA</small><h3>${escapeHtml(selected.displayName||profile.displayName||'Usuario JEMMO')}</h3><p>${escapeHtml(selected.publicId||profile.publicId||'ID pendiente')} · ${positionLabel(selected)} · Agente: ${escapeHtml(memberAgentName(selected))}</p></div><em class="${status.complete?'done':''}">${status.complete?'TAREA COMPLETA':status.active?'EN CURSO':'PENDIENTE'}</em></section>
+      <div class="house-agent-detail-kpis"><div><small>VALOR BRUTO</small><b>${formatJems(finance.gross)}</b></div><div><small>EMISORA · 70%</small><b>${formatJems(finance.emitter)}</b></div><div><small>JEMMO · 20%</small><b>${formatJems(finance.app)}</b></div><div><small>AGENTE/CASA · 10%</small><b>${formatJems(finance.agent)}</b></div></div>
+      <div class="house-agent-confirmation"><span><small>COMISIÓN CONFIRMADA</small><b>${formatJems(finance.agentConfirmed)}</b></span><span><small>COMISIÓN PENDIENTE</small><b>${formatJems(finance.agentPending)}</b></span></div>
+      <section class="house-agent-task-detail"><div class="house-workspace-title"><h2>TAREA ACTUAL</h2><span>${status.active?`Quedan ${countdown(status.remainingMs)}`:'Sin ciclo activo'}</span></div><div class="house-emitter-metrics four"><span><small>LIVE</small><b>${formatDuration(task.liveSeconds)}</b></span><span><small>SALA OFICIAL</small><b>${formatDuration(task.houseRoomSeconds)}</b></span><span><small>OBJETIVO LIVE</small><b>${formatNumber(state.taskConfig.liveTargetMinutes)} min</b></span><span><small>OBJETIVO SALA</small><b>${formatNumber(state.taskConfig.houseRoomTargetMinutes)} min</b></span></div>${state.isAdmin?`<div class="house-emitter-actions"><button type="button" data-review-task="approved" data-task-uid="${escapeHtml(selected.uid)}">APROBAR TAREA</button><button type="button" class="secondary" data-reset-task="${escapeHtml(selected.uid)}">NUEVO CICLO 24H</button></div>`:''}</section>
+      <section class="house-agent-history"><div class="house-workspace-title"><h2>MOVIMIENTOS ECONÓMICOS</h2><span>${formatNumber(movementList.length)} registros</span></div>${movementList.length?movementList.map(item=>`<article><div><b>${escapeHtml(item.giftName||'Regalo JEMMO')}</b><small>${escapeHtml(item.context||'JEMMO LIVE')} · ${escapeHtml(formatDate(item.createdAt||item.createdAtClient))}</small></div><span><b>+${formatJems(item.agentTotal)}</b><small class="${item.status==='pending'?'pending':'confirmed'}">${item.status==='pending'?'PENDIENTE':'CONFIRMADO'}</small></span></article>`).join(''):'<div class="house-workspace-empty">No hay regalos registrados para esta emisora en el periodo seleccionado.</div>'}</section>
+      <section class="house-agent-history"><div class="house-workspace-title"><h2>HISTORIAL DE CICLOS</h2><span>${formatNumber(history.length)} ciclos archivados</span></div>${history.length?history.slice(0,20).map(item=>`<article><div><b>Ciclo ${formatDate(item.cycleStartedAtClient)}</b><small>${formatDuration(item.liveSeconds)} LIVE · ${formatDuration(item.houseRoomSeconds)} Sala</small></div><span><b>${item.reviewStatus==='approved'?'APROBADO':'ARCHIVADO'}</b><small>${escapeHtml(item.archiveReason||'ciclo finalizado')}</small></span></article>`).join(''):'<div class="house-workspace-empty">Todavía no hay ciclos anteriores archivados.</div>'}</section>`;
+    return;
+  }
+
+  const completed=visibleEmitters().filter(member=>taskStatus(currentTask(member.uid)).complete).length;
+  const filterLabel=({today:'Hoy','7d':'7 días','30d':'30 días',month:'Mes actual',custom:'Rango'})[state.financeFilter]||'30 días';
+  const rows=emitters.map(member=>{const task=currentTask(member.uid),status=taskStatus(task),profile=state.profiles.get(member.uid)||{},finance=emitterFinance(member.uid),time=status.active?countdown(status.remainingMs):status.expired?'VENCIDA':'SIN ACTIVAR';return{member,task,status,profile,finance,time}}).sort((a,b)=>b.finance.agent-a.finance.agent);
+  target.innerHTML=`<section class="house-agent-summary"><div><small>MI COMISIÓN · ${filterLabel.toUpperCase()}</small><b>${formatJems(totals.agent)}</b><span>70% emisora · 20% JEMMO · 10% Casa/agente</span></div><div class="house-agent-summary-split"><span><small>CONFIRMADA</small><b>${formatJems(totals.confirmed)}</b></span><span><small>PENDIENTE</small><b>${formatJems(totals.pending)}</b></span></div></section>
+    <div class="house-agent-periods"><button type="button" data-agent-period="today" class="${state.financeFilter==='today'?'active':''}">HOY</button><button type="button" data-agent-period="7d" class="${state.financeFilter==='7d'?'active':''}">7 DÍAS</button><button type="button" data-agent-period="30d" class="${state.financeFilter==='30d'?'active':''}">30 DÍAS</button><button type="button" data-agent-period="month" class="${state.financeFilter==='month'?'active':''}">MES</button><button type="button" data-agent-period="custom" class="${state.financeFilter==='custom'?'active':''}">RANGO</button></div>
+    <form class="house-agent-search" id="houseAgentSearchForm"><input name="query" value="${escapeHtml(state.financeSearch)}" placeholder="Buscar nombre o ID JEMMO" maxlength="80"><button type="submit">BUSCAR</button></form>
+    <form class="house-agent-dates ${state.financeFilter==='custom'?'show':''}" id="houseAgentDateForm"><label>Desde<input type="date" name="from" value="${escapeHtml(state.financeFrom)}"></label><label>Hasta<input type="date" name="to" value="${escapeHtml(state.financeTo)}"></label><button type="submit">APLICAR</button></form>
+    <div class="house-emitter-kpis"><div><b>${formatNumber(visibleEmitters().length)}</b><small>EMISORAS ASIGNADAS</small></div><div><b>${formatNumber(completed)}</b><small>TAREA COMPLETA</small></div><div><b>${formatJems(totals.gross)}</b><small>VALOR BRUTO</small></div><div><b>${formatNumber(movements.length)}</b><small>REGALOS</small></div></div>
+    <div class="house-emitter-list">${rows.length?rows.map(({member,task,status,profile,finance,time})=>`<article class="house-emitter-row house-emitter-open" data-emitter-detail="${escapeHtml(member.uid)}" role="button" tabindex="0"><div class="house-emitter-head"><span>${escapeHtml((member.displayName||profile.displayName||'JM').slice(0,2).toUpperCase())}</span><div><b>${escapeHtml(member.displayName||profile.displayName||'Usuario JEMMO')}</b><small>${escapeHtml(member.publicId||profile.publicId||'ID pendiente')} · ${positionLabel(member)} · Agente: ${escapeHtml(memberAgentName(member))}</small></div><em class="${status.complete?'done':''}">${status.complete?'COMPLETA':status.active?'EN CURSO':'PENDIENTE'}</em></div><div class="house-emitter-metrics four"><span><small>LIVE</small><b>${formatDuration(task.liveSeconds)}</b></span><span><small>SALA CASA</small><b>${formatDuration(task.houseRoomSeconds)}</b></span><span><small>REGALOS</small><b>${formatJems(finance.gross)}</b></span><span><small>MI 10%</small><b>${formatJems(finance.agent)}</b></span></div><div class="house-emitter-footer"><span>Queda: <b data-task-countdown="${number(task.cycleEndsAtClient)}">${time}</b></span><span>Confirmado: <b>${formatJems(finance.agentConfirmed)}</b></span><i>VER DETALLE ›</i></div></article>`).join(''):'<div class="house-workspace-empty">No hay emisoras asignadas que coincidan con la búsqueda. Asigna la función EMISOR/A desde Administración.</div>'}</div>
+    <p class="house-module-note">Panel financiero de pruebas conectado a Firestore. Cada regalo queda ligado a la emisora, Casa, agente, fecha, estado y operación original. No permite modificar saldos.</p>`;
 }
 
 function renderTaskAdmin() {
   const target = $('#houseTaskAdmin'); if (!target) return;
   target.hidden = !state.isAdmin; if (!state.isAdmin) return;
-  target.innerHTML = `<div class="house-workspace-title"><h2>CONFIGURACIÓN DE TAREAS</h2><span>Cada emisora dispone de un ciclo individual de 24 horas</span></div><form id="houseTaskConfigForm" class="house-task-config"><label>Minutos de LIVE<input name="liveTargetMinutes" type="number" min="0" max="10000" value="${number(state.taskConfig.liveTargetMinutes)}"></label><label>Minutos en Sala de Casa<input name="houseRoomTargetMinutes" type="number" min="0" max="10000" value="${number(state.taskConfig.houseRoomTargetMinutes)}"></label><label>Duración del ciclo<input value="24 horas" disabled></label><button type="submit">GUARDAR OBJETIVOS</button></form><p class="house-module-note">La tarea se activa automáticamente al ingresar o ser asignado como Emisor/a. Al vencer, el siguiente acceso a LIVE o Sala abre un nuevo ciclo y conserva un resumen del anterior. No genera JEMS ni pagos automáticos.</p>`;
+  target.innerHTML = `<div class="house-workspace-title"><h2>CONFIGURACIÓN DE TAREAS</h2><span>Cada emisora dispone de un ciclo individual de 24 horas</span></div><form id="houseTaskConfigForm" class="house-task-config"><label>Minutos de LIVE<input name="liveTargetMinutes" type="number" min="0" max="10000" value="${number(state.taskConfig.liveTargetMinutes)}"></label><label>Minutos en Sala de Casa<input name="houseRoomTargetMinutes" type="number" min="0" max="10000" value="${number(state.taskConfig.houseRoomTargetMinutes)}"></label><label>Duración del ciclo<input value="24 horas" disabled></label><button type="submit">GUARDAR OBJETIVOS</button></form><p class="house-module-note">La tarea se activa automáticamente al ingresar o ser asignado como Emisor/a. Al vencer, el siguiente acceso a LIVE o Sala abre un nuevo ciclo y conserva un resumen del anterior. La tarea acredita actividad real, pero no concede salario automático. Las ganancias del agente proceden del 10% de regalos registrados para sus emisoras.</p>`;
 }
 
 function renderAssignments() {
   const target = $('#houseMemberAssignments');
   if (!target || !state.isAdmin) return;
+  const agents = availableAgents();
   target.innerHTML = state.members.map(member => {
     const selected = clean(member.housePosition, 30) || (isEmitter(member) ? 'emitter' : member.role === 'owner' ? 'owner' : 'member');
-    return `<article class="house-assignment-row"><div><b>${escapeHtml(member.displayName || 'Usuario JEMMO')}</b><small>${escapeHtml(member.publicId || 'ID pendiente')} · ${positionLabel(member)}</small></div><select data-house-position="${escapeHtml(member.uid)}" ${member.role === 'owner' ? 'disabled' : ''}><option value="member" ${selected === 'member' ? 'selected' : ''}>Miembro</option><option value="emitter" ${selected === 'emitter' ? 'selected' : ''}>Emisor/a</option><option value="agent" ${selected === 'agent' ? 'selected' : ''}>Agente</option><option value="admin" ${selected === 'admin' ? 'selected' : ''}>Apoyo administrativo</option><option value="owner" ${selected === 'owner' ? 'selected' : ''}>Propietario</option></select></article>`;
+    const assigned = memberAgentUid(member) || (selected === 'emitter' ? defaultAgentUid() : '');
+    const agentControl = selected === 'emitter' ? `<label class="house-agent-assignment"><span>Agente responsable</span><select data-assigned-agent="${escapeHtml(member.uid)}" ${agents.length ? '' : 'disabled'}>${agents.length ? agents.map(agent => `<option value="${escapeHtml(agent.uid)}" ${assigned === agent.uid ? 'selected' : ''}>${escapeHtml(agent.name)} · ${escapeHtml(agent.label)}</option>`).join('') : '<option value="">Primero asigna un agente</option>'}</select></label>` : '';
+    return `<article class="house-assignment-row"><div class="house-assignment-person"><b>${escapeHtml(member.displayName || 'Usuario JEMMO')}</b><small>${escapeHtml(member.publicId || 'ID pendiente')} · ${positionLabel(member)}</small></div><div class="house-assignment-controls"><label><span>Función en la Casa</span><select data-house-position="${escapeHtml(member.uid)}" ${member.role === 'owner' ? 'disabled' : ''}><option value="member" ${selected === 'member' ? 'selected' : ''}>Miembro</option><option value="emitter" ${selected === 'emitter' ? 'selected' : ''}>Emisor/a</option><option value="agent" ${selected === 'agent' ? 'selected' : ''}>Agente</option><option value="admin" ${selected === 'admin' ? 'selected' : ''}>Apoyo administrativo</option><option value="owner" ${selected === 'owner' ? 'selected' : ''}>Propietario</option></select></label>${agentControl}</div></article>`;
   }).join('') || '<div class="house-workspace-empty">No hay miembros para asignar.</div>';
 }
 
@@ -329,7 +507,7 @@ function renderAll() {
   refreshAuthority();
   const workspace = $('#houseWorkspace');
   if (!workspace || workspace.hidden || !state.houseId) return;
-  document.querySelectorAll('[data-workspace-tab="emitters"]').forEach(element => { element.hidden = !state.isAdmin; });
+  document.querySelectorAll('[data-workspace-tab="emitters"]').forEach(element => { element.hidden = !state.canViewAgentPanel; });
   const assignments = $('#houseAssignmentsBlock');
   if (assignments) assignments.hidden = !state.isAdmin;
   renderRoom();
@@ -354,6 +532,7 @@ async function saveTaskConfig(event) {
   };
   try {
     await state.services.setDoc(state.services.doc(state.services.db, 'casas', state.houseId, 'configuracion', 'tareas'), next, { merge: true });
+    await writeAudit('task_config_updated', '', { liveTargetMinutes: next.liveTargetMinutes, houseRoomTargetMinutes: next.houseRoomTargetMinutes, cycleHours: 24 });
     toast('Objetivos de tareas guardados.', 'success');
   } catch (error) { toast('No se pudieron guardar los objetivos.', 'error'); }
 }
@@ -371,6 +550,7 @@ async function saveRoomConfig(event) {
       updatedBy: state.user.uid,
       updatedAt: state.services.serverTimestamp()
     }, { merge: true });
+    await writeAudit('official_room_config_updated', '', { capacity: 20, mode: 'audio', seatPolicy: clean(data.get('seatPolicy'), 20) || 'members', minLevel: Math.min(100, Math.max(1, Number(data.get('minLevel')) || 1)) });
     toast('Ajustes de la sala guardados.', 'success');
   } catch { toast('No se pudieron guardar los ajustes.', 'error'); }
 }
@@ -386,6 +566,7 @@ async function reviewTask(uid, status) {
       reviewedAt: state.services.serverTimestamp(),
       updatedAt: state.services.serverTimestamp()
     }, { merge: true });
+    await writeAudit(status === 'approved' ? 'task_approved' : 'task_reopened', uid, { reviewStatus: status });
     toast(status === 'approved' ? 'Tarea aprobada.' : 'Tarea reabierta para revisión.', 'success');
   } catch { toast('No se pudo actualizar la revisión.', 'error'); }
 }
@@ -411,7 +592,7 @@ async function activateTask(uid, reason = 'emitter_assigned', force = false) {
 
 async function resetTask(uid) {
   if (!state.isAdmin || !uid) return;
-  try { await activateTask(uid, 'admin_manual_24h_reset', true); toast('Nuevo ciclo de 24 horas activado.', 'success'); }
+  try { await activateTask(uid, 'admin_manual_24h_reset', true); await writeAudit('task_cycle_reset', uid, { cycleHours: 24 }); toast('Nuevo ciclo de 24 horas activado.', 'success'); }
   catch { toast('No se pudo reiniciar la tarea.', 'error'); }
 }
 
@@ -419,30 +600,73 @@ async function changePosition(uid, position) {
   if (!state.isAdmin || !uid) return;
   try {
     const s = state.services;
+    const existingMember = state.members.find(member => member.uid === uid) || {};
+    const assignedAgentUid = position === 'emitter' ? clean(existingMember.assignedAgentUid || defaultAgentUid(), 160) : '';
+    const assignedAgent = availableAgents().find(agent => agent.uid === assignedAgentUid);
     await Promise.all([
-      s.setDoc(s.doc(s.db, 'casas', state.houseId, 'miembros', uid), { housePosition: position, updatedAt: s.serverTimestamp() }, { merge: true }),
-      s.setDoc(s.doc(s.db, 'users', uid), { housePosition: position, houseUpdatedAt: s.serverTimestamp() }, { merge: true })
+      s.setDoc(s.doc(s.db, 'casas', state.houseId, 'miembros', uid), { housePosition: position, assignedAgentUid: position === 'emitter' ? assignedAgentUid : s.deleteField(), assignedAgentName: position === 'emitter' ? clean(assignedAgent?.name || state.profile.displayName || state.user.displayName || 'Agente JEMMO', 80) : s.deleteField(), updatedAt: s.serverTimestamp() }, { merge: true }),
+      s.setDoc(s.doc(s.db, 'users', uid), { housePosition: position, assignedAgentUid: position === 'emitter' ? assignedAgentUid : s.deleteField(), houseUpdatedAt: s.serverTimestamp() }, { merge: true })
     ]);
+    if (position === 'emitter') window.JemmoWallet?.setMembership?.(uid, { hasHouse: true, houseId: state.houseId, houseName: state.house.name || 'Casa JEMMO', agentUid: assignedAgentUid });
     if (position === 'emitter') await activateTask(uid, 'emitter_assigned');
     else await s.setDoc(s.doc(s.db, 'casas', state.houseId, 'tareas', uid), { taskState: 'paused', pausedReason: 'house_position_changed', pausedAt: s.serverTimestamp(), updatedAt: s.serverTimestamp() }, { merge: true });
+    await writeAudit('house_position_changed', uid, { previousPosition: clean(existingMember.housePosition || 'member', 30), newPosition: position, assignedAgentUid });
     toast(position === 'emitter' ? 'Función Emisor/a asignada y tarea de 24 horas activada.' : 'Función interna actualizada.', 'success');
   } catch { toast('No se pudo cambiar la función.', 'error'); }
+}
+
+async function assignAgent(emitterUid, agentUid) {
+  if (!state.isAdmin || !emitterUid || !agentUid) return;
+  const emitter = state.members.find(member => member.uid === emitterUid);
+  if (!emitter || !isEmitter(emitter)) { toast('Primero asigna la función Emisor/a.', 'error'); renderAssignments(); return; }
+  const agent = availableAgents().find(item => item.uid === agentUid);
+  if (!agent) { toast('El agente seleccionado no pertenece a esta Casa.', 'error'); renderAssignments(); return; }
+  try {
+    const s = state.services;
+    await Promise.all([
+      s.setDoc(s.doc(s.db, 'casas', state.houseId, 'miembros', emitterUid), { assignedAgentUid: agent.uid, assignedAgentName: agent.name, updatedAt: s.serverTimestamp() }, { merge: true }),
+      s.setDoc(s.doc(s.db, 'users', emitterUid), { assignedAgentUid: agent.uid, assignedAgentName: agent.name, houseUpdatedAt: s.serverTimestamp() }, { merge: true }),
+      s.setDoc(s.doc(s.db, 'casas', state.houseId, 'tareas', emitterUid), { assignedAgentUid: agent.uid, assignedAgentName: agent.name, updatedAt: s.serverTimestamp() }, { merge: true })
+    ]);
+    window.JemmoWallet?.setMembership?.(emitterUid, { hasHouse: true, houseId: state.houseId, houseName: state.house.name || 'Casa JEMMO', agentUid: agent.uid });
+    await writeAudit('emitter_agent_assigned', emitterUid, { agentUid: agent.uid, agentName: agent.name });
+    toast(`${clean(emitter.displayName || 'La emisora', 60)} quedó asignada a ${agent.name}.`, 'success');
+  } catch (error) {
+    console.warn('JEMMO asignación de agente:', error?.code || error?.message || error);
+    toast('No se pudo asignar el agente.', 'error');
+  }
 }
 
 function bind() {
   document.addEventListener('submit', event => {
     if (event.target.id === 'houseTaskConfigForm') void saveTaskConfig(event);
     if (event.target.id === 'houseRoomConfigForm') void saveRoomConfig(event);
+    if (event.target.id === 'houseAgentSearchForm') { event.preventDefault(); state.financeSearch = clean(new FormData(event.target).get('query'), 80); renderEmitters(); }
+    if (event.target.id === 'houseAgentDateForm') { event.preventDefault(); const data=new FormData(event.target); state.financeFrom=clean(data.get('from'),10); state.financeTo=clean(data.get('to'),10); state.financeFilter='custom'; renderEmitters(); }
   });
   document.addEventListener('click', event => {
     const review = event.target.closest('[data-review-task]');
     if (review) { review.disabled = true; void reviewTask(review.dataset.taskUid, review.dataset.reviewTask).finally(() => { review.disabled = false; }); return; }
     const reset = event.target.closest('[data-reset-task]');
     if (reset) { reset.disabled = true; void resetTask(reset.dataset.resetTask).finally(() => { reset.disabled = false; }); return; }
+    const period = event.target.closest('[data-agent-period]');
+    if (period) { state.financeFilter=period.dataset.agentPeriod||'30d'; renderEmitters(); return; }
+    const detail = event.target.closest('[data-emitter-detail]');
+    if (detail) { state.selectedEmitterUid=detail.dataset.emitterDetail||''; renderEmitters(); return; }
+    if (event.target.closest('[data-agent-back]')) { state.selectedEmitterUid=''; renderEmitters(); return; }
+  });
+  document.addEventListener('keydown', event => {
+    const detail = event.target.closest?.('[data-emitter-detail]');
+    if (!detail || !['Enter', ' '].includes(event.key)) return;
+    event.preventDefault();
+    state.selectedEmitterUid = detail.dataset.emitterDetail || '';
+    renderEmitters();
   });
   document.addEventListener('change', event => {
-    const select = event.target.closest('[data-house-position]');
-    if (select) void changePosition(select.dataset.housePosition, select.value);
+    const position = event.target.closest('[data-house-position]');
+    if (position) { void changePosition(position.dataset.housePosition, position.value); return; }
+    const agent = event.target.closest('[data-assigned-agent]');
+    if (agent) void assignAgent(agent.dataset.assignedAgent, agent.value);
   });
 }
 
@@ -483,7 +707,7 @@ async function boot() {
 
 window.JemmoHouseOperations = {
   refresh: () => attachCurrentWorkspace(),
-  getState: () => ({ houseId: state.houseId, isAdmin: state.isAdmin, actualAdmin: state.actualAdmin, testRole: state.testRole, memberRole: state.memberRole, room: { ...state.room }, taskConfig: { ...state.taskConfig } })
+  getState: () => ({ houseId: state.houseId, isAdmin: state.isAdmin, actualAdmin: state.actualAdmin, actualAgent: state.actualAgent, canViewAgentPanel: state.canViewAgentPanel, testRole: state.testRole, memberRole: state.memberRole, room: { ...state.room }, taskConfig: { ...state.taskConfig }, movementCount: state.financeMovements.length })
 };
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });

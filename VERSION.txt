@@ -1,25 +1,59 @@
-JEMMO LIVE V1 · NAVEGACIÓN INFERIOR DE MENSAJES UNIFICADA PRUEBA 22
+JEMMO LIVE V1 · TAREAS REALES Y PANEL FINANCIERO DE AGENTES PRUEBA 23
 Fecha: 26/07/2026
 
-Base:
-- JEMMO LIVE V1 · PERFIL Y NAVEGACIÓN INFERIOR CORREGIDOS PRUEBA 21.
+Base acumulada:
+- JEMMO LIVE V1 · NAVEGACIÓN INFERIOR DE MENSAJES UNIFICADA PRUEBA 22.
+- Incluye las correcciones de Universo, Salas, Perfil, Logros y navegación de PRUEBAS 20, 21 y 22.
 
-Incidencia confirmada:
-- La pantalla Mensajes conservaba una barra inferior antigua y diferente.
-- Los cinco apartados mostraban imágenes oscuras del pescado, mientras las demás pantallas utilizaban el sistema común de iconos y un único pescado en el apartado activo.
-- La navegación de Mensajes no mantenía el mismo tamaño, alineación ni comportamiento visual que Inicio, LIVE, Salas y Yo.
+Objetivo:
+- Convertir las tareas de Casas y el panel de agentes en un sistema funcional de pruebas conectado a Firebase/Firestore.
+- No es una maqueta visual: registra actividad, regalos, reparto económico, estados e historial.
 
-Corrección:
-- Mensajes utiliza ahora exactamente el sistema común de navegación inferior.
-- Orden oficial: Inicio, LIVE, Salas, Mensajes y Yo.
-- Solo Mensajes aparece activo en esa pantalla.
-- Solo existe un pescado visible en la barra: el del apartado activo Mensajes.
-- Los cuatro apartados inactivos utilizan sus iconos normales, sin pescados oscuros ni cuadrados repetidos.
-- Se conservan el contador rojo de mensajes no leídos y su actualización dinámica.
-- No se modifica ninguna conversación, contacto, grupo, regalo ni función interna de Mensajes.
+Tareas reales de emisoras:
+- La tarea se activa únicamente cuando la persona pertenece a la Casa y queda asignada formalmente como Emisor/a.
+- Cada emisora dispone de un ciclo individual de 24 horas.
+- Se contabiliza por separado el tiempo real en transmisión LIVE y en la Sala oficial de la Casa.
+- Cada sesión utiliza identificador, lease y segundos acreditados para impedir el cómputo duplicado entre pestañas o móviles.
+- El conteo se detiene al cerrar la emisión/sala, ocultar la página, perder conexión o ser sustituida la sesión por otra más reciente.
+- Al finalizar el ciclo se archiva el resultado y se conserva el historial.
+- La administración puede revisar, aprobar y reiniciar un ciclo de 24 horas.
+- Las tareas no generan salario automático en esta prueba.
+
+Panel financiero de agentes:
+- Diseño propio JEMMO LIVE: negro, morado fluorescente, amarillo y tarjetas premium.
+- Filtros: hoy, 7 días, 30 días, mes actual y rango personalizado.
+- Buscador por nombre o ID JEMMO.
+- Resumen de comisión total, confirmada y pendiente.
+- Lista de emisoras asignadas con estado de tarea, tiempo LIVE, tiempo en Sala oficial, regalos, valor bruto y comisión.
+- Detalle individual con reparto económico, movimientos de regalos e historial de ciclos.
+- Un agente real solo consulta las emisoras que tiene asignadas.
+- El propietario y la administración pueden consultar el conjunto de la Casa.
+
+Asignación de agentes:
+- Administración permite asignar las funciones Miembro, Emisor/a, Agente o Apoyo administrativo.
+- Cada Emisor/a dispone de un selector explícito de agente responsable.
+- La asignación se sincroniza en el miembro, perfil y tarea de Firestore.
+
+Economía de regalos:
+- Emisora con Casa: 70% Emisora, 20% JEMMO LIVE y 10% Casa/agente.
+- Emisora independiente: 70% Emisora y 30% JEMMO LIVE.
+- Integración en LIVE, Audio Room/Salas, Mensajes privados y Destellos.
+- Cada regalo utiliza una operación idempotente y queda asociado a emisor, remitente, Casa, agente, fecha, contexto y estado.
+- Se separan cantidades confirmadas y pendientes según el origen de los JEMMOS.
+- Las cantidades pendientes se concilian cuando alcanza su fecha de confirmación.
+- Los regalos de Batalla de Casas no se atribuyen artificialmente a una emisora individual.
+
+Firebase y auditoría:
+- Movimientos globales en giftOperations.
+- Ganancias por usuario y resúmenes económicos.
+- Movimientos, resúmenes por emisora, agente y día dentro de cada Casa.
+- Auditoría de reparto, confirmación, tareas, objetivos, sala, ingreso, salida, expulsión, funciones y asignación de agente.
+- El panel no contiene controles para modificar saldos manualmente.
+
+Estado económico:
+- MODO DE PRUEBAS.
+- No mueve dinero real ni ejecuta retiros reales.
+- Antes de producción deben desplegarse reglas Firestore por roles y validación económica en backend/Cloud Functions.
 
 Actualización móvil:
-- Nueva versión de caché PWA y service worker para impedir que el móvil conserve la barra anterior.
-
-Economía:
-- MODO DE PRUEBAS · SIN COBROS REALES.
+- Nueva caché PWA y service worker para impedir que el móvil conserve archivos anteriores.

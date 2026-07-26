@@ -85,7 +85,7 @@
         <button class="house-workspace-tab active" type="button" data-workspace-tab="home">INICIO</button>
         <button class="house-workspace-tab" type="button" data-workspace-tab="room">SALA</button>
         <button class="house-workspace-tab" type="button" data-workspace-tab="tasks">MIS TAREAS</button>
-        <button class="house-workspace-tab" type="button" data-workspace-tab="emitters" hidden>EMISORES/AS</button>
+        <button class="house-workspace-tab" type="button" data-workspace-tab="emitters" hidden>PANEL AGENTE</button>
         <button class="house-workspace-tab" type="button" data-workspace-tab="chat">CHAT</button>
         <button class="house-workspace-tab" type="button" data-workspace-tab="members">MIEMBROS</button>
         <button class="house-workspace-tab" type="button" data-workspace-tab="admin" hidden>ADMINISTRACIÓN</button>
@@ -98,7 +98,7 @@
         </section>
         <section class="house-workspace-card house-quick-access">
           <div class="house-workspace-title"><h2>ACCESOS DE LA CASA</h2><span>Sala, tareas y equipo</span></div>
-          <div class="house-quick-grid"><button type="button" data-workspace-tab="room"><span>🎙</span><b>SALA DE LA CASA</b><small>Audio Room 24/7</small></button><button type="button" data-workspace-tab="tasks"><span>🎯</span><b>MIS TAREAS</b><small>LIVE y Sala</small></button><button type="button" data-workspace-tab="emitters"><span>👥</span><b>EMISORES/AS</b><small>Panel de control</small></button></div>
+          <div class="house-quick-grid"><button type="button" data-workspace-tab="room"><span>🎙</span><b>SALA DE LA CASA</b><small>Audio Room 24/7</small></button><button type="button" data-workspace-tab="tasks"><span>🎯</span><b>MIS TAREAS</b><small>LIVE y Sala</small></button><button type="button" data-workspace-tab="emitters"><span>👥</span><b>PANEL AGENTE</b><small>Tareas y comisiones</small></button></div>
         </section>
         <form class="house-workspace-card house-notice-composer" id="houseNoticeComposer" hidden>
           <div class="house-workspace-title"><h2>PUBLICAR AVISO</h2><span>Solo administración</span></div>
@@ -128,7 +128,7 @@
 
       <div class="house-workspace-view" data-workspace-view="emitters" hidden>
         <section class="house-workspace-card">
-          <div class="house-workspace-title"><h2>PANEL DE EMISORES Y EMISORAS</h2><span>Seguimiento del ciclo</span></div>
+          <div class="house-workspace-title"><h2>TAREAS Y FINANZAS DE EMISORAS</h2><span>Actividad, regalos y comisión</span></div>
           <div id="houseEmittersDashboard"><div class="house-workspace-empty">Cargando el equipo…</div></div>
         </section>
       </div>
@@ -161,7 +161,7 @@
           <div class="house-admin-list" id="houseAdminMembers"></div>
         </section>
         <section class="house-workspace-card" id="houseAssignmentsBlock" hidden>
-          <div class="house-workspace-title"><h2>FUNCIONES DEL EQUIPO</h2><span>Miembro, emisor/a o agente</span></div>
+          <div class="house-workspace-title"><h2>FUNCIONES Y AGENTES</h2><span>Asigna cada emisora a su agente responsable</span></div>
           <div class="house-admin-list" id="houseMemberAssignments"></div>
         </section>
         <section class="house-workspace-card" id="houseCreationAdminBlock" hidden>
@@ -203,6 +203,7 @@
   <script type="module" src="jemmo-session.js"></script>
   <script src="pwa-register.js"></script>
   <script src="jemmo-wallet.js"></script>
+  <script src="jemmo-house-finance.js"></script>
   <script src="app.js"></script>
   <script type="module" src="jemmo-houses.js"></script>
   <script type="module" src="jemmo-house-operations.js"></script>

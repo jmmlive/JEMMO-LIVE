@@ -1389,6 +1389,7 @@
   <script type="module" src="jemmo-session.js"></script>
   <script src="pwa-register.js"></script>
   <script src="jemmo-wallet.js"></script>
+  <script src="jemmo-house-finance.js"></script>
   <script src="jemmo-prep-storage.js"></script>
   <script type="module" src="jemmo-personalization-runtime.js"></script>
   <script>
@@ -2257,11 +2258,15 @@
     }
 
     function liveRecipientList(){
-      const list=[{key:"host",name:"Emisor",photo:$("hostAvatar")?.src||"jemmo-fish-nav.webp"}];
+      const params=new URLSearchParams(location.search);
+      const hostUid=String(params.get("hostUid")||activeUid());
+      const hostName=String(params.get("hostName")||$("hostName")?.textContent||"Emisor").trim();
+      const list=[{key:"host",uid:hostUid,name:hostName,photo:$("hostAvatar")?.src||"jemmo-fish-nav.webp"}];
       document.querySelectorAll(".jl-seat.occupied,.jl-seat.request").forEach(seat=>{
         const number=Number(seat.dataset.seat);
-        const name=number===1?"Luna":number===3?"Alex":`Silla ${number}`;
-        list.push({key:`seat${number}`,name,photo:"jemmo-fish-nav.webp"});
+        const name=seat.dataset.name||(number===1?"Luna":number===3?"Alex":`Silla ${number}`);
+        const uid=String(seat.dataset.uid||seat.dataset.userUid||`seat-${number}`);
+        list.push({key:`seat${number}`,uid,name,photo:seat.dataset.photo||"jemmo-fish-nav.webp"});
       });
       return list;
     }
@@ -2351,11 +2356,18 @@
       if(!confirm(`¿Enviar ${state.giftQuantity} × ${giftName} a cada destinatario?\n\nDestino: ${target}\nTotal: ${totalGifts} regalos · ${totalCost.toLocaleString("es-ES")} JEMMOS.`))return;
       setLiveGiftSending(true);
       const recipientKey=recipients.map(item=>item.key).sort().join("-");
-      const idempotencyKey=`live:${giftName}:${unitCost}:${state.giftQuantity}:${recipientKey}:${Math.floor(Date.now()/2000)}`;
-      const spent=window.JemmoWallet?.spendCoins?.(totalCost,{title:"Regalo enviado en LIVE",giftName,detail:`${giftName} · ${target} · ×${state.giftQuantity}`,context:"LIVE",source:"live-gift",idempotencyKey});
-      if(!spent?.ok){
-        if(spent?.duplicate)showToast("Doble toque bloqueado: el regalo ya se registró.");
-        else{showToast("Saldo insuficiente. Abriendo el Monedero.");window.JemmoWallet?.open?.("recharge")}
+      const requestKey=`live:${giftName}:${unitCost}:${state.giftQuantity}:${recipientKey}:${Date.now()}`;
+      let spent=null,failed=null;
+      const unitRecipientCost=unitCost*state.giftQuantity;
+      recipients.forEach((item,index)=>{
+        if(failed)return;
+        const result=window.JemmoWallet?.spendCoins?.(unitRecipientCost,{recipientUid:item.uid||item.key,recipientName:item.name,title:"Regalo enviado en LIVE",giftName,detail:`${giftName} · ${item.name} · ×${state.giftQuantity}`,context:"LIVE",source:"live-gift",reference:item.key,idempotencyKey:`${requestKey}:${index}:${item.uid||item.key}`});
+        if(!result?.ok&&!result?.duplicate)failed=result||{missing:unitRecipientCost};
+        if(result?.ok)spent=result;
+      });
+      if(failed||!spent){
+        showToast("No se pudo completar el envío. Revisa el saldo y vuelve a intentarlo.");
+        if(failed?.missing)window.JemmoWallet?.open?.("recharge");
       }else{
         state.balance=spent.wallet.jemmos;
         state.gifts+=totalGifts;

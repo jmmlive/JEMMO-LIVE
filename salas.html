@@ -391,6 +391,7 @@
 <script type="module" src="jemmo-session.js"></script>
 <script src="pwa-register.js"></script>
 <script src="jemmo-wallet.js"></script>
+<script src="jemmo-house-finance.js"></script>
 <script src="jemmo-prep-storage.js"></script>
 <script type="module" src="jemmo-room-realtime.js"></script>
 <script type="module" src="jemmo-personalization-runtime.js"></script>
@@ -1411,11 +1412,19 @@
 Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
     if(!confirm(question)){release();return}
     const recipientKey=indexes.slice().sort((a,b)=>a-b).join('-');
-    const idempotencyKey=`salas:${gift}:${unitPrice}:${state.giftQuantity}:${recipientKey}:${Math.floor(Date.now()/2000)}`;
-    const spent=window.JemmoWallet?.spendCoins?.(totalCoins,{title:'Regalo enviado en Sala',giftName:gift,detail:`${gift} · ${target} · ×${state.giftQuantity}`,context:'Audio Room / Salas',source:'salas-gift',idempotencyKey});
-    if(!spent?.ok){
-      if(spent?.duplicate)toast('Doble toque bloqueado: el regalo ya se registró.');
-      else{toast('Saldo insuficiente. Abriendo el Monedero.');openRoomWallet('recharge')}
+    const requestKey=`salas:${gift}:${unitPrice}:${state.giftQuantity}:${recipientKey}:${Date.now()}`;
+    const unitRecipientCost=unitPrice*state.giftQuantity;
+    let spent=null,failed=null;
+    indexes.forEach((index,order)=>{
+      if(failed)return;
+      const person=occupantFor(index)||{};
+      const result=window.JemmoWallet?.spendCoins?.(unitRecipientCost,{recipientUid:person.uid||`seat-${index}`,recipientName:person.name||`Silla ${index}`,title:'Regalo enviado en Sala',giftName:gift,detail:`${gift} · ${person.name||`Silla ${index}`} · ×${state.giftQuantity}`,context:houseContext.enabled?'SALA OFICIAL DE CASA':'Audio Room / Salas',source:'salas-gift',reference:`seat-${index}`,houseId:houseContext.enabled?houseContext.houseId:'',houseName:houseContext.enabled?houseContext.houseName:'',idempotencyKey:`${requestKey}:${order}:${person.uid||index}`});
+      if(!result?.ok&&!result?.duplicate)failed=result||{missing:unitRecipientCost};
+      if(result?.ok)spent=result;
+    });
+    if(failed||!spent){
+      toast('No se pudo completar el envío. Revisa el saldo y vuelve a intentarlo.');
+      if(failed?.missing)openRoomWallet('recharge');
       release();
       return;
     }

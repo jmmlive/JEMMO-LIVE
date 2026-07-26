@@ -1132,6 +1132,7 @@ async function reviewJoinRequest(applicantUid, decision) {
       const memberRef = s.doc(s.db, 'casas', house.id, 'miembros', applicantUid);
       const userRef = s.doc(s.db, 'users', applicantUid);
       const taskRef = s.doc(s.db, 'casas', house.id, 'tareas', applicantUid);
+      const auditRef = s.doc(s.collection(s.db, 'casas', house.id, 'auditoria'));
       const inboxSnap = await transaction.get(inboxRef);
       const houseSnap = await transaction.get(houseRef);
       const memberSnap = await transaction.get(memberRef);
@@ -1147,17 +1148,20 @@ async function reviewJoinRequest(applicantUid, decision) {
           uid: applicantUid, displayName: cleanText(request.applicantName || userData.displayName || 'Usuario JEMMO', 48),
           publicId: cleanText(request.applicantPublicId || userData.publicId, 48), role: 'member', status: 'active',
           accountRole: cleanText(userData.role || userData.rol || 'usuario', 30), housePosition: initialPosition,
+          assignedAgentUid: initialPosition === 'emitter' ? state.uid : s.deleteField(),
+          assignedAgentName: initialPosition === 'emitter' ? cleanText(state.identity.displayName || 'Responsable de Casa', 80) : s.deleteField(),
           joinedAt: memberSnap.exists() ? (memberSnap.data()?.joinedAt || s.serverTimestamp()) : s.serverTimestamp(),
           approvedBy: state.uid, updatedAt: s.serverTimestamp()
         }, { merge: true });
         transaction.set(userRef, {
           houseId: house.id, houseName: house.name, houseRole: 'member', houseStatus: 'active', housePosition: initialPosition,
+          assignedAgentUid: initialPosition === 'emitter' ? state.uid : s.deleteField(),
           houseJoinedAt: s.serverTimestamp(), houseUpdatedAt: s.serverTimestamp(),
           houseRequestId: s.deleteField(), houseRequestName: s.deleteField(), houseRequestStatus: s.deleteField()
         }, { merge: true });
         if (initialPosition === 'emitter') {
           const previousTask = taskSnap.data() || {};
-          transaction.set(taskRef, { uid: applicantUid, displayName: cleanText(request.applicantName || userData.displayName || 'Emisora JEMMO', 48), publicId: cleanText(request.applicantPublicId || userData.publicId, 48), taskState: 'active', cycleDurationHours: 24, cycleStartedAtClient: acceptedAtClient, cycleEndsAtClient: acceptedAtClient + 86400000, cycleKey: `24h-${acceptedAtClient}`, cycleNumber: Math.max(1, Number(previousTask.cycleNumber || 0) + 1), liveSeconds: 0, houseRoomSeconds: 0, reviewStatus: 'pending', activatedReason: 'membership_accepted_as_emitter', activatedAtClient: acceptedAtClient, updatedAt: s.serverTimestamp() }, { merge: true });
+          transaction.set(taskRef, { uid: applicantUid, displayName: cleanText(request.applicantName || userData.displayName || 'Emisora JEMMO', 48), publicId: cleanText(request.applicantPublicId || userData.publicId, 48), assignedAgentUid: state.uid, taskState: 'active', completionState: 'in_progress', cycleDurationHours: 24, cycleStartedAtClient: acceptedAtClient, cycleEndsAtClient: acceptedAtClient + 86400000, cycleKey: `24h-${acceptedAtClient}`, cycleNumber: Math.max(1, Number(previousTask.cycleNumber || 0) + 1), liveSeconds: 0, houseRoomSeconds: 0, reviewStatus: 'pending', activatedReason: 'membership_accepted_as_emitter', activatedAtClient: acceptedAtClient, updatedAt: s.serverTimestamp() }, { merge: true });
         }
         transaction.set(houseRef, {
           memberCount: number(houseSnap.data()?.memberCount ?? houseSnap.data()?.members) + (memberSnap.exists() ? 0 : 1), updatedAt: s.serverTimestamp()
@@ -1169,6 +1173,7 @@ async function reviewJoinRequest(applicantUid, decision) {
       };
       transaction.set(inboxRef, review, { merge: true });
       transaction.set(globalRef, review, { merge: true });
+      transaction.set(auditRef, { action: decision === 'accept' ? 'membership_request_accepted' : 'membership_request_rejected', subjectUid: applicantUid, actorUid: state.uid, actorName: state.identity.displayName, decision, createdAtClient: acceptedAtClient, createdAt: s.serverTimestamp(), simulation: true, schemaVersion: 1 });
       if (decision === 'reject') {
         transaction.set(userRef, {
           houseRequestId: s.deleteField(), houseRequestName: s.deleteField(), houseRequestStatus: 'rejected',
@@ -1191,6 +1196,7 @@ async function changeMemberRole(memberUid, nextRole) {
       const memberRef = s.doc(s.db, 'casas', state.workspaceHouse.id, 'miembros', memberUid);
       const userRef = s.doc(s.db, 'users', memberUid);
       const houseRef = s.doc(s.db, 'casas', state.workspaceHouse.id);
+      const auditRef = s.doc(s.collection(s.db, 'casas', state.workspaceHouse.id, 'auditoria'));
       const ownerSnap = await transaction.get(ownerRef);
       const memberSnap = await transaction.get(memberRef);
       if (ownerSnap.data()?.role !== 'owner' || !memberSnap.exists() || memberSnap.data()?.role === 'owner') throw new Error('NOT_ADMIN');
@@ -1199,6 +1205,7 @@ async function changeMemberRole(memberUid, nextRole) {
       transaction.set(houseRef, {
         adminUids: nextRole === 'admin' ? s.arrayUnion(memberUid) : s.arrayRemove(memberUid), updatedAt: s.serverTimestamp()
       }, { merge: true });
+      transaction.set(auditRef, { action: 'house_admin_role_changed', subjectUid: memberUid, actorUid: state.uid, actorName: state.identity.displayName, nextRole, createdAtClient: Date.now(), createdAt: s.serverTimestamp(), simulation: true, schemaVersion: 1 });
     });
     toast(nextRole === 'admin' ? 'Administrador añadido.' : 'Administrador retirado.', 'success');
   } catch (error) { toast(friendlyError(error), 'error'); }
@@ -1216,6 +1223,8 @@ async function removeMember(memberUid) {
       const memberRef = s.doc(s.db, 'casas', state.workspaceHouse.id, 'miembros', memberUid);
       const userRef = s.doc(s.db, 'users', memberUid);
       const houseRef = s.doc(s.db, 'casas', state.workspaceHouse.id);
+      const taskRef = s.doc(s.db, 'casas', state.workspaceHouse.id, 'tareas', memberUid);
+      const auditRef = s.doc(s.collection(s.db, 'casas', state.workspaceHouse.id, 'auditoria'));
       const adminSnap = await transaction.get(adminRef);
       const memberSnap = await transaction.get(memberRef);
       const userSnap = await transaction.get(userRef);
@@ -1227,13 +1236,16 @@ async function removeMember(memberUid) {
       if (userSnap.data()?.houseId === state.workspaceHouse.id) {
         transaction.set(userRef, {
           houseId: s.deleteField(), houseName: s.deleteField(), houseRole: s.deleteField(), houseStatus: 'removed',
+          housePosition: s.deleteField(), assignedAgentUid: s.deleteField(),
           houseLeftAt: s.serverTimestamp(), houseUpdatedAt: s.serverTimestamp()
         }, { merge: true });
       }
+      transaction.set(taskRef, { taskState: 'paused', pausedReason: 'removed_from_house', pausedAt: s.serverTimestamp(), updatedAt: s.serverTimestamp() }, { merge: true });
       transaction.set(houseRef, {
         memberCount: Math.max(0, number(houseSnap.data()?.memberCount ?? houseSnap.data()?.members) - (memberSnap.exists() ? 1 : 0)),
         adminUids: s.arrayRemove(memberUid), updatedAt: s.serverTimestamp()
       }, { merge: true });
+      transaction.set(auditRef, { action: 'house_member_removed', subjectUid: memberUid, actorUid: state.uid, actorName: state.identity.displayName, createdAtClient: Date.now(), createdAt: s.serverTimestamp(), simulation: true, schemaVersion: 1 });
     });
     toast('Miembro expulsado.', 'success');
     await addSystemMessage(`${member.displayName || 'Un miembro'} salió de la Casa por decisión de la administración.`);
@@ -1252,18 +1264,21 @@ async function leaveHouse() {
       const memberRef = s.doc(s.db, 'casas', houseId, 'miembros', state.uid);
       const userRef = s.doc(s.db, 'users', state.uid);
       const houseRef = s.doc(s.db, 'casas', houseId);
+      const auditRef = s.doc(s.collection(s.db, 'casas', houseId, 'auditoria'));
       const memberSnap = await transaction.get(memberRef);
       const houseSnap = await transaction.get(houseRef);
       if (memberSnap.data()?.role === 'owner') throw new Error('OWNER_CANNOT_LEAVE');
       transaction.delete(memberRef);
       transaction.set(userRef, {
         houseId: s.deleteField(), houseName: s.deleteField(), houseRole: s.deleteField(), houseStatus: 'left',
+        housePosition: s.deleteField(), assignedAgentUid: s.deleteField(),
         houseLeftAt: s.serverTimestamp(), houseUpdatedAt: s.serverTimestamp()
       }, { merge: true });
       transaction.set(houseRef, {
         memberCount: Math.max(0, number(houseSnap.data()?.memberCount ?? houseSnap.data()?.members) - (memberSnap.exists() ? 1 : 0)),
         adminUids: s.arrayRemove(state.uid), updatedAt: s.serverTimestamp()
       }, { merge: true });
+      transaction.set(auditRef, { action: 'house_member_left', subjectUid: state.uid, actorUid: state.uid, actorName: state.identity.displayName, createdAtClient: Date.now(), createdAt: s.serverTimestamp(), simulation: true, schemaVersion: 1 });
     });
     writeLocalMembership(null);
     state.membership = null;

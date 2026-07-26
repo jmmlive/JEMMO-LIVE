@@ -1,9 +1,21 @@
-JEMMO LIVE V1 · NAVEGACIÓN INFERIOR DE MENSAJES UNIFICADA PRUEBA 22
+JEMMO LIVE V1 · TAREAS REALES Y PANEL FINANCIERO DE AGENTES PRUEBA 23
 Fecha: 26/07/2026
-Contenido: archivos incrementales que deben sustituirse directamente en la raíz del proyecto.
+Modo: PRUEBAS · SIN DINERO REAL
 
-SHA-256 DE LOS ARCHIVOS:
-369b3ce2eba75a5b8bb13e8bf1c7425f7a1d97bde21549096a03cf3e74403fd1  /mnt/data/work22/package22/VERSION.txt
-8965437b1b24443d2dced1033ff90206d0e57c3363946c75ebb55ac261684e92  /mnt/data/work22/package22/mensajes.html
-4acd82701f611ebcf3a135385cefee7a783c06ee3736eba90bde31f375f8cca6  /mnt/data/work22/package22/pwa-register.js
-cb4d2662c041edee7ddb0e9b60731647414d0001f073616f9c1a01c00ed88066  /mnt/data/work22/package22/sw.js
+SHA-256 de los archivos de esta entrega:
+7e050026b59a0196b0a31e675c082e5da86f8063913b63c2d6a988c45b489f57  VERSION.txt
+9061f4f82a3077876086306e5462e13ab3f336b97ebb57cfef403bca3df707d6  app.css
+555e89e49a27fd9cc079a96992e1b9243b3633dccb62702da3e78ac8660f70c0  casa-demo.html
+c6a7652dfb37918be7129b41b50613a543ee4db521cb0b33e8575802983658f0  jemmo-battle-gifts.js
+513b4ca4f5c1762df5d0e969b3e1c192720e2324e0d52592951f01970cb3a29d  jemmo-house-activity.js
+0699b3be42f8dcbc48a510fd676f7934ba73e88455825fdaf6427416e6bcaf59  jemmo-house-finance.js
+43cfa2afdb6332b7df2472d86318e929741fa7c29aa34f1d6b1919c23c3c6978  jemmo-house-operations.js
+ee93ddd9363ab704574c19fbbf9c9695e43e3dbf325664e4ef6b06e85beb110f  jemmo-houses.js
+1e6b7ba8ea3cce99056f404bd0cb048a9d5d0ac0a2fab8028f54a12107b04454  jemmo-messages-realtime.js
+ce9be568da8339f2c54c796f40480a42a94e73011cd8e722fe891a561a891e83  jemmo-wallet.js
+e596037abce5a5be04e1f9c46beb96c855964ba74215aa7c2a79181b2a555e08  live.html
+bac43ca05736f6fa7ec02a502a8888b080a97eff1174cf1b5099cb74b916cab7  mensajes.html
+1dc6bd94e52e396c0c763ce56d0201f79ae5594064f550200a9f99cb3be746ed  pwa-register.js
+6466913e6311922e9fdaa18f85667aba2c39c183771a2d4ca3a1094d7f943b61  salas.html
+7caf46aa89363547dbe3eccbbe7cbca639a2ebf1065b0794f2fab1830d1b7b66  sw.js
+6177baeb9b460c4bd23b345303a5926c7c5545240d2cf90ca13f5c276defb9b3  yo.html

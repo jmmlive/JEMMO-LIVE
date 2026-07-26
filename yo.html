@@ -919,6 +919,7 @@
   <script src="pwa-register.js"></script>
   <script src="jemmo-profile-storage.js"></script>
   <script src="jemmo-wallet.js"></script>
+  <script src="jemmo-house-finance.js"></script>
   <script src="app.js"></script>
   <script>
   (()=>{
@@ -1112,6 +1113,7 @@
       state.gifts.unshift({id:operationId,senderUid:uid,recipientUid,context,reference,giftName,total:amount,hostTotal,hostConfirmed,hostPending,appTotal,appConfirmed,appPending,agencyTotal,agencyConfirmed,agencyPending,hasHouse:member.hasHouse,houseId:member.houseId,houseName:member.houseName,sourceMethods:allocations,createdAt:Date.now(),simulation:true});state.gifts=state.gifts.slice(0,600);
       audit(state,'gift',`${giftName} repartido`,{operationId,total:amount,hostTotal,appTotal,agencyTotal,hostPending,appPending,agencyPending,hasHouse:member.hasHouse});
       writeWallet(recipient,recipientUid);writeFinance(state);notify();
+      window.JemmoHouseFinance?.enqueueGift?.({operationId,senderUid:uid,senderName:String(getProfile().displayName||getProfile().name||'').trim().slice(0,80),recipientUid,recipientName:String(getProfile().displayName||getProfile().name||'Usuario JEMMO').trim().slice(0,80),giftName,context,reference,source:'destello-gift',economicType:'emitter-gift',total:amount,hostTotal,hostConfirmed,hostPending,appTotal,appConfirmed,appPending,agencyTotal,agencyConfirmed,agencyPending,hasHouse:member.hasHouse,houseId:member.houseId||'',houseName:member.houseName||'',agentUid:member.agentUid||'',sourceMethods:allocations,releaseAtClient:releaseAt,createdAtClient:Date.now(),simulation:true});
       return {ok:true,operationId,hostTotal,hostConfirmed,hostPending,appTotal,agencyTotal,hasHouse:member.hasHouse};
     };
 

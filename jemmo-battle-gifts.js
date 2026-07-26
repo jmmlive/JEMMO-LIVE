@@ -250,6 +250,9 @@ async function confirmGift() {
     source: 'battle-house-gift',
     reference: house.name,
     recipientUid: `jemmo-battle-house-${house.id}`,
+    economicType: 'house-battle',
+    houseId: house.id,
+    houseName: house.name,
     idempotencyKey: `battle:${activeUid()}:${requestId}`
   });
   if (!result?.ok) {

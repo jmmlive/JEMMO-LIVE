@@ -305,6 +305,7 @@
     const idempotencyKey = `messages:${state.currentConversationId}:${state.user.uid}:${state.currentPeer.uid}:${gift.name}:${quantity}:${Math.floor(Date.now() / 5000)}`;
     const result = walletApi.spendCoins(total, {
       recipientUid: state.currentPeer.uid,
+      recipientName: state.currentPeer.name,
       giftName: gift.name,
       title: 'Regalo enviado por Mensajes',
       detail: `${gift.icon} ${gift.name} ×${quantity} para ${state.currentPeer.name}`,

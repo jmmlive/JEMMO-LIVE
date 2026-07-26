@@ -1,13 +1,14 @@
 /* =========================================================
-   JEMMO LIVE · CORRECCIÓN RECARGA PERSISTENTE 03
+   JEMMO LIVE · MONEDERO Y ECONOMÍA DE CASAS PRUEBA 23
    Un solo saldo y un solo libro económico para toda la app
    ========================================================= */
 (() => {
   'use strict';
   if (window.JemmoWallet?.version) return;
 
-  const VERSION = '7.3.0-test';
+  const VERSION = '7.4.0-test';
   const FINANCE_KEY = 'jemmo_finance_v1';
+  const CLOUD_GIFT_QUEUE_KEY = 'jemmo_cloud_gift_queue_v1';
   const STORAGE_DB = 'jemmo_live_durable_v1';
   const STORAGE_DB_VERSION = 1;
   const WALLET_STORE = 'wallets';
@@ -42,6 +43,20 @@
     }
   };
   const saveJson = (key, value) => localStorage.setItem(key, JSON.stringify(value));
+  function queueCloudGift(detail) {
+    if (!detail?.operationId) return;
+    try {
+      const parsed = JSON.parse(localStorage.getItem(CLOUD_GIFT_QUEUE_KEY) || '[]');
+      const queue = Array.isArray(parsed) ? parsed.filter(item => item && item.operationId) : [];
+      const index = queue.findIndex(item => item.operationId === detail.operationId);
+      const entry = { ...detail, queuedAtClient: Number(detail.queuedAtClient || Date.now()), attempts: Number(detail.attempts || 0) };
+      if (index >= 0) queue[index] = { ...queue[index], ...entry };
+      else queue.unshift(entry);
+      localStorage.setItem(CLOUD_GIFT_QUEUE_KEY, JSON.stringify(queue.slice(0, 240)));
+    } catch {}
+    try { window.dispatchEvent(new CustomEvent('jemmo-gift-registered', { detail })); } catch {}
+    try { window.JemmoHouseFinance?.enqueueGift?.(detail); } catch {}
+  }
   const isQuotaError = error => Boolean(error && (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED' || error.code === 22 || error.code === 1014));
 
   function openStorageDb() {
@@ -349,6 +364,24 @@
     financeSavePromise.catch(() => false);
     return clean;
   };
+
+  function setMembership(uid, details = {}) {
+    uid = String(uid || '').trim();
+    if (!uid) return null;
+    const state = readFinance();
+    const current = state.membership[uid] || {};
+    const next = {
+      ...current,
+      hasHouse: Boolean(details.hasHouse && details.houseId),
+      houseId: details.hasHouse ? String(details.houseId || '').trim().slice(0, 80) : '',
+      houseName: details.hasHouse ? String(details.houseName || '').trim().slice(0, 80) : '',
+      agentUid: details.hasHouse ? String(details.agentUid || '').trim().slice(0, 160) : '',
+      updatedAt: Date.now()
+    };
+    state.membership[uid] = next;
+    writeFinance(state);
+    return next;
+  }
 
   function auditFinance(state, type, label, details = {}) {
     state.audit.unshift({
@@ -755,7 +788,11 @@
 
     const settings = state.settings;
     const recipientUid = String(meta.recipientUid || senderUid);
-    const member = state.membership[recipientUid] || { hasHouse: false, houseId: '', houseName: '' };
+    const storedMember = state.membership[recipientUid] || { hasHouse: false, houseId: '', houseName: '', agentUid: '' };
+    const hintedHouseId = String(meta.houseId || '').trim().slice(0, 80);
+    const member = hintedHouseId && meta.hasHouse !== false
+      ? { ...storedMember, hasHouse: true, houseId: hintedHouseId, houseName: String(meta.houseName || storedMember.houseName || 'Casa JEMMO').trim().slice(0, 80), agentUid: String(meta.agentUid || storedMember.agentUid || '').trim().slice(0, 160) }
+      : storedMember;
     const pendingSpent = allocations.filter(item => item.risk === 'reversible').reduce((sum, item) => sum + item.amount, 0);
     const pendingRatio = amount ? pendingSpent / amount : 0;
     const hostTotal = Math.floor(amount * Number(settings.hostPct || 70) / 100);
@@ -834,10 +871,45 @@
     if (recipientUid !== senderUid) saveWalletFor(recipientUid, recipient);
     writeFinance(state);
     const saved = saveWallet(wallet, meta.source || 'gift');
+    const cloudDetail = {
+      operationId,
+      idempotencyKey,
+      senderUid,
+      senderName: String(meta.senderName || '').trim().slice(0, 80),
+      recipientUid,
+      recipientName: String(meta.recipientName || '').trim().slice(0, 80),
+      giftName,
+      context,
+      reference,
+      detail: String(meta.detail || '').slice(0, 240),
+      source: String(meta.source || 'gift').slice(0, 80),
+      economicType: String(meta.economicType || 'emitter-gift').slice(0, 40),
+      total: amount,
+      hostTotal,
+      hostConfirmed,
+      hostPending,
+      appTotal,
+      appConfirmed,
+      appPending,
+      agencyTotal,
+      agencyConfirmed,
+      agencyPending,
+      hasHouse: Boolean(member.hasHouse),
+      houseId: member.houseId || hintedHouseId || '',
+      houseName: member.houseName || String(meta.houseName || ''),
+      agentUid: member.agentUid || String(meta.agentUid || ''),
+      sourceMethods: allocations,
+      releaseAtClient: releaseAt,
+      createdAtClient: Date.now(),
+      simulation: true
+    };
+    queueCloudGift(cloudDetail);
     return {
       ok: true, wallet: saved, operationId,
       hostTotal, hostConfirmed, hostPending,
-      appTotal, agencyTotal, hasHouse: Boolean(member.hasHouse)
+      appTotal, appConfirmed, appPending,
+      agencyTotal, agencyConfirmed, agencyPending,
+      releaseAt, hasHouse: Boolean(member.hasHouse), cloudDetail
     };
   }
 
@@ -1673,6 +1745,7 @@
     releasePending,
     getFinance: readFinance,
     saveFinance: writeFinance,
+    setMembership,
     rehydrate: uid => hydrateActiveState(String(uid || currentUid()), 'manual'),
     open,
     openRecharge: () => open('recharge'),

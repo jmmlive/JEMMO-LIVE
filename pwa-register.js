@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-messages-nav-unified-22';
+  const VERSION = 'pwa-house-tasks-agent-finance-23';
   let installPrompt = null;
 
   const isStandalone = () =>
