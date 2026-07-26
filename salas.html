@@ -295,6 +295,12 @@
   'use strict';
   const $=id=>document.getElementById(id);
   const activeUid=()=>{try{return String(window.__jemmoAuthenticatedUid||localStorage.getItem('jemmo_active_uid')||sessionStorage.getItem('jemmo_active_uid')||'local-user')}catch{return 'local-user'}};
+  const pageParams=new URLSearchParams(location.search);
+  const houseContext={
+    enabled:pageParams.get('houseRoom')==='1',
+    id:String(pageParams.get('house')||'').trim().slice(0,80),
+    name:String(pageParams.get('houseName')||'').trim().slice(0,60)
+  };
   const storageKey=()=>`salas:${activeUid()}`;
   const previousStorageKeys=()=>[`jemmo_v1_salas_prueba_06_${activeUid()}`,`jemmo_v1_salas_prueba_05_${activeUid()}`,'jemmo_v1_salas_prueba_05','jemmo_v1_salas_prueba_04'];
   const state={
@@ -396,6 +402,20 @@
         $('roomAvatar').src=state.cover;
       }
     }catch(e){console.warn('No se pudo recuperar la configuración.',e)}
+  }
+
+  function applyHouseRoomContext(){
+    if(!houseContext.enabled||!houseContext.id)return;
+    state.mode='audio';
+    state.count=25;
+    state.private=false;
+    const title=pageParams.get('title')||`Sala oficial de ${houseContext.name||'mi Casa'}`;
+    const description=pageParams.get('description')||'Audio Room oficial para miembros, tareas y actividades de la Casa.';
+    $('roomTitle').value=String(title).slice(0,60);
+    $('roomDescription').value=String(description).slice(0,180);
+    if(!state.cover){state.cover='jemmo-fish-nav.webp';$('coverPreview').src=state.cover;$('roomAvatar').src=state.cover}
+    $('roomModeLabel').textContent='AUDIO ROOM DE LA CASA';
+    $('roomConnectionButton').textContent='COMPARTIR SALA DE LA CASA';
   }
 
   function setValidity(id,ok){
@@ -726,6 +746,7 @@
     const api=await waitRealtimeApi();
     state.realtimeSession=await api.createHostSession({
       mode:state.mode,count:state.count,title:$('roomTitle').value.trim(),description:$('roomDescription').value.trim(),localStream:stream,
+      houseId:houseContext.enabled?houseContext.id:'',houseName:houseContext.enabled?(houseContext.name||$('roomTitle').value.trim()):'',
       onOutgoingMediaNeeded:()=>recoverLocalMedia(true),
       onRemoteStream:handleRemoteStream,onRemoteProfile:handleRemoteProfile,onLocalProfile:profile=>{state.ownName=profile.name||state.ownName;state.ownPhoto=profile.photo||state.ownPhoto},onStatus:handleRealtimeStatus,onMessage:handleRoomMessage
     });
@@ -1050,7 +1071,7 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   }
   renderRoomGiftCatalog();
   renderPreparation();
-  void restore().then(()=>{renderPreparation();updateRoomMirrorControl();void prepareIncomingInvite()});
+  void restore().then(()=>{applyHouseRoomContext();renderPreparation();updateRoomMirrorControl();void prepareIncomingInvite()});
 
   document.querySelectorAll('.jr-mode').forEach(btn=>btn.addEventListener('click',()=>{
     state.mode=btn.dataset.mode;
@@ -1261,5 +1282,6 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   window.addEventListener('beforeunload',stopCamera);
 })();
 </script>
+<script src="jemmo-house-activity.js"></script>
 </body>
 </html>

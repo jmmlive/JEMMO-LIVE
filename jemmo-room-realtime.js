@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · RECEPCIÓN DE INVITADA PRUEBA 11
+/* JEMMO LIVE V1 · RECEPCIÓN INVITADA Y SALA DE CASA PRUEBA 14
    Señalización WebRTC y chat de prueba mediante Firestore. No es infraestructura de producción.
    La invitada enlaza sus pistas a los transceptores ofrecidos por el anfitrión antes de responder. */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
@@ -193,7 +193,7 @@ function configureRoomChat({ roomRef, user, profile, unsubs, onMessage }) {
   };
 }
 
-function makeSession({ role, roomId, roomRef, peer, remoteStream, unsubs, onStatus, sendChatMessage, renegotiate, requestRenegotiation, expectVideo }) {
+function makeSession({ role, roomId, roomRef, houseRoomRef, peer, remoteStream, unsubs, onStatus, sendChatMessage, renegotiate, requestRenegotiation, expectVideo }) {
   let closed = false;
   const close = async ({ endRoom = role === 'host' } = {}) => {
     if (closed) return;
@@ -204,11 +204,8 @@ function makeSession({ role, roomId, roomRef, peer, remoteStream, unsubs, onStat
     try { peer.close(); } catch {}
     if (endRoom) {
       try {
-        await updateDoc(roomRef, {
-          status: 'ended',
-          endedAt: serverTimestamp(),
-          updatedAt: serverTimestamp()
-        });
+        await updateDoc(roomRef, { status: 'ended', endedAt: serverTimestamp(), updatedAt: serverTimestamp() });
+        if (houseRoomRef) await setDoc(houseRoomRef, { status: 'ended', endedAt: serverTimestamp(), updatedAt: serverTimestamp() }, { merge: true });
       } catch (error) {
         console.warn('JEMMO Room close:', error);
       }
@@ -329,6 +326,8 @@ async function getRoomPreview(code) {
     description: clean(data.description, 180),
     hostName: clean(data.hostName) || 'Anfitrión',
     hostPhoto: clean(data.hostPhoto, 1200),
+    houseId: clean(data.houseId, 80),
+    houseName: clean(data.houseName, 60),
     status: clean(data.status) || 'open'
   };
 }
@@ -338,6 +337,9 @@ async function createHostSession(options = {}) {
   const profile = await readProfile(user);
   const id = randomCode();
   const roomRef = doc(db, ROOM_COLLECTION, id);
+  const houseId = clean(options.houseId, 80);
+  const houseName = clean(options.houseName, 60);
+  const houseRoomRef = houseId ? doc(db, 'casas', houseId, 'salaActual', 'estado') : null;
   const peer = new RTCPeerConnection(RTC_CONFIG);
   const remoteStream = new MediaStream();
   const unsubs = [];
@@ -435,6 +437,9 @@ async function createHostSession(options = {}) {
     hostName: profile.name,
     hostPhoto: profile.photo,
     hostVerified: profile.verified,
+    houseId,
+    houseName,
+    officialHouseRoom: Boolean(houseId),
     offer: serializeDescription(peer.localDescription),
     offerRevision,
     answerRevision: 0,
@@ -442,6 +447,16 @@ async function createHostSession(options = {}) {
     updatedAt: serverTimestamp(),
     expiresAtMs: Date.now() + 2 * 60 * 60 * 1000
   });
+  if (houseRoomRef) {
+    const joinUrl = new URL(`salas.html?join=${encodeURIComponent(id)}&houseRoom=1&house=${encodeURIComponent(houseId)}&houseName=${encodeURIComponent(houseName)}`, location.href).href;
+    await setDoc(houseRoomRef, {
+      status: 'open', roomId: id, joinUrl, mode: options.mode === 'camera' ? 'camera' : 'audio',
+      count: Number(options.count) || 25, title: clean(options.title, 60), description: clean(options.description, 180),
+      hostUid: user.uid, hostName: profile.name, houseId, houseName,
+      openedAt: serverTimestamp(), updatedAt: serverTimestamp(), expiresAtMs: Date.now() + 2 * 60 * 60 * 1000
+    }, { merge: true });
+  }
+
   unsubs.push(onSnapshot(roomRef, snapshot => {
     if (!snapshot.exists()) return;
     const data = snapshot.data() || {};
@@ -491,13 +506,15 @@ async function createHostSession(options = {}) {
   });
   options.onLocalProfile?.(profile);
   options.onStatus?.({ state: 'waiting', text: 'Esperando a Ruth' });
-  return makeSession({
-    role: 'host', roomId: id, roomRef, peer, remoteStream, unsubs,
+  const session = makeSession({
+    role: 'host', roomId: id, roomRef, houseRoomRef, peer, remoteStream, unsubs,
     onStatus: options.onStatus, sendChatMessage,
     renegotiate: publishOffer,
     requestRenegotiation: null,
     expectVideo: options.mode === 'camera'
   });
+  if (houseId) session.inviteUrl = new URL(`salas.html?join=${encodeURIComponent(id)}&houseRoom=1&house=${encodeURIComponent(houseId)}&houseName=${encodeURIComponent(houseName)}`, location.href).href;
+  return session;
 }
 
 async function joinGuestSession(code, options = {}) {

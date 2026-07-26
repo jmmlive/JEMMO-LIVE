@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-functional-houses-13';
+  const VERSION = 'pwa-house-father-operations-14';
   let installPrompt = null;
 
   const isStandalone = () =>

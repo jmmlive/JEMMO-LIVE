@@ -35,14 +35,14 @@
 
     <section class="panel my-house-panel" id="myHousePanel" hidden aria-live="polite"></section>
 
-    <section class="panel house-mother-panel" aria-labelledby="motherHouseTitle">
+    <section class="panel house-mother-panel" aria-labelledby="fatherHouseTitle">
       <div class="house-mother-mark">♛</div>
       <div>
         <small>CASA OFICIAL</small>
-        <h2 id="motherHouseTitle">Casa Madre JEMMO</h2>
+        <h2 id="fatherHouseTitle">Casa Padre JEMMO</h2>
         <p>Centro oficial para avisos, orientación y actividades generales de la comunidad.</p>
       </div>
-      <button type="button" data-house-details="madre">VER CASA</button>
+      <button type="button" data-house-details="padre">VER CASA</button>
     </section>
 
     <section class="panel houses-explorer-panel" id="explorar" aria-labelledby="explorerTitle">
@@ -83,6 +83,9 @@
       </div>
       <nav class="house-workspace-tabs" aria-label="Secciones de Mi Casa">
         <button class="house-workspace-tab active" type="button" data-workspace-tab="home">INICIO</button>
+        <button class="house-workspace-tab" type="button" data-workspace-tab="room">SALA</button>
+        <button class="house-workspace-tab" type="button" data-workspace-tab="tasks">MIS TAREAS</button>
+        <button class="house-workspace-tab" type="button" data-workspace-tab="emitters" hidden>EMISORES/AS</button>
         <button class="house-workspace-tab" type="button" data-workspace-tab="chat">CHAT</button>
         <button class="house-workspace-tab" type="button" data-workspace-tab="members">MIEMBROS</button>
         <button class="house-workspace-tab" type="button" data-workspace-tab="admin" hidden>ADMINISTRACIÓN</button>
@@ -93,6 +96,10 @@
           <div class="house-workspace-title"><h2>RESUMEN DE LA CASA</h2><span>Actualizado en tiempo real</span></div>
           <div class="house-activity-summary" id="houseActivitySummary"></div>
         </section>
+        <section class="house-workspace-card house-quick-access">
+          <div class="house-workspace-title"><h2>ACCESOS DE LA CASA</h2><span>Sala, tareas y equipo</span></div>
+          <div class="house-quick-grid"><button type="button" data-workspace-tab="room"><span>🎙</span><b>SALA DE LA CASA</b><small>Audio Room oficial</small></button><button type="button" data-workspace-tab="tasks"><span>🎯</span><b>MIS TAREAS</b><small>LIVE y Sala</small></button><button type="button" data-workspace-tab="emitters"><span>👥</span><b>EMISORES/AS</b><small>Panel de control</small></button></div>
+        </section>
         <form class="house-workspace-card house-notice-composer" id="houseNoticeComposer" hidden>
           <div class="house-workspace-title"><h2>PUBLICAR AVISO</h2><span>Solo administración</span></div>
           <label>Título<input name="title" maxlength="60" required placeholder="Ejemplo: Reunión de la Casa"></label>
@@ -102,6 +109,27 @@
         <section class="house-workspace-card">
           <div class="house-workspace-title"><h2>AVISOS</h2><span>Información interna</span></div>
           <div class="house-notice-list" id="houseNoticeList"></div>
+        </section>
+      </div>
+
+      <div class="house-workspace-view" data-workspace-view="room" hidden>
+        <section class="house-workspace-card" id="houseRoomPanel">
+          <div class="house-workspace-empty">Preparando la Sala oficial de la Casa…</div>
+        </section>
+      </div>
+
+      <div class="house-workspace-view" data-workspace-view="tasks" hidden>
+        <section class="house-workspace-card">
+          <div class="house-workspace-title"><h2>MIS TAREAS DE CASA</h2><span>LIVE y Audio Room oficial</span></div>
+          <div id="houseOwnTasks"><div class="house-workspace-empty">Cargando tus tareas…</div></div>
+        </section>
+        <section class="house-workspace-card" id="houseTaskAdmin" hidden></section>
+      </div>
+
+      <div class="house-workspace-view" data-workspace-view="emitters" hidden>
+        <section class="house-workspace-card">
+          <div class="house-workspace-title"><h2>PANEL DE EMISORES Y EMISORAS</h2><span>Seguimiento del ciclo</span></div>
+          <div id="houseEmittersDashboard"><div class="house-workspace-empty">Cargando el equipo…</div></div>
         </section>
       </div>
 
@@ -131,6 +159,10 @@
         <section class="house-workspace-card">
           <div class="house-workspace-title"><h2>GESTIÓN DE MIEMBROS</h2><span>Roles y expulsiones</span></div>
           <div class="house-admin-list" id="houseAdminMembers"></div>
+        </section>
+        <section class="house-workspace-card" id="houseAssignmentsBlock" hidden>
+          <div class="house-workspace-title"><h2>FUNCIONES DEL EQUIPO</h2><span>Miembro, emisor/a o agente</span></div>
+          <div class="house-admin-list" id="houseMemberAssignments"></div>
         </section>
         <section class="house-workspace-card" id="houseCreationAdminBlock" hidden>
           <div class="house-workspace-title"><h2>CREACIÓN DE CASAS</h2><span>Panel del propietario de JEMMO LIVE</span></div>
@@ -173,5 +205,6 @@
   <script src="jemmo-wallet.js"></script>
   <script src="app.js"></script>
   <script type="module" src="jemmo-houses.js"></script>
+  <script type="module" src="jemmo-house-operations.js"></script>
 </body>
 </html>

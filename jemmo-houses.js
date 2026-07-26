@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · CASAS FUNCIONALES PRUEBA 13 */
+/* JEMMO LIVE V1 · CASA PADRE Y OPERACIONES PRUEBA 14 */
 const firebaseConfig = {
   apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
   authDomain: 'jemmo-live.firebaseapp.com',
@@ -31,7 +31,7 @@ async function firebaseServices() {
 
 const PREVIEW_HOUSES = [
   {
-    id: 'madre', name: 'Casa Madre JEMMO', short: 'JM', country: 'Oficial', city: 'JEMMO LIVE', flag: '✦',
+    id: 'padre', name: 'Casa Padre JEMMO', short: 'JM', country: 'Oficial', city: 'JEMMO LIVE', flag: '✦',
     emblem: '♛', members: 0, score: 0, rank: 1, status: 'open', featured: true, newHouse: false,
     accent: '#ffd329', glow: 'rgba(255,211,41,.22)',
     description: 'Casa oficial para orientación, novedades y actividades generales de la comunidad.'
@@ -471,22 +471,26 @@ async function loadIdentity() {
   state.platformAdmin = ownerSecurityUid() === state.uid || state.identity.role === 'owner';
 }
 
-async function ensureMotherHouseForOwner() {
+async function ensureFatherHouseForOwner() {
   if (!state.services || !state.uid || !state.platformAdmin || state.bootstrappedMother) return;
   state.bootstrappedMother = true;
   const s = state.services;
   try {
     await s.runTransaction(s.db, async transaction => {
-      const houseRef = s.doc(s.db, 'casas', 'madre');
-      const memberRef = s.doc(s.db, 'casas', 'madre', 'miembros', state.uid);
+      const houseRef = s.doc(s.db, 'casas', 'padre');
+      const memberRef = s.doc(s.db, 'casas', 'padre', 'miembros', state.uid);
+      const legacyHouseRef = s.doc(s.db, 'casas', 'madre');
+      const legacyMemberRef = s.doc(s.db, 'casas', 'madre', 'miembros', state.uid);
       const userRef = s.doc(s.db, 'users', state.uid);
       const ownRequestRef = s.doc(s.db, 'solicitudesCasa', state.uid);
       const houseSnap = await transaction.get(houseRef);
       const memberSnap = await transaction.get(memberRef);
+      const legacyHouseSnap = await transaction.get(legacyHouseRef);
+      const legacyMemberSnap = await transaction.get(legacyMemberRef);
       const userSnap = await transaction.get(userRef);
       const ownRequestSnap = await transaction.get(ownRequestRef);
       const userData = userSnap.data() || {};
-      const houseData = houseSnap.data() || {};
+      const houseData = houseSnap.exists() ? (houseSnap.data() || {}) : (legacyHouseSnap.data() || {});
       const base = PREVIEW_HOUSES[0];
       transaction.set(houseRef, {
         name: base.name, short: base.short, country: base.country, city: base.city, flag: base.flag,
@@ -494,33 +498,44 @@ async function ensureMotherHouseForOwner() {
         ownerUid: state.uid, adminUids: s.arrayUnion(state.uid), active: true, open: true,
         status: cleanText(houseData.status || 'open', 20), featured: true, official: true,
         score: number(houseData.score), rank: Math.max(1, number(houseData.rank) || 1),
-        memberCount: number(houseData.memberCount ?? houseData.members) + (memberSnap.exists() ? 0 : 1),
-        updatedAt: s.serverTimestamp(), createdAt: houseSnap.exists() ? (houseData.createdAt || s.serverTimestamp()) : s.serverTimestamp()
+        memberCount: Math.max(1, number(houseData.memberCount ?? houseData.members)),
+        migratedFrom: legacyHouseSnap.exists() ? 'madre' : s.deleteField(),
+        updatedAt: s.serverTimestamp(), createdAt: houseSnap.exists() ? (houseData.createdAt || s.serverTimestamp()) : (houseData.createdAt || s.serverTimestamp())
       }, { merge: true });
+      const legacyMember = legacyMemberSnap.data() || {};
       transaction.set(memberRef, {
         uid: state.uid, displayName: state.identity.displayName, publicId: state.identity.publicId,
-        role: 'owner', status: 'active', joinedAt: memberSnap.exists() ? (memberSnap.data()?.joinedAt || s.serverTimestamp()) : s.serverTimestamp(),
+        role: 'owner', housePosition: 'owner', accountRole: cleanText(userData.role || 'owner', 30), status: 'active',
+        joinedAt: memberSnap.exists() ? (memberSnap.data()?.joinedAt || s.serverTimestamp()) : (legacyMember.joinedAt || s.serverTimestamp()),
         updatedAt: s.serverTimestamp()
       }, { merge: true });
-      if (!cleanText(userData.houseId, 80)) {
+      if (!cleanText(userData.houseId, 80) || userData.houseId === 'madre') {
         transaction.set(userRef, {
-          houseId: 'madre', houseName: base.name, houseRole: 'owner', houseStatus: 'active',
-          houseJoinedAt: s.serverTimestamp(), houseUpdatedAt: s.serverTimestamp(),
+          houseId: 'padre', houseName: base.name, houseRole: 'owner', housePosition: 'owner', houseStatus: 'active',
+          houseJoinedAt: userData.houseJoinedAt || s.serverTimestamp(), houseUpdatedAt: s.serverTimestamp(),
           houseRequestId: s.deleteField(), houseRequestName: s.deleteField(), houseRequestStatus: s.deleteField()
         }, { merge: true });
       }
+      if (legacyHouseSnap.exists()) {
+        transaction.set(legacyHouseRef, {
+          active: false, open: false, status: 'disabled', migratedTo: 'padre',
+          migrationLabel: 'Casa Padre JEMMO', updatedAt: s.serverTimestamp()
+        }, { merge: true });
+      }
+      if (legacyMemberSnap.exists()) transaction.delete(legacyMemberRef);
       if (ownRequestSnap.exists() && ['pending', 'reviewing'].includes(cleanText(ownRequestSnap.data()?.status, 30))) {
         transaction.set(ownRequestRef, {
-          status: ownRequestSnap.data()?.houseId === 'madre' ? 'accepted' : 'cancelled',
+          status: ['padre','madre'].includes(ownRequestSnap.data()?.houseId) ? 'accepted' : 'cancelled',
+          houseId: 'padre', houseName: base.name,
           reviewedBy: state.uid, reviewedAt: s.serverTimestamp(), updatedAt: s.serverTimestamp(),
-          reviewNote: 'Cerrada al activar la propiedad de Casa Madre JEMMO.'
+          reviewNote: 'Cerrada al activar la propiedad de Casa Padre JEMMO.'
         }, { merge: true });
       }
     });
-    setCloudState('Casas conectadas · Casa Madre operativa', 'online');
+    setCloudState('Casas conectadas · Casa Padre operativa', 'online');
   } catch (error) {
     state.bootstrappedMother = false;
-    console.warn('JEMMO Casas: no se pudo activar Casa Madre', error?.code || error);
+    console.warn('JEMMO Casas: no se pudo activar Casa Padre', error?.code || error);
   }
 }
 
@@ -934,6 +949,7 @@ function renderWorkspace() {
   const workspace = $('#houseWorkspace');
   if (!workspace || workspace.hidden || !state.workspaceHouse) return;
   const house = state.workspaceHouse;
+  workspace.dataset.houseId = house.id;
   calculatePermissions(house);
   $('#workspaceEmblem').textContent = house.emblem || house.short || '♛';
   $('#workspaceName').textContent = house.name;
@@ -1104,6 +1120,8 @@ async function reviewJoinRequest(applicantUid, decision) {
         transaction.set(memberRef, {
           uid: applicantUid, displayName: cleanText(request.applicantName || userData.displayName || 'Usuario JEMMO', 48),
           publicId: cleanText(request.applicantPublicId || userData.publicId, 48), role: 'member', status: 'active',
+          accountRole: cleanText(userData.role || userData.rol || 'usuario', 30),
+          housePosition: ['emisor','emisora','host','streamer'].includes(lower(userData.role || userData.rol)) ? 'emitter' : 'member',
           joinedAt: memberSnap.exists() ? (memberSnap.data()?.joinedAt || s.serverTimestamp()) : s.serverTimestamp(),
           approvedBy: state.uid, updatedAt: s.serverTimestamp()
         }, { merge: true });
@@ -1274,7 +1292,7 @@ async function approveCreation(requestUid, decision) {
       });
       transaction.set(memberRef, {
         uid: requestUid, displayName: cleanText(current.applicantName || userSnap.data()?.displayName || 'Propietario', 48),
-        publicId: cleanText(current.applicantPublicId || userSnap.data()?.publicId, 48), role: 'owner', status: 'active',
+        publicId: cleanText(current.applicantPublicId || userSnap.data()?.publicId, 48), role: 'owner', status: 'active', housePosition: 'owner', accountRole: cleanText(userSnap.data()?.role || 'owner', 30),
         joinedAt: s.serverTimestamp(), updatedAt: s.serverTimestamp()
       });
       transaction.set(userRef, {
@@ -1352,7 +1370,7 @@ function bind() {
   window.addEventListener('online', async () => {
     state.services = await firebaseServices();
     await loadIdentity();
-    await ensureMotherHouseForOwner();
+    await ensureFatherHouseForOwner();
     await loadCloudHouses();
     subscribeOwnState();
     renderAll();
@@ -1367,7 +1385,7 @@ async function boot() {
   setCloudState(navigator.onLine ? 'Conectando Casas…' : 'Sin conexión · vista previa', navigator.onLine ? '' : 'offline');
   state.services = navigator.onLine ? await firebaseServices() : null;
   await loadIdentity();
-  await ensureMotherHouseForOwner();
+  await ensureFatherHouseForOwner();
   await loadCloudHouses();
   subscribeOwnState();
   renderAll();

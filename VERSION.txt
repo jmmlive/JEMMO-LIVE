@@ -1,82 +1,57 @@
-JEMMO LIVE V1 · CASAS FUNCIONALES PRUEBA 13
+JEMMO LIVE V1 · CASA PADRE, SALA Y CONTROL DE EMISORES PRUEBA 14
 Fecha: 26/07/2026
 
 Base verificada:
-- JEMMO LIVE V1 · CASAS Y REGALOS DE BATALLA PRUEBA 12.
-- Conserva las correcciones de PRUEBA 11: recepción WebRTC invitada → anfitrión, enlace personal para invitar amigos y cambio JEMMOS → CRISTALES 1:1.
-- Conserva el explorador visual de Casas, el bloque Casas de Inicio y los regalos de la Batalla oficial de PRUEBA 12.
+- JEMMO LIVE V1 · CASAS FUNCIONALES PRUEBA 13.
+- Conserva solicitudes, aceptación/rechazo, Mi Casa, avisos, chat, miembros y administración.
+- Conserva WebRTC y referidos de PRUEBA 11 y regalos de Batalla de PRUEBA 12.
 
-Objetivo de esta entrega:
-- Sustituir el módulo de Casas principalmente demostrativo por un circuito operativo conectado a Cloud Firestore.
-- Diferenciar claramente una Casa activa de una ficha de vista previa, evitando que los datos ficticios aparenten actividad real.
+Corrección de identidad:
+- El nombre oficial se corrige de “Casa Madre JEMMO” a “Casa Padre JEMMO”.
+- La Casa oficial pasa a usar el identificador canónico `padre` en las nuevas instalaciones.
+- El texto de ayuda de Chili IA también usa Casa Padre.
 
-Casas reales y vistas previas:
-- Las Casas recuperadas desde `casas/{houseId}` aparecen con la etiqueta “CASA ACTIVA”.
-- Las fichas locales que todavía no existen en Firestore aparecen como “VISTA PREVIA”, con cero miembros y cero puntos.
-- Una vista previa no permite enviar solicitudes hasta que el propietario de JEMMO LIVE la active.
-- El propietario puede activar una vista previa como Casa real y administrarla sin abandonar Casa Madre.
-- Al activarse, se crea el documento real de la Casa con datos iniciales, propietario, estado, ranking y contador de miembros.
+Sala oficial de la Casa:
+- Nueva pestaña SALA dentro de Mi Casa.
+- Audio Room oficial de 25 sillas.
+- Propietario o administrador abre la sala desde el panel.
+- Al comenzar la sala se publica su estado en `casas/{houseId}/salaActual/estado`.
+- Los miembros ven el botón ENTRAR EN LA SALA mientras esté abierta.
+- El panel muestra anfitrión, capacidad, política de acceso a silla y nivel mínimo.
+- Administración puede cerrar el estado de la sala.
+- La Sala oficial utiliza el WebRTC existente de Salas y mantiene la prueba pendiente entre Jesús y Ruth.
 
-Casa Madre JEMMO:
-- Cuando la cuenta propietaria está reconocida mediante su rol `owner/propietario` o la protección local de JEMMO Finanzas, se crea o completa `casas/madre`.
-- La cuenta propietaria queda registrada como propietaria de Casa Madre y obtiene acceso a su administración.
-- Las solicitudes antiguas pendientes de la propia cuenta se cierran al activar Casa Madre para evitar estados contradictorios.
+Control de tareas:
+- Nueva pestaña MIS TAREAS para cada miembro.
+- Objetivos separados de LIVE y Sala oficial de la Casa.
+- El tiempo de LIVE se registra mientras la pantalla de emisión permanece activa.
+- El tiempo de Audio Room solo cuenta cuando se entra mediante la Sala oficial de la Casa.
+- Datos guardados en `casas/{houseId}/tareas/{uid}` por ciclo.
+- Las tareas no generan JEMS ni pagos automáticos: requieren revisión y conexión posterior con el sistema económico.
 
-Solicitud real de ingreso:
-- Solo se permite pertenecer a una Casa y mantener una solicitud pendiente.
-- La solicitud se guarda en:
-  - `solicitudesCasa/{uid}` para el estado personal y la auditoría.
-  - `casas/{houseId}/solicitudes/{uid}` para la bandeja de administración de la Casa.
-  - `users/{uid}` para reflejar el estado resumido del usuario.
-- El usuario puede consultar el estado y cancelar una solicitud pendiente.
-- Una solicitud rechazada puede eliminarse y sustituirse por otra posterior.
+Panel de emisores y emisoras:
+- Nueva pestaña EMISORES/AS visible para propietario y administradores.
+- Resumen de número de emisores, tareas completas, minutos LIVE y minutos en Sala de Casa.
+- Ficha por emisor/a con progreso, última actividad y estado de revisión.
+- Administración puede aprobar o reabrir la revisión de una tarea.
+- En Administración se asigna la función interna: miembro, emisor/a, agente o apoyo administrativo.
+- La función interna no sustituye el rol global de la cuenta.
 
-Aceptación y rechazo:
-- El propietario o un administrador de la Casa recibe las solicitudes pendientes en tiempo real.
-- Al aceptar:
-  - se crea `casas/{houseId}/miembros/{uid}`;
-  - se actualiza `users/{uid}` con Casa, rol y estado;
-  - aumenta una sola vez el contador real de miembros;
-  - la solicitud queda marcada como aceptada.
-- Al rechazar, la solicitud queda marcada como rechazada y el usuario puede solicitar otra Casa.
-- Las operaciones críticas usan transacciones de Firestore para evitar duplicados y contadores incorrectos.
+Configuración:
+- Administración define minutos objetivo de LIVE y Sala de Casa para cada ciclo.
+- Configura quién puede subir a silla y el nivel mínimo de la Sala oficial.
+- Valores iniciales de prueba: 60 minutos LIVE y 60 minutos Sala de Casa.
 
-Mi Casa:
-- Al ser aceptado aparece “ENTRAR EN MI CASA”.
-- Página interna con cuatro áreas:
-  1. Inicio: resumen, puntos, miembros y avisos.
-  2. Chat: mensajes internos en tiempo real, solo para miembros o administración.
-  3. Miembros: propietario, administradores y miembros.
-  4. Administración: solicitudes, roles, expulsiones y revisión de nuevas Casas.
-- Los avisos y el chat usan subcolecciones reales de la Casa.
-
-Administración de miembros:
-- El propietario puede nombrar o retirar administradores.
-- Propietario y administradores pueden expulsar miembros, respetando la jerarquía interna.
-- Un administrador no puede expulsar al propietario ni a otro administrador.
-- Los miembros y administradores pueden abandonar la Casa con confirmación.
-- El propietario no puede abandonar su Casa hasta que exista un flujo posterior de transferencia de propiedad.
-
-Creación real de Casas:
-- El formulario crea una solicitud real en `solicitudesCasaCreacion/{uid}`.
-- El propietario de JEMMO LIVE dispone de una bandeja para aprobar o rechazar.
-- Al aprobar:
-  - se crea `casas/{houseId}`;
-  - el solicitante queda registrado como propietario y primer miembro;
-  - se actualiza su perfil `users/{uid}`;
-  - la solicitud queda marcada como aprobada.
-- La Casa no se activa automáticamente sin revisión.
-
-Inicio y navegación:
-- El bloque Casas de Inicio indica si el usuario debe unirse, revisar una solicitud o entrar en Mi Casa.
-- Se mantiene la botonera oficial: Inicio, Live, Salas, Mensajes y Yo.
-- Casas continúa accesible desde el buscador global y el acceso directo de la PWA.
-
-Archivos modificados:
+Archivos modificados o añadidos:
 - `casa-demo.html`
-- `inicio.html`
 - `app.css`
 - `jemmo-houses.js`
+- `jemmo-house-operations.js` (nuevo)
+- `jemmo-house-activity.js` (nuevo)
+- `salas.html`
+- `jemmo-room-realtime.js`
+- `live.html`
+- `jemmo-chili-knowledge.js`
 - `sw.js`
 - `pwa-register.js`
 - `manifest.webmanifest`
@@ -84,29 +59,21 @@ Archivos modificados:
 - `INTEGRIDAD_SHA256.txt`
 
 Actualización PWA:
-- Caché: `jemmo-live-v1-functional-houses-13-20260726`.
-- Registro: `pwa-functional-houses-13`.
+- Caché: `jemmo-live-v1-house-father-operations-14-20260726`.
+- Registro: `pwa-house-father-operations-14`.
 - No es necesario desinstalar la PWA.
 
-Validaciones realizadas:
-- Sintaxis JavaScript de todos los archivos modificados.
-- Estructura HTML, IDs únicos y manifest JSON.
-- Comprobación de recursos locales usados por las páginas.
-- Renderización móvil del explorador, Mi Casa y Administración.
-- Prueba local aislada de navegación entre Inicio, Chat, Miembros y Administración.
-- Diferenciación visual entre “CASA ACTIVA” y “VISTA PREVIA”.
-
 Pruebas móviles obligatorias:
-1. Instalar los nueve archivos y abrir Casas con conexión.
-2. Confirmar que la cuenta propietaria ve Casa Madre como Mi Casa.
-3. Desde la cuenta de Ruth, solicitar entrar en Casa Madre.
-4. Desde la cuenta de Jesús, abrir Administración y aceptar a Ruth.
-5. Verificar que Ruth ve “Entrar en mi Casa”.
-6. Probar un aviso, un mensaje de Jesús y una respuesta de Ruth.
-7. Probar rechazo, cancelación y salida con otra cuenta de prueba cuando exista.
-8. Mantener pendiente la prueba WebRTC real de cámara y micrófono entre Jesús y Ruth.
+1. Confirmar que todas las pantallas dicen Casa Padre JEMMO.
+2. Entrar en Mi Casa y revisar SALA, MIS TAREAS, EMISORES/AS y ADMINISTRACIÓN.
+3. Marcar una cuenta de prueba como EMISOR/A.
+4. Abrir la Sala oficial desde Jesús y entrar desde Ruth.
+5. Mantenerse un minuto y confirmar que aumenta Sala de Casa.
+6. Abrir un LIVE desde una cuenta miembro y confirmar que aumenta LIVE.
+7. Aprobar y reabrir una tarea desde el panel.
+8. Completar la prueba WebRTC real pendiente de cámara y micrófono.
 
 Límites y seguridad:
-- El módulo es funcional para pruebas, pero las reglas actuales de Firestore siguen siendo temporales y permisivas.
-- Antes de producción deben aplicarse reglas que validen membresía, roles, administración y transacciones en servidor.
-- La transferencia de propiedad, moderación avanzada, notificaciones push y auditoría administrativa completa quedan para una fase posterior.
+- Los objetivos son configurables de prueba y no activan recompensas monetarias.
+- Las reglas Firestore temporales siguen siendo permisivas; deben endurecerse antes de producción.
+- Para producción, contadores, aprobaciones y pagos deberán validarse mediante Cloud Functions o servidor confiable.

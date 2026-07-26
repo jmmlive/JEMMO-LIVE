@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · CASAS FUNCIONALES PRUEBA 13 */
-const CACHE = 'jemmo-live-v1-functional-houses-13-20260726';
+/* JEMMO LIVE V1 · CASA PADRE Y CONTROL DE EMISORES PRUEBA 14 */
+const CACHE = 'jemmo-live-v1-house-father-operations-14-20260726';
 const APP_SHELL = [
   './',
   './index.html',
@@ -20,6 +20,8 @@ const APP_SHELL = [
   './jemmo.css',
   './app.js',
   './jemmo-houses.js',
+  './jemmo-house-operations.js',
+  './jemmo-house-activity.js',
   './jemmo-battle-gifts.js',
   './directos.js',
   './jemmo-session.js',
@@ -113,25 +115,25 @@ async function injectJemmoScripts(response, url) {
   if (UNREAD_PAGES.has(page)) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="functional-houses-13"></script>'
+      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="house-father-operations-14"></script>'
     );
   }
   if (page === '/mensajes.html' && !html.includes('jemmo-messages-realtime.js')) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="functional-houses-13"></script>'
+      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="house-father-operations-14"></script>'
     );
   }
   if (['/yo.html','/mensajes.html','/chili-ia.html'].includes(page) && !html.includes('jemmo-social.js')) {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="functional-houses-13"></script>'
+      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="house-father-operations-14"></script>'
     );
   }
   if (page === '/yo.html') {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="functional-houses-13"></script>'
+      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="house-father-operations-14"></script>'
     );
   }
 
@@ -139,7 +141,7 @@ async function injectJemmoScripts(response, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-version', 'functional-houses-13');
+  headers.set('x-jemmo-version', 'house-father-operations-14');
 
   return new Response(html, {
     status: response.status,

@@ -31,8 +31,8 @@ const TOPICS = [
   },
   {
     id: 'houses',
-    keywords: ['casa','casas','agente','agencia','batalla','batallas','elevador','patio','casa madre'],
-    answer: `En JEMMO, una **Casa** representa al agente. La Casa Madre tiene su propio Patio y puede disponer de Súper Patio. Las batallas de Casas se organizan por temporadas, suman puntos de la Casa y de las salas personales, y pueden incluir periodos de puntuación doble.\n\nLas emisoras no crean Casas por su cuenta; participan dentro de la estructura de su agente.`,
+    keywords: ['casa','casas','agente','agencia','batalla','batallas','elevador','patio','casa padre'],
+    answer: `En JEMMO, una **Casa** representa al agente. La Casa Padre tiene su propio Patio y puede disponer de Súper Patio. Las batallas de Casas se organizan por temporadas, suman puntos de la Casa y de las salas personales, y pueden incluir periodos de puntuación doble.\n\nLas emisoras no crean Casas por su cuenta; participan dentro de la estructura de su agente.`,
     actions: [{label:'Ver batalla',route:'casa-demo.html'}]
   },
   {
