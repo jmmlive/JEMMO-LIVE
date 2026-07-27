@@ -1,84 +1,56 @@
-JEMMO LIVE V1 · CHILI SABER, VOZ Y SOPORTE HUMANO PRUEBA 38
+JEMMO LIVE V1 · MASCOTA Y PECERA DE CASA PRUEBA 39
 Fecha: 27/07/2026
-Base instalada: JEMMO LIVE V1 · TARIFA AUDIO ROOM 800 Y SILENCIO MODERADO PRUEBA 37
 
-OBJETIVO DE LA ENTREGA
-- Convertir Chili IA en el centro real de conocimiento y orientación de JEMMO LIVE.
-- Permitir consultar tareas, tarifas, economía, Casas, privacidad, seguridad y rutas de la aplicación.
-- Incorporar conversación por voz usando las funciones disponibles en el navegador móvil.
-- Incorporar un acceso directo y clasificado a soporte humano con captura obligatoria.
+Base oficial:
+- JEMMO LIVE V1 · CHILI SABER, VOZ Y SOPORTE HUMANO PRUEBA 38.
 
-SABER JEMMO
-- Nueva biblioteca revisada con conocimiento sobre LIVE, Salas, Audio Room, Casas, perfiles, IDs JEMMO, Mensajes, invitaciones, monedero, regalos, retiradas, privacidad, seguridad, acceso y soporte.
-- Las respuestas incluyen botones que llevan directamente a la sección o página correcta.
-- La página incorpora un menú Saber JEMMO y una tabla visible de tareas y tarifas.
+Objetivo:
+- Incorporar la primera Mascota oficial dentro de cada Casa y mostrarla en la Audio Room oficial.
+- Usar inicialmente el chicharro JEMMO violeta neón, con detalles dorados, ojos azules y J dorada.
+- Preparar una arquitectura extensible para futuras mascotas configurables por Casa.
 
-TABLA DE TAREAS Y TARIFAS
-- Audio Room aparece siempre con tarifa fija de 800 JEMS por cada hora completa.
-- El nivel aumenta las horas diarias disponibles, pero no el precio de Audio Room.
-- LIVE conserva la escala actualmente programada por nivel.
-- BASE muestra una hora diaria; Nivel I muestra dos horas; los niveles posteriores siguen la escala vigente.
-- Se explica que el ciclo dura 24 horas y que una tarea no completada o una recompensa no cobrada caduca cuando se inicia el ciclo siguiente.
-- Se aclara que los minutos parciales de LIVE y Audio Room no se mezclan.
-- Se explica el silencio voluntario, el silencio de moderación y las condiciones del cronómetro.
+Resultado funcional:
+- Botón compacto MASCOTA dentro de la Audio Room de Casa.
+- Vista de pecera interactiva sin abandonar ni cerrar la sala.
+- Indicación de Nivel de la Casa y Nivel de la Pecera.
+- Chicharro interactivo que se acerca al punto tocado, celebra y reacciona al usuario.
+- Acciones ALIMENTAR, LIMPIAR y JUGAR con tiempos de espera e incremento de experiencia.
+- Evolución de pecera hasta cinco niveles, barras de alimento, limpieza y ánimo.
+- Visita diaria a la Audio Room de Casa que añade progreso de prueba.
+- Respaldo duradero en IndexedDB y sincronización opcional con Firestore.
+- Ruta Firestore: casas/{houseId}/mascota/actual.
+- Historial/idempotencia de acciones: casas/{houseId}/mascotaAcciones/{actionId}.
+- API preparada para tareas y regalos: window.JemmoHousePet.addProgress(...).
 
-CONVERSACIÓN POR VOZ
-- El botón HABLAR CON CHILI abre una vista de conversación semejante a una llamada.
-- Chili puede escuchar mediante SpeechRecognition cuando el navegador lo permite.
-- Chili puede leer sus respuestas mediante SpeechSynthesis en español.
-- Cada respuesta dispone de un botón para escucharla.
-- Existe un control general ACTIVAR VOZ / CHILI HABLA.
-- La interfaz aclara que todavía no es una videollamada humana ni un motor de IA remoto.
+Integración controlada:
+- No modifica salas.html, WebRTC, sillas, tareas, chat, regalos ni monedero.
+- pwa-register.js carga el módulo únicamente en Salas y páginas de Casas.
+- sw.js renueva la caché PWA y prioriza la red para HTML, JavaScript y CSS.
 
-SOPORTE HUMANO
-- Nueva sección directa dentro de Chili IA.
-- Categorías: monedero, acceso, tareas, fallo técnico, comportamiento, posible menor, suplantación y otra consulta.
-- El usuario debe indicar dónde ocurrió, explicar el problema y adjuntar una captura obligatoria.
-- La captura se reduce antes de guardarse para no exceder el límite de Firestore.
-- La solicitud se registra en supportTickets con estado pending, prioridad, UID, categoría, descripción y evidencia.
-- Los casos de acoso, posible menor o suplantación también crean un registro relacionado en denuncias.
-- La aplicación genera una referencia visible con formato JEMMO-XXXXXXXX.
-- La sección muestra las últimas solicitudes del usuario y su estado.
-- La entrega no afirma que una persona haya respondido; únicamente confirma una gestión cuando Firebase devuelve una referencia.
+Modo actual:
+- MODO DE PRUEBAS.
+- Las acciones de cuidado son gratuitas.
+- La pecera no cobra JEMMOS, no entrega JEMS y no modifica la economía.
+- La sincronización depende de la sesión Firebase y de las reglas Firestore vigentes.
 
-ACCESOS DIRECTOS
-- Inicio: Ayuda y soporte abre directamente chili-ia.html#soporte.
-- Perfil: Seguridad y privacidad abre Saber JEMMO en Privacidad.
-- Perfil: Ayuda y soporte abre directamente el formulario humano.
-- LIVE: Ayuda y soporte abre directamente el formulario humano.
+Archivos de la entrega:
+- VERSION.txt
+- jemmo-house-pet.css
+- jemmo-house-pet.js
+- pwa-register.js
+- sw.js
+- INTEGRIDAD_SHA256.txt
 
-PRIVACIDAD Y PRODUCCIÓN
-- Las capturas se guardan en Firestore solo para esta fase de pruebas.
-- Antes de producción deben aplicarse reglas autenticadas por propietario del ticket y rol de soporte.
-- En producción conviene mover las evidencias a Firebase Storage protegido y conservar en Firestore únicamente su referencia.
-- Chili no aprende automáticamente de conversaciones privadas.
+Instalación:
+1. Copiar los seis archivos en la raíz actual de JEMMO LIVE y sustituir pwa-register.js y sw.js.
+2. Hacer commit y esperar la publicación.
+3. Cerrar completamente la PWA y volver a abrirla.
+4. Entrar en Perfil > Mi Casa > Audio Room oficial.
+5. Tocar MASCOTA y comprobar la pecera.
 
-PRUEBA RECOMENDADA
-1. Instalar PRUEBA 38 encima de PRUEBA 37.
-2. Cerrar completamente JEMMO y volver a abrirla.
-3. Abrir Chili IA desde Inicio.
-4. Preguntar: "¿Cómo funcionan las tareas de 24 horas?".
-5. Comprobar la tabla: Audio Room debe mostrar 800 JEMS/h en todos los niveles.
-6. Pulsar HABLAR CON CHILI, conceder micrófono y realizar una pregunta.
-7. Activar CHILI HABLA y comprobar que lee la respuesta.
-8. Abrir Soporte humano, seleccionar una categoría, escribir al menos 20 caracteres y adjuntar una captura.
-9. Enviar y comprobar que aparece una referencia JEMMO y estado PENDIENTE.
-10. Volver a abrir Chili y comprobar que la solicitud aparece en Mis últimas solicitudes.
-
-ARCHIVOS DEL ZIP
-1. VERSION.txt
-2. chili-ia.html
-3. chili-ia.css
-4. jemmo-chili.js
-5. jemmo-chili-knowledge.js
-6. inicio.html
-7. yo.html
-8. live.html
-9. pwa-register.js
-10. sw.js
-11. INTEGRIDAD_SHA256.txt
-
-MODO DE PRUEBAS
-- La economía y el soporte continúan en modo de pruebas.
-- Las respuestas de Chili proceden de una biblioteca local revisada.
-- El futuro motor de IA y la voz premium necesitarán backend seguro, proveedor de IA y control de costes.
+Prueba obligatoria:
+- La Audio Room debe seguir funcionando igual antes y después de abrir la pecera.
+- El micrófono y el audio no deben detenerse al abrir o cerrar la mascota.
+- ALIMENTAR, LIMPIAR y JUGAR deben actualizar sus barras y experiencia.
+- Cerrar y abrir JEMMO debe conservar el nivel y el estado.
+- En un segundo móvil de la misma Casa, Firestore debe mostrar la misma mascota cuando las reglas lo permitan.

@@ -1,13 +1,12 @@
-JEMMO LIVE V1 · CHILI SABER, VOZ Y SOPORTE HUMANO PRUEBA 38
-Integridad SHA-256 de los archivos modificados
+JEMMO LIVE V1 · MASCOTA Y PECERA DE CASA PRUEBA 39
+Fecha: 27/07/2026
 
-9a1cedabe739a03e8060a38100592119b881c9a1cf6021b6f2f04f5f70a7c716  VERSION.txt
-dc9572d623dbcb966dddd2ed2a0fc5cf5d803dcb0481874e949668362c9539c6  chili-ia.html
-24faaccfc25691dd26d29fa57b062f43ba8fe91243796552d732e45d21feb739  chili-ia.css
-b0472274d6ef1180eec1483d00f23ced9ce4306d4c50d3fac671c37991163510  jemmo-chili.js
-94a6e803baaf3bfa478f5cdf9b10244e8cbcb4b2d3c6fd05dd44a36b46e0897b  jemmo-chili-knowledge.js
-7183cb9d936bca00869a82374982bf8984f1771fe521e569c9bd2c50e72b5878  inicio.html
-9c72b68e782cf70cea51d3bdcfc2daf3367e3c8ec89f7945413a0083c83ae850  yo.html
-809382ac5a7d60f6097c31113dd2fab16c5921baf097126d0d6a0e8751d13169  live.html
-e03ddb604c98cb4057375993fd667b5a9b1ae710d901d990ab347147c59f51f5  pwa-register.js
-14cd94a7242f3f289b462bed03dd4a24d18c04af6b96839fbcffed136c102507  sw.js
+SHA-256 de los archivos instalables:
+e1254485cef066e0e20ecaf47ab9709a6d5b5b7dfe4ecf5c8c108fa25bbbd708  VERSION.txt
+bc7d2341711598345da065fd1ed0b9cbfd3a79bf5ba522aeaa4cbac11cdb7fe7  jemmo-house-pet.css
+c154403661ba81f7f030ff3f74a3a6f0da6c460c1935a02d41a9cd6affcdf049  jemmo-house-pet.js
+0eda8f73354d26fb6b8d219a389ce1619e05d2d6c4973265246a8459025e5c4d  pwa-register.js
+57e0321814238a4232580c07288e6f98b4e7a24cd7c0f195f26fe563f3b0db97  sw.js
+
+El ZIP es incremental y debe copiarse completo sobre PRUEBA 38.
+El documento Word se entrega separado y no se incluye dentro del ZIP.
