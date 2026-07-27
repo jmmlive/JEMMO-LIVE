@@ -1,26 +1,26 @@
-JEMMO LIVE V1 · AGENDA Y PROGRESO DE AGENTES · PRUEBA 40
+JEMMO LIVE V1 · PECERA FUTURISTA Y ALIMENTACIÓN DUAL PRUEBA 41
 Fecha: 27/07/2026
-Base documental: JEMMO LIVE V1 · MASCOTA Y PECERA DE CASA PRUEBA 39
-Tipo: Entrega aislada de validación visual y funcional
-Economía: MODO DE PRUEBAS · SIN DINERO REAL
 
-OBJETIVO
-- Crear una Agenda profesional para agentes.
-- Mostrar al propio agente en primer plano.
-- Mostrar debajo sus Emisoras con progreso, tarea, horas y resultado económico.
-- Abrir el perfil al tocar la foto.
-- Abrir el desglose operativo al tocar nombre, letras o cifras.
-- Recuperar perfiles reales desde Firebase cuando estén disponibles.
-- Mantener diez perfiles ficticios claramente marcados como DEMO para validar el diseño.
-- Reservar a Ruth como cuenta REAL: sus cifras no se inventan; permanecen en cero hasta leer Firebase.
-- Mostrar días transcurridos desde el registro.
+Base compatible:
+- JEMMO LIVE V1 · MASCOTA Y PECERA DE CASA PRUEBA 39
+- Sustituye únicamente jemmo-house-pet.css y jemmo-house-pet.js.
 
-ARCHIVOS
-- jemmo-agent-agenda.html
-- jemmo-agent-agenda.css
-- jemmo-agent-agenda.js
-- VERSION.txt
-- INTEGRIDAD_SHA256.txt
+Correcciones y ampliaciones:
+- Diseño completamente responsive sin desbordamiento horizontal en móvil.
+- Textos de XP y tiempos de espera completos, sin cortes.
+- Chicharro oficial rediseñado en SVG 2.5D: violeta/malva neón, detalles dorados, ojo azul y J dorada visible.
+- Movimiento autónomo por defecto, reacción al tocarlo y seguimiento del dedo en el agua.
+- Evolución visual automática en cinco niveles según XP.
+- Alimentación gratuita cada 24 horas con +4 XP para progresión lenta.
+- Alimentación con regalos de 500, 2.000 y 5.000 JEMMOS, con +20, +70 y +180 XP.
+- Confirmación previa, bloqueo de doble toque e idempotencia en el monedero.
+- Persistencia en IndexedDB y sincronización con casas/{houseId}/mascota/actual.
+- Registro de acciones en casas/{houseId}/mascotaAcciones/{actionId}.
+- Conserva la API window.JemmoHousePet.addProgress(...) para tareas y regalos externos.
 
-LÍMITE DE ESTA ENTREGA
-La entrega no sustituye casa-demo.html, pwa-register.js ni sw.js porque la copia binaria completa de PRUEBA 39 no estaba disponible en el entorno actual. El módulo se entrega aislado para evitar borrar o sobrescribir funciones existentes. La integración final en el botón del panel de Casa debe realizarse sobre el ZIP completo actualmente instalado.
+Estado económico:
+MODO DE PRUEBAS. Los JEMMOS utilizados son el saldo de pruebas del monedero actual.
+
+Instalación:
+Copiar los dos archivos jemmo-house-pet.css y jemmo-house-pet.js en la raíz del repositorio y sustituir los anteriores.
+No sustituir salas.html, casa-demo.html, pwa-register.js, sw.js, WebRTC, tareas ni Chili.
