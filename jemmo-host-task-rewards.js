@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · TAREA DE EMISORA VISIBLE Y COMPATIBILIDAD DE MEMBRESÍA PRUEBA 31
+/* JEMMO LIVE V1 · TAREA ASIGNADA A LA EMISORA REAL PRUEBA 32
    Tareas exclusivas de Emisoras formalmente asignadas a una Casa.
    Cada hora se cobra por separado. El nivel usa únicamente el 70% neto de regalos de Casa.
    MODO DE PRUEBAS: antes de producción, cálculo y abono deben validarse en backend. */
@@ -6,7 +6,7 @@
   'use strict';
   if (window.JemmoHostTaskRewards?.version) return;
 
-  const VERSION = '31.0-test';
+  const VERSION = '32.0-test';
   const params = new URLSearchParams(location.search);
   const isHouseRoom = location.pathname.toLowerCase().endsWith('salas.html') && params.get('houseRoom') === '1';
   if (!isHouseRoom) return;
@@ -48,6 +48,7 @@
   let memberExists = false;
   let eligibilityState = 'checking';
   let migrationRunning = false;
+  let cleanupRunning = false;
   let claiming = false;
   let attachedHouse = '';
   let lastTierSignature = '';
@@ -104,50 +105,101 @@
   };
   const normalizeRole = value => clean(value, 40).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   const emitterRoles = new Set(['emitter', 'emisor', 'emisora', 'host', 'streamer', 'creator', 'creador', 'creadora']);
+  const managementRoles = new Set(['owner', 'propietario', 'superadmin', 'admin', 'administrador', 'agent', 'agente', 'agency']);
   const inactiveStatuses = new Set(['left', 'removed', 'inactive', 'expelled', 'salio', 'salida', 'eliminado', 'eliminada']);
   const isEmitterRole = value => emitterRoles.has(normalizeRole(value));
+  const isManagementRole = value => managementRoles.has(normalizeRole(value));
   const isActiveMember = () => memberExists && !inactiveStatuses.has(normalizeRole(member.status || profile.houseStatus || 'active'));
+  const profileMatchesHouse = () => !clean(profile.houseId, 80) || clean(profile.houseId, 80) === houseId;
   const explicitHousePosition = () => {
     const memberPosition = member.housePosition || member.position || member.houseRole || member.house_role;
     if (clean(memberPosition, 40)) return memberPosition;
-    const profileHouseMatches = !clean(profile.houseId, 80) || clean(profile.houseId, 80) === houseId;
-    return profileHouseMatches ? (profile.housePosition || profile.houseRole || profile.house_role) : '';
+    return profileMatchesHouse() ? (profile.housePosition || profile.houseRole || profile.house_role) : '';
   };
-  const legacyTaskEvidence = () => !clean(explicitHousePosition(), 40)
-    && isEmitterRole(task.housePosition || task.position)
-    && !['inactive', 'cancelled', 'removed'].includes(normalizeRole(task.taskState));
-  const isFormalHouseEmitter = () => isActiveMember() && (isEmitterRole(explicitHousePosition()) || legacyTaskEvidence());
+  const authorityRole = () => member.role || member.accountRole || (profileMatchesHouse() ? (profile.role || profile.rol || profile.accountRole) : '');
+  const assignedAgentUid = () => clean(member.assignedAgentUid || (profileMatchesHouse() ? profile.assignedAgentUid : '') || task.assignedAgentUid, 160);
+  const taskIsUsableEvidence = () => !['inactive', 'cancelled', 'removed', 'paused'].includes(normalizeRole(task.taskState));
+  const blockedByManagementRole = () => isManagementRole(explicitHousePosition()) || isManagementRole(authorityRole());
+  const hasEmitterAssignmentEvidence = () => {
+    if (blockedByManagementRole()) return false;
+    if (isEmitterRole(explicitHousePosition())) return true;
+    if (assignedAgentUid()) return true;
+    if (isEmitterRole(member.accountRole) || (profileMatchesHouse() && isEmitterRole(profile.role || profile.rol || profile.accountRole))) return true;
+    return taskIsUsableEvidence() && (isEmitterRole(task.housePosition || task.position) || Boolean(clean(task.assignedAgentUid, 160)));
+  };
+  const isFormalHouseEmitter = () => isActiveMember() && hasEmitterAssignmentEvidence();
 
   function eligibilityMessage() {
     if (eligibilityState === 'checking') return 'Comprobando tu asignación de Emisora en Firebase…';
     if (eligibilityState === 'no_membership') return 'No se encontró una membresía activa en esta Casa.';
     if (eligibilityState === 'inactive') return 'Tu pertenencia a esta Casa no está activa.';
-    return 'La Casa todavía no te ha asignado formalmente como Emisor/a. El agente debe cambiar tu posición a Emisor/a.';
+    if (eligibilityState === 'management') return 'Los propietarios, agentes y administradores no cobran tareas de Emisora.';
+    return 'La Casa todavía no te ha asignado formalmente como Emisor/a y a un agente responsable.';
   }
 
   async function migrateLegacyEmitter() {
-    if (migrationRunning || !emitter || !user || !houseId || isEmitterRole(member.housePosition)) return;
+    if (migrationRunning || !emitter || !user || !houseId || (isEmitterRole(member.housePosition) && assignedAgentUid())) return;
     migrationRunning = true;
     try {
       const s = await services();
+      const agentUid = assignedAgentUid();
+      const memberPatch = {
+        housePosition: 'emitter',
+        status: clean(member.status || 'active', 20) || 'active',
+        migratedEmitterPositionAtClient: Date.now(),
+        migratedEmitterPositionAt: s.serverTimestamp(),
+        updatedAt: s.serverTimestamp()
+      };
+      const profilePatch = {
+        houseId,
+        housePosition: 'emitter',
+        houseStatus: 'active',
+        houseUpdatedAt: s.serverTimestamp()
+      };
+      if (agentUid) {
+        memberPatch.assignedAgentUid = agentUid;
+        profilePatch.assignedAgentUid = agentUid;
+      }
       await Promise.all([
-        s.setDoc(s.doc(s.db, 'casas', houseId, 'miembros', user.uid), {
+        s.setDoc(s.doc(s.db, 'casas', houseId, 'miembros', user.uid), memberPatch, { merge: true }),
+        s.setDoc(s.doc(s.db, 'users', user.uid), profilePatch, { merge: true }),
+        s.setDoc(s.doc(s.db, 'casas', houseId, 'tareas', user.uid), {
+          uid: user.uid,
           housePosition: 'emitter',
-          migratedEmitterPositionAtClient: Date.now(),
-          migratedEmitterPositionAt: s.serverTimestamp(),
+          assignedAgentUid: agentUid || clean(task.assignedAgentUid, 160),
+          taskState: clean(task.taskState, 20) === 'active' ? 'active' : 'waiting',
+          assignmentVerifiedAtClient: Date.now(),
+          assignmentVerifiedAt: s.serverTimestamp(),
           updatedAt: s.serverTimestamp()
-        }, { merge: true }),
-        s.setDoc(s.doc(s.db, 'users', user.uid), {
-          houseId,
-          housePosition: 'emitter',
-          houseStatus: 'active',
-          houseUpdatedAt: s.serverTimestamp()
         }, { merge: true })
       ]);
+      member.housePosition = 'emitter';
+      if (agentUid) member.assignedAgentUid = agentUid;
     } catch (error) {
       console.warn('JEMMO tareas: migración de Emisora', error?.code || error?.message || error);
     } finally {
       migrationRunning = false;
+    }
+  }
+
+  async function pauseInvalidTask() {
+    if (cleanupRunning || emitter || !user || !houseId || !task || clean(task.taskState, 20) !== 'active') return;
+    if (!memberExists || eligibilityState === 'checking') return;
+    cleanupRunning = true;
+    try {
+      const s = await services();
+      await s.setDoc(s.doc(s.db, 'casas', houseId, 'tareas', user.uid), {
+        taskState: 'paused',
+        completionState: 'inactive',
+        pausedReason: blockedByManagementRole() ? 'management_role_no_emitter_task' : 'not_formal_house_emitter',
+        pausedAtClient: Date.now(),
+        pausedAt: s.serverTimestamp(),
+        updatedAt: s.serverTimestamp()
+      }, { merge: true });
+    } catch (error) {
+      console.warn('JEMMO tareas: limpieza de tarea incorrecta', error?.code || error?.message || error);
+    } finally {
+      cleanupRunning = false;
     }
   }
 
@@ -159,6 +211,9 @@
     } else if (!isActiveMember()) {
       emitter = false;
       eligibilityState = 'inactive';
+    } else if (blockedByManagementRole()) {
+      emitter = false;
+      eligibilityState = 'management';
     } else {
       emitter = isFormalHouseEmitter();
       eligibilityState = emitter ? 'eligible' : 'not_emitter';
@@ -167,6 +222,8 @@
     if (emitter) {
       void migrateLegacyEmitter();
       if (!previous) void window.JemmoHouseActivity?.ensureTaskCycle?.('task_rewards_ready');
+    } else {
+      void pauseInvalidTask();
     }
   }
 
@@ -289,7 +346,11 @@
     const count = $('houseTaskCountdown');
     const mini = $('houseTaskProgressMini');
     if (!box || !count || !mini) return;
-    box.hidden = false;
+    const managementHidden = !emitter && eligibilityState === 'management';
+    box.hidden = managementHidden;
+    const setting = $('jemmoHostTaskSetting');
+    if (setting) setting.hidden = managementHidden;
+    if (managementHidden) return;
     box.setAttribute('role', 'button');
     box.setAttribute('tabindex', '0');
     box.setAttribute('aria-label', emitter ? 'Abrir mis tareas de Emisora' : 'Consultar estado de tareas de Casa');
@@ -642,7 +703,7 @@
       user = await waitForUser(s);
       unsubscribers.push(s.onSnapshot(s.doc(s.db, 'users', user.uid), snapshot => {
         profile = snapshot.data() || {};
-        const nextHouse = clean(params.get('house') || profile.houseId, 80);
+        const nextHouse = clean(profile.houseId || params.get('house'), 80);
         if (nextHouse && nextHouse !== houseId) {
           houseId = nextHouse;
           clearHouseListeners();

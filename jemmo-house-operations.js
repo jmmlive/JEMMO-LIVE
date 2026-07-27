@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · TAREA DE EMISORA VISIBLE Y COMPATIBILIDAD DE MEMBRESÍA PRUEBA 31
+/* JEMMO LIVE V1 · TAREA ASIGNADA A LA EMISORA REAL PRUEBA 32
    Escala automática, ventana móvil de 7 días y reparto 70/20/10 para Emisoras de Casa. */
 const firebaseConfig = {
   apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
@@ -151,9 +151,10 @@ function positionLabel(member) {
 }
 
 function isEmitter(member) {
-  if (member?.uid === state.user?.uid && state.testRole) return state.testRole === 'emitter';
-  const value = normalizedAccountRole(member?.housePosition || member?.position || member?.houseRole || member?.accountRole);
-  return value === 'emitter';
+  const position = normalizedAccountRole(member?.housePosition || member?.position || member?.houseRole);
+  const authority = normalizedAccountRole(member?.role || member?.accountRole);
+  if (['owner', 'agent'].includes(position) || ['owner', 'agent'].includes(authority) || clean(member?.role, 20) === 'admin') return false;
+  return position === 'emitter' || Boolean(clean(member?.assignedAgentUid, 160)) || normalizedAccountRole(member?.accountRole) === 'emitter';
 }
 
 function currentTask(uid) {
@@ -642,7 +643,7 @@ async function reviewTask(uid, status) {
 
 function newTaskCycle(uid, reason, current = {}) {
   const now = Date.now();
-  return { uid, taskState: 'active', cycleDurationHours: 24, cycleStartedAtClient: now, cycleEndsAtClient: now + DAY_MS, cycleKey: `24h-${now}`, cycleNumber: Math.max(1, Number(current.cycleNumber || 0) + 1), liveSeconds: 0, houseRoomSeconds: 0, reviewStatus: 'pending', activatedReason: reason, activatedAtClient: Number(current.activatedAtClient || now), updatedAt: state.services.serverTimestamp() };
+  const emitter = state.members.find(member => member.uid === uid) || {}; return { uid, housePosition: 'emitter', assignedAgentUid: clean(emitter.assignedAgentUid, 160), assignedAgentName: clean(emitter.assignedAgentName, 80), taskState: 'active', completionState: 'in_progress', cycleDurationHours: 24, cycleStartedAtClient: now, cycleEndsAtClient: now + DAY_MS, cycleKey: `24h-${now}`, cycleNumber: Math.max(1, Number(current.cycleNumber || 0) + 1), liveSeconds: 0, houseRoomSeconds: 0, totalTargetMinutes: 60, dailyHours: 1, hourlyRewardJems: 2000, taskTierCode: 'BASE', claimedHourSlots: [], claimedHours: 0, hourlyClaims: {}, reviewStatus: 'pending', activatedReason: reason, activatedAtClient: Number(current.activatedAtClient || now), updatedAt: state.services.serverTimestamp() };
 }
 
 async function activateTask(uid, reason = 'emitter_assigned', force = false) {
@@ -761,7 +762,7 @@ async function boot() {
     } catch {}
     refreshAuthority();
     bind();
-    window.addEventListener('jemmo-test-role-change', event => { refreshAuthority(); renderAll(); if (event.detail?.mode === 'emitter') void activateTask(state.user.uid, 'owner_role_lab'); });
+    window.addEventListener('jemmo-test-role-change', () => { refreshAuthority(); renderAll(); });
     const workspace = $('#houseWorkspace');
     new MutationObserver(() => void attachCurrentWorkspace()).observe(workspace, { attributes: true, attributeFilter: ['hidden', 'data-house-id'] });
     document.addEventListener('click', event => {

@@ -1,22 +1,22 @@
-JEMMO LIVE V1 · TAREA DE EMISORA VISIBLE Y COMPATIBILIDAD DE MEMBRESÍA PRUEBA 31
+JEMMO LIVE V1 · TAREA ASIGNADA A LA EMISORA REAL PRUEBA 32
 Fecha: 27/07/2026
-Base instalada requerida: JEMMO LIVE V1 · COBRO POR HORAS Y ESCALA MÓVIL DE SIETE DÍAS PRUEBA 30
+Base instalada requerida: JEMMO LIVE V1 · TAREA DE EMISORA VISIBLE Y COMPATIBILIDAD DE MEMBRESÍA PRUEBA 31
 
 INCIDENCIA REAL CORREGIDA
-- PRUEBA 30 ocultaba por completo la tarea cuando la membresía antigua no contenía exactamente housePosition: emitter.
-- Ruth podía estar asignada como Emisora mediante position, houseRole, datos del Perfil o una tarea activa anterior y, aun así, la tarjeta desaparecía.
-- El contador de actividad también rechazaba la Sala cuando el houseId del Perfil estaba desactualizado aunque el documento real de membresía existiera.
+- La cuenta propietaria podía crear una tarea real al cambiar únicamente la vista del laboratorio de roles a Emisor/a.
+- Esa tarea quedaba guardada y seguía apareciendo incluso al volver a la vista Agente.
+- Ruth podía tener un agente responsable asignado, pero no ver su tarea si el campo housePosition antiguo seguía como miembro o estaba incompleto.
 
 CORRECCIÓN
-- Compatibilidad con emitter, emisor, emisora y campos antiguos de posición de Casa.
-- La membresía real en casas/{houseId}/miembros/{uid} sigue siendo obligatoria y debe estar activa.
-- Recuperación segura desde una tarea activa anterior solo cuando no existe una posición explícita contradictoria.
-- Migración automática del dato antiguo a housePosition: emitter en miembro y Perfil.
-- La tarjeta de tarea ya no desaparece silenciosamente: muestra CARGANDO, tarea activa o motivo exacto de no activación.
-- El contador de LIVE/Audio Room usa la membresía real de Firebase aunque el Perfil conserve temporalmente un houseId antiguo.
-- El reparto económico reconoce los campos compatibles sin convertir a una Emisora independiente en Emisora de Casa.
+- El laboratorio de roles de la cuenta propietaria pasa a ser exclusivamente visual y nunca crea tareas en Firebase.
+- Propietarios, agentes y administradores no muestran ni cobran tareas de Emisora.
+- Las tareas pertenecen exclusivamente al UID real de la Emisora activa de la Casa.
+- Tener assignedAgentUid en una membresía activa se reconoce como asignación efectiva de Emisora y se migra a housePosition: emitter.
+- La tarea antigua creada por el laboratorio del propietario se pausa automáticamente.
+- Los nuevos ciclos guardan housePosition, agente responsable, pago base y horas de forma explícita.
+- El reparto 70/20/10 reconoce la asignación real de Ruth; una Emisora independiente continúa en 70/30 y sin tareas.
 
 INSTALACIÓN
-- Instalar directamente encima de PRUEBA 30.
+- Instalar directamente encima de PRUEBA 31.
 - Sustituir todos los archivos incluidos en este ZIP.
-- PRUEBA 29 continúa anulada.
+- Después entrar con Ruth en la Audio Room de su Casa y comprobar MI TAREA.

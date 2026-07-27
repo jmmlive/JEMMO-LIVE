@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · TAREA DE EMISORA VISIBLE Y COMPATIBILIDAD DE MEMBRESÍA PRUEBA 31 */
-const CACHE = 'jemmo-live-v1-task-membership-compat-31-20260727';
+/* JEMMO LIVE V1 · TAREA ASIGNADA A LA EMISORA REAL PRUEBA 32 */
+const CACHE = 'jemmo-live-v1-real-emitter-task-32-20260727';
 const APP_SHELL = [
   './',
   './index.html',

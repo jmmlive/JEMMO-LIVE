@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · ACTIVIDAD Y COBRO POR HORAS DE CASAS PRUEBA 31
+/* JEMMO LIVE V1 · ACTIVIDAD DE LA EMISORA REAL PRUEBA 32
    Registra tiempo LIVE y tiempo real sentado en Sala oficial con sesión, lease e idempotencia.
    Solo funciona para Emisoras formalmente asignadas a una Casa. */
 (() => {
@@ -20,24 +20,40 @@
   const num=v=>Math.max(0,Number(v)||0);
   function testRole(uid){try{return clean(JSON.parse(localStorage.getItem(`jemmo_role_lab_v1_${uid}`)||'null')?.mode,20)}catch{return''}}
   const emitterRoles=new Set(['emitter','emisor','emisora','host','streamer','creator','creador','creadora']);
+  const managementRoles=new Set(['owner','propietario','superadmin','admin','administrador','agent','agente','agency']);
   const inactiveStatuses=new Set(['left','removed','inactive','expelled','salio','salida','eliminado','eliminada']);
   const isEmitterRole=value=>emitterRoles.has(normalize(value));
+  const isManagementRole=value=>managementRoles.has(normalize(value));
   const memberActive=()=>!inactiveStatuses.has(normalize(member.status||profile.houseStatus||'active'));
+  const profileMatchesHouse=()=>!clean(profile.houseId,80)||clean(profile.houseId,80)===houseId;
   function explicitHousePosition(){
     const memberPosition=member.housePosition||member.position||member.houseRole||member.house_role;
     if(clean(memberPosition,40))return memberPosition;
-    const profileMatches=!clean(profile.houseId,80)||clean(profile.houseId,80)===houseId;
-    return profileMatches?(profile.housePosition||profile.houseRole||profile.house_role):'';
+    return profileMatchesHouse()?(profile.housePosition||profile.houseRole||profile.house_role):'';
   }
-  function emitterEligible(){return memberActive()&&isEmitterRole(explicitHousePosition())}
+  const authorityRole=()=>member.role||member.accountRole||(profileMatchesHouse()?(profile.role||profile.rol||profile.accountRole):'');
+  const assignedAgentUid=()=>clean(member.assignedAgentUid||(profileMatchesHouse()?profile.assignedAgentUid:'')||'',160);
+  const blockedByManagementRole=()=>isManagementRole(explicitHousePosition())||isManagementRole(authorityRole());
+  function emitterEligible(taskData={}){
+    if(!memberActive()||blockedByManagementRole())return false;
+    if(isEmitterRole(explicitHousePosition()))return true;
+    if(assignedAgentUid())return true;
+    if(isEmitterRole(member.accountRole)||(profileMatchesHouse()&&isEmitterRole(profile.role||profile.rol||profile.accountRole)))return true;
+    return !['inactive','cancelled','removed','paused'].includes(normalize(taskData.taskState))&&(isEmitterRole(taskData.housePosition||taskData.position)||Boolean(clean(taskData.assignedAgentUid,160)));
+  }
   async function migrateLegacyEmitter(){
-    if(!services||!user||!houseId||isEmitterRole(member.housePosition))return;
+    if(!services||!user||!houseId||(isEmitterRole(member.housePosition)&&assignedAgentUid()))return;
     try{
+      const agentUid=assignedAgentUid();
+      const memberPatch={housePosition:'emitter',migratedEmitterPositionAtClient:Date.now(),migratedEmitterPositionAt:services.serverTimestamp(),updatedAt:services.serverTimestamp()};
+      const profilePatch={houseId,housePosition:'emitter',houseStatus:'active',houseUpdatedAt:services.serverTimestamp()};
+      if(agentUid){memberPatch.assignedAgentUid=agentUid;profilePatch.assignedAgentUid=agentUid}
       await Promise.all([
-        services.setDoc(services.doc(services.db,'casas',houseId,'miembros',user.uid),{housePosition:'emitter',migratedEmitterPositionAtClient:Date.now(),migratedEmitterPositionAt:services.serverTimestamp(),updatedAt:services.serverTimestamp()},{merge:true}),
-        services.setDoc(services.doc(services.db,'users',user.uid),{houseId,housePosition:'emitter',houseStatus:'active',houseUpdatedAt:services.serverTimestamp()},{merge:true})
+        services.setDoc(services.doc(services.db,'casas',houseId,'miembros',user.uid),memberPatch,{merge:true}),
+        services.setDoc(services.doc(services.db,'users',user.uid),profilePatch,{merge:true}),
+        services.setDoc(services.doc(services.db,'casas',houseId,'tareas',user.uid),{uid:user.uid,housePosition:'emitter',assignedAgentUid:agentUid,assignmentVerifiedAtClient:Date.now(),assignmentVerifiedAt:services.serverTimestamp(),updatedAt:services.serverTimestamp()},{merge:true})
       ]);
-      member.housePosition='emitter';
+      member.housePosition='emitter';if(agentUid)member.assignedAgentUid=agentUid;
     }catch(e){console.warn('JEMMO actividad Casa: migración Emisora',e?.code||e)}
   }
 
@@ -52,7 +68,7 @@
     return roomVisible&&seatState?.houseSeatActive===true&&seatState?.sessionActive===true;
   }
 
-  function cyclePayload(now,reason,current={}){return{uid:user.uid,displayName:clean(profile.displayName||user.displayName||user.email?.split('@')[0]||'Usuario JEMMO',48),publicId:clean(profile.publicId,48),accountRole:clean(profile.role||profile.rol||member.accountRole||'emisor',30),housePosition:'emitter',assignedAgentUid:clean(member.assignedAgentUid||profile.assignedAgentUid,160),taskState:'active',completionState:'in_progress',cycleDurationHours:24,cycleStartedAtClient:now,cycleEndsAtClient:now+DAY_MS,cycleKey:`24h-${now}`,cycleNumber:Math.max(1,Number(current.cycleNumber||0)+1),liveSeconds:0,houseRoomSeconds:0,totalTargetMinutes:60,dailyHours:1,hourlyRewardJems:2000,taskTierCode:'BASE',giftWindowDays:7,claimedHourSlots:[],claimedHours:0,hourlyClaims:{},rewardClaimed:false,rewardAmount:0,rewardTotalClaimed:0,reviewStatus:'pending',activatedReason:reason,activatedAtClient:Number(current.activatedAtClient||now),updatedAt:services.serverTimestamp()}}
+  function cyclePayload(now,reason,current={}){return{uid:user.uid,displayName:clean(profile.displayName||user.displayName||user.email?.split('@')[0]||'Usuario JEMMO',48),publicId:clean(profile.publicId,48),accountRole:clean(profile.role||profile.rol||member.accountRole||'emisor',30),housePosition:'emitter',assignedAgentUid:assignedAgentUid(),taskState:'active',completionState:'in_progress',cycleDurationHours:24,cycleStartedAtClient:now,cycleEndsAtClient:now+DAY_MS,cycleKey:`24h-${now}`,cycleNumber:Math.max(1,Number(current.cycleNumber||0)+1),liveSeconds:0,houseRoomSeconds:0,totalTargetMinutes:60,dailyHours:1,hourlyRewardJems:2000,taskTierCode:'BASE',giftWindowDays:7,claimedHourSlots:[],claimedHours:0,hourlyClaims:{},rewardClaimed:false,rewardAmount:0,rewardTotalClaimed:0,reviewStatus:'pending',activatedReason:reason,activatedAtClient:Number(current.activatedAtClient||now),updatedAt:services.serverTimestamp()}}
   async function archiveAndReset(transaction,taskRef,current,now,reason){const oldStart=Number(current.cycleStartedAtClient||0);if(oldStart){const historyRef=services.doc(services.db,'casas',houseId,'historialTareas',`${user.uid}_${oldStart}`);transaction.set(historyRef,{...current,uid:user.uid,houseId,archivedAtClient:now,archivedAt:services.serverTimestamp(),archiveReason:reason},{merge:true})}const next=cyclePayload(now,reason,current);transaction.set(taskRef,next,{merge:true});cycleEndMs=next.cycleEndsAtClient;return next}
 
   async function ensureTaskCycle(reason='activity_entry'){
@@ -73,11 +89,10 @@
     ]);
     member=memberSnap.data()||{};taskConfig={...taskConfig,...(configSnap.data()||{})};
     if(!memberSnap.exists()||!memberActive()){eligible=false;return false;}
-    const explicit=clean(explicitHousePosition(),40);
-    const legacyTask=!explicit&&isEmitterRole(taskSnap.data()?.housePosition||taskSnap.data()?.position)&&!['inactive','cancelled','removed'].includes(normalize(taskSnap.data()?.taskState));
-    if(!isEmitterRole(explicit)&&!legacyTask){eligible=false;return false;}
+    const taskData=taskSnap.data()||{};
+    if(!emitterEligible(taskData)){eligible=false;return false;}
     eligible=true;
-    if(legacyTask||!isEmitterRole(member.housePosition))await migrateLegacyEmitter();
+    if(!isEmitterRole(member.housePosition)||!assignedAgentUid())await migrateLegacyEmitter();
     window.JemmoWallet?.setMembership?.(user.uid,{hasHouse:true,houseId,houseName:profile.houseName||'',agentUid:member.assignedAgentUid||profile.assignedAgentUid||''});
     await ensureTaskCycle('emitter_activity_started');return true;
   }
@@ -116,7 +131,7 @@
         const complete=liveSeconds+roomSeconds>=totalTargetMinutes*60;
         transaction.set(r.session,{creditedSeconds:nextCredited,lastFlushAtClient:now,lastFlushAt:s.serverTimestamp(),updatedAt:s.serverTimestamp()},{merge:true});
         transaction.set(r.lease,{lastHeartbeatAtClient:now,leaseUntilClient:now+LEASE_MS,creditedSeconds:nextCredited,updatedAt:s.serverTimestamp()},{merge:true});
-        if(delta>0)transaction.set(r.task,{uid:user.uid,displayName:clean(profile.displayName||user.displayName||'Usuario JEMMO',48),publicId:clean(profile.publicId,48),accountRole:clean(profile.role||profile.rol||member.accountRole||'emisor',30),housePosition:'emitter',assignedAgentUid:clean(member.assignedAgentUid||profile.assignedAgentUid,160),taskState:'active',liveSeconds,houseRoomSeconds:roomSeconds,totalTargetMinutes,dailyHours:num(current.dailyHours||Math.max(1,Math.ceil(totalTargetMinutes/60))),hourlyRewardJems:num(current.hourlyRewardJems||2000),taskTierCode:clean(current.taskTierCode||'BASE',10),liveTargetMinutes:0,houseRoomTargetMinutes:0,completionState:complete?'completed':'in_progress',completedAtClient:complete?Number(current.completedAtClient||now):0,lastActivityType:activityType,lastActivitySessionId:sessionId,lastActivityAtClient:now,lastActivityAt:s.serverTimestamp(),updatedAt:s.serverTimestamp(),reviewStatus:clean(current.reviewStatus||'pending',20)},{merge:true});
+        if(delta>0)transaction.set(r.task,{uid:user.uid,displayName:clean(profile.displayName||user.displayName||'Usuario JEMMO',48),publicId:clean(profile.publicId,48),accountRole:clean(profile.role||profile.rol||member.accountRole||'emisor',30),housePosition:'emitter',assignedAgentUid:assignedAgentUid(),taskState:'active',liveSeconds,houseRoomSeconds:roomSeconds,totalTargetMinutes,dailyHours:num(current.dailyHours||Math.max(1,Math.ceil(totalTargetMinutes/60))),hourlyRewardJems:num(current.hourlyRewardJems||2000),taskTierCode:clean(current.taskTierCode||'BASE',10),liveTargetMinutes:0,houseRoomTargetMinutes:0,completionState:complete?'completed':'in_progress',completedAtClient:complete?Number(current.completedAtClient||now):0,lastActivityType:activityType,lastActivitySessionId:sessionId,lastActivityAtClient:now,lastActivityAt:s.serverTimestamp(),updatedAt:s.serverTimestamp(),reviewStatus:clean(current.reviewStatus||'pending',20)},{merge:true});
         transaction.set(r.presence,{status:'active',sessionId,type:activityType,leaseUntilClient:now+LEASE_MS,updatedAtClient:now,updatedAt:s.serverTimestamp()},{merge:true});
       });
       if(leaseLost){running=false;clearInterval(flushTimer);flushTimer=0;window.dispatchEvent(new CustomEvent('jemmo-house-activity',{detail:{type:activityType,status:'replaced',houseId}}))}
@@ -144,7 +159,7 @@
     if(!services||!user||!houseId||membershipUnsub)return;
     membershipUnsub=services.onSnapshot(services.doc(services.db,'casas',houseId,'miembros',user.uid),snap=>{
       const next=snap.data()||{};member=next;
-      const active=snap.exists()&&memberActive()&&emitterEligible();
+      const active=snap.exists()&&emitterEligible();
       if(!active){eligible=false;void stop('membership_inactive');void markTaskInactive('not_formal_house_emitter');return}
       const wasEligible=eligible;eligible=true;if(!wasEligible){void ensureTaskCycle('formal_emitter_assigned').then(sync)}
     },e=>console.warn('JEMMO actividad Casa: membresía',e?.code||e));

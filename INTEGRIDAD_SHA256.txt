@@ -1,11 +1,13 @@
-JEMMO LIVE V1 · TAREA DE EMISORA VISIBLE Y COMPATIBILIDAD DE MEMBRESÍA PRUEBA 31
-Base directa: PRUEBA 30 instalada.
+JEMMO LIVE V1 · TAREA ASIGNADA A LA EMISORA REAL PRUEBA 32
+Base directa: PRUEBA 31 instalada.
 Fecha: 27/07/2026
 
-6fe36c92751499b5e8f2552dc8650c6f6478e00aaf903c62c152ee766b6431e8  VERSION.txt
-21134bf7a9be81c0c6ea0f3dd7d96dabe7248977d45d25c2e8d6592d3a1f4f4a  jemmo-host-task-rewards.js
-069391cce9e62f85d5fec6f4caf85e1af970c00bd1f56a31af26371a37af346e  jemmo-house-activity.js
-b2f11f40e2e375fc652b1c354d939b39071a8a9ff72ebc5f2e92f3a087b09df5  jemmo-house-finance.js
-594bab5548c149799d78e6478c450b5a061982935c13b395481cc0ad651d0e7d  jemmo-house-operations.js
-024a474550ac77b3df79c0041e60d8bc89d813dbd1e8ef50627d4a61036fec20  pwa-register.js
-8f2b8321e81794c290264bd7bfbf5e01e40f89f6de87114a2f5d792eba570c1e  sw.js
+9fd51a28add0ba45e980f42bc4010a59f4726bb85d5869018c387513520c01f7  VERSION.txt
+fbda52c99ec167615363ea690d54baa95367efb0a818a46f8f667feb3d1dab70  jemmo-host-task-rewards.js
+87b79083e53ac7fbcf41687919b5f6e2b4a55ea0e9e97af7478c1319d2260ba5  jemmo-house-activity.js
+82454fae12b5ddc45fd15c8806bc86a987f48179b7903a7debb4b2da863f9017  jemmo-house-finance.js
+8fda880ef10633cfd89c72e679a3bff39b122a2d509e8a91afd789b8b88a80e1  jemmo-house-operations.js
+717f4b17ec4bcb249882aab1e2eb90eb074dbbab7a230f126a9ef606b4221fbc  jemmo-role-lab.js
+f3e7cf9c9cef5b2f15c00aee3e8b70c8714f3d2419aa6132c449fff98494f011  jemmo-houses.js
+c725bdc97baf1c73874d81457f6bf62ca4f34e158cbecf4566e90ac9f2672303  pwa-register.js
+b0e58a2c1bc7d6b1f922ce65ea7b26ff5e7a2ec411abf89b5f86148ed2ff2b9a  sw.js

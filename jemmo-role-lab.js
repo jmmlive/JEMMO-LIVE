@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · LABORATORIO DE ROLES Y TAREA 24H PRUEBA 16
+/* JEMMO LIVE V1 · LABORATORIO VISUAL DE ROLES SIN TAREAS REALES PRUEBA 32
    Selector exclusivo de la cuenta propietaria para probar la aplicación como propietario,
    agente de Casa, emisor/a o miembro sin perder la autoridad real de propietario. */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
@@ -10,7 +10,7 @@ const app=getApps()[0]||initializeApp(firebaseConfig),auth=getAuth(app),db=getFi
 const ROLES=Object.freeze({
   owner:{label:'PROPIETARIO',short:'Propietario',icon:'♛',description:'Control completo de JEMMO LIVE y Casa Padre.',housePosition:'owner',accountRole:'owner'},
   agent:{label:'AGENTE DE CASA',short:'Agente',icon:'🛡️',description:'Gestiona emisores, tareas y la Sala de la Casa.',housePosition:'agent',accountRole:'agent'},
-  emitter:{label:'EMISOR/A',short:'Emisor/a',icon:'🎙️',description:'Perfil de emisor con tareas y acceso directo a la Sala.',housePosition:'emitter',accountRole:'emitter'},
+  emitter:{label:'EMISOR/A',short:'Emisor/a',icon:'🎙️',description:'Vista visual de Emisor/a. Las tareas reales solo pertenecen a la cuenta asignada por la Casa.',housePosition:'emitter',accountRole:'emitter'},
   member:{label:'MIEMBRO DE CASA',short:'Miembro',icon:'🏠',description:'Vista normal de una persona perteneciente a la Casa.',housePosition:'member',accountRole:'user'}
 });
 let state={user:null,profile:{},available:false,mode:'owner'};
@@ -31,14 +31,8 @@ document.head.append(style)}
 function roleButtons(context='profile'){return Object.entries(ROLES).map(([id,r])=>`<button type="button" data-jemmo-test-role="${id}" class="${state.mode===id?'active':''}">${r.icon} ${r.short}</button>`).join('')}
 function updateHouseProfileCard(){const name=document.getElementById('houseName'),text=document.getElementById('houseText'),button=document.querySelector('.house-strip button');if(!name||!text||!button)return;const house=membership();if(house?.houseId){name.textContent=house.houseName||'Casa Padre JEMMO';text.textContent=`${ROLES[state.mode]?.label||'MIEMBRO'} · Sala de Casa abierta 24/7.`;button.textContent=state.mode==='emitter'?'IR A SALA':'ENTRAR';button.dataset.jemmoHouseProfile='1'}else{button.dataset.jemmoHouseProfile='1'}}
 function render(){document.body.dataset.jemmoTestRole=state.mode;const def=ROLES[state.mode]||ROLES.owner;document.querySelectorAll('[data-jemmo-test-role]').forEach(b=>b.classList.toggle('active',b.dataset.jemmoTestRole===state.mode));document.querySelectorAll('[data-jemmo-role-current]').forEach(e=>e.textContent=def.label);document.querySelectorAll('[data-jemmo-role-copy]').forEach(e=>e.textContent=def.description);document.querySelectorAll('[data-jemmo-role-action]').forEach(a=>{const action=actionForMode();a.textContent=action.label;a.href=action.url});const badge=document.getElementById('jemmoRoleProfileBadge');if(badge)badge.textContent=`${def.icon} MODO PRUEBA · ${def.label}`;updateHouseProfileCard()}
-function injectProfile(){if(!state.available||!document.getElementById('profileName'))return;const username=document.getElementById('profileUsername');if(username&&!document.getElementById('jemmoRoleProfileBadge')){const badge=document.createElement('span');badge.id='jemmoRoleProfileBadge';badge.className='jemmo-role-profile-badge';username.insertAdjacentElement('afterend',badge)}if(document.getElementById('jemmoRoleLabSection'))return;const anchor=document.querySelector('.house-strip')?.closest('section')||document.querySelector('main');const section=document.createElement('section');section.id='jemmoRoleLabSection';section.className='section jemmo-role-lab';section.innerHTML=`<div class="section-head"><div><h2>Modo de pruebas de rol</h2><p>Exclusivo para la cuenta propietaria</p></div></div><div class="jemmo-role-lab-card"><div class="jemmo-role-lab-head"><div><small>PERFIL ACTIVO PARA PROBAR</small><b data-jemmo-role-current></b></div><span class="jemmo-role-lab-chip">NO CAMBIA TU PROPIEDAD REAL</span></div><p class="jemmo-role-lab-copy" data-jemmo-role-copy></p><div class="jemmo-role-lab-options">${roleButtons()}</div><a class="jemmo-role-lab-action" data-jemmo-role-action href="casa-demo.html?miCasa=1">ENTRAR EN MI CASA</a></div>`;anchor?.insertAdjacentElement('afterend',section)}
+function injectProfile(){if(!state.available||!document.getElementById('profileName'))return;const username=document.getElementById('profileUsername');if(username&&!document.getElementById('jemmoRoleProfileBadge')){const badge=document.createElement('span');badge.id='jemmoRoleProfileBadge';badge.className='jemmo-role-profile-badge';username.insertAdjacentElement('afterend',badge)}if(document.getElementById('jemmoRoleLabSection'))return;const anchor=document.querySelector('.house-strip')?.closest('section')||document.querySelector('main');const section=document.createElement('section');section.id='jemmoRoleLabSection';section.className='section jemmo-role-lab';section.innerHTML=`<div class="section-head"><div><h2>Modo de pruebas de rol</h2><p>Exclusivo para la cuenta propietaria</p></div></div><div class="jemmo-role-lab-card"><div class="jemmo-role-lab-head"><div><small>PERFIL ACTIVO PARA PROBAR</small><b data-jemmo-role-current></b></div><span class="jemmo-role-lab-chip">SOLO CAMBIA LA VISTA · NO CREA TAREAS</span></div><p class="jemmo-role-lab-copy" data-jemmo-role-copy></p><div class="jemmo-role-lab-options">${roleButtons()}</div><a class="jemmo-role-lab-action" data-jemmo-role-action href="casa-demo.html?miCasa=1">ENTRAR EN MI CASA</a></div>`;anchor?.insertAdjacentElement('afterend',section)}
 function injectHouse(){if(!state.available||!document.getElementById('houseWorkspace')||document.getElementById('jemmoRoleHousebar'))return;const header=document.querySelector('.house-workspace-header');const bar=document.createElement('div');bar.id='jemmoRoleHousebar';bar.className='jemmo-role-housebar';bar.innerHTML=`<p>🧪 VISTA DE PRUEBA: <span data-jemmo-role-current></span></p><div class="jemmo-role-lab-options">${roleButtons('house')}</div>`;header?.insertAdjacentElement('afterend',bar)}
-async function activateEmitterTask(){
-  const house=membership(),houseId=clean(house?.houseId||state.profile.houseId||'padre',80);if(!state.user||!houseId)return;
-  const ref=doc(db,'casas',houseId,'tareas',state.user.uid),snap=await getDoc(ref),current=snap.data()||{},now=Date.now();
-  if(clean(current.taskState,20)==='active'&&Number(current.cycleEndsAtClient||0)>now)return;
-  await setDoc(ref,{uid:state.user.uid,displayName:clean(state.profile.displayName||state.user.displayName||'Jesús',48),publicId:clean(state.profile.publicId,48),taskState:'active',cycleDurationHours:24,cycleStartedAtClient:now,cycleEndsAtClient:now+86400000,cycleKey:`24h-${now}`,cycleNumber:Math.max(1,Number(current.cycleNumber||0)+1),liveSeconds:0,houseRoomSeconds:0,reviewStatus:'pending',activatedReason:'owner_role_lab',activatedAtClient:Number(current.activatedAtClient||now),updatedAt:serverTimestamp()},{merge:true});
-}
 async function setMode(mode){
   if(!state.available||!ROLES[mode])return;
   state.mode=mode;
@@ -46,7 +40,6 @@ async function setMode(mode){
   render();
   try{
     await setDoc(doc(db,'users',state.user.uid),{testRoleMode:mode,testRoleEnabled:true,testRoleUpdatedAt:serverTimestamp()},{merge:true});
-    if(mode==='emitter')await activateEmitterTask();
   }catch(e){console.warn('JEMMO roles: guardado remoto',e?.code||e)}
   window.dispatchEvent(new CustomEvent('jemmo-test-role-change',{detail:publicState()}));
 }
