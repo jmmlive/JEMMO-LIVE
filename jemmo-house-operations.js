@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · ASIGNACIÓN MÓVIL DIRECTA PRUEBA 35
+/* JEMMO LIVE V1 · ADMINISTRACIÓN DE TARIFAS POR MODALIDAD PRUEBA 37
    Botones táctiles para función, agente responsable y activación real de la tarea. */
 const firebaseConfig = {
   apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
@@ -167,13 +167,14 @@ function taskStatus(task) {
   const dailyHours = Math.max(1, number(task.dailyHours || Math.ceil(number(task.totalTargetMinutes || 60) / 60)));
   const totalTargetMinutes = dailyHours * 60;
   const totalSeconds = number(task.liveSeconds) + number(task.houseRoomSeconds);
+  const payableHours = Math.floor(number(task.liveSeconds) / 3600) + Math.floor(number(task.houseRoomSeconds) / 3600);
   const paidSlots = Array.isArray(task.claimedHourSlots) ? [...new Set(task.claimedHourSlots.map(number).filter(slot => slot >= 1 && slot <= 4))] : [];
   const end = Number(task.cycleEndsAtClient || 0);
   const active = clean(task.taskState, 20) === 'active' && end > Date.now();
   return {
     liveDone: number(task.liveSeconds) > 0,
     roomDone: number(task.houseRoomSeconds) > 0,
-    complete: totalSeconds >= totalTargetMinutes * 60,
+    complete: payableHours >= dailyHours,
     allPaid: paidSlots.filter(slot => slot <= dailyHours).length >= dailyHours,
     paidHours: paidSlots.filter(slot => slot <= dailyHours).length,
     totalSeconds,
@@ -553,7 +554,7 @@ function renderEmitters() {
       <section class="house-agent-person"><span>${escapeHtml((selected.displayName||profile.displayName||'JM').slice(0,2).toUpperCase())}</span><div><small>EMISORA ASIGNADA</small><h3>${escapeHtml(selected.displayName||profile.displayName||'Usuario JEMMO')}</h3><p>${escapeHtml(selected.publicId||profile.publicId||'ID pendiente')} · ${positionLabel(selected)} · Agente: ${escapeHtml(memberAgentName(selected))}</p></div><em class="${status.complete?'done':''}">${status.complete?'TAREA COMPLETA':status.active?'EN CURSO':'PENDIENTE'}</em></section>
       <div class="house-agent-detail-kpis"><div><small>VALOR BRUTO</small><b>${formatJems(finance.gross)}</b></div><div><small>EMISORA · 70%</small><b>${formatJems(finance.emitter)}</b></div><div><small>JEMMO · 20%</small><b>${formatJems(finance.app)}</b></div><div><small>AGENTE/CASA · 10%</small><b>${formatJems(finance.agent)}</b></div></div>
       <div class="house-agent-confirmation"><span><small>COMISIÓN CONFIRMADA</small><b>${formatJems(finance.agentConfirmed)}</b></span><span><small>COMISIÓN PENDIENTE</small><b>${formatJems(finance.agentPending)}</b></span></div>
-      <section class="house-agent-task-detail"><div class="house-workspace-title"><h2>TAREA ACTUAL</h2><span>${status.active?`Quedan ${countdown(status.remainingMs)}`:'Sin ciclo activo'}</span></div><div class="house-emitter-metrics four"><span><small>LIVE</small><b>${formatDuration(task.liveSeconds)}</b></span><span><small>SALA OFICIAL</small><b>${formatDuration(task.houseRoomSeconds)}</b></span><span><small>HORAS DIARIAS</small><b>${formatNumber(status.dailyHours)}</b></span><span><small>PAGO POR HORA</small><b>${formatJems(task.hourlyRewardJems||2000)}</b></span></div>${state.isAdmin?`<div class="house-emitter-actions"><button type="button" data-review-task="approved" data-task-uid="${escapeHtml(selected.uid)}">APROBAR TAREA</button><button type="button" class="secondary" data-reset-task="${escapeHtml(selected.uid)}">NUEVO CICLO 24H</button></div>`:''}</section>
+      <section class="house-agent-task-detail"><div class="house-workspace-title"><h2>TAREA ACTUAL</h2><span>${status.active?`Quedan ${countdown(status.remainingMs)}`:'Sin ciclo activo'}</span></div><div class="house-emitter-metrics four"><span><small>LIVE</small><b>${formatDuration(task.liveSeconds)}</b></span><span><small>SALA OFICIAL</small><b>${formatDuration(task.houseRoomSeconds)}</b></span><span><small>HORAS DIARIAS</small><b>${formatNumber(status.dailyHours)}</b></span><span><small>LIVE / AUDIO</small><b>${formatJems(task.liveHourlyRewardJems||task.hourlyRewardJems||2000)} / ${formatJems(task.audioRoomHourlyRewardJems||800)}</b></span></div>${state.isAdmin?`<div class="house-emitter-actions"><button type="button" data-review-task="approved" data-task-uid="${escapeHtml(selected.uid)}">APROBAR TAREA</button><button type="button" class="secondary" data-reset-task="${escapeHtml(selected.uid)}">NUEVO CICLO 24H</button></div>`:''}</section>
       <section class="house-agent-history"><div class="house-workspace-title"><h2>MOVIMIENTOS ECONÓMICOS</h2><span>${formatNumber(movementList.length)} registros</span></div>${movementList.length?movementList.map(item=>`<article><div><b>${escapeHtml(item.giftName||'Regalo JEMMO')}</b><small>${escapeHtml(item.context||'JEMMO LIVE')} · ${escapeHtml(formatDate(item.createdAt||item.createdAtClient))}</small></div><span><b>+${formatJems(item.agentTotal)}</b><small class="${item.status==='pending'?'pending':'confirmed'}">${item.status==='pending'?'PENDIENTE':'CONFIRMADO'}</small></span></article>`).join(''):'<div class="house-workspace-empty">No hay regalos registrados para esta emisora en el periodo seleccionado.</div>'}</section>
       <section class="house-agent-history"><div class="house-workspace-title"><h2>HISTORIAL DE CICLOS</h2><span>${formatNumber(history.length)} ciclos archivados</span></div>${history.length?history.slice(0,20).map(item=>`<article><div><b>Ciclo ${formatDate(item.cycleStartedAtClient)}</b><small>${formatDuration(item.liveSeconds)} LIVE · ${formatDuration(item.houseRoomSeconds)} Sala</small></div><span><b>${item.reviewStatus==='approved'?'APROBADO':'ARCHIVADO'}</b><small>${escapeHtml(item.archiveReason||'ciclo finalizado')}</small></span></article>`).join(''):'<div class="house-workspace-empty">Todavía no hay ciclos anteriores archivados.</div>'}</section>`;
     return;
@@ -698,7 +699,7 @@ function newTaskCycle(uid, reason, current = {}) {
   const fallbackAgentUid = clean(emitter.assignedAgentUid || current.assignedAgentUid || defaultAgentUid(), 160);
   const fallbackAgent = availableAgents().find(agent => agent.uid === fallbackAgentUid);
   const fallbackAgentName = clean(emitter.assignedAgentName || current.assignedAgentName || fallbackAgent?.name || 'Responsable de Casa', 80);
-  return { uid, housePosition: 'emitter', assignedAgentUid: fallbackAgentUid, assignedAgentName: fallbackAgentName, taskState: 'active', completionState: 'in_progress', cycleDurationHours: 24, cycleStartedAtClient: now, cycleEndsAtClient: now + DAY_MS, cycleKey: `24h-${now}`, cycleNumber: Math.max(1, Number(current.cycleNumber || 0) + 1), liveSeconds: 0, houseRoomSeconds: 0, totalTargetMinutes: 60, dailyHours: 1, hourlyRewardJems: 2000, taskTierCode: 'BASE', claimedHourSlots: [], claimedHours: 0, hourlyClaims: {}, reviewStatus: 'pending', activatedReason: reason, activatedAtClient: Number(current.activatedAtClient || now), updatedAt: state.services.serverTimestamp() };
+  return { uid, housePosition: 'emitter', assignedAgentUid: fallbackAgentUid, assignedAgentName: fallbackAgentName, taskState: 'active', completionState: 'in_progress', cycleDurationHours: 24, cycleStartedAtClient: now, cycleEndsAtClient: now + DAY_MS, cycleKey: `24h-${now}`, cycleNumber: Math.max(1, Number(current.cycleNumber || 0) + 1), liveSeconds: 0, houseRoomSeconds: 0, totalTargetMinutes: 60, dailyHours: 1, hourlyRewardJems: 2000, liveHourlyRewardJems: 2000, audioRoomHourlyRewardJems: 800, rewardRatePolicy: 'mode_specific_v1', taskTierCode: 'BASE', claimedHourSlots: [], claimedHours: 0, hourlyClaims: {}, reviewStatus: 'pending', activatedReason: reason, activatedAtClient: Number(current.activatedAtClient || now), updatedAt: state.services.serverTimestamp() };
 }
 
 async function activateTask(uid, reason = 'emitter_assigned', force = false) {

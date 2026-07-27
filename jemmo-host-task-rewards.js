@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · CRONÓMETRO VISIBLE Y ESTADO ACTIVO PRUEBA 36
+/* JEMMO LIVE V1 · TARIFAS POR MODALIDAD Y SILENCIO MODERADO PRUEBA 37
    Tareas exclusivas de Emisoras formalmente asignadas a una Casa.
    Cada hora se cobra por separado. El nivel usa únicamente el 70% neto de regalos de Casa.
    MODO DE PRUEBAS: antes de producción, cálculo y abono deben validarse en backend. */
@@ -6,7 +6,7 @@
   'use strict';
   if (window.JemmoHostTaskRewards?.version) return;
 
-  const VERSION = '36.0-test';
+  const VERSION = '37.0-test';
   const params = new URLSearchParams(location.search);
   const isHouseRoom = location.pathname.toLowerCase().endsWith('salas.html') && (
     params.get('houseRoom') === '1' ||
@@ -24,6 +24,7 @@
   };
 
   const HOUR_SECONDS = 3600;
+  const AUDIO_ROOM_REWARD = 800;
   const TIERS = Object.freeze([
     { code: 'BASE', target: 0, reward: 2000, hours: 1, label: 'Inicial' },
     { code: 'I', target: 150000, reward: 3000, hours: 2, label: 'Nivel I' },
@@ -45,7 +46,7 @@
 
   // La utilidad clean debe existir antes de resolver la Casa. En PRUEBA 33
   // se invocaba antes de inicializarse y el módulo se detenía con ReferenceError.
-  window.__JEMMO_TASK_UI_OWNER__ = 'rewards-36-loading';
+  window.__JEMMO_TASK_UI_OWNER__ = 'rewards-37-loading';
 
   let servicesPromise = null;
   let user = null;
@@ -116,7 +117,9 @@
   }
   function activityLabel() {
     if (activity.status === 'active') {
-      const seat = activity.seat || roomControlState().localSeat || 0;
+      const controls = roomControlState();
+      const seat = activity.seat || controls.localSeat || 0;
+      if (controls.moderatedMuted === true) return `ACTIVA · SILENCIO DE MODERACIÓN${seat ? ` · SILLA ${seat}` : ''}`;
       return `ACTIVA · CONTANDO${seat ? ` EN SILLA ${seat}` : ''}`;
     }
     const controls = roomControlState();
@@ -163,12 +166,56 @@
     return [...new Set(raw.map(number).filter(slot => slot >= 1 && slot <= 4))].sort((a, b) => a - b);
   };
   const hourlyClaims = value => value?.hourlyClaims && typeof value.hourlyClaims === 'object' ? value.hourlyClaims : {};
-  const completedHours = value => Math.floor(totalSeconds(value) / HOUR_SECONDS);
-  const nextClaimableSlot = (value, tier) => {
+  const normalizeTaskMode = value => {
+    const mode = normalizeRole(value);
+    if (['house_room', 'audio_room', 'audio', 'sala', 'sala_oficial'].includes(mode)) return 'house_room';
+    if (['live', 'video_live', 'directo'].includes(mode)) return 'live';
+    return '';
+  };
+  const modeLabel = mode => { const normalized = normalizeTaskMode(mode); return normalized === 'house_room' ? 'AUDIO ROOM' : normalized === 'live' ? 'LIVE' : 'TAREA ANTERIOR'; };
+  const rewardForMode = (mode, tier) => normalizeTaskMode(mode) === 'house_room' ? AUDIO_ROOM_REWARD : number(tier?.reward || 2000);
+  const completedModeHours = value => ({
+    live: Math.floor(number(value?.liveSeconds) / HOUR_SECONDS),
+    house_room: Math.floor(number(value?.houseRoomSeconds) / HOUR_SECONDS)
+  });
+  const claimedModeCounts = value => {
+    const counts = { live: 0, house_room: 0, legacy: 0 };
+    const claims = hourlyClaims(value);
+    for (const slot of claimedSlots(value)) {
+      const mode = normalizeTaskMode(claims[`h${slot}`]?.taskMode);
+      if (mode) counts[mode] += 1;
+      else counts.legacy += 1;
+    }
+    return counts;
+  };
+  const nextDailySlot = (value, tier) => {
     const paid = new Set(claimedSlots(value));
-    const available = Math.min(completedHours(value), tier.hours);
-    for (let slot = 1; slot <= available; slot += 1) if (!paid.has(slot)) return slot;
+    for (let slot = 1; slot <= tier.hours; slot += 1) if (!paid.has(slot)) return slot;
     return 0;
+  };
+  const claimableModes = (value, tier) => {
+    if (claimedSlots(value).filter(slot => slot <= tier.hours).length >= tier.hours) return [];
+    const completed = completedModeHours(value);
+    const claimed = claimedModeCounts(value);
+    const modes = [];
+    if (completed.live > claimed.live) modes.push('live');
+    if (completed.house_room > claimed.house_room) modes.push('house_room');
+    return modes;
+  };
+  const completedPayableHours = value => {
+    const completed = completedModeHours(value);
+    return completed.live + completed.house_room;
+  };
+  const qualifyingSeconds = (value, tier) => {
+    const live = number(value?.liveSeconds), room = number(value?.houseRoomSeconds);
+    const complete = Math.floor(live / HOUR_SECONDS) + Math.floor(room / HOUR_SECONDS);
+    const partial = Math.max(live % HOUR_SECONDS, room % HOUR_SECONDS);
+    return Math.min(tier.hours * HOUR_SECONDS, complete * HOUR_SECONDS + partial);
+  };
+  const minutesToNextModeHour = value => {
+    const liveRemainder = number(value?.liveSeconds) % HOUR_SECONDS;
+    const roomRemainder = number(value?.houseRoomSeconds) % HOUR_SECONDS;
+    return Math.max(1, Math.ceil(Math.min(HOUR_SECONDS - liveRemainder, HOUR_SECONDS - roomRemainder) / 60));
   };
   const normalizeRole = value => clean(value, 40).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   const emitterRoles = new Set(['emitter', 'emisor', 'emisora', 'host', 'streamer', 'creator', 'creador', 'creadora']);
@@ -315,6 +362,9 @@
           dailyHours: tier.hours,
           totalTargetMinutes: tier.hours * 60,
           hourlyRewardJems: tier.reward,
+        liveHourlyRewardJems: tier.reward,
+        audioRoomHourlyRewardJems: AUDIO_ROOM_REWARD,
+        rewardRatePolicy: 'mode_specific_v1',
           taskTierCode: tier.code,
           claimedHourSlots: [],
           claimedHours: 0,
@@ -407,11 +457,11 @@
       .jr-task-progress-title{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.jr-task-progress-title b{display:block;margin-top:4px;font-size:18px}.jr-task-progress-title em{font-style:normal;color:#ffe843;font-weight:900}.jr-task-progress-card>i,.jr-task-tier-card>i{display:block;height:9px;margin:12px 0;border-radius:999px;background:#24152f;overflow:hidden}.jr-task-progress-card>i span,.jr-task-tier-card>i span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#9e37e8,#ffe946)}
       .jr-task-split{display:grid;grid-template-columns:1fr 1fr;gap:8px}.jr-task-split span{padding:10px;border-radius:13px;background:rgba(255,255,255,.055)}.jr-task-split small{display:block;color:#a995b7;font-size:9px}.jr-task-split b{display:block;margin-top:3px;font-size:13px}.jr-task-progress-card p,.jr-task-tier-card p,.jr-task-rule{margin:10px 0 0;color:#bfaec8;font-size:11px;line-height:1.45}
       .jr-task-hours{display:grid;gap:8px}.jr-task-hour{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:11px 12px;border:1px solid rgba(255,255,255,.1);border-radius:14px;background:#0e0915}.jr-task-hour>span{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#271434;color:#ffe843;font-weight:900}.jr-task-hour b{display:block;font-size:13px}.jr-task-hour small{display:block;margin-top:2px;color:#a995b7;font-size:10px}.jr-task-hour em{font-style:normal;font-size:10px;font-weight:900;color:#a995b7}.jr-task-hour.ready{border-color:#ffe843;box-shadow:0 0 16px rgba(255,232,67,.12)}.jr-task-hour.ready em{color:#ffe843}.jr-task-hour.paid{border-color:rgba(73,229,154,.48);background:rgba(21,89,58,.22)}.jr-task-hour.paid em{color:#49e59a}
-      .jr-task-claim{width:100%;min-height:52px;border:0;border-radius:15px;background:linear-gradient(90deg,#9c31df,#f4d936);color:#100713;font-weight:1000;font-size:13px;letter-spacing:.4px}.jr-task-claim:disabled{opacity:.46;filter:saturate(.45)}.jr-task-claim.claimed{background:#183a2c;color:#55e8a3}
+      .jr-task-claim{width:100%;min-height:52px;border:0;border-radius:15px;background:linear-gradient(90deg,#9c31df,#f4d936);color:#100713;font-weight:1000;font-size:13px;letter-spacing:.4px}.jr-task-claim:disabled{opacity:.46;filter:saturate(.45)}.jr-task-claim.claimed{background:#183a2c;color:#55e8a3}.jr-task-claim-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.jr-task-claim-grid.single{grid-template-columns:1fr}.jr-task-rate-pair{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.jr-task-rate-pair span{padding:11px;border-radius:12px;background:rgba(255,255,255,.055)}.jr-task-rate-pair small{display:block;color:#c5b4cc;font-size:9px}.jr-task-rate-pair b{display:block;margin-top:3px;font-size:17px;color:#f3df4c}.jr-task-mode-note{margin-top:8px!important;color:#cabbd0!important}
       .jr-task-tier-card{display:grid;grid-template-columns:1fr auto;gap:8px}.jr-task-tier-card>div b{display:block;margin-top:4px}.jr-task-tier-card>div span{display:block;margin-top:3px;color:#bfaec8;font-size:11px}.jr-task-tier-card>em{font-style:normal;color:#ffe843;font-weight:900}.jr-task-tier-card>i,.jr-task-tier-card>p{grid-column:1/-1}
       .jr-task-window-card{display:grid;gap:8px}.jr-task-window-row{display:grid;grid-template-columns:1fr auto;gap:10px;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.045)}.jr-task-window-row b{font-size:12px}.jr-task-window-row span{color:#a995b7;font-size:10px}.jr-task-window-row em{font-style:normal;color:#f4dd4c;font-weight:900;font-size:12px}
       .jr-task-levels{border:1px solid rgba(255,255,255,.11);border-radius:15px;background:#0d0913;overflow:hidden}.jr-task-levels summary{cursor:pointer;padding:13px 14px;color:#f1de4b;font-size:11px;font-weight:900}.jr-task-levels>div{display:grid;gap:6px;padding:0 10px 12px}.jr-task-levels span{display:grid;grid-template-columns:48px 1fr auto;gap:8px;align-items:center;padding:9px;border-radius:11px;background:rgba(255,255,255,.04)}.jr-task-levels span.active{outline:1px solid #f0d941;background:rgba(240,217,65,.09)}.jr-task-levels b{font-size:11px}.jr-task-levels small{color:#bbaac4;font-size:10px}.jr-task-levels em{font-style:normal;text-align:right;color:#f1df4b;font-size:10px;font-weight:900}
-      @media(max-width:380px){.jr-task-sheet{padding-left:11px;padding-right:11px}.jr-task-levels span{grid-template-columns:42px 1fr}.jr-task-levels em{grid-column:2;text-align:left}}
+      @media(max-width:380px){.jr-task-claim-grid,.jr-task-rate-pair{grid-template-columns:1fr}.jr-task-sheet{padding-left:11px;padding-right:11px}.jr-task-levels span{grid-template-columns:42px 1fr}.jr-task-levels em{grid-column:2;text-align:left}}
     `;
     document.head.appendChild(style);
   }
@@ -502,8 +552,8 @@
     box.classList.toggle('waiting', !isCounting && !allPaid);
     box.classList.toggle('done', allPaid);
     if (label) label.textContent = allPaid ? 'TAREA DIARIA COBRADA' : isCounting ? 'MI TAREA · ACTIVA AHORA' : 'MI TAREA · PAUSADA';
-    count.textContent = `${fmt(tier.reward)} JEMS/HORA`;
-    mini.textContent = `${activityLabel()} · ${wakeLabel()}`;
+    count.textContent = `${fmt(AUDIO_ROOM_REWARD)} JEMS/HORA`;
+    mini.textContent = `AUDIO ROOM · ${activityLabel()} · ${wakeLabel()}`;
   }
 
   function render() {
@@ -518,30 +568,39 @@
     const tier = currentTier(giftNet7d);
     const next = nextTier(giftNet7d);
     const viewTask = projectedTask();
-    const seconds = totalSeconds(viewTask);
+    const seconds = qualifyingSeconds(viewTask, tier);
     const targetSeconds = tier.hours * HOUR_SECONDS;
     const progress = Math.min(100, Math.floor(seconds / targetSeconds * 100));
     const giftProgress = next ? Math.min(100, Math.floor(giftNet7d / next.target * 100)) : 100;
     const paidSlots = claimedSlots(task);
     const paidSet = new Set(paidSlots);
-    const claimable = nextClaimableSlot(task, tier);
+    const availableModes = claimableModes(viewTask, tier);
     const paidForTier = paidSlots.filter(slot => slot <= tier.hours).length;
     const allPaid = paidForTier >= tier.hours;
     const active = clean(task.taskState, 20) === 'active';
-    const nextNeededHour = Math.min(tier.hours, paidForTier + 1);
-    const secondsNeededForNext = Math.max(0, nextNeededHour * HOUR_SECONDS - seconds);
-    const minutesNeeded = Math.ceil(secondsNeededForNext / 60);
-    const nextText = next ? `Faltan ${fmt(Math.max(0, next.target - giftNet7d))} JEMS netos para ${fmt(next.reward)} JEMS/h y ${next.hours} horas diarias.` : 'Has alcanzado el nivel máximo.';
+    const nextSlot = nextDailySlot(task, tier);
+    const minutesNeeded = minutesToNextModeHour(viewTask);
+    const nextText = next
+      ? `Faltan ${fmt(Math.max(0, next.target - giftNet7d))} JEMS netos para LIVE a ${fmt(next.reward)} JEMS/h y ${next.hours} horas diarias. Audio Room permanece siempre en ${fmt(AUDIO_ROOM_REWARD)} JEMS/h.`
+      : `Has alcanzado el nivel máximo. Audio Room permanece siempre en ${fmt(AUDIO_ROOM_REWARD)} JEMS/h.`;
 
     const hoursHtml = Array.from({ length: tier.hours }, (_, index) => {
       const slot = index + 1;
       const paid = paidSet.has(slot);
-      const ready = !paid && seconds >= slot * HOUR_SECONDS;
-      const stateClass = paid ? 'paid' : ready ? 'ready' : '';
-      const stateText = paid ? 'COBRADA' : ready ? 'LISTA PARA COBRAR' : `${Math.min(60, Math.floor(Math.max(0, seconds - index * HOUR_SECONDS) / 60))}/60 MIN`;
       const claim = hourlyClaims(task)[`h${slot}`] || {};
-      const amount = number(claim.rewardJems || tier.reward);
-      return `<div class="jr-task-hour ${stateClass}"><span>${slot}</span><div><b>HORA ${slot} · ${fmt(tier.reward)} JEMS</b><small>${paid ? `Abonada: ${fmt(amount)} JEMS` : '60 minutos activos combinando LIVE y Sala oficial'}</small></div><em>${stateText}</em></div>`;
+      const paidMode = normalizeTaskMode(claim.taskMode);
+      const amount = number(claim.rewardJems || (paidMode ? rewardForMode(paidMode, tier) : 0));
+      const ready = !paid && slot === nextSlot && availableModes.length > 0;
+      const stateClass = paid ? 'paid' : ready ? 'ready' : '';
+      const bestProgress = Math.min(60, Math.floor(Math.max(number(viewTask.liveSeconds) % HOUR_SECONDS, number(viewTask.houseRoomSeconds) % HOUR_SECONDS) / 60));
+      const stateText = paid ? 'COBRADA' : ready ? `LISTA · ${availableModes.map(modeLabel).join(' / ')}` : `${bestProgress}/60 MIN`;
+      const title = paid
+        ? `HORA ${slot} · ${modeLabel(paidMode)} · ${fmt(amount)} JEMS`
+        : `HORA ${slot} · LIVE ${fmt(tier.reward)} / AUDIO ${fmt(AUDIO_ROOM_REWARD)}`;
+      const detail = paid
+        ? `Abonada: ${fmt(amount)} JEMS · hora ${number(claim.modeHourNumber || 1)} de ${modeLabel(paidMode)}`
+        : 'Completa 60 minutos dentro de LIVE o dentro de Audio Room. Los minutos parciales de modalidades distintas no se mezclan.';
+      return `<div class="jr-task-hour ${stateClass}"><span>${slot}</span><div><b>${title}</b><small>${detail}</small></div><em>${stateText}</em></div>`;
     }).join('');
 
     const bucketsHtml = giftBuckets.map(bucket => {
@@ -550,37 +609,41 @@
       return `<div class="jr-task-window-row"><div><b>${formatDay(bucket.startedAt)}</b><span>Cuenta hasta terminar ${formatDay(expires.getTime())}</span></div><em>${fmt(bucket.amount)} JEMS</em></div>`;
     }).join('');
 
-    const buttonText = allPaid
-      ? `TODAS LAS HORAS COBRADAS · ${fmt(paidSlots.reduce((sum, slot) => sum + number(hourlyClaims(task)[`h${slot}`]?.rewardJems), 0))} JEMS`
-      : claimable
-        ? `COBRAR HORA ${claimable} · ${fmt(tier.reward)} JEMS`
-        : `FALTAN ${minutesNeeded} MIN PARA LA HORA ${nextNeededHour}`;
+    const paidTotal = paidSlots.reduce((sum, slot) => sum + number(hourlyClaims(task)[`h${slot}`]?.rewardJems), 0);
+    let claimButtons = '';
+    if (allPaid) {
+      claimButtons = `<button class="jr-task-claim claimed" type="button" disabled>TODAS LAS HORAS COBRADAS · ${fmt(paidTotal)} JEMS</button>`;
+    } else if (availableModes.length) {
+      claimButtons = availableModes.map(mode => `<button class="jr-task-claim" data-claim-mode="${mode}" type="button" ${!active || claiming ? 'disabled' : ''}>COBRAR HORA ${modeLabel(mode)} · ${fmt(rewardForMode(mode, tier))} JEMS</button>`).join('');
+    } else {
+      claimButtons = `<button class="jr-task-claim" type="button" disabled>FALTAN ${minutesNeeded} MIN PARA COMPLETAR UNA HORA</button>`;
+    }
 
     target.innerHTML = `
-      <section class="jr-task-activity-card ${activity.status === 'active' ? '' : 'paused'}"><div><b>${activityLabel()}</b><small>${activity.status === 'active' ? 'El cronómetro avanza segundo a segundo y se guarda periódicamente en Firebase.' : 'El tiempo solo suma con la Sala visible, en una silla y con micrófono real activo.'}</small></div><em>${wakeLabel()}</em></section>
+      <section class="jr-task-activity-card ${activity.status === 'active' ? '' : 'paused'}"><div><b>${activityLabel()}</b><small>${activity.status === 'active' ? (roomControlState().moderatedMuted === true ? 'La moderación ha silenciado el audio, pero la presencia en silla continúa contando.' : 'El cronómetro avanza segundo a segundo y se guarda periódicamente en Firebase.') : 'El tiempo solo suma con la Sala visible, en una silla y con micrófono real activo.'}</small></div><em>${wakeLabel()}</em></section>
       <section class="jr-task-reward-card">
-        <small>PAGO ACTUAL POR CADA HORA</small>
-        <strong>${fmt(tier.reward)} <em>JEMS/HORA</em></strong>
-        <span>Nivel ${tier.code}: hasta ${tier.hours} cobro${tier.hours === 1 ? '' : 's'} diario${tier.hours === 1 ? '' : 's'}, uno por cada bloque completo de 60 minutos.</span>
+        <small>TARIFAS DE TAREA · NIVEL ${tier.code}</small>
+        <div class="jr-task-rate-pair"><span><small>LIVE</small><b>${fmt(tier.reward)} JEMS/HORA</b></span><span><small>AUDIO ROOM · FIJO</small><b>${fmt(AUDIO_ROOM_REWARD)} JEMS/HORA</b></span></div>
+        <p class="jr-task-mode-note">El nivel modifica el precio de LIVE y el número de horas diarias. Audio Room nunca cambia de precio: cada hora completa paga ${fmt(AUDIO_ROOM_REWARD)} JEMS.</p>
       </section>
       <section class="jr-task-progress-card">
-        <div class="jr-task-progress-title"><div><small>PROGRESO DEL CICLO DE 24 HORAS</small><b>${formatClock(seconds)} / ${formatClock(targetSeconds)}</b></div><em>${progress}%</em></div>
+        <div class="jr-task-progress-title"><div><small>PROGRESO VÁLIDO DEL CICLO DE 24 HORAS</small><b>${formatClock(seconds)} / ${formatClock(targetSeconds)}</b></div><em>${progress}%</em></div>
         <i><span style="width:${progress}%"></span></i>
-        <div class="jr-task-split"><span><small>LIVE ACTIVO</small><b>${formatClock(viewTask.liveSeconds)}</b></span><span><small>AUDIO ROOM EN SILLA</small><b>${formatClock(viewTask.houseRoomSeconds)}</b></span></div>
-        <p>Escuchar abajo no suma. Cada hora completa se cobra de forma independiente y las siguientes horas continúan acumulándose.</p>
+        <div class="jr-task-split"><span><small>LIVE ACTIVO · ${fmt(tier.reward)}/H</small><b>${formatClock(viewTask.liveSeconds)}</b></span><span><small>AUDIO ROOM · ${fmt(AUDIO_ROOM_REWARD)}/H</small><b>${formatClock(viewTask.houseRoomSeconds)}</b></span></div>
+        <p>Escuchar abajo no suma. Cada bloque remunerado exige 60 minutos completos en la misma modalidad.</p>
       </section>
       <section class="jr-task-hours">${hoursHtml}</section>
-      <button class="jr-task-claim ${allPaid ? 'claimed' : ''}" id="jemmoHostTaskClaim" type="button" ${!active || !claimable || claiming ? 'disabled' : ''}>${buttonText}</button>
+      <div class="jr-task-claim-grid ${availableModes.length < 2 ? 'single' : ''}">${claimButtons}</div>
       <section class="jr-task-tier-card">
         <div><small>NIVEL ACTUAL · VENTANA MÓVIL</small><b>${tier.label} · ${tier.code}</b><span>${fmt(giftNet7d)} JEMS netos de regalos de Casa durante 7 días naturales</span></div>
-        <em>${fmt(tier.reward)}/h · ${tier.hours}h</em>
+        <em>LIVE ${fmt(tier.reward)}/h · AUDIO ${fmt(AUDIO_ROOM_REWARD)}/h · ${tier.hours}h/día</em>
         <i><span style="width:${giftProgress}%"></span></i>
         <p>${nextText}</p>
       </section>
       <section class="jr-task-window-card"><small>DESGLOSE DE LOS 7 DÍAS QUE CUENTAN AHORA</small>${bucketsHtml}</section>
       <p class="jr-task-rule">Solo cuentan regalos enviados mientras eres Emisora de esta Casa. De cada regalo: 70% Emisora, 20% JEMMO LIVE y 10% Casa/agente. Para tu nivel cuenta exclusivamente tu 70% neto. Una Emisora independiente recibe 70/30, pero no tiene tareas.</p>
-      <details class="jr-task-levels"><summary>VER TODA LA ESCALA</summary><div>${TIERS.map(item => `<span class="${item.code === tier.code ? 'active' : ''}"><b>${item.code}</b><small>${fmt(item.target)} netos</small><em>${fmt(item.reward)}/h · ${item.hours}h/día</em></span>`).join('')}</div></details>`;
-    $('jemmoHostTaskClaim')?.addEventListener('click', () => void claimReward());
+      <details class="jr-task-levels"><summary>VER TODA LA ESCALA</summary><div>${TIERS.map(item => `<span class="${item.code === tier.code ? 'active' : ''}"><b>${item.code}</b><small>${fmt(item.target)} netos</small><em>LIVE ${fmt(item.reward)}/h · AUDIO ${fmt(AUDIO_ROOM_REWARD)}/h · ${item.hours}h/día</em></span>`).join('')}</div></details>`;
+    target.querySelectorAll('[data-claim-mode]').forEach(button => button.addEventListener('click', () => void claimReward(button.dataset.claimMode)));
   }
 
   function syncClaimedRewardsToWallet() {
@@ -595,7 +658,7 @@
       window.JemmoWallet?.addJems?.(amount, {
         type: 'task-reward',
         title: `Hora ${slot} de tarea de Emisora`,
-        detail: `60 minutos · Nivel ${clean(claim.taskTierCode || task.taskTierCode || 'BASE', 10)}`,
+        detail: `60 minutos · ${modeLabel(claim.taskMode)} · Nivel ${clean(claim.taskTierCode || task.taskTierCode || 'BASE', 10)}`,
         source: 'host-task-hour-sync',
         idempotencyKey: `host-task:${houseId}:${user.uid}:${key}:hour:${slot}`
       });
@@ -606,7 +669,7 @@
     if (!emitter || !user || !houseId || !task.cycleStartedAtClient) return;
     const tier = currentTier(giftNet7d);
     const paid = claimedSlots(task);
-    const signature = `${cycleKey(task)}:${giftNet7d}:${tier.code}:${tier.reward}:${tier.hours}:${paid.join(',')}`;
+    const signature = `${cycleKey(task)}:${giftNet7d}:${tier.code}:${tier.reward}:${AUDIO_ROOM_REWARD}:${tier.hours}:${paid.join(',')}`;
     if (signature === lastTierSignature) return;
     lastTierSignature = signature;
     try {
@@ -627,6 +690,9 @@
         taskTierCode: tier.code,
         taskTierLabel: tier.label,
         hourlyRewardJems: tier.reward,
+        liveHourlyRewardJems: tier.reward,
+        audioRoomHourlyRewardJems: AUDIO_ROOM_REWARD,
+        rewardRatePolicy: 'mode_specific_v1',
         rewardClaimed: paid.filter(slot => slot <= tier.hours).length >= tier.hours,
         tierUpdatedAtClient: Date.now(),
         tierUpdatedAt: s.serverTimestamp(),
@@ -638,8 +704,9 @@
     }
   }
 
-  async function claimReward() {
-    if (claiming || !emitter || !user || !houseId) return;
+  async function claimReward(requestedMode) {
+    const requested = normalizeTaskMode(requestedMode);
+    if (claiming || !requested || !emitter || !user || !houseId) return;
     claiming = true;
     render();
     try {
@@ -653,9 +720,14 @@
         const current = taskSnap.data() || {};
         const key = cycleKey(current);
         if (!key) throw new Error('La tarea todavía no tiene un ciclo activo.');
-        const slot = nextClaimableSlot(current, tier);
-        if (!slot) throw new Error('Todavía no existe una hora nueva disponible para cobrar.');
-        const rewardId = `${key}-hour-${slot}`;
+        const slot = nextDailySlot(current, tier);
+        if (!slot) throw new Error('Ya has cobrado todas las horas disponibles de este nivel.');
+        const modes = claimableModes(current, tier);
+        if (!modes.includes(requested)) throw new Error(`Todavía no has completado una hora entera en ${modeLabel(requested)}.`);
+        const claimedByMode = claimedModeCounts(current);
+        const modeHourNumber = claimedByMode[requested] + 1;
+        const amount = rewardForMode(requested, tier);
+        const rewardId = `${key}-${requested}-hour-${modeHourNumber}`;
         const rewardRef = s.doc(s.db, 'users', user.uid, 'recompensasTareas', rewardId);
         const rewardSnap = await transaction.get(rewardRef);
         if (rewardSnap.exists()) {
@@ -663,11 +735,13 @@
           return;
         }
 
-        const amount = tier.reward;
         const common = {
           rewardId,
           cycleKey: key,
           hourSlot: slot,
+          taskMode: requested,
+          taskModeLabel: modeLabel(requested),
+          modeHourNumber,
           houseId,
           uid: user.uid,
           displayName: clean(profile.displayName || user.displayName || 'Emisora JEMMO', 60),
@@ -680,12 +754,15 @@
           dailyHours: tier.hours,
           liveSeconds: number(current.liveSeconds),
           houseRoomSeconds: number(current.houseRoomSeconds),
+          liveHourlyRewardJems: tier.reward,
+          audioRoomHourlyRewardJems: AUDIO_ROOM_REWARD,
+          rewardRatePolicy: 'mode_specific_v1',
           rewardJems: amount,
           status: 'confirmed',
           claimedAtClient: Date.now(),
           claimedAt: s.serverTimestamp(),
           simulation: true,
-          schemaVersion: 2
+          schemaVersion: 3
         };
         transaction.set(rewardRef, common);
         transaction.set(s.doc(s.db, 'casas', houseId, 'recompensasTareas', `${user.uid}_${rewardId}`), common);
@@ -695,6 +772,9 @@
         slots.sort((a, b) => a - b);
         const claims = { ...hourlyClaims(current), [`h${slot}`]: {
           hourSlot: slot,
+          taskMode: requested,
+          taskModeLabel: modeLabel(requested),
+          modeHourNumber,
           rewardJems: amount,
           taskTierCode: tier.code,
           taskTierLabel: tier.label,
@@ -704,7 +784,7 @@
         const totalClaimed = number(current.rewardTotalClaimed) + amount;
         const allPaid = slots.filter(value => value <= tier.hours).length >= tier.hours;
         transaction.set(taskRef, {
-          completionState: allPaid ? 'paid' : totalSeconds(current) >= tier.hours * HOUR_SECONDS ? 'completed' : 'in_progress',
+          completionState: allPaid ? 'paid' : completedPayableHours(current) >= tier.hours ? 'completed' : 'in_progress',
           claimedHourSlots: slots,
           claimedHours: slots.length,
           hourlyClaims: claims,
@@ -713,6 +793,10 @@
           rewardTotalClaimed: totalClaimed,
           lastRewardAmount: amount,
           lastRewardHourSlot: slot,
+          lastRewardTaskMode: requested,
+          liveHourlyRewardJems: tier.reward,
+          audioRoomHourlyRewardJems: AUDIO_ROOM_REWARD,
+          rewardRatePolicy: 'mode_specific_v1',
           rewardTierCode: tier.code,
           rewardGiftNet7d: giftNet7d,
           rewardClaimedAtClient: Date.now(),
@@ -723,6 +807,8 @@
           taskRewardsCount: s.increment(1),
           taskHoursPaid: s.increment(1),
           taskJemsConfirmed: s.increment(amount),
+          [`taskHoursPaid_${requested}`]: s.increment(1),
+          [`taskJemsConfirmed_${requested}`]: s.increment(amount),
           lastTaskRewardAtClient: Date.now(),
           lastTaskRewardAt: s.serverTimestamp(),
           updatedAt: s.serverTimestamp(),
@@ -734,30 +820,33 @@
           actorUid: user.uid,
           cycleKey: key,
           hourSlot: slot,
+          taskMode: requested,
+          modeHourNumber,
           rewardJems: amount,
           taskTierCode: tier.code,
           giftNet7d,
           createdAtClient: Date.now(),
           createdAt: s.serverTimestamp(),
           simulation: true,
-          schemaVersion: 2
+          schemaVersion: 3
         });
         result = common;
       });
 
-      const amount = number(result?.rewardJems || tier.reward);
+      const amount = number(result?.rewardJems || rewardForMode(requested, tier));
       const key = clean(result?.cycleKey || cycleKey(task), 100);
       const slot = number(result?.hourSlot);
+      const mode = normalizeTaskMode(result?.taskMode || requested);
       window.JemmoWallet?.addJems?.(amount, {
         type: 'task-reward',
-        title: `Hora ${slot} de tarea de Emisora`,
-        detail: `60 minutos · Nivel ${clean(result?.taskTierCode || tier.code, 10)}`,
+        title: `Hora ${slot} de tarea · ${modeLabel(mode)}`,
+        detail: `60 minutos · ${modeLabel(mode)} · Nivel ${clean(result?.taskTierCode || tier.code, 10)}`,
         source: 'host-task-hour-reward',
         idempotencyKey: `host-task:${houseId}:${user.uid}:${key}:hour:${slot}`
       });
-      window.dispatchEvent(new CustomEvent('jemmo-host-task-reward', { detail: { houseId, uid: user.uid, rewardJems: amount, cycleKey: key, hourSlot: slot } }));
-      if (window.toast) window.toast(`Hora ${slot} cobrada: +${fmt(amount)} JEMS.`);
-      else alert(`Hora ${slot} cobrada: +${fmt(amount)} JEMS.`);
+      window.dispatchEvent(new CustomEvent('jemmo-host-task-reward', { detail: { houseId, uid: user.uid, rewardJems: amount, cycleKey: key, hourSlot: slot, taskMode: mode } }));
+      if (window.toast) window.toast(`Hora de ${modeLabel(mode)} cobrada: +${fmt(amount)} JEMS.`);
+      else alert(`Hora de ${modeLabel(mode)} cobrada: +${fmt(amount)} JEMS.`);
     } catch (error) {
       const message = clean(error?.message || 'No se pudo cobrar esta hora.', 180);
       if (window.toast) window.toast(message);
@@ -898,7 +987,10 @@
     tiers: TIERS,
     currentTier,
     nextTier,
-    nextClaimableSlot,
+    nextDailySlot,
+    claimableModes,
+    completedModeHours,
+    rewardForMode,
     claimedSlots,
     giftWindowStart,
     open: openSheet,

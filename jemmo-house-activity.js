@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · ACTIVIDAD VISIBLE Y CRONÓMETRO REAL PRUEBA 36
-   Registra tiempo LIVE y tiempo real sentado en Sala oficial con sesión, lease e idempotencia.
+/* JEMMO LIVE V1 · ACTIVIDAD POR MODALIDAD Y SILENCIO MODERADO PRUEBA 37
+   Registra LIVE y Audio Room por separado, con lease e idempotencia; el silencio impuesto por moderación no penaliza la tarea.
    Solo funciona para Emisoras formalmente asignadas a una Casa. */
 (() => {
   'use strict';
@@ -79,7 +79,7 @@
     // PRUEBA 36: la Sala oficial es 24/7. No se exige que un propietario mantenga
     // una sesión WebRTC abierta. Sí se exige silla, micrófono encendido y una pista
     // de audio local realmente viva; estar abajo o simular el botón no suma.
-    return roomVisible&&seatState?.houseSeatActive===true&&seatState?.micEnabled===true&&seatState?.mediaActive===true;
+    return roomVisible&&seatState?.houseSeatActive===true&&seatState?.taskMediaActive===true;
   }
   function inactiveReason(){
     if(document.hidden)return'background';
@@ -87,12 +87,13 @@
     if(activityType==='live')return'inactive';
     const state=window.JemmoHouseRoomControls?.getState?.()||{};
     if(state.houseSeatActive!==true)return'listener';
+    if(state.moderatedMuted===true&&state.taskMediaActive===true)return'moderation_mute';
     if(state.micEnabled!==true)return'muted';
-    if(state.mediaActive!==true)return'microphone_unavailable';
+    if(state.taskMediaActive!==true)return'microphone_unavailable';
     return'waiting';
   }
 
-  function cyclePayload(now,reason,current={}){return{uid:user.uid,displayName:clean(profile.displayName||user.displayName||user.email?.split('@')[0]||'Usuario JEMMO',48),publicId:clean(profile.publicId,48),accountRole:clean(profile.role||profile.rol||member.accountRole||'emisor',30),housePosition:'emitter',assignedAgentUid:assignedAgentUid(),taskState:'active',completionState:'in_progress',cycleDurationHours:24,cycleStartedAtClient:now,cycleEndsAtClient:now+DAY_MS,cycleKey:`24h-${now}`,cycleNumber:Math.max(1,Number(current.cycleNumber||0)+1),liveSeconds:0,houseRoomSeconds:0,totalTargetMinutes:60,dailyHours:1,hourlyRewardJems:2000,taskTierCode:'BASE',giftWindowDays:7,claimedHourSlots:[],claimedHours:0,hourlyClaims:{},rewardClaimed:false,rewardAmount:0,rewardTotalClaimed:0,reviewStatus:'pending',activatedReason:reason,activatedAtClient:Number(current.activatedAtClient||now),updatedAt:services.serverTimestamp()}}
+  function cyclePayload(now,reason,current={}){return{uid:user.uid,displayName:clean(profile.displayName||user.displayName||user.email?.split('@')[0]||'Usuario JEMMO',48),publicId:clean(profile.publicId,48),accountRole:clean(profile.role||profile.rol||member.accountRole||'emisor',30),housePosition:'emitter',assignedAgentUid:assignedAgentUid(),taskState:'active',completionState:'in_progress',cycleDurationHours:24,cycleStartedAtClient:now,cycleEndsAtClient:now+DAY_MS,cycleKey:`24h-${now}`,cycleNumber:Math.max(1,Number(current.cycleNumber||0)+1),liveSeconds:0,houseRoomSeconds:0,totalTargetMinutes:60,dailyHours:1,hourlyRewardJems:2000,liveHourlyRewardJems:2000,audioRoomHourlyRewardJems:800,rewardRatePolicy:'mode_specific_v1',taskTierCode:'BASE',giftWindowDays:7,claimedHourSlots:[],claimedHours:0,hourlyClaims:{},rewardClaimed:false,rewardAmount:0,rewardTotalClaimed:0,reviewStatus:'pending',activatedReason:reason,activatedAtClient:Number(current.activatedAtClient||now),updatedAt:services.serverTimestamp()}}
   async function archiveAndReset(transaction,taskRef,current,now,reason){const oldStart=Number(current.cycleStartedAtClient||0);if(oldStart){const historyRef=services.doc(services.db,'casas',houseId,'historialTareas',`${user.uid}_${oldStart}`);transaction.set(historyRef,{...current,uid:user.uid,houseId,archivedAtClient:now,archivedAt:services.serverTimestamp(),archiveReason:reason},{merge:true})}const next=cyclePayload(now,reason,current);transaction.set(taskRef,next,{merge:true});cycleEndMs=next.cycleEndsAtClient;return next}
 
   async function ensureTaskCycle(reason='activity_entry'){
@@ -154,17 +155,17 @@
         const liveSeconds=Number(current.liveSeconds||0)+(activityType==='live'?delta:0);
         const roomSeconds=Number(current.houseRoomSeconds||0)+(activityType==='house_room'?delta:0);
         const totalTargetMinutes=num(current.totalTargetMinutes||taskConfig.totalTargetMinutes||60);
-        const complete=liveSeconds+roomSeconds>=totalTargetMinutes*60;
+        const payableHours=Math.floor(liveSeconds/3600)+Math.floor(roomSeconds/3600);const complete=payableHours>=Math.max(1,Math.ceil(totalTargetMinutes/60));
         transaction.set(r.session,{creditedSeconds:nextCredited,lastFlushAtClient:now,lastFlushAt:s.serverTimestamp(),updatedAt:s.serverTimestamp()},{merge:true});
         transaction.set(r.lease,{lastHeartbeatAtClient:now,leaseUntilClient:now+LEASE_MS,creditedSeconds:nextCredited,updatedAt:s.serverTimestamp()},{merge:true});
-        if(delta>0)transaction.set(r.task,{uid:user.uid,displayName:clean(profile.displayName||user.displayName||'Usuario JEMMO',48),publicId:clean(profile.publicId,48),accountRole:clean(profile.role||profile.rol||member.accountRole||'emisor',30),housePosition:'emitter',assignedAgentUid:assignedAgentUid(),taskState:'active',liveSeconds,houseRoomSeconds:roomSeconds,totalTargetMinutes,dailyHours:num(current.dailyHours||Math.max(1,Math.ceil(totalTargetMinutes/60))),hourlyRewardJems:num(current.hourlyRewardJems||2000),taskTierCode:clean(current.taskTierCode||'BASE',10),liveTargetMinutes:0,houseRoomTargetMinutes:0,completionState:complete?'completed':'in_progress',completedAtClient:complete?Number(current.completedAtClient||now):0,lastActivityType:activityType,lastActivitySessionId:sessionId,lastActivityAtClient:now,lastActivityAt:s.serverTimestamp(),updatedAt:s.serverTimestamp(),reviewStatus:clean(current.reviewStatus||'pending',20)},{merge:true});
+        if(delta>0)transaction.set(r.task,{uid:user.uid,displayName:clean(profile.displayName||user.displayName||'Usuario JEMMO',48),publicId:clean(profile.publicId,48),accountRole:clean(profile.role||profile.rol||member.accountRole||'emisor',30),housePosition:'emitter',assignedAgentUid:assignedAgentUid(),taskState:'active',liveSeconds,houseRoomSeconds:roomSeconds,totalTargetMinutes,dailyHours:num(current.dailyHours||Math.max(1,Math.ceil(totalTargetMinutes/60))),hourlyRewardJems:num(current.liveHourlyRewardJems||current.hourlyRewardJems||2000),liveHourlyRewardJems:num(current.liveHourlyRewardJems||current.hourlyRewardJems||2000),audioRoomHourlyRewardJems:800,rewardRatePolicy:'mode_specific_v1',taskTierCode:clean(current.taskTierCode||'BASE',10),liveTargetMinutes:0,houseRoomTargetMinutes:0,completionState:complete?'completed':'in_progress',completedAtClient:complete?Number(current.completedAtClient||now):0,lastActivityType:activityType,lastActivityModeratedMute:Boolean(window.JemmoHouseRoomControls?.getState?.()?.moderatedMuted),lastModerationActorUid:clean(window.JemmoHouseRoomControls?.getState?.()?.moderatedByUid,160),lastActivitySessionId:sessionId,lastActivityAtClient:now,lastActivityAt:s.serverTimestamp(),updatedAt:s.serverTimestamp(),reviewStatus:clean(current.reviewStatus||'pending',20)},{merge:true});
         transaction.set(r.presence,{status:'active',sessionId,type:activityType,leaseUntilClient:now+LEASE_MS,updatedAtClient:now,updatedAt:s.serverTimestamp()},{merge:true});
       });
       if(leaseLost){running=false;clearInterval(flushTimer);flushTimer=0;window.dispatchEvent(new CustomEvent('jemmo-house-activity',{detail:{type:activityType,status:'replaced',houseId}}))}
     }catch(e){console.warn('JEMMO actividad Casa: no se pudo guardar',e?.code||e)}
   }
 
-  async function start(){if(running||starting||destroyed||!houseId||leaseLost)return;starting=true;try{await ensureTaskCycle('activity_resumed');await claimLease();running=true;startedAt=Date.now();sessionElapsedSeconds=0;clearInterval(flushTimer);flushTimer=setInterval(()=>void flush(false),30000);window.dispatchEvent(new CustomEvent('jemmo-house-activity',{detail:{type:activityType,status:'active',houseId,sessionId,cycleEndsAtClient:cycleEndMs,startedAtClient:startedAt,seat:window.JemmoHouseRoomControls?.getState?.()?.localSeat||0}}))}catch(e){console.warn('JEMMO actividad Casa: inicio',e?.code||e)}finally{starting=false}}
+  async function start(){if(running||starting||destroyed||!houseId||leaseLost)return;starting=true;try{await ensureTaskCycle('activity_resumed');await claimLease();running=true;startedAt=Date.now();sessionElapsedSeconds=0;clearInterval(flushTimer);flushTimer=setInterval(()=>void flush(false),30000);window.dispatchEvent(new CustomEvent('jemmo-house-activity',{detail:{type:activityType,status:'active',houseId,sessionId,cycleEndsAtClient:cycleEndMs,startedAtClient:startedAt,seat:window.JemmoHouseRoomControls?.getState?.()?.localSeat||0,moderatedMuted:Boolean(window.JemmoHouseRoomControls?.getState?.()?.moderatedMuted)}}))}catch(e){console.warn('JEMMO actividad Casa: inicio',e?.code||e)}finally{starting=false}}
 
   async function stop(reason='stopped'){
     if(!running&&reason!=='closed')return;
@@ -192,6 +193,6 @@
   }
   async function boot(){try{if(!await resolveMembership())return;watchMembership();const target=document.getElementById(targetId);if(!target)return;observer=new MutationObserver(sync);observer.observe(target,{attributes:true,attributeFilter:['hidden','class','style']});document.addEventListener('visibilitychange',sync);window.addEventListener('jemmo-house-seat-change',sync);window.addEventListener('offline',()=>void stop('offline'));window.addEventListener('online',sync);window.addEventListener('pagehide',()=>{destroyed=true;try{membershipUnsub?.()}catch{}membershipUnsub=null;void stop('closed')});setInterval(sync,1000);sync()}catch(e){console.warn('JEMMO actividad Casa:',e?.message||e)}}
 
-  window.JemmoHouseActivity={version:'36.0-test',getState:()=>({type:activityType,houseId,running,sessionId,sessionElapsedSeconds,cycleEndMs,leaseLost,reason:running?'active':inactiveReason(),seat:window.JemmoHouseRoomControls?.getState?.()?.localSeat||0}),flush:()=>flush(true),ensureTaskCycle};
+  window.JemmoHouseActivity={version:'37.0-test',getState:()=>({type:activityType,houseId,running,sessionId,sessionElapsedSeconds,cycleEndMs,leaseLost,reason:running?'active':inactiveReason(),seat:window.JemmoHouseRoomControls?.getState?.()?.localSeat||0}),flush:()=>flush(true),ensureTaskCycle};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else void boot();
 })();

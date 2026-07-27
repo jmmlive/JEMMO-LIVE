@@ -460,7 +460,7 @@
 <div class="jr-toast" id="toast" role="status"></div>
 
 <script type="module" src="jemmo-session.js"></script>
-<script src="pwa-register.js"></script>
+<script src="pwa-register.js?v=37"></script>
 <script src="jemmo-wallet.js"></script>
 <script src="jemmo-house-finance.js"></script>
 <script src="jemmo-prep-storage.js"></script>
@@ -561,6 +561,9 @@
     houseAccess:null,
     pendingHouseSeat:0,
     moderatedDown:false,
+    moderatedMuted:false,
+    moderatedByUid:'',
+    moderatedMutedAt:0,
     currentUserVip:storedVipActive(),
     vipKnown:false
   };
@@ -873,7 +876,7 @@
     if(person){
       const audioIcon=person.local?(state.micEnabled?'🎙':'🔇'):(person.mutedByMe?'🔇':person.remote&&!state.remoteConnected?'⌛':person.host?'🎙':'🔊');
       return `<span class="jr-seat-avatar"><img src="${person.photo||'jemmo-fish-nav.webp'}" alt="Foto de ${person.name||'usuario'}" loading="eager" decoding="async" onerror="this.onerror=null;this.src='jemmo-fish-nav.webp'"></span>
-        <span class="jr-seat-person-label"><b>${person.name}</b><small>${person.local&&!state.micEnabled?'Micrófono silenciado':person.mutedByMe?'Audio silenciado en este móvil':person.role}</small></span>
+        <span class="jr-seat-person-label"><b>${person.name}</b><small>${person.local&&state.moderatedMuted?'Silenciada por moderación · tarea activa':person.local&&!state.micEnabled?'Micrófono silenciado · tarea pausada':person.mutedByMe?'Audio silenciado en este móvil':person.role}</small></span>
         <span class="jr-mic">${audioIcon}</span><span class="jr-number">${index}</span>${giftBadge(index)}`;
     }
     return `<span class="jr-seat-avatar">+</span><b>Silla libre</b><small>Toca para subir</small><span class="jr-mic">＋</span><span class="jr-number">${index}</span>`;
@@ -955,7 +958,7 @@
     if(!houseContext.enabled)return;
     const seatButton=$('houseSeatButton'),micButton=$('houseMicButton');
     if(seatButton){seatButton.innerHTML=`${state.houseSeatActive?'⬇️':'⬆️'}<small>${state.houseSeatActive?'BAJAR':'SUBIR'}</small>`;seatButton.classList.toggle('active',state.houseSeatActive)}
-    if(micButton){micButton.innerHTML=`${state.micEnabled?'🎙':'🔇'}<small>${state.micEnabled?'MICRO':'MUDO'}</small>`;micButton.classList.toggle('active',state.micEnabled);micButton.disabled=!state.houseSeatActive}
+    if(micButton){micButton.innerHTML=`${state.micEnabled?'🎙':'🔇'}<small>${state.moderatedMuted?'MODERACIÓN':state.micEnabled?'MICRO':'MUDO'}</small>`;micButton.classList.toggle('active',state.micEnabled||state.moderatedMuted);micButton.disabled=!state.houseSeatActive||state.moderatedMuted;micButton.title=state.moderatedMuted?'Silenciado por un responsable. La tarea continúa contando.':''}
   }
 
   function localHousePerson(){
@@ -964,23 +967,25 @@
 
   function updateRoomControlLabels(){
     const mic=$('roomMicSetting'),camera=$('roomCameraSetting'),chat=$('roomChatSetting');
-    if(mic){mic.querySelector('b').childNodes[0].textContent=`Micrófono ${state.micEnabled?'ON':'OFF'}`;mic.classList.toggle('active',state.micEnabled)}
+    if(mic){mic.querySelector('b').childNodes[0].textContent=state.moderatedMuted?'Micrófono silenciado por moderación':`Micrófono ${state.micEnabled?'ON':'OFF'}`;mic.classList.toggle('active',state.micEnabled||state.moderatedMuted)}
     if(camera){camera.hidden=state.mode!=='camera';camera.querySelector('b').childNodes[0].textContent=`Cámara ${state.cameraEnabled?'ON':'OFF'}`;camera.classList.toggle('active',state.cameraEnabled)}
     if(chat){chat.querySelector('b').childNodes[0].textContent=`Chat ${state.chatClosed?'CERRADO':'ABIERTO'}`;chat.classList.toggle('active',!state.chatClosed)}
   }
   function emitHouseActivityState(){
     if(!houseContext.enabled)return;
     const audioTrack=state.stream?.getAudioTracks?.().find(track=>track.readyState==='live')||null;
-    window.dispatchEvent(new CustomEvent('jemmo-house-seat-change',{detail:{houseSeatActive:state.houseSeatActive,micEnabled:state.micEnabled,mediaActive:Boolean(audioTrack&&audioTrack.enabled),localSeat:state.localSeat,roomOpen}}));
+    window.dispatchEvent(new CustomEvent('jemmo-house-seat-change',{detail:{houseSeatActive:state.houseSeatActive,micEnabled:state.micEnabled,mediaActive:Boolean(audioTrack&&audioTrack.enabled),mediaTrackLive:Boolean(audioTrack),taskMediaActive:Boolean(audioTrack&&(audioTrack.enabled||state.moderatedMuted)),moderatedMuted:state.moderatedMuted,moderatedByUid:state.moderatedByUid,moderatedMutedAt:state.moderatedMutedAt,localSeat:state.localSeat,roomOpen}}));
   }
   async function toggleRoomMicro(force){
     if(houseContext.enabled&&!state.houseSeatActive){toast('Sube a una silla para activar el micrófono.');return}
     const next=typeof force==='boolean'?force:!state.micEnabled;
+    if(state.moderatedMuted&&next){toast('Un responsable ha silenciado tu micrófono. La tarea continúa contando hasta que lo reactive.');return}
     if(next&&!state.stream){
       const stream=await startCamera();
       if(!stream){state.micEnabled=false;syncHouseDirectControls();updateRoomControlLabels();renderSeats();emitHouseActivityState();toast('No se puede contar la tarea sin permiso real de micrófono.');return}
     }
     state.micEnabled=next;
+    if(!next){state.moderatedMuted=false;state.moderatedByUid='';state.moderatedMutedAt=0}
     state.stream?.getAudioTracks?.().forEach(track=>{track.enabled=state.micEnabled});
     syncHouseDirectControls();updateRoomControlLabels();renderSeats();emitHouseActivityState();
     toast(state.micEnabled?'Micrófono activado. La tarea puede contar si estás en una silla.':'Micrófono silenciado. La tarea queda pausada.');
@@ -1007,7 +1012,7 @@
     if(!houseContext.enabled)return;
     if(state.houseSeatActive){
       [...state.occupants.entries()].forEach(([index,person])=>{if(person?.local)state.occupants.delete(index)});
-      state.houseSeatActive=false;state.houseListenerOnly=true;state.pendingHouseSeat=0;state.micEnabled=false;
+      state.houseSeatActive=false;state.houseListenerOnly=true;state.pendingHouseSeat=0;state.micEnabled=false;state.moderatedMuted=false;state.moderatedByUid='';state.moderatedMutedAt=0;
       state.stream?.getAudioTracks?.().forEach(track=>{track.enabled=false});
       state.realtimeSession?.setOutgoingEnabled?.(false);
       void state.realtimeSession?.setSeatState?.(false,0).catch(error=>console.warn('Estado oyente:',error));
@@ -1017,7 +1022,7 @@
       const preferred=requested>=1&&requested<=state.count?requested:(state.isGuest?2:1);
       const index=!state.occupants.has(preferred)?preferred:[...Array(state.count)].map((_,i)=>i+1).find(i=>!state.occupants.has(i));
       if(!index){toast('No hay sillas libres en este momento.');return}
-      state.houseSeatActive=true;state.houseListenerOnly=false;state.micEnabled=true;state.localSeat=index;state.pendingHouseSeat=index;
+      state.houseSeatActive=true;state.houseListenerOnly=false;state.micEnabled=true;state.moderatedMuted=false;state.moderatedByUid='';state.moderatedMutedAt=0;state.localSeat=index;state.pendingHouseSeat=index;
       const stream=state.stream||await startCamera();
       if(!stream){
         state.houseSeatActive=false;state.houseListenerOnly=true;state.micEnabled=false;state.localSeat=0;state.pendingHouseSeat=0;
@@ -1163,7 +1168,7 @@
         audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}
       });
       state.stream=stream;
-      state.micEnabled=!(houseContext.enabled&&!state.houseSeatActive);
+      state.micEnabled=state.moderatedMuted?false:!(houseContext.enabled&&!state.houseSeatActive);
       if(state.mode!=='camera')state.cameraEnabled=false;
       stream.getAudioTracks().forEach(track=>{
         track.enabled=state.micEnabled;
@@ -1259,23 +1264,27 @@
     if(String(action.targetUid||'')!==String(state.ownUid||activeUid()))return;
     const type=String(action.action||'').toLowerCase();
     if(type==='mute'||type==='unmute'){
-      state.micEnabled=type==='unmute';
+      const moderated=type==='mute';
+      state.moderatedMuted=moderated;
+      state.moderatedByUid=moderated?String(action.actorUid||''):'';
+      state.moderatedMutedAt=moderated?Number(action.createdAtMs||Date.now()):0;
+      state.micEnabled=!moderated&&state.houseSeatActive;
       state.stream?.getAudioTracks?.().forEach(track=>{track.enabled=state.micEnabled});
-      syncHouseDirectControls();updateRoomControlLabels();renderSeats();
-      toast(type==='mute'?'El anfitrión ha silenciado tu micrófono.':'El anfitrión ha reactivado tu micrófono.');
+      syncHouseDirectControls();updateRoomControlLabels();renderSeats();emitHouseActivityState();
+      toast(moderated?'Un responsable ha silenciado tu micrófono. Sigues presente y la tarea continúa contando.':'El responsable ha reactivado tu micrófono. La tarea continúa normalmente.');
       return;
     }
     if(type==='down'){
-      state.moderatedDown=true;state.micEnabled=false;
+      state.moderatedDown=true;state.micEnabled=false;state.moderatedMuted=false;state.moderatedByUid='';state.moderatedMutedAt=0;
       state.stream?.getAudioTracks?.().forEach(track=>{track.enabled=false});
-      state.occupants.delete(state.localSeat);renderSeats();renderGiftRecipients();syncHouseDirectControls();updateRoomControlLabels();
+      state.occupants.delete(state.localSeat);renderSeats();renderGiftRecipients();syncHouseDirectControls();updateRoomControlLabels();emitHouseActivityState();
       toast('El anfitrión te ha bajado de la silla. Sigues dentro de la sala.');
       return;
     }
     if(type==='kick'){
       const until=Math.max(Date.now()+ROOM_TEST_BAN_MS,Number(action.untilMs)||0);
       const map=safeBanMap();map[personKey({uid:state.ownUid||activeUid()})]=until;saveBanMap(map);
-      state.micEnabled=false;state.stream?.getTracks?.().forEach(track=>{track.enabled=false});
+      state.micEnabled=false;state.moderatedMuted=false;state.moderatedByUid='';state.moderatedMutedAt=0;state.stream?.getTracks?.().forEach(track=>{track.enabled=false});
       toast('Has sido expulsada durante 1 minuto de prueba.');
       setTimeout(()=>leaveRoom(false,false),450);
     }
@@ -1352,6 +1361,7 @@
     state.houseSeatActive=true;
     state.pendingHouseSeat=1;
     state.moderatedDown=false;
+    state.moderatedMuted=false;state.moderatedByUid='';state.moderatedMutedAt=0;
     state.localSeat=1;
     state.remoteSeat=2;
     state.remoteName=state.remoteName||'';
@@ -1398,6 +1408,7 @@
     state.houseSeatActive=!asListener;
     state.pendingHouseSeat=asListener?0:(Number(preferredSeat)||2);
     state.moderatedDown=false;
+    state.moderatedMuted=false;state.moderatedByUid='';state.moderatedMutedAt=0;
     state.localSeat=asListener?0:state.pendingHouseSeat;
     state.remoteSeat=1;
     state.mode=meta.mode;
@@ -1915,7 +1926,7 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   async function recoverLocalMedia(force=false){
     if(!roomOpen||mediaRecoveryBusy)return false;
     const tracks=state.stream?.getTracks?.()||[];
-    const unhealthy=!tracks.length||tracks.some(track=>track.readyState!=='live'||track.muted||!track.enabled);
+    const unhealthy=!tracks.length||tracks.some(track=>track.readyState!=='live'||track.muted);
     if(!force&&!unhealthy&&Date.now()-lastMediaRecoveryAt<2500)return true;
     mediaRecoveryBusy=true;
     try{
@@ -1984,14 +1995,14 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   window.addEventListener('focus',()=>{if(roomOpen)void recoverLocalMedia(false).finally(emitHouseActivityState)});
   window.addEventListener('pageshow',()=>{if(roomOpen)void recoverLocalMedia(true).finally(emitHouseActivityState)});
 
-  window.JemmoHouseRoomControls={version:'36.0-test',toggleSeat:toggleHouseSeat,toggleMic:toggleRoomMicro,getState:()=>{const audioTrack=state.stream?.getAudioTracks?.().find(track=>track.readyState==='live')||null;return{houseSeatActive:state.houseSeatActive,micEnabled:state.micEnabled,mediaActive:Boolean(audioTrack&&audioTrack.enabled),localSeat:state.localSeat,roomOpen,sessionActive:Boolean(roomOpen&&state.realtimeSession)}}};
+  window.JemmoHouseRoomControls={version:'37.0-test',toggleSeat:toggleHouseSeat,toggleMic:toggleRoomMicro,getState:()=>{const audioTrack=state.stream?.getAudioTracks?.().find(track=>track.readyState==='live')||null;return{houseSeatActive:state.houseSeatActive,micEnabled:state.micEnabled,mediaActive:Boolean(audioTrack&&audioTrack.enabled),mediaTrackLive:Boolean(audioTrack),taskMediaActive:Boolean(audioTrack&&(audioTrack.enabled||state.moderatedMuted)),moderatedMuted:state.moderatedMuted,moderatedByUid:state.moderatedByUid,moderatedMutedAt:state.moderatedMutedAt,localSeat:state.localSeat,roomOpen,sessionActive:Boolean(roomOpen&&state.realtimeSession)}}};
   window.addEventListener('pagehide',()=>{void save()});
   window.addEventListener('beforeunload',stopCamera);
 })();
 </script>
-<script type="module" src="jemmo-house-room-ui.js"></script>
-<script src="jemmo-house-activity.js?v=36"></script>
-<script src="jemmo-host-task-rewards.js?v=36"></script>
-<script src="jemmo-keep-awake.js?v=36"></script>
+<script type="module" src="jemmo-house-room-ui.js?v=37"></script>
+<script src="jemmo-house-activity.js?v=37"></script>
+<script src="jemmo-host-task-rewards.js?v=37"></script>
+<script src="jemmo-keep-awake.js?v=37"></script>
 </body>
 </html>

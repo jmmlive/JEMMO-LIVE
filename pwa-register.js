@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-task-active-36';
+  const VERSION = 'pwa-task-rates-37';
   let installPrompt = null;
 
   const isStandalone = () =>

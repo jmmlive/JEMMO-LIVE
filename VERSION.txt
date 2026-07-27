@@ -1,54 +1,69 @@
-JEMMO LIVE V1 · CRONÓMETRO ACTIVO Y PANTALLA DESPIERTA PRUEBA 36
+JEMMO LIVE V1 · TARIFA AUDIO ROOM 800 Y SILENCIO MODERADO PRUEBA 37
 Fecha: 27/07/2026
-Base instalada: JEMMO LIVE V1 · ASIGNACIÓN MÓVIL DIRECTA Y TAREA PRUEBA 35
+Base instalada: JEMMO LIVE V1 · CRONÓMETRO ACTIVO Y PANTALLA DESPIERTA PRUEBA 36
 
-INCIDENCIA CONFIRMADA EN LA PRUEBA REAL DE RUTH
-- La tarea ya estaba asignada y visible: 2000 JEMS/HORA, Nivel BASE y 0/1 horas cobradas.
-- Ruth aparecía ocupando una silla y con el botón de micrófono encendido.
-- Sin embargo, el cronómetro permanecía en 00:00:00.
-- La cabecera mostraba ESPERANDO porque no existía una sesión WebRTC abierta por un responsable.
-- `jemmo-house-activity.js` exigía simultáneamente silla activa y `sessionActive: true`.
-- Por esa condición, la Sala oficial 24/7 no contabilizaba el tiempo de una Emisora cuando estaba sola o esperaba conexión.
-- El botón MICRO podía mostrarse activo aunque todavía no hubiera una pista real de micrófono abierta.
-- Android podía apagar la pantalla por inactividad, lo que además pausaba la tarea al pasar la app a segundo plano.
+CAMBIO ECONÓMICO CONFIRMADO POR JESÚS
+- LIVE conserva la escala de pago por nivel existente: el precio por hora de LIVE aumenta según los JEMS netos de regalos de Casa.
+- Audio Room paga siempre exactamente 800 JEMS por cada hora completa.
+- El precio de Audio Room nunca sube por nivel.
+- El nivel sí aumenta el número de horas diarias disponibles para ambas modalidades.
+- Ejemplo BASE: 1 hora diaria. Si se completa en Audio Room, se cobran 800 JEMS.
+- Ejemplo NIVEL I: 2 horas diarias. Si las dos se completan en Audio Room, se cobran 800 + 800 = 1.600 JEMS.
+- En NIVEL I, LIVE paga 3.000 JEMS por cada hora completa, mientras Audio Room continúa pagando 800 JEMS por cada hora completa.
 
-CORRECCIÓN
-- La tarea de Audio Room oficial cuenta cuando JEMMO está visible, la Emisora ocupa una silla, el micrófono está encendido y existe una pista de audio local viva.
-- Ya no depende de que el propietario mantenga abierta una sesión WebRTC.
-- Al subir a una silla, JEMMO solicita y abre realmente el micrófono; si el permiso falla, no inicia el contador y muestra el motivo.
-- Al bajar de la silla o silenciar el micrófono, la tarea se pausa inmediatamente.
-- El estado se publica con el evento `jemmo-house-seat-change` y se comprueba cada segundo.
-- La tarjeta superior muestra `MI TAREA · ACTIVA AHORA` y `ACTIVA · CONTANDO EN SILLA N`.
-- El panel Mis tareas proyecta el cronómetro segundo a segundo, aunque Firebase siga guardando el tiempo en bloques seguros cada 30 segundos.
-- Se añade Screen Wake Lock en LIVE y Salas para mantener la pantalla despierta mientras la vista está activa.
-- Al volver desde segundo plano se solicita nuevamente el bloqueo de pantalla.
-- El panel muestra `PANTALLA ACTIVA` cuando el navegador confirma el bloqueo.
-- Nueva caché PWA y versionado PRUEBA 36.
+CORRECCIÓN DE CÁLCULO Y COBRO
+- LIVE y Audio Room mantienen contadores separados.
+- Cada bloque remunerado exige 60 minutos completos dentro de una misma modalidad.
+- Los minutos parciales de LIVE y Audio Room no se mezclan para fabricar una hora con una tarifa incorrecta.
+- El máximo de bloques cobrables dentro del ciclo de 24 horas lo determina el nivel actual.
+- La pantalla de tareas muestra por separado la tarifa LIVE y la tarifa fija de Audio Room.
+- Cuando existe una hora completa en ambas modalidades aparecen dos botones de cobro separados.
+- Cada recompensa guarda modalidad, número de hora de esa modalidad, tarifa aplicada y nivel.
+- Se mantienen campos de compatibilidad para las tareas creadas en pruebas anteriores.
 
-PRUEBA CON RUTH
-1. Instalar PRUEBA 36 encima de PRUEBA 35.
-2. Cerrar completamente JEMMO y volver a abrirla.
-3. Ruth entra en Mi Casa > Sala oficial.
-4. Toca una silla libre y permite el micrófono si Android lo solicita.
-5. Debe verse `MI TAREA · ACTIVA AHORA` y `ACTIVA · CONTANDO EN SILLA 2`.
-6. Abrir Mis tareas y comprobar que AUDIO ROOM EN SILLA avanza 00:00:01, 00:00:02, 00:00:03...
-7. Silenciar el micrófono: debe mostrar PAUSADA y dejar de sumar.
-8. Activarlo: debe continuar desde el tiempo guardado.
-9. Mantener la Sala abierta varios minutos sin tocar el móvil: la pantalla no debe suspenderse mientras el bloqueo esté activo.
+SILENCIO VOLUNTARIO Y SILENCIO DE MODERACIÓN
+- Si la Emisora silencia voluntariamente su micrófono, la tarea se pausa.
+- Si un propietario, administrador o responsable la silencia mediante moderación, la tarea continúa contando mientras permanezca en la silla, con JEMMO visible y una pista real de micrófono abierta.
+- La Emisora no puede reactivarse por sí sola mientras siga silenciada por moderación.
+- La interfaz muestra SILENCIO DE MODERACIÓN y aclara que la tarea continúa activa.
+- Se conserva el UID del responsable que aplicó el silencio en el estado de actividad y en el registro de moderación de la Sala.
+- Si la Emisora baja de la silla o es expulsada, la tarea se pausa aunque antes estuviera silenciada por moderación.
+
+ADMINISTRACIÓN
+- El panel del agente muestra las dos tarifas: LIVE / AUDIO.
+- Una tarea solo se considera completa cuando existen horas enteras válidas en LIVE o Audio Room, no por sumar dos fracciones de modalidades distintas.
+- Los ciclos nuevos se crean con LIVE 2.000 JEMS/h en BASE y Audio Room 800 JEMS/h fijo.
+
+PRUEBA RECOMENDADA CON RUTH
+1. Instalar PRUEBA 37 encima de PRUEBA 36.
+2. Cerrar completamente JEMMO en ambos móviles y volver a abrirla.
+3. Ruth entra en la Sala oficial, sube a una silla y activa el micrófono.
+4. La tarjeta superior debe mostrar 800 JEMS/HORA.
+5. Ruth silencia voluntariamente el micrófono: el cronómetro debe pausarse.
+6. Ruth lo reactiva: el cronómetro debe continuar.
+7. Jesús abre el perfil de Ruth desde su silla y pulsa SILENCIAR.
+8. Ruth debe ver SILENCIO DE MODERACIÓN y el cronómetro debe continuar avanzando.
+9. Jesús pulsa REACTIVAR AUDIO: Ruth vuelve a emitir y la tarea continúa sin reiniciarse.
+10. Para la prueba económica abre Mis tareas: debe mostrar LIVE 2.000/H y AUDIO 800/H en nivel BASE.
 
 ARCHIVOS DEL ZIP
 1. VERSION.txt
 2. salas.html
-3. live.html
-4. jemmo-house-activity.js
-5. jemmo-host-task-rewards.js
-6. jemmo-keep-awake.js
-7. pwa-register.js
-8. sw.js
-9. INTEGRIDAD_SHA256.txt
+3. casa-demo.html
+4. jemmo-host-task-rewards.js
+5. jemmo-house-activity.js
+6. jemmo-house-room-ui.js
+7. jemmo-house-operations.js
+8. pwa-register.js
+9. sw.js
+10. INTEGRIDAD_SHA256.txt
 
 INSTALACIÓN
-- Copiar y sustituir los nueve archivos del ZIP.
+- Copiar y sustituir los diez archivos del ZIP.
 - Hacer commit y esperar la publicación.
-- Cerrar completamente JEMMO en ambos móviles y volver a abrirla.
+- Cerrar completamente JEMMO y volver a abrirla para cargar la nueva caché.
 - No modificar Firebase manualmente.
+
+MODO DE PRUEBAS
+- La economía continúa en modo de pruebas.
+- Antes de producción, los cobros y las validaciones de actividad deberán trasladarse o verificarse mediante backend seguro.

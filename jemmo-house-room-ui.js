@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · IDENTIDAD DE SALA Y TAREA ÚNICA PRUEBA 33
+/* JEMMO LIVE V1 · IDENTIDAD DE SALA Y TARIFA AUDIO ROOM PRUEBA 37
    La cabecera pertenece a la Casa y usa la identidad configurada por sus responsables. */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
@@ -64,8 +64,8 @@ if(params.get('houseRoom')==='1'||window.JemmoHouseRoomContext?.enabled===true){
     if(!active){count.textContent=task.taskState==='expired'?'CICLO VENCIDO':'PENDIENTE';mini.textContent='Se activa al ingresar como Emisor/a';return}
     const hours=Math.max(1,number(task.dailyHours||Math.ceil(number(task.totalTargetMinutes||60)/60)));
     const paid=Array.isArray(task.claimedHourSlots)?task.claimedHourSlots.filter(slot=>number(slot)<=hours).length:0;
-    count.textContent=`${fmt(task.hourlyRewardJems||2000)} JEMS/HORA`;
-    mini.textContent=`${paid}/${hours} horas cobradas · Nivel ${clean(task.taskTierCode||'BASE',10)}`;
+    count.textContent=`${fmt(task.audioRoomHourlyRewardJems||800)} JEMS/HORA`;
+    mini.textContent=`AUDIO ROOM · ${paid}/${hours} horas cobradas · Nivel ${clean(task.taskTierCode||'BASE',10)}`;
   }
   async function boot(){
     try{
