@@ -1,37 +1,52 @@
-JEMMO LIVE V1 · ARRANQUE REAL DE TAREA PRUEBA 34
+JEMMO LIVE V1 · ASIGNACIÓN MÓVIL DIRECTA Y TAREA PRUEBA 35
 Fecha: 27/07/2026
-Base instalada: JEMMO LIVE V1 · TAREA REAL EN LA CASA ACTUAL PRUEBA 33
+Base instalada: JEMMO LIVE V1 · ARRANQUE REAL DE TAREA PRUEBA 34
 
-CAUSA REAL CONFIRMADA
-- PRUEBA 33 contenía la lógica correcta de asignación, Casa actual y recuperación del ciclo, pero el módulo principal de tareas se detenía antes de conectarse a Firebase.
-- `jemmo-host-task-rewards.js` calculaba la Casa actual llamando a `clean()` antes de que esa función hubiera sido inicializada.
-- JavaScript lanzaba un `ReferenceError` al cargar el archivo. Por eso el módulo remunerado no tomaba control de la tarjeta y Ruth seguía viendo PENDIENTE.
-- El problema ocurría antes de leer la membresía, la asignación de agente o el documento de tarea; por tanto, los cambios de PRUEBA 33 nunca llegaban a ejecutarse.
+INCIDENCIA CONFIRMADA EN MÓVIL
+- Ruth aparece correctamente en `users/{UID_DE_RUTH}` y como miembro activo de Casa Padre JEMMO.
+- Sus datos actuales son `houseId: padre`, `houseStatus: active`, `housePosition: member` y `houseRole: member`.
+- `houseRole` representa el permiso dentro de la Casa (miembro/administrador/propietario); no debe usarse como sustituto de la función laboral.
+- El campo que bloquea la tarea es `housePosition: member`, porque debe pasar a `housePosition: emitter`.
+- El panel FUNCIONES Y AGENTES mostraba un selector desplegable que no respondía de forma fiable en el móvil.
+- Al abrir GESTIÓN DE MIEMBRO solo aparecía EXPULSAR DE LA CASA; no existía una acción directa para asignar función, responsable y tarea.
+- La colección antigua `usuarios` y el documento genérico “Emisora de prueba” no identifican a Ruth y no deben decidir su estado actual.
 
-CORRECCIONES
-- `clean()` queda declarada antes de resolver la Casa abierta y antes de cualquier llamada que dependa de ella.
-- El módulo de tareas toma la propiedad de la tarjeta desde el inicio de su carga.
-- La tarjeta arranca mostrando CARGANDO… en lugar del marcador antiguo PENDIENTE.
-- `salas.html` solicita explícitamente `jemmo-host-task-rewards.js?v=34` para impedir que el móvil reutilice el JavaScript roto de PRUEBA 33.
-- Si Firebase o la sesión fallan durante el arranque, la tarjeta muestra TAREA NO CARGADA / REENTRAR en vez de quedarse silenciosamente en PENDIENTE.
-- Se conserva toda la lógica aprobada: Casa abierta autoritativa, Emisora formal, agente asignado, recuperación de tareas pausadas, ciclo móvil de 24 horas, tiempo real sentado y cobro por horas.
-- Nueva caché PWA PRUEBA 34.
+CORRECCIÓN
+- Se elimina la dependencia del desplegable móvil para las funciones de Casa.
+- Cada miembro muestra botones táctiles directos: MIEMBRO, EMISOR/A y AGENTE.
+- La ficha GESTIÓN DE MIEMBRO incorpora el botón ASIGNAR FUNCIÓN Y ACTIVAR TAREA.
+- Al tocar EMISOR/A se actualizan directamente `users/{UID}` y `casas/{houseId}/miembros/{UID}` con `housePosition: emitter`.
+- `houseRole` se conserva como permiso de membresía; no se sobrescribe erróneamente con la función de emisora.
+- Se asigna automáticamente un propietario o agente responsable perteneciente a la Casa.
+- Se crea o actualiza `emisoras/{UID}` usando el UID real de la persona, nunca un ID automático ni el documento genérico de prueba.
+- Se crea o reactiva `casas/{houseId}/tareas/{UID}` con un ciclo real de 24 horas.
+- Cuando la persona ya es Emisor/a aparecen botones directos para cambiar el agente responsable.
+- La interfaz se actualiza inmediatamente después de guardar.
+- Los errores de Firestore muestran un mensaje visible y registran su código técnico en consola.
+- Se eliminó la opción de convertir a otro miembro en Propietario desde este control.
+- Nueva caché PWA y versionado explícito de CSS y JavaScript de Casas.
 
-RESULTADO ESPERADO EN LA PRUEBA DE RUTH
-1. Entrar desde Mi Casa a la Sala oficial.
-2. La tarjeta debe mostrar primero CARGANDO… durante la comprobación.
-3. Después debe mostrar la recompensa por hora y el nivel de tarea, o un motivo concreto si Firebase no reconoce la membresía.
-4. No debe volver a quedarse en el texto estático PENDIENTE.
+PRUEBA CON RUTH
+1. Instalar PRUEBA 35 encima de PRUEBA 34.
+2. Entrar con Jesús en Mi Casa > Administración.
+3. Abrir Ruth y tocar ASIGNAR FUNCIÓN Y ACTIVAR TAREA; también puede hacerse desde FUNCIONES Y AGENTES.
+4. Tocar EMISOR/A.
+5. Confirmar que la ficha cambia inmediatamente a EMISOR/A y muestra a Jesús como responsable.
+6. Ruth debe cerrar por completo JEMMO, volver a abrir y entrar en Mi Casa > Sala oficial.
+7. La tarjeta debe dejar de mostrar NO ACTIVA y presentar su ciclo, nivel y recompensa por hora.
 
 ARCHIVOS DEL ZIP
 1. VERSION.txt
-2. salas.html
-3. jemmo-host-task-rewards.js
-4. pwa-register.js
-5. sw.js
-6. INTEGRIDAD_SHA256.txt
+2. casa-demo.html
+3. app.css
+4. jemmo-houses.js
+5. jemmo-house-operations.js
+6. pwa-register.js
+7. sw.js
+8. INTEGRIDAD_SHA256.txt
 
 INSTALACIÓN
-- Instalar directamente encima de PRUEBA 33.
-- Copiar y sustituir los seis archivos del ZIP.
-- Hacer commit y abrir JEMMO de nuevo; la caché PRUEBA 34 fuerza la recarga del módulo corregido.
+- Copiar y sustituir los ocho archivos del ZIP.
+- Hacer commit y esperar la publicación.
+- Cerrar completamente JEMMO en ambos móviles y volver a abrirla para tomar la caché PRUEBA 35.
+- No modificar Firebase manualmente.

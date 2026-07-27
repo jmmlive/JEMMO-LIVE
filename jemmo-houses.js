@@ -1391,10 +1391,11 @@ function openMemberMenu(uid) {
   const content = $('#houseModalContent');
   if (!modal || !content) return;
   const canRole = state.houseOwner && member.role !== 'owner';
+  const canAssign = state.houseAdmin && member.role !== 'owner';
   content.innerHTML = `
     <div class="house-modal-head"><span>${escapeHtml((member.displayName || 'JM').slice(0, 2).toUpperCase())}</span><div><small>GESTIÓN DE MIEMBRO</small><h2 id="houseModalTitle">${escapeHtml(member.displayName || 'Usuario JEMMO')}</h2></div></div>
     <p class="house-modal-copy">${escapeHtml(member.publicId || 'ID pública pendiente')} · ${roleLabel(member.role)}</p>
-    <div class="member-menu-actions">${canRole ? `<button type="button" data-role-member="${escapeHtml(uid)}" data-next-role="${member.role === 'admin' ? 'member' : 'admin'}">${member.role === 'admin' ? 'QUITAR COMO ADMINISTRADOR' : 'HACER ADMINISTRADOR'}</button>` : ''}<button type="button" class="danger" data-remove-member="${escapeHtml(uid)}">EXPULSAR DE LA CASA</button></div>`;
+    <div class="member-menu-actions">${canAssign ? `<button type="button" class="member-assignment-open" data-open-member-assignment="${escapeHtml(uid)}">ASIGNAR FUNCIÓN Y ACTIVAR TAREA</button>` : ''}${canRole ? `<button type="button" data-role-member="${escapeHtml(uid)}" data-next-role="${member.role === 'admin' ? 'member' : 'admin'}">${member.role === 'admin' ? 'QUITAR COMO ADMINISTRADOR' : 'HACER ADMINISTRADOR'}</button>` : ''}<button type="button" class="danger" data-remove-member="${escapeHtml(uid)}">EXPULSAR DE LA CASA</button></div>`;
   setModalVisibility(modal, true);
 }
 
@@ -1428,6 +1429,13 @@ function bind() {
     if (review) { review.disabled = true; await reviewJoinRequest(review.dataset.requestUid, review.dataset.reviewRequest); review.disabled = false; return; }
     const memberMenu = event.target.closest('[data-member-menu]');
     if (memberMenu) { openMemberMenu(memberMenu.dataset.memberMenu); return; }
+    const assignment = event.target.closest('[data-open-member-assignment]');
+    if (assignment) {
+      const api = window.JemmoHouseOperations;
+      if (api?.openAssignment) api.openAssignment(assignment.dataset.openMemberAssignment);
+      else toast('La asignación todavía se está cargando. Vuelve a tocar en unos segundos.', 'error');
+      return;
+    }
     const role = event.target.closest('[data-role-member]');
     if (role) { role.disabled = true; await changeMemberRole(role.dataset.roleMember, role.dataset.nextRole); role.disabled = false; closeAllModals(); return; }
     const remove = event.target.closest('[data-remove-member]');

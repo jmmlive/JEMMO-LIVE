@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · TAREA ASIGNADA A LA EMISORA REAL PRUEBA 32
-   Escala automática, ventana móvil de 7 días y reparto 70/20/10 para Emisoras de Casa. */
+/* JEMMO LIVE V1 · ASIGNACIÓN MÓVIL DIRECTA PRUEBA 35
+   Botones táctiles para función, agente responsable y activación real de la tarea. */
 const firebaseConfig = {
   apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
   authDomain: 'jemmo-live.firebaseapp.com',
@@ -87,6 +87,7 @@ const state = {
   taskConfig: { ...DEFAULT_TASK_CONFIG },
   roomConfig: { ...DEFAULT_ROOM_CONFIG },
   room: {},
+  assignmentModalUid: '',
   unsubscribers: [],
   attachToken: 0
 };
@@ -226,6 +227,59 @@ function defaultAgentUid() {
   if (state.actualAgent && state.user?.uid) return state.user.uid;
   const agents = availableAgents();
   return clean(agents.find(item => item.label === 'AGENTE')?.uid || agents.find(item => item.label === 'PROPIETARIO')?.uid || agents[0]?.uid || state.user?.uid, 160);
+}
+
+
+const HOUSE_POSITION_OPTIONS = [
+  { value: 'member', label: 'MIEMBRO', note: 'Sin tarea remunerada' },
+  { value: 'emitter', label: 'EMISOR/A', note: 'Activa la tarea de 24 horas' },
+  { value: 'agent', label: 'AGENTE', note: 'Responsable de emisoras' }
+];
+
+function selectedHousePosition(member) {
+  if (member?.role === 'owner') return 'owner';
+  const direct = clean(member?.housePosition || member?.position, 30);
+  if (['member', 'emitter', 'agent', 'admin'].includes(direct)) return direct;
+  return isEmitter(member) ? 'emitter' : 'member';
+}
+
+function renderPositionButtons(member, compact = false) {
+  const selected = selectedHousePosition(member);
+  if (selected === 'owner') return '<div class="house-position-fixed">PROPIETARIO</div>';
+  return `<div class="house-position-buttons ${compact ? 'compact' : ''}" role="group" aria-label="Función en la Casa">${HOUSE_POSITION_OPTIONS.map(option => `<button type="button" class="house-position-button ${selected === option.value ? 'active' : ''}" data-set-house-position="${escapeHtml(member.uid)}" data-position-value="${option.value}" aria-pressed="${selected === option.value}"><b>${option.label}</b><small>${option.note}</small></button>`).join('')}</div>`;
+}
+
+function renderAgentButtons(member, compact = false) {
+  const agents = availableAgents();
+  const selected = memberAgentUid(member) || defaultAgentUid();
+  if (!agents.length) return '<p class="house-assignment-warning">Primero debe existir un propietario o agente activo en la Casa.</p>';
+  return `<div class="house-agent-buttons ${compact ? 'compact' : ''}" role="group" aria-label="Agente responsable">${agents.map(agent => `<button type="button" class="house-agent-button ${selected === agent.uid ? 'active' : ''}" data-set-assigned-agent="${escapeHtml(member.uid)}" data-agent-uid="${escapeHtml(agent.uid)}" aria-pressed="${selected === agent.uid}"><b>${escapeHtml(agent.name)}</b><small>${escapeHtml(agent.label)}</small></button>`).join('')}</div>`;
+}
+
+function showAssignmentModal(uid) {
+  const member = state.members.find(item => item.uid === uid);
+  const modal = $('#houseModal');
+  const content = $('#houseModalContent');
+  if (!member || !modal || !content) {
+    toast('No se pudo abrir la asignación de este miembro.', 'error');
+    return;
+  }
+  state.assignmentModalUid = uid;
+  const selected = selectedHousePosition(member);
+  content.innerHTML = `
+    <div class="house-modal-head"><span>${escapeHtml((member.displayName || 'JM').slice(0, 2).toUpperCase())}</span><div><small>FUNCIÓN Y TAREA DE CASA</small><h2 id="houseModalTitle">${escapeHtml(member.displayName || 'Usuario JEMMO')}</h2></div></div>
+    <p class="house-modal-copy">${escapeHtml(member.publicId || 'ID pública pendiente')} · ${positionLabel(member)}</p>
+    <section class="house-assignment-sheet">
+      <div class="house-assignment-section-title"><b>1. FUNCIÓN EN LA CASA</b><small>Toca una opción. No usa menús desplegables.</small></div>
+      ${renderPositionButtons(member, true)}
+      ${selected === 'emitter' ? `<div class="house-assignment-section-title"><b>2. AGENTE RESPONSABLE</b><small>La tarea queda vinculada a este responsable.</small></div>${renderAgentButtons(member, true)}` : '<p class="house-assignment-info">Al tocar <b>EMISOR/A</b>, JEMMO asignará automáticamente un responsable y creará un ciclo real de 24 horas.</p>'}
+      <p class="house-assignment-result">Estado actual: <b>${escapeHtml(positionLabel(member))}</b>${selected === 'emitter' ? ` · Agente: <b>${escapeHtml(memberAgentName(member))}</b>` : ''}</p>
+    </section>`;
+  const backdrop = $('#houseModalBackdrop');
+  if (backdrop) backdrop.hidden = false;
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
 }
 
 async function writeAudit(action, subjectUid = '', details = {}) {
@@ -526,12 +580,9 @@ function renderTaskAdmin() {
 function renderAssignments() {
   const target = $('#houseMemberAssignments');
   if (!target || !state.isAdmin) return;
-  const agents = availableAgents();
   target.innerHTML = state.members.map(member => {
-    const selected = clean(member.housePosition, 30) || (isEmitter(member) ? 'emitter' : member.role === 'owner' ? 'owner' : 'member');
-    const assigned = memberAgentUid(member) || (selected === 'emitter' ? defaultAgentUid() : '');
-    const agentControl = selected === 'emitter' ? `<label class="house-agent-assignment"><span>Agente responsable</span><select data-assigned-agent="${escapeHtml(member.uid)}" ${agents.length ? '' : 'disabled'}>${agents.length ? agents.map(agent => `<option value="${escapeHtml(agent.uid)}" ${assigned === agent.uid ? 'selected' : ''}>${escapeHtml(agent.name)} · ${escapeHtml(agent.label)}</option>`).join('') : '<option value="">Primero asigna un agente</option>'}</select></label>` : '';
-    return `<article class="house-assignment-row"><div class="house-assignment-person"><b>${escapeHtml(member.displayName || 'Usuario JEMMO')}</b><small>${escapeHtml(member.publicId || 'ID pendiente')} · ${positionLabel(member)}</small></div><div class="house-assignment-controls"><label><span>Función en la Casa</span><select data-house-position="${escapeHtml(member.uid)}" ${member.role === 'owner' ? 'disabled' : ''}><option value="member" ${selected === 'member' ? 'selected' : ''}>Miembro</option><option value="emitter" ${selected === 'emitter' ? 'selected' : ''}>Emisor/a</option><option value="agent" ${selected === 'agent' ? 'selected' : ''}>Agente</option><option value="admin" ${selected === 'admin' ? 'selected' : ''}>Apoyo administrativo</option><option value="owner" ${selected === 'owner' ? 'selected' : ''}>Propietario</option></select></label>${agentControl}</div></article>`;
+    const selected = selectedHousePosition(member);
+    return `<article class="house-assignment-row"><div class="house-assignment-person"><b>${escapeHtml(member.displayName || 'Usuario JEMMO')}</b><small>${escapeHtml(member.publicId || 'ID pendiente')} · ${positionLabel(member)}</small></div><div class="house-assignment-controls"><div class="house-assignment-section-title"><b>FUNCIÓN EN LA CASA</b><small>Selección táctil directa</small></div>${renderPositionButtons(member)}${selected === 'emitter' ? `<div class="house-assignment-section-title"><b>AGENTE RESPONSABLE</b><small>Obligatorio para la tarea</small></div>${renderAgentButtons(member)}` : ''}</div></article>`;
   }).join('') || '<div class="house-workspace-empty">No hay miembros para asignar.</div>';
 }
 
@@ -643,7 +694,11 @@ async function reviewTask(uid, status) {
 
 function newTaskCycle(uid, reason, current = {}) {
   const now = Date.now();
-  const emitter = state.members.find(member => member.uid === uid) || {}; return { uid, housePosition: 'emitter', assignedAgentUid: clean(emitter.assignedAgentUid, 160), assignedAgentName: clean(emitter.assignedAgentName, 80), taskState: 'active', completionState: 'in_progress', cycleDurationHours: 24, cycleStartedAtClient: now, cycleEndsAtClient: now + DAY_MS, cycleKey: `24h-${now}`, cycleNumber: Math.max(1, Number(current.cycleNumber || 0) + 1), liveSeconds: 0, houseRoomSeconds: 0, totalTargetMinutes: 60, dailyHours: 1, hourlyRewardJems: 2000, taskTierCode: 'BASE', claimedHourSlots: [], claimedHours: 0, hourlyClaims: {}, reviewStatus: 'pending', activatedReason: reason, activatedAtClient: Number(current.activatedAtClient || now), updatedAt: state.services.serverTimestamp() };
+  const emitter = state.members.find(member => member.uid === uid) || {};
+  const fallbackAgentUid = clean(emitter.assignedAgentUid || current.assignedAgentUid || defaultAgentUid(), 160);
+  const fallbackAgent = availableAgents().find(agent => agent.uid === fallbackAgentUid);
+  const fallbackAgentName = clean(emitter.assignedAgentName || current.assignedAgentName || fallbackAgent?.name || 'Responsable de Casa', 80);
+  return { uid, housePosition: 'emitter', assignedAgentUid: fallbackAgentUid, assignedAgentName: fallbackAgentName, taskState: 'active', completionState: 'in_progress', cycleDurationHours: 24, cycleStartedAtClient: now, cycleEndsAtClient: now + DAY_MS, cycleKey: `24h-${now}`, cycleNumber: Math.max(1, Number(current.cycleNumber || 0) + 1), liveSeconds: 0, houseRoomSeconds: 0, totalTargetMinutes: 60, dailyHours: 1, hourlyRewardJems: 2000, taskTierCode: 'BASE', claimedHourSlots: [], claimedHours: 0, hourlyClaims: {}, reviewStatus: 'pending', activatedReason: reason, activatedAtClient: Number(current.activatedAtClient || now), updatedAt: state.services.serverTimestamp() };
 }
 
 async function activateTask(uid, reason = 'emitter_assigned', force = false) {
@@ -667,22 +722,77 @@ async function resetTask(uid) {
 }
 
 async function changePosition(uid, position) {
-  if (!state.isAdmin || !uid) return;
+  if (!state.isAdmin || !uid) return false;
+  const allowed = new Set(['member', 'emitter', 'agent']);
+  if (!allowed.has(position)) { toast('La función seleccionada no es válida.', 'error'); return false; }
+  const existingMember = state.members.find(member => member.uid === uid);
+  if (!existingMember || existingMember.role === 'owner') { toast('La función del propietario no se puede modificar.', 'error'); return false; }
   try {
     const s = state.services;
-    const existingMember = state.members.find(member => member.uid === uid) || {};
+    const previousPosition = selectedHousePosition(existingMember);
     const assignedAgentUid = position === 'emitter' ? clean(existingMember.assignedAgentUid || defaultAgentUid(), 160) : '';
     const assignedAgent = availableAgents().find(agent => agent.uid === assignedAgentUid);
+    if (position === 'emitter' && (!assignedAgentUid || !assignedAgent)) {
+      toast('Primero debe existir un agente o propietario responsable.', 'error');
+      return false;
+    }
+    const assignedAgentName = clean(assignedAgent?.name || state.profile.displayName || state.user.displayName || 'Responsable de Casa', 80);
+    const memberProfile = state.profiles.get(uid) || {};
+    const emitterRegistry = {
+      uid,
+      userUid: uid,
+      displayName: clean(existingMember.displayName || memberProfile.displayName || memberProfile.name || 'Emisor/a JEMMO', 80),
+      publicId: clean(existingMember.publicId || memberProfile.publicId || memberProfile.profileId, 60),
+      houseId: state.houseId,
+      houseName: clean(state.house.name || 'Casa JEMMO', 80),
+      housePosition: position,
+      assignedAgentUid: position === 'emitter' ? assignedAgentUid : s.deleteField(),
+      assignedAgentName: position === 'emitter' ? assignedAgentName : s.deleteField(),
+      status: position === 'emitter' ? 'active' : 'inactive',
+      sourceCollection: 'users',
+      schemaVersion: 2,
+      updatedAt: s.serverTimestamp()
+    };
+    if (position === 'emitter') emitterRegistry.activatedAt = s.serverTimestamp();
+    else emitterRegistry.deactivatedAt = s.serverTimestamp();
     await Promise.all([
-      s.setDoc(s.doc(s.db, 'casas', state.houseId, 'miembros', uid), { housePosition: position, assignedAgentUid: position === 'emitter' ? assignedAgentUid : s.deleteField(), assignedAgentName: position === 'emitter' ? clean(assignedAgent?.name || state.profile.displayName || state.user.displayName || 'Agente JEMMO', 80) : s.deleteField(), updatedAt: s.serverTimestamp() }, { merge: true }),
-      s.setDoc(s.doc(s.db, 'users', uid), { housePosition: position, assignedAgentUid: position === 'emitter' ? assignedAgentUid : s.deleteField(), houseUpdatedAt: s.serverTimestamp() }, { merge: true })
+      s.setDoc(s.doc(s.db, 'casas', state.houseId, 'miembros', uid), { housePosition: position, assignedAgentUid: position === 'emitter' ? assignedAgentUid : s.deleteField(), assignedAgentName: position === 'emitter' ? assignedAgentName : s.deleteField(), updatedAt: s.serverTimestamp() }, { merge: true }),
+      s.setDoc(s.doc(s.db, 'users', uid), { houseId: state.houseId, houseName: state.house.name || 'Casa JEMMO', houseStatus: 'active', housePosition: position, emitterStatus: position === 'emitter' ? 'active' : 'inactive', assignedAgentUid: position === 'emitter' ? assignedAgentUid : s.deleteField(), assignedAgentName: position === 'emitter' ? assignedAgentName : s.deleteField(), houseUpdatedAt: s.serverTimestamp() }, { merge: true }),
+      s.setDoc(s.doc(s.db, 'emisoras', uid), emitterRegistry, { merge: true })
     ]);
-    if (position === 'emitter') window.JemmoWallet?.setMembership?.(uid, { hasHouse: true, houseId: state.houseId, houseName: state.house.name || 'Casa JEMMO', agentUid: assignedAgentUid });
-    if (position === 'emitter') await activateTask(uid, 'emitter_assigned');
-    else await s.setDoc(s.doc(s.db, 'casas', state.houseId, 'tareas', uid), { taskState: 'paused', pausedReason: 'house_position_changed', pausedAt: s.serverTimestamp(), updatedAt: s.serverTimestamp() }, { merge: true });
-    await writeAudit('house_position_changed', uid, { previousPosition: clean(existingMember.housePosition || 'member', 30), newPosition: position, assignedAgentUid });
-    toast(position === 'emitter' ? 'Función Emisor/a asignada y tarea de 24 horas activada.' : 'Función interna actualizada.', 'success');
-  } catch { toast('No se pudo cambiar la función.', 'error'); }
+    if (position === 'emitter') {
+      window.JemmoWallet?.setMembership?.(uid, { hasHouse: true, houseId: state.houseId, houseName: state.house.name || 'Casa JEMMO', agentUid: assignedAgentUid });
+      await activateTask(uid, 'emitter_assigned');
+    } else {
+      await s.setDoc(s.doc(s.db, 'casas', state.houseId, 'tareas', uid), { taskState: 'paused', pausedReason: 'house_position_changed', pausedAt: s.serverTimestamp(), updatedAt: s.serverTimestamp() }, { merge: true });
+    }
+    existingMember.housePosition = position;
+    if (position === 'emitter') {
+      existingMember.assignedAgentUid = assignedAgentUid;
+      existingMember.assignedAgentName = assignedAgentName;
+    } else {
+      delete existingMember.assignedAgentUid;
+      delete existingMember.assignedAgentName;
+    }
+    const profile = { ...(state.profiles.get(uid) || {}), houseId: state.houseId, housePosition: position, houseStatus: 'active' };
+    if (position === 'emitter') {
+      profile.assignedAgentUid = assignedAgentUid;
+      profile.assignedAgentName = assignedAgentName;
+    } else {
+      delete profile.assignedAgentUid;
+      delete profile.assignedAgentName;
+    }
+    state.profiles.set(uid, profile);
+    renderAll();
+    if (state.assignmentModalUid === uid && $('#houseModal')?.classList.contains('open')) showAssignmentModal(uid);
+    await writeAudit('house_position_changed', uid, { previousPosition, newPosition: position, assignedAgentUid });
+    toast(position === 'emitter' ? `${clean(existingMember.displayName || 'La persona', 60)} ya es Emisor/a y su tarea de 24 horas quedó activada.` : 'Función de la Casa actualizada.', 'success');
+    return true;
+  } catch (error) {
+    console.warn('JEMMO función de Casa:', error?.code || error?.message || error);
+    toast(`No se pudo guardar la función${error?.code ? ` · ${error.code}` : ''}.`, 'error');
+    return false;
+  }
 }
 
 async function assignAgent(emitterUid, agentUid) {
@@ -695,15 +805,24 @@ async function assignAgent(emitterUid, agentUid) {
     const s = state.services;
     await Promise.all([
       s.setDoc(s.doc(s.db, 'casas', state.houseId, 'miembros', emitterUid), { assignedAgentUid: agent.uid, assignedAgentName: agent.name, updatedAt: s.serverTimestamp() }, { merge: true }),
-      s.setDoc(s.doc(s.db, 'users', emitterUid), { assignedAgentUid: agent.uid, assignedAgentName: agent.name, houseUpdatedAt: s.serverTimestamp() }, { merge: true }),
+      s.setDoc(s.doc(s.db, 'users', emitterUid), { assignedAgentUid: agent.uid, assignedAgentName: agent.name, emitterStatus: 'active', houseUpdatedAt: s.serverTimestamp() }, { merge: true }),
+      s.setDoc(s.doc(s.db, 'emisoras', emitterUid), { uid: emitterUid, userUid: emitterUid, houseId: state.houseId, houseName: clean(state.house.name || 'Casa JEMMO', 80), housePosition: 'emitter', assignedAgentUid: agent.uid, assignedAgentName: agent.name, status: 'active', sourceCollection: 'users', schemaVersion: 2, updatedAt: s.serverTimestamp() }, { merge: true }),
       s.setDoc(s.doc(s.db, 'casas', state.houseId, 'tareas', emitterUid), { assignedAgentUid: agent.uid, assignedAgentName: agent.name, updatedAt: s.serverTimestamp() }, { merge: true })
     ]);
     window.JemmoWallet?.setMembership?.(emitterUid, { hasHouse: true, houseId: state.houseId, houseName: state.house.name || 'Casa JEMMO', agentUid: agent.uid });
+    emitter.assignedAgentUid = agent.uid;
+    emitter.assignedAgentName = agent.name;
+    const profile = { ...(state.profiles.get(emitterUid) || {}), assignedAgentUid: agent.uid, assignedAgentName: agent.name };
+    state.profiles.set(emitterUid, profile);
+    renderAll();
+    if (state.assignmentModalUid === emitterUid && $('#houseModal')?.classList.contains('open')) showAssignmentModal(emitterUid);
     await writeAudit('emitter_agent_assigned', emitterUid, { agentUid: agent.uid, agentName: agent.name });
     toast(`${clean(emitter.displayName || 'La emisora', 60)} quedó asignada a ${agent.name}.`, 'success');
+    return true;
   } catch (error) {
     console.warn('JEMMO asignación de agente:', error?.code || error?.message || error);
     toast('No se pudo asignar el agente.', 'error');
+    return false;
   }
 }
 
@@ -714,7 +833,35 @@ function bind() {
     if (event.target.id === 'houseAgentSearchForm') { event.preventDefault(); state.financeSearch = clean(new FormData(event.target).get('query'), 80); renderEmitters(); }
     if (event.target.id === 'houseAgentDateForm') { event.preventDefault(); const data=new FormData(event.target); state.financeFrom=clean(data.get('from'),10); state.financeTo=clean(data.get('to'),10); state.financeFilter='custom'; renderEmitters(); }
   });
-  document.addEventListener('click', event => {
+  document.addEventListener('click', async event => {
+    const positionAction = event.target.closest('[data-set-house-position]');
+    if (positionAction) {
+      event.preventDefault();
+      const uid = clean(positionAction.dataset.setHousePosition, 160);
+      const value = clean(positionAction.dataset.positionValue, 30);
+      const scope = positionAction.closest('.house-assignment-row,.house-assignment-sheet') || document;
+      const controls = [...scope.querySelectorAll('button[data-set-house-position],button[data-set-assigned-agent]')];
+      controls.forEach(button => { button.disabled = true; });
+      positionAction.classList.add('saving');
+      await changePosition(uid, value);
+      controls.forEach(button => { button.disabled = false; });
+      positionAction.classList.remove('saving');
+      return;
+    }
+    const agentAction = event.target.closest('[data-set-assigned-agent]');
+    if (agentAction) {
+      event.preventDefault();
+      const uid = clean(agentAction.dataset.setAssignedAgent, 160);
+      const agentUid = clean(agentAction.dataset.agentUid, 160);
+      const scope = agentAction.closest('.house-assignment-row,.house-assignment-sheet') || document;
+      const controls = [...scope.querySelectorAll('button[data-set-house-position],button[data-set-assigned-agent]')];
+      controls.forEach(button => { button.disabled = true; });
+      agentAction.classList.add('saving');
+      await assignAgent(uid, agentUid);
+      controls.forEach(button => { button.disabled = false; });
+      agentAction.classList.remove('saving');
+      return;
+    }
     const review = event.target.closest('[data-review-task]');
     if (review) { review.disabled = true; void reviewTask(review.dataset.taskUid, review.dataset.reviewTask).finally(() => { review.disabled = false; }); return; }
     const reset = event.target.closest('[data-reset-task]');
@@ -777,6 +924,7 @@ async function boot() {
 
 window.JemmoHouseOperations = {
   refresh: () => attachCurrentWorkspace(),
+  openAssignment: uid => showAssignmentModal(clean(uid, 160)),
   getState: () => ({ houseId: state.houseId, isAdmin: state.isAdmin, actualAdmin: state.actualAdmin, actualAgent: state.actualAgent, canViewAgentPanel: state.canViewAgentPanel, testRole: state.testRole, memberRole: state.memberRole, room: { ...state.room }, taskConfig: { ...state.taskConfig }, movementCount: state.financeMovements.length })
 };
 

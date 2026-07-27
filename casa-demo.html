@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" href="favicon-64.png">
   <link rel="icon" href="icon-192.png">
   <title>JEMMO LIVE · Casas</title>
-  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="app.css?v=35">
   <style>html.jemmo-auth-pending body{visibility:hidden}</style>
   <script>document.documentElement.classList.add('jemmo-auth-pending');setTimeout(()=>{if(!document.documentElement.classList.contains('jemmo-auth-pending'))return;let uid='';try{uid=localStorage.getItem('jemmo_active_uid')||''}catch{}if(!uid)try{uid=sessionStorage.getItem('jemmo_active_uid')||''}catch{}if(uid)document.documentElement.classList.remove('jemmo-auth-pending');else location.replace('acceso.html?sesion=timeout')},5500)</script>
 </head>
@@ -201,12 +201,12 @@
     <a data-tab="yo" href="yo.html"><span class="nav-icon">♙</span><b>Yo</b></a>
   </nav>
   <script type="module" src="jemmo-session.js"></script>
-  <script src="pwa-register.js"></script>
+  <script src="pwa-register.js?v=35"></script>
   <script src="jemmo-wallet.js"></script>
   <script src="jemmo-house-finance.js"></script>
   <script src="app.js"></script>
-  <script type="module" src="jemmo-houses.js"></script>
-  <script type="module" src="jemmo-house-operations.js"></script>
-  <script type="module" src="jemmo-role-lab.js"></script>
+  <script type="module" src="jemmo-houses.js?v=35"></script>
+  <script type="module" src="jemmo-house-operations.js?v=35"></script>
+  <script type="module" src="jemmo-role-lab.js?v=35"></script>
 </body>
 </html>
