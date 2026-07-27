@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · TAREA REAL EN LA CASA ACTUAL PRUEBA 33
+/* JEMMO LIVE V1 · ARRANQUE REAL DE TAREA PRUEBA 34
    Tareas exclusivas de Emisoras formalmente asignadas a una Casa.
    Cada hora se cobra por separado. El nivel usa únicamente el 70% neto de regalos de Casa.
    MODO DE PRUEBAS: antes de producción, cálculo y abono deben validarse en backend. */
@@ -6,7 +6,7 @@
   'use strict';
   if (window.JemmoHostTaskRewards?.version) return;
 
-  const VERSION = '33.0-test';
+  const VERSION = '34.0-test';
   const params = new URLSearchParams(location.search);
   const isHouseRoom = location.pathname.toLowerCase().endsWith('salas.html') && (
     params.get('houseRoom') === '1' ||
@@ -38,6 +38,15 @@
     { code: 'S', target: 50000000, reward: 70000, hours: 4, label: 'Nivel S' }
   ]);
 
+  const $ = id => document.getElementById(id);
+  function clean(value, max = 180) {
+    return String(value ?? '').trim().slice(0, max);
+  }
+
+  // La utilidad clean debe existir antes de resolver la Casa. En PRUEBA 33
+  // se invocaba antes de inicializarse y el módulo se detenía con ReferenceError.
+  window.__JEMMO_TASK_UI_OWNER__ = 'rewards-34-loading';
+
   let servicesPromise = null;
   let user = null;
   let profile = {};
@@ -66,8 +75,6 @@
   const unsubscribers = [];
   const houseUnsubscribers = [];
 
-  const $ = id => document.getElementById(id);
-  const clean = (value, max = 180) => String(value ?? '').trim().slice(0, max);
   const number = value => Math.max(0, Math.floor(Number(value) || 0));
   const fmt = value => number(value).toLocaleString('es-ES');
   const millis = value => value?.toMillis?.() || (value?.seconds ? Number(value.seconds) * 1000 : Number(value || 0));
@@ -752,7 +759,7 @@
 
   async function boot() {
     try {
-      window.__JEMMO_TASK_UI_OWNER__ = 'rewards-33';
+      window.__JEMMO_TASK_UI_OWNER__ = 'rewards-34';
       injectTaskSheet();
       renderClock();
       const box = $('houseTaskClock');
@@ -798,6 +805,18 @@
       windowTimer = setInterval(() => recalculateGiftWindow(false), 60000);
       document.addEventListener('visibilitychange', () => { if (!document.hidden) recalculateGiftWindow(false); });
     } catch (error) {
+      eligibilityState = 'error';
+      const box = $('houseTaskClock');
+      const label = box?.querySelector('small');
+      const count = $('houseTaskCountdown');
+      const mini = $('houseTaskProgressMini');
+      if (box && count && mini) {
+        box.hidden = false;
+        box.classList.add('waiting');
+        if (label) label.textContent = 'TAREA NO CARGADA';
+        count.textContent = 'REENTRAR';
+        mini.textContent = 'No se pudo iniciar el módulo. Sal de la Sala y vuelve a entrar.';
+      }
       console.warn('JEMMO tareas remuneradas:', error?.code || error?.message || error);
     }
   }
