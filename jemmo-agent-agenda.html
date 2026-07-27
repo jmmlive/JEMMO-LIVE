@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#09060f">
+  <title>Agenda de Agente · JEMMO LIVE</title>
+  <link rel="stylesheet" href="jemmo-agent-agenda.css?v=40">
+</head>
+<body>
+  <main id="jaa-app" class="jaa-app" aria-live="polite">
+    <header class="jaa-header">
+      <a class="jaa-back" href="casa-demo.html" aria-label="Volver a Mi Casa">‹</a>
+      <div>
+        <p class="jaa-eyebrow">JEMMO LIVE · CASA</p>
+        <h1>AGENDA DEL AGENTE</h1>
+      </div>
+      <button id="jaa-refresh" class="jaa-icon-btn" type="button" aria-label="Actualizar">↻</button>
+    </header>
+
+    <section id="jaa-agent-card" class="jaa-agent-card" aria-label="Resumen del agente">
+      <div class="jaa-agent-glow"></div>
+      <div class="jaa-agent-top">
+        <div id="jaa-agent-avatar" class="jaa-avatar jaa-avatar-agent" aria-hidden="true">J</div>
+        <div class="jaa-agent-id">
+          <span class="jaa-chip jaa-chip-owner">AGENTE</span>
+          <h2 id="jaa-agent-name">Jesús</h2>
+          <p id="jaa-agent-public-id">JEMMO · CUENTA RESPONSABLE</p>
+        </div>
+        <div class="jaa-agent-rank">
+          <span>NIVEL</span>
+          <strong id="jaa-agent-level">BASE</strong>
+        </div>
+      </div>
+      <div class="jaa-agent-metrics">
+        <article><span>GENERADO POR EMISORAS</span><strong id="jaa-total-gross">0</strong><small>JEMMOS brutos</small></article>
+        <article><span>BENEFICIO DEL AGENTE</span><strong id="jaa-total-agent">0</strong><small>10% · JEMS</small></article>
+        <article><span>EMISORAS ASIGNADAS</span><strong id="jaa-total-emitters">0</strong><small>activas y demo</small></article>
+        <article><span>DÍAS EN JEMMO</span><strong id="jaa-agent-days">0</strong><small>desde el registro</small></article>
+      </div>
+      <div class="jaa-progress-block">
+        <div><span>PROGRESO DE LA AGENDA</span><b id="jaa-team-progress-label">0%</b></div>
+        <div class="jaa-progress"><i id="jaa-team-progress"></i></div>
+      </div>
+    </section>
+
+    <section class="jaa-toolbar" aria-label="Filtros de agenda">
+      <label class="jaa-search">
+        <span>⌕</span>
+        <input id="jaa-search" type="search" placeholder="Buscar nombre o ID JEMMO" autocomplete="off">
+      </label>
+      <div class="jaa-filters" role="group" aria-label="Periodo">
+        <button class="is-active" data-period="today" type="button">HOY</button>
+        <button data-period="7d" type="button">7 DÍAS</button>
+        <button data-period="30d" type="button">30 DÍAS</button>
+      </div>
+    </section>
+
+    <section class="jaa-list-head">
+      <div>
+        <p class="jaa-eyebrow">EQUIPO ASIGNADO</p>
+        <h2>EMISORAS</h2>
+      </div>
+      <span id="jaa-sync-state" class="jaa-sync jaa-sync-loading">CARGANDO</span>
+    </section>
+
+    <section id="jaa-list" class="jaa-list" aria-label="Lista de emisoras"></section>
+
+    <section class="jaa-legend" aria-label="Leyenda">
+      <span><i class="jaa-dot jaa-dot-real"></i>REAL · Firebase</span>
+      <span><i class="jaa-dot jaa-dot-demo"></i>DEMO · visual</span>
+      <p>Los perfiles DEMO no se guardan en Firebase ni generan dinero. Sirven únicamente para comprobar la agenda.</p>
+    </section>
+  </main>
+
+  <div id="jaa-detail" class="jaa-sheet" hidden>
+    <div class="jaa-sheet-backdrop" data-close-detail></div>
+    <section class="jaa-sheet-panel" role="dialog" aria-modal="true" aria-labelledby="jaa-detail-name">
+      <div class="jaa-sheet-handle"></div>
+      <header class="jaa-detail-header">
+        <button class="jaa-close" type="button" data-close-detail aria-label="Cerrar">×</button>
+        <button id="jaa-open-profile" class="jaa-profile-link" type="button">VER PERFIL</button>
+      </header>
+      <div id="jaa-detail-content"></div>
+    </section>
+  </div>
+
+  <noscript>JEMMO LIVE necesita JavaScript para abrir la Agenda del Agente.</noscript>
+  <script type="module" src="jemmo-agent-agenda.js?v=40"></script>
+</body>
+</html>

@@ -1,12 +1,4 @@
-JEMMO LIVE V1 · MASCOTA Y PECERA DE CASA PRUEBA 39
-Fecha: 27/07/2026
-
-SHA-256 de los archivos instalables:
-e1254485cef066e0e20ecaf47ab9709a6d5b5b7dfe4ecf5c8c108fa25bbbd708  VERSION.txt
-bc7d2341711598345da065fd1ed0b9cbfd3a79bf5ba522aeaa4cbac11cdb7fe7  jemmo-house-pet.css
-c154403661ba81f7f030ff3f74a3a6f0da6c460c1935a02d41a9cd6affcdf049  jemmo-house-pet.js
-0eda8f73354d26fb6b8d219a389ce1619e05d2d6c4973265246a8459025e5c4d  pwa-register.js
-57e0321814238a4232580c07288e6f98b4e7a24cd7c0f195f26fe563f3b0db97  sw.js
-
-El ZIP es incremental y debe copiarse completo sobre PRUEBA 38.
-El documento Word se entrega separado y no se incluye dentro del ZIP.
+03fd2ff4d42aebcbfbf6ae7f5a198abe6ee2ade0d40f13952b3dd7489dc3d92c  VERSION.txt
+a253b4cf25b331f614f8e52ec3f157565566326fc2b8f341c459a47df5c663bf  jemmo-agent-agenda.html
+ae173d26ddebdcd8c3f0f822e1b1443b6f900d15a428c7d8a812a7a74f858e62  jemmo-agent-agenda.css
+85a12735c3fba54d05c31766786af574b53a00c5792eb920a57b7cde8ebdce19  jemmo-agent-agenda.js

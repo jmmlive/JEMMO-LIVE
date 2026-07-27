@@ -1,56 +1,26 @@
-JEMMO LIVE V1 · MASCOTA Y PECERA DE CASA PRUEBA 39
+JEMMO LIVE V1 · AGENDA Y PROGRESO DE AGENTES · PRUEBA 40
 Fecha: 27/07/2026
+Base documental: JEMMO LIVE V1 · MASCOTA Y PECERA DE CASA PRUEBA 39
+Tipo: Entrega aislada de validación visual y funcional
+Economía: MODO DE PRUEBAS · SIN DINERO REAL
 
-Base oficial:
-- JEMMO LIVE V1 · CHILI SABER, VOZ Y SOPORTE HUMANO PRUEBA 38.
+OBJETIVO
+- Crear una Agenda profesional para agentes.
+- Mostrar al propio agente en primer plano.
+- Mostrar debajo sus Emisoras con progreso, tarea, horas y resultado económico.
+- Abrir el perfil al tocar la foto.
+- Abrir el desglose operativo al tocar nombre, letras o cifras.
+- Recuperar perfiles reales desde Firebase cuando estén disponibles.
+- Mantener diez perfiles ficticios claramente marcados como DEMO para validar el diseño.
+- Reservar a Ruth como cuenta REAL: sus cifras no se inventan; permanecen en cero hasta leer Firebase.
+- Mostrar días transcurridos desde el registro.
 
-Objetivo:
-- Incorporar la primera Mascota oficial dentro de cada Casa y mostrarla en la Audio Room oficial.
-- Usar inicialmente el chicharro JEMMO violeta neón, con detalles dorados, ojos azules y J dorada.
-- Preparar una arquitectura extensible para futuras mascotas configurables por Casa.
-
-Resultado funcional:
-- Botón compacto MASCOTA dentro de la Audio Room de Casa.
-- Vista de pecera interactiva sin abandonar ni cerrar la sala.
-- Indicación de Nivel de la Casa y Nivel de la Pecera.
-- Chicharro interactivo que se acerca al punto tocado, celebra y reacciona al usuario.
-- Acciones ALIMENTAR, LIMPIAR y JUGAR con tiempos de espera e incremento de experiencia.
-- Evolución de pecera hasta cinco niveles, barras de alimento, limpieza y ánimo.
-- Visita diaria a la Audio Room de Casa que añade progreso de prueba.
-- Respaldo duradero en IndexedDB y sincronización opcional con Firestore.
-- Ruta Firestore: casas/{houseId}/mascota/actual.
-- Historial/idempotencia de acciones: casas/{houseId}/mascotaAcciones/{actionId}.
-- API preparada para tareas y regalos: window.JemmoHousePet.addProgress(...).
-
-Integración controlada:
-- No modifica salas.html, WebRTC, sillas, tareas, chat, regalos ni monedero.
-- pwa-register.js carga el módulo únicamente en Salas y páginas de Casas.
-- sw.js renueva la caché PWA y prioriza la red para HTML, JavaScript y CSS.
-
-Modo actual:
-- MODO DE PRUEBAS.
-- Las acciones de cuidado son gratuitas.
-- La pecera no cobra JEMMOS, no entrega JEMS y no modifica la economía.
-- La sincronización depende de la sesión Firebase y de las reglas Firestore vigentes.
-
-Archivos de la entrega:
+ARCHIVOS
+- jemmo-agent-agenda.html
+- jemmo-agent-agenda.css
+- jemmo-agent-agenda.js
 - VERSION.txt
-- jemmo-house-pet.css
-- jemmo-house-pet.js
-- pwa-register.js
-- sw.js
 - INTEGRIDAD_SHA256.txt
 
-Instalación:
-1. Copiar los seis archivos en la raíz actual de JEMMO LIVE y sustituir pwa-register.js y sw.js.
-2. Hacer commit y esperar la publicación.
-3. Cerrar completamente la PWA y volver a abrirla.
-4. Entrar en Perfil > Mi Casa > Audio Room oficial.
-5. Tocar MASCOTA y comprobar la pecera.
-
-Prueba obligatoria:
-- La Audio Room debe seguir funcionando igual antes y después de abrir la pecera.
-- El micrófono y el audio no deben detenerse al abrir o cerrar la mascota.
-- ALIMENTAR, LIMPIAR y JUGAR deben actualizar sus barras y experiencia.
-- Cerrar y abrir JEMMO debe conservar el nivel y el estado.
-- En un segundo móvil de la misma Casa, Firestore debe mostrar la misma mascota cuando las reglas lo permitan.
+LÍMITE DE ESTA ENTREGA
+La entrega no sustituye casa-demo.html, pwa-register.js ni sw.js porque la copia binaria completa de PRUEBA 39 no estaba disponible en el entorno actual. El módulo se entrega aislado para evitar borrar o sobrescribir funciones existentes. La integración final en el botón del panel de Casa debe realizarse sobre el ZIP completo actualmente instalado.
