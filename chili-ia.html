@@ -10,7 +10,7 @@
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   <title>Chili IA · JEMMO LIVE</title>
-  <link rel="stylesheet" href="chili-ia.css">
+  <link rel="stylesheet" href="chili-ia.css?v=38">
   <style>html.jemmo-auth-pending body{visibility:hidden}</style>
   <script>
     document.documentElement.classList.add('jemmo-auth-pending');
@@ -46,6 +46,7 @@
         <p>Tu asistente oficial dentro de JEMMO LIVE. Te ayudo a aprender, crear, compartir y resolver problemas con seguridad.</p>
         <div class="hero-actions">
           <button class="hero-play" type="button" data-media-slot="presentacion"><span>▶</span> VER PRESENTACIÓN</button>
+          <button class="hero-voice" type="button" data-open-voice-call><span>🎙</span> HABLAR CON CHILI</button>
           <span class="hero-online"><i></i> EN LÍNEA</span>
         </div>
         <div class="trust-row" aria-label="Características de Chili IA">
@@ -57,12 +58,12 @@
     <section class="chat-card" aria-labelledby="chatTitle">
       <div class="section-heading">
         <div><p class="eyebrow">CENTRO DE AYUDA INTELIGENTE</p><h2 id="chatTitle">Pregúntale a Chili</h2></div>
-        <button class="subtle-button" id="clearChat" type="button">Limpiar</button>
+        <div class="chat-head-actions"><button class="voice-output-toggle" id="voiceOutputToggle" type="button" aria-pressed="false">🔇 ACTIVAR VOZ</button><button class="subtle-button" id="clearChat" type="button">Limpiar</button></div>
       </div>
 
       <div class="capability-banner" id="capabilityBanner">
         <span>✦</span>
-        <div><strong>Conocimiento JEMMO activo</strong><small>Esta primera base responde con información revisada de la aplicación. La conexión al motor de IA se añadirá mediante un servidor seguro.</small></div>
+        <div><strong>Saber JEMMO · Base oficial PRUEBA 38</strong><small>Tareas, tarifas, economía, privacidad, seguridad, rutas y soporte humano. Chili puede escuchar y leer respuestas usando la voz del dispositivo.</small></div>
       </div>
 
       <div class="chat-log" id="chiliChatLog" role="log" aria-live="polite" aria-relevant="additions">
@@ -76,10 +77,10 @@
       </div>
 
       <div class="quick-prompts" id="quickPrompts" aria-label="Preguntas rápidas">
-        <button type="button" data-prompt="¿Cómo inicio un LIVE?">Iniciar LIVE</button>
-        <button type="button" data-prompt="¿Cómo funcionan las salas?">Salas</button>
-        <button type="button" data-prompt="¿Cómo encuentro a una persona por su ID JEMMO?">Buscar persona</button>
-        <button type="button" data-prompt="Tengo un problema para entrar en la app">Problemas de acceso</button>
+        <button type="button" data-prompt="¿Cómo funcionan las tareas de 24 horas?">Tareas 24 h</button>
+        <button type="button" data-prompt="Enséñame la tabla de tarifas">Tarifas</button>
+        <button type="button" data-prompt="¿Cuándo cuenta el cronómetro de Audio Room?">Cronómetro</button>
+        <button type="button" data-prompt="Quiero hablar con soporte humano">Soporte humano</button>
       </div>
 
       <form class="composer" id="chiliForm">
@@ -87,7 +88,46 @@
         <label class="composer-input"><span class="sr-only">Pregunta para Chili IA</span><textarea id="chiliInput" rows="1" maxlength="700" placeholder="Escribe tu pregunta…" enterkeyhint="send"></textarea></label>
         <button class="send-button" id="sendButton" type="submit" aria-label="Enviar pregunta">➤</button>
       </form>
-      <p class="ai-note">Chili puede equivocarse. Para seguridad, pagos o recuperación de cuenta, muestra siempre los pasos oficiales y permite pedir ayuda humana.</p>
+      <p class="ai-note">La voz utiliza el reconocimiento y lector del móvil. Chili no es una persona ni confirma una gestión humana hasta que el formulario genera una referencia.</p>
+    </section>
+
+
+    <section class="knowledge-section" id="saber" aria-labelledby="knowledgeTitle">
+      <div class="section-heading"><div><p class="eyebrow">BIBLIOTECA OFICIAL</p><h2 id="knowledgeTitle">Saber JEMMO</h2><p class="section-intro">Información revisada para orientar a usuarios, emisoras y agentes sin salir de la aplicación.</p></div><button class="voice-call-mini" type="button" data-open-voice-call>🎙 CONVERSAR</button></div>
+      <div class="knowledge-nav" aria-label="Categorías del Saber JEMMO">
+        <button type="button" data-section="tareas"><span>⏱️</span><b>Tareas y tarifas</b><small>LIVE y Audio Room</small></button>
+        <button type="button" data-prompt="Explícame el monedero y las monedas de JEMMO"><span>🪙</span><b>Economía</b><small>JEMMOS, JEMS y retiros</small></button>
+        <button type="button" data-prompt="¿Cómo funcionan las Casas y las batallas?"><span>🏠</span><b>Casas</b><small>Agentes y Emisoras</small></button>
+        <button type="button" data-section="privacidad"><span>🔒</span><b>Privacidad</b><small>Datos y seguridad</small></button>
+        <button type="button" data-section="soporte"><span>🧑‍💻</span><b>Soporte humano</b><small>Consulta o denuncia</small></button>
+      </div>
+
+      <article class="task-knowledge-card" id="tareas">
+        <div class="task-card-head"><div><p class="eyebrow">TABLA VIGENTE · MODO DE PRUEBAS</p><h3>Tareas de Emisora</h3><p>El nivel determina las horas diarias y la tarifa de LIVE. Audio Room mantiene siempre la misma tarifa.</p></div><span><small>AUDIO ROOM FIJO</small><b id="audioRateFixed">800 JEMS/HORA</b></span></div>
+        <div class="task-rules-grid">
+          <div><b>24 H</b><small>Plazo para completar y cobrar. Lo no cobrado caduca al reiniciar.</small></div>
+          <div><b>60 MIN</b><small>Cada recompensa exige una hora completa en la misma modalidad.</small></div>
+          <div><b>800</b><small>Audio Room por hora, sin aumento de precio por nivel.</small></div>
+          <div><b>SEPARADO</b><small>Los minutos de LIVE y Audio Room no se mezclan.</small></div>
+        </div>
+        <div class="task-table-wrap" tabindex="0" aria-label="Tabla de niveles y tarifas de tareas">
+          <table class="task-rate-table">
+            <thead><tr><th>Nivel</th><th>JEMS netos</th><th>Horas/día</th><th>LIVE/h</th><th>AUDIO/h</th><th>Máximo AUDIO</th></tr></thead>
+            <tbody id="taskRatesBody"></tbody>
+          </table>
+        </div>
+        <div class="task-examples">
+          <p><strong>BASE:</strong> una hora de Audio Room completa = 800 JEMS y la tarea termina hasta el ciclo siguiente.</p>
+          <p><strong>NIVEL I:</strong> dos horas disponibles = 800 + 800 = 1.600 JEMS si ambas se realizan en Audio Room.</p>
+          <p><strong>Micrófono:</strong> silencio voluntario pausa; silencio aplicado por moderación continúa mientras la Emisora siga en la silla.</p>
+        </div>
+        <div class="knowledge-actions"><a href="casa-demo.html">ABRIR MIS TAREAS</a><a href="salas.html">ABRIR AUDIO ROOM</a><a href="live.html">ABRIR LIVE</a></div>
+      </article>
+
+      <article class="privacy-card" id="privacidad">
+        <span>🔐</span><div><p class="eyebrow">PRIVACIDAD Y SEGURIDAD</p><h3>Qué debe proteger JEMMO</h3><p>El correo, las contraseñas, los códigos de verificación, los datos bancarios y las conversaciones privadas no deben mostrarse públicamente. Chili no incorpora chats privados a su conocimiento. Las capturas de soporte se guardan únicamente para investigar el caso y necesitan reglas de acceso estrictas antes de producción.</p></div>
+        <button type="button" data-prompt="Explícame la privacidad y cómo se usan las capturas de soporte">PREGUNTAR A CHILI</button>
+      </article>
     </section>
 
     <section class="help-section" aria-labelledby="helpTitle">
@@ -100,6 +140,29 @@
         <button class="help-tile cyan" data-prompt="¿Cómo funcionan los perfiles, IDs y mensajes?"><span>💬</span><strong>Personas</strong><small>ID JEMMO, perfil y mensajes</small></button>
         <button class="help-tile red" data-prompt="¿Cómo denuncio, bloqueo o reporto un posible menor?"><span>🛡️</span><strong>Seguridad</strong><small>Bloqueo, denuncia y menores</small></button>
       </div>
+    </section>
+
+
+    <section class="support-section" id="soporte" aria-labelledby="supportTitle">
+      <div class="section-heading"><div><p class="eyebrow">ATENCIÓN CLASIFICADA</p><h2 id="supportTitle">Soporte humano</h2><p class="section-intro">Chili te guía primero. Cuando necesitas revisión de una persona, registra el caso con categoría, explicación y captura.</p></div><span class="support-mode">MODO DE PRUEBAS</span></div>
+      <div class="support-alert"><span>!</span><p><strong>Una solicitud solo está enviada cuando aparece una referencia JEMMO.</strong> En posible menor o riesgo urgente, utiliza la categoría de seguridad y no publiques la evidencia en una sala.</p></div>
+      <form class="support-form" id="supportForm">
+        <div class="support-fields two">
+          <label><span>Motivo *</span><select id="supportCategory" name="category" required></select></label>
+          <label><span>Dónde ocurrió *</span><select name="location" required><option value="">Selecciona el lugar</option><option value="wallet">Monedero o recarga</option><option value="live">LIVE</option><option value="audio_room">Audio Room o Sala</option><option value="messages">Mensajes privados</option><option value="profile">Perfil o Destello</option><option value="access">Acceso a la aplicación</option><option value="other">Otro lugar</option></select></label>
+        </div>
+        <label><span>Persona, ID JEMMO o referencia relacionada</span><input name="target" maxlength="100" placeholder="Ejemplo: JEMMO-1000002 o nombre de la Sala"></label>
+        <label><span>Explica exactamente qué pasó *</span><textarea name="description" rows="5" maxlength="1600" minlength="20" required placeholder="Indica qué ocurrió, cuándo, qué esperabas que pasara y qué aparece en pantalla. En denuncias, incluye la frase o conducta que debe revisarse."></textarea><small>Entre 20 y 1.600 caracteres. No escribas contraseñas ni códigos.</small></label>
+        <div class="evidence-zone" id="evidenceZone">
+          <label class="evidence-picker" for="supportEvidence"><span>📷</span><b>ADJUNTAR CAPTURA OBLIGATORIA</b><small>PNG, JPG o WEBP · máximo original 15 MB</small></label>
+          <input id="supportEvidence" type="file" accept="image/*" required>
+          <div class="evidence-preview" id="evidencePreview" hidden><img id="evidencePreviewImage" alt="Vista previa de la captura"><div><b>Captura preparada</b><small id="evidenceMeta"></small><button id="removeEvidence" type="button">QUITAR</button></div></div>
+        </div>
+        <label class="support-consent"><input type="checkbox" required><span>Confirmo que la información es verdadera y autorizo su uso para revisar este caso.</span></label>
+        <button class="support-submit" id="supportSubmit" type="submit">ENVIAR A SOPORTE HUMANO</button>
+        <p class="support-send-state" id="supportSendState">La solicitud se guardará en Firebase con estado PENDIENTE y una referencia.</p>
+      </form>
+      <div class="support-history"><div><p class="eyebrow">SEGUIMIENTO</p><h3>Mis últimas solicitudes</h3></div><div id="supportTicketsList"><p class="empty-tickets">Cargando solicitudes…</p></div></div>
     </section>
 
     <section class="media-section official-media" aria-labelledby="mediaTitle">
@@ -155,6 +218,20 @@
     <a data-tab="yo" href="yo.html"><span class="nav-icon">♙</span><b>Yo</b></a>
   </nav>
 
+
+  <div class="voice-call-modal" id="voiceCallModal" hidden>
+    <div class="voice-call-card" role="dialog" aria-modal="true" aria-labelledby="voiceCallTitle">
+      <button class="voice-call-close" id="voiceCallClose" type="button" aria-label="Cerrar conversación">×</button>
+      <p class="eyebrow">CONVERSACIÓN POR VOZ · PRUEBA</p>
+      <h2 id="voiceCallTitle">Habla con Chili</h2>
+      <div class="voice-orbit"><i></i><i></i><i></i><img src="chili-avatar.webp" alt="Chili IA"></div>
+      <strong class="voice-call-status" id="voiceCallStatus">LISTA PARA ESCUCHAR</strong>
+      <p class="voice-transcript" id="voiceTranscript">Toca el micrófono y hazme una pregunta sobre JEMMO LIVE.</p>
+      <div class="voice-call-actions"><button class="voice-call-mic" id="voiceCallMic" type="button" aria-label="Hablar">🎙</button><button class="voice-call-end" id="voiceCallEnd" type="button">FINALIZAR</button></div>
+      <small>Usa el reconocimiento y la voz disponibles en el móvil. No es una videollamada humana y puede no estar disponible en todos los navegadores.</small>
+    </div>
+  </div>
+
   <div class="video-modal" id="videoModal" hidden>
     <div class="video-modal-card" role="dialog" aria-modal="true" aria-labelledby="videoModalTitle">
       <button class="video-modal-close" id="videoModalClose" type="button" aria-label="Cerrar vídeo">×</button>
@@ -177,7 +254,7 @@
 
   <script type="module" src="jemmo-session.js"></script>
   <script src="pwa-register.js"></script>
-  <script type="module" src="jemmo-chili.js"></script>
+  <script type="module" src="jemmo-chili.js?v=38"></script>
   <script type="module" src="jemmo-social.js"></script>
 </body>
 </html>

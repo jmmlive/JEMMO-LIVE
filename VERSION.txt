@@ -1,69 +1,84 @@
-JEMMO LIVE V1 · TARIFA AUDIO ROOM 800 Y SILENCIO MODERADO PRUEBA 37
+JEMMO LIVE V1 · CHILI SABER, VOZ Y SOPORTE HUMANO PRUEBA 38
 Fecha: 27/07/2026
-Base instalada: JEMMO LIVE V1 · CRONÓMETRO ACTIVO Y PANTALLA DESPIERTA PRUEBA 36
+Base instalada: JEMMO LIVE V1 · TARIFA AUDIO ROOM 800 Y SILENCIO MODERADO PRUEBA 37
 
-CAMBIO ECONÓMICO CONFIRMADO POR JESÚS
-- LIVE conserva la escala de pago por nivel existente: el precio por hora de LIVE aumenta según los JEMS netos de regalos de Casa.
-- Audio Room paga siempre exactamente 800 JEMS por cada hora completa.
-- El precio de Audio Room nunca sube por nivel.
-- El nivel sí aumenta el número de horas diarias disponibles para ambas modalidades.
-- Ejemplo BASE: 1 hora diaria. Si se completa en Audio Room, se cobran 800 JEMS.
-- Ejemplo NIVEL I: 2 horas diarias. Si las dos se completan en Audio Room, se cobran 800 + 800 = 1.600 JEMS.
-- En NIVEL I, LIVE paga 3.000 JEMS por cada hora completa, mientras Audio Room continúa pagando 800 JEMS por cada hora completa.
+OBJETIVO DE LA ENTREGA
+- Convertir Chili IA en el centro real de conocimiento y orientación de JEMMO LIVE.
+- Permitir consultar tareas, tarifas, economía, Casas, privacidad, seguridad y rutas de la aplicación.
+- Incorporar conversación por voz usando las funciones disponibles en el navegador móvil.
+- Incorporar un acceso directo y clasificado a soporte humano con captura obligatoria.
 
-CORRECCIÓN DE CÁLCULO Y COBRO
-- LIVE y Audio Room mantienen contadores separados.
-- Cada bloque remunerado exige 60 minutos completos dentro de una misma modalidad.
-- Los minutos parciales de LIVE y Audio Room no se mezclan para fabricar una hora con una tarifa incorrecta.
-- El máximo de bloques cobrables dentro del ciclo de 24 horas lo determina el nivel actual.
-- La pantalla de tareas muestra por separado la tarifa LIVE y la tarifa fija de Audio Room.
-- Cuando existe una hora completa en ambas modalidades aparecen dos botones de cobro separados.
-- Cada recompensa guarda modalidad, número de hora de esa modalidad, tarifa aplicada y nivel.
-- Se mantienen campos de compatibilidad para las tareas creadas en pruebas anteriores.
+SABER JEMMO
+- Nueva biblioteca revisada con conocimiento sobre LIVE, Salas, Audio Room, Casas, perfiles, IDs JEMMO, Mensajes, invitaciones, monedero, regalos, retiradas, privacidad, seguridad, acceso y soporte.
+- Las respuestas incluyen botones que llevan directamente a la sección o página correcta.
+- La página incorpora un menú Saber JEMMO y una tabla visible de tareas y tarifas.
 
-SILENCIO VOLUNTARIO Y SILENCIO DE MODERACIÓN
-- Si la Emisora silencia voluntariamente su micrófono, la tarea se pausa.
-- Si un propietario, administrador o responsable la silencia mediante moderación, la tarea continúa contando mientras permanezca en la silla, con JEMMO visible y una pista real de micrófono abierta.
-- La Emisora no puede reactivarse por sí sola mientras siga silenciada por moderación.
-- La interfaz muestra SILENCIO DE MODERACIÓN y aclara que la tarea continúa activa.
-- Se conserva el UID del responsable que aplicó el silencio en el estado de actividad y en el registro de moderación de la Sala.
-- Si la Emisora baja de la silla o es expulsada, la tarea se pausa aunque antes estuviera silenciada por moderación.
+TABLA DE TAREAS Y TARIFAS
+- Audio Room aparece siempre con tarifa fija de 800 JEMS por cada hora completa.
+- El nivel aumenta las horas diarias disponibles, pero no el precio de Audio Room.
+- LIVE conserva la escala actualmente programada por nivel.
+- BASE muestra una hora diaria; Nivel I muestra dos horas; los niveles posteriores siguen la escala vigente.
+- Se explica que el ciclo dura 24 horas y que una tarea no completada o una recompensa no cobrada caduca cuando se inicia el ciclo siguiente.
+- Se aclara que los minutos parciales de LIVE y Audio Room no se mezclan.
+- Se explica el silencio voluntario, el silencio de moderación y las condiciones del cronómetro.
 
-ADMINISTRACIÓN
-- El panel del agente muestra las dos tarifas: LIVE / AUDIO.
-- Una tarea solo se considera completa cuando existen horas enteras válidas en LIVE o Audio Room, no por sumar dos fracciones de modalidades distintas.
-- Los ciclos nuevos se crean con LIVE 2.000 JEMS/h en BASE y Audio Room 800 JEMS/h fijo.
+CONVERSACIÓN POR VOZ
+- El botón HABLAR CON CHILI abre una vista de conversación semejante a una llamada.
+- Chili puede escuchar mediante SpeechRecognition cuando el navegador lo permite.
+- Chili puede leer sus respuestas mediante SpeechSynthesis en español.
+- Cada respuesta dispone de un botón para escucharla.
+- Existe un control general ACTIVAR VOZ / CHILI HABLA.
+- La interfaz aclara que todavía no es una videollamada humana ni un motor de IA remoto.
 
-PRUEBA RECOMENDADA CON RUTH
-1. Instalar PRUEBA 37 encima de PRUEBA 36.
-2. Cerrar completamente JEMMO en ambos móviles y volver a abrirla.
-3. Ruth entra en la Sala oficial, sube a una silla y activa el micrófono.
-4. La tarjeta superior debe mostrar 800 JEMS/HORA.
-5. Ruth silencia voluntariamente el micrófono: el cronómetro debe pausarse.
-6. Ruth lo reactiva: el cronómetro debe continuar.
-7. Jesús abre el perfil de Ruth desde su silla y pulsa SILENCIAR.
-8. Ruth debe ver SILENCIO DE MODERACIÓN y el cronómetro debe continuar avanzando.
-9. Jesús pulsa REACTIVAR AUDIO: Ruth vuelve a emitir y la tarea continúa sin reiniciarse.
-10. Para la prueba económica abre Mis tareas: debe mostrar LIVE 2.000/H y AUDIO 800/H en nivel BASE.
+SOPORTE HUMANO
+- Nueva sección directa dentro de Chili IA.
+- Categorías: monedero, acceso, tareas, fallo técnico, comportamiento, posible menor, suplantación y otra consulta.
+- El usuario debe indicar dónde ocurrió, explicar el problema y adjuntar una captura obligatoria.
+- La captura se reduce antes de guardarse para no exceder el límite de Firestore.
+- La solicitud se registra en supportTickets con estado pending, prioridad, UID, categoría, descripción y evidencia.
+- Los casos de acoso, posible menor o suplantación también crean un registro relacionado en denuncias.
+- La aplicación genera una referencia visible con formato JEMMO-XXXXXXXX.
+- La sección muestra las últimas solicitudes del usuario y su estado.
+- La entrega no afirma que una persona haya respondido; únicamente confirma una gestión cuando Firebase devuelve una referencia.
+
+ACCESOS DIRECTOS
+- Inicio: Ayuda y soporte abre directamente chili-ia.html#soporte.
+- Perfil: Seguridad y privacidad abre Saber JEMMO en Privacidad.
+- Perfil: Ayuda y soporte abre directamente el formulario humano.
+- LIVE: Ayuda y soporte abre directamente el formulario humano.
+
+PRIVACIDAD Y PRODUCCIÓN
+- Las capturas se guardan en Firestore solo para esta fase de pruebas.
+- Antes de producción deben aplicarse reglas autenticadas por propietario del ticket y rol de soporte.
+- En producción conviene mover las evidencias a Firebase Storage protegido y conservar en Firestore únicamente su referencia.
+- Chili no aprende automáticamente de conversaciones privadas.
+
+PRUEBA RECOMENDADA
+1. Instalar PRUEBA 38 encima de PRUEBA 37.
+2. Cerrar completamente JEMMO y volver a abrirla.
+3. Abrir Chili IA desde Inicio.
+4. Preguntar: "¿Cómo funcionan las tareas de 24 horas?".
+5. Comprobar la tabla: Audio Room debe mostrar 800 JEMS/h en todos los niveles.
+6. Pulsar HABLAR CON CHILI, conceder micrófono y realizar una pregunta.
+7. Activar CHILI HABLA y comprobar que lee la respuesta.
+8. Abrir Soporte humano, seleccionar una categoría, escribir al menos 20 caracteres y adjuntar una captura.
+9. Enviar y comprobar que aparece una referencia JEMMO y estado PENDIENTE.
+10. Volver a abrir Chili y comprobar que la solicitud aparece en Mis últimas solicitudes.
 
 ARCHIVOS DEL ZIP
 1. VERSION.txt
-2. salas.html
-3. casa-demo.html
-4. jemmo-host-task-rewards.js
-5. jemmo-house-activity.js
-6. jemmo-house-room-ui.js
-7. jemmo-house-operations.js
-8. pwa-register.js
-9. sw.js
-10. INTEGRIDAD_SHA256.txt
-
-INSTALACIÓN
-- Copiar y sustituir los diez archivos del ZIP.
-- Hacer commit y esperar la publicación.
-- Cerrar completamente JEMMO y volver a abrirla para cargar la nueva caché.
-- No modificar Firebase manualmente.
+2. chili-ia.html
+3. chili-ia.css
+4. jemmo-chili.js
+5. jemmo-chili-knowledge.js
+6. inicio.html
+7. yo.html
+8. live.html
+9. pwa-register.js
+10. sw.js
+11. INTEGRIDAD_SHA256.txt
 
 MODO DE PRUEBAS
-- La economía continúa en modo de pruebas.
-- Antes de producción, los cobros y las validaciones de actividad deberán trasladarse o verificarse mediante backend seguro.
+- La economía y el soporte continúan en modo de pruebas.
+- Las respuestas de Chili proceden de una biblioteca local revisada.
+- El futuro motor de IA y la voz premium necesitarán backend seguro, proveedor de IA y control de costes.

@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-task-rates-37';
+  const VERSION = 'pwa-chili-support-38';
   let installPrompt = null;
 
   const isStandalone = () =>
