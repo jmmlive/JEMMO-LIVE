@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · ACTIVIDAD EN LA CASA ACTUAL PRUEBA 33
+/* JEMMO LIVE V1 · ACTIVIDAD VISIBLE Y CRONÓMETRO REAL PRUEBA 36
    Registra tiempo LIVE y tiempo real sentado en Sala oficial con sesión, lease e idempotencia.
    Solo funciona para Emisoras formalmente asignadas a una Casa. */
 (() => {
@@ -76,7 +76,20 @@
     if(activityType==='live')return !target.hidden&&getComputedStyle(target).display!=='none';
     const roomVisible=!target.classList.contains('jr-hidden')&&getComputedStyle(target).display!=='none';
     const seatState=window.JemmoHouseRoomControls?.getState?.();
-    return roomVisible&&seatState?.houseSeatActive===true&&seatState?.sessionActive===true;
+    // PRUEBA 36: la Sala oficial es 24/7. No se exige que un propietario mantenga
+    // una sesión WebRTC abierta. Sí se exige silla, micrófono encendido y una pista
+    // de audio local realmente viva; estar abajo o simular el botón no suma.
+    return roomVisible&&seatState?.houseSeatActive===true&&seatState?.micEnabled===true&&seatState?.mediaActive===true;
+  }
+  function inactiveReason(){
+    if(document.hidden)return'background';
+    if(!navigator.onLine)return'offline';
+    if(activityType==='live')return'inactive';
+    const state=window.JemmoHouseRoomControls?.getState?.()||{};
+    if(state.houseSeatActive!==true)return'listener';
+    if(state.micEnabled!==true)return'muted';
+    if(state.mediaActive!==true)return'microphone_unavailable';
+    return'waiting';
   }
 
   function cyclePayload(now,reason,current={}){return{uid:user.uid,displayName:clean(profile.displayName||user.displayName||user.email?.split('@')[0]||'Usuario JEMMO',48),publicId:clean(profile.publicId,48),accountRole:clean(profile.role||profile.rol||member.accountRole||'emisor',30),housePosition:'emitter',assignedAgentUid:assignedAgentUid(),taskState:'active',completionState:'in_progress',cycleDurationHours:24,cycleStartedAtClient:now,cycleEndsAtClient:now+DAY_MS,cycleKey:`24h-${now}`,cycleNumber:Math.max(1,Number(current.cycleNumber||0)+1),liveSeconds:0,houseRoomSeconds:0,totalTargetMinutes:60,dailyHours:1,hourlyRewardJems:2000,taskTierCode:'BASE',giftWindowDays:7,claimedHourSlots:[],claimedHours:0,hourlyClaims:{},rewardClaimed:false,rewardAmount:0,rewardTotalClaimed:0,reviewStatus:'pending',activatedReason:reason,activatedAtClient:Number(current.activatedAtClient||now),updatedAt:services.serverTimestamp()}}
@@ -151,7 +164,7 @@
     }catch(e){console.warn('JEMMO actividad Casa: no se pudo guardar',e?.code||e)}
   }
 
-  async function start(){if(running||starting||destroyed||!houseId||leaseLost)return;starting=true;try{await ensureTaskCycle('activity_resumed');await claimLease();running=true;startedAt=Date.now();sessionElapsedSeconds=0;clearInterval(flushTimer);flushTimer=setInterval(()=>void flush(false),30000);window.dispatchEvent(new CustomEvent('jemmo-house-activity',{detail:{type:activityType,status:'active',houseId,sessionId,cycleEndsAtClient:cycleEndMs}}))}catch(e){console.warn('JEMMO actividad Casa: inicio',e?.code||e)}finally{starting=false}}
+  async function start(){if(running||starting||destroyed||!houseId||leaseLost)return;starting=true;try{await ensureTaskCycle('activity_resumed');await claimLease();running=true;startedAt=Date.now();sessionElapsedSeconds=0;clearInterval(flushTimer);flushTimer=setInterval(()=>void flush(false),30000);window.dispatchEvent(new CustomEvent('jemmo-house-activity',{detail:{type:activityType,status:'active',houseId,sessionId,cycleEndsAtClient:cycleEndMs,startedAtClient:startedAt,seat:window.JemmoHouseRoomControls?.getState?.()?.localSeat||0}}))}catch(e){console.warn('JEMMO actividad Casa: inicio',e?.code||e)}finally{starting=false}}
 
   async function stop(reason='stopped'){
     if(!running&&reason!=='closed')return;
@@ -163,7 +176,7 @@
     window.dispatchEvent(new CustomEvent('jemmo-house-activity',{detail:{type:activityType,status:reason,houseId,sessionId}}));
   }
 
-  function sync(){if(targetRunning())void start();else void stop(document.hidden?'background':activityType==='house_room'?'listener':'inactive')}
+  function sync(){if(targetRunning())void start();else void stop(inactiveReason())}
   async function markTaskInactive(reason='membership_inactive'){
     if(!services||!user||!houseId)return;
     try{await services.setDoc(services.doc(services.db,'casas',houseId,'tareas',user.uid),{taskState:'inactive',completionState:'inactive',inactiveReason:reason,inactiveAtClient:Date.now(),inactiveAt:services.serverTimestamp(),updatedAt:services.serverTimestamp()},{merge:true})}catch(e){console.warn('JEMMO actividad Casa: desactivar tarea',e?.code||e)}
@@ -177,8 +190,8 @@
       const wasEligible=eligible;eligible=true;if(!wasEligible){void ensureTaskCycle('formal_emitter_assigned').then(sync)}
     },e=>console.warn('JEMMO actividad Casa: membresía',e?.code||e));
   }
-  async function boot(){try{if(!await resolveMembership())return;watchMembership();const target=document.getElementById(targetId);if(!target)return;observer=new MutationObserver(sync);observer.observe(target,{attributes:true,attributeFilter:['hidden','class','style']});document.addEventListener('visibilitychange',sync);window.addEventListener('jemmo-house-seat-change',sync);window.addEventListener('offline',()=>void stop('offline'));window.addEventListener('online',sync);window.addEventListener('pagehide',()=>{destroyed=true;try{membershipUnsub?.()}catch{}membershipUnsub=null;void stop('closed')});setInterval(sync,2000);sync()}catch(e){console.warn('JEMMO actividad Casa:',e?.message||e)}}
+  async function boot(){try{if(!await resolveMembership())return;watchMembership();const target=document.getElementById(targetId);if(!target)return;observer=new MutationObserver(sync);observer.observe(target,{attributes:true,attributeFilter:['hidden','class','style']});document.addEventListener('visibilitychange',sync);window.addEventListener('jemmo-house-seat-change',sync);window.addEventListener('offline',()=>void stop('offline'));window.addEventListener('online',sync);window.addEventListener('pagehide',()=>{destroyed=true;try{membershipUnsub?.()}catch{}membershipUnsub=null;void stop('closed')});setInterval(sync,1000);sync()}catch(e){console.warn('JEMMO actividad Casa:',e?.message||e)}}
 
-  window.JemmoHouseActivity={getState:()=>({type:activityType,houseId,running,sessionId,sessionElapsedSeconds,cycleEndMs,leaseLost}),flush:()=>flush(true),ensureTaskCycle};
+  window.JemmoHouseActivity={version:'36.0-test',getState:()=>({type:activityType,houseId,running,sessionId,sessionElapsedSeconds,cycleEndMs,leaseLost,reason:running?'active':inactiveReason(),seat:window.JemmoHouseRoomControls?.getState?.()?.localSeat||0}),flush:()=>flush(true),ensureTaskCycle};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else void boot();
 })();

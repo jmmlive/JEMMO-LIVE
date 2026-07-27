@@ -968,12 +968,22 @@
     if(camera){camera.hidden=state.mode!=='camera';camera.querySelector('b').childNodes[0].textContent=`Cámara ${state.cameraEnabled?'ON':'OFF'}`;camera.classList.toggle('active',state.cameraEnabled)}
     if(chat){chat.querySelector('b').childNodes[0].textContent=`Chat ${state.chatClosed?'CERRADO':'ABIERTO'}`;chat.classList.toggle('active',!state.chatClosed)}
   }
-  function toggleRoomMicro(force){
+  function emitHouseActivityState(){
+    if(!houseContext.enabled)return;
+    const audioTrack=state.stream?.getAudioTracks?.().find(track=>track.readyState==='live')||null;
+    window.dispatchEvent(new CustomEvent('jemmo-house-seat-change',{detail:{houseSeatActive:state.houseSeatActive,micEnabled:state.micEnabled,mediaActive:Boolean(audioTrack&&audioTrack.enabled),localSeat:state.localSeat,roomOpen}}));
+  }
+  async function toggleRoomMicro(force){
     if(houseContext.enabled&&!state.houseSeatActive){toast('Sube a una silla para activar el micrófono.');return}
-    state.micEnabled=typeof force==='boolean'?force:!state.micEnabled;
+    const next=typeof force==='boolean'?force:!state.micEnabled;
+    if(next&&!state.stream){
+      const stream=await startCamera();
+      if(!stream){state.micEnabled=false;syncHouseDirectControls();updateRoomControlLabels();renderSeats();emitHouseActivityState();toast('No se puede contar la tarea sin permiso real de micrófono.');return}
+    }
+    state.micEnabled=next;
     state.stream?.getAudioTracks?.().forEach(track=>{track.enabled=state.micEnabled});
-    syncHouseDirectControls();updateRoomControlLabels();renderSeats();
-    toast(state.micEnabled?'Micrófono activado.':'Micrófono silenciado.');
+    syncHouseDirectControls();updateRoomControlLabels();renderSeats();emitHouseActivityState();
+    toast(state.micEnabled?'Micrófono activado. La tarea puede contar si estás en una silla.':'Micrófono silenciado. La tarea queda pausada.');
   }
   function toggleRoomCamera(force){
     if(state.mode!=='camera'){toast('La cámara solo está disponible en Sala con cámara.');return}
@@ -993,7 +1003,7 @@
     if(!silent){addChat(`JEMMO: El chat ha sido ${state.chatClosed?'cerrado':'abierto'} por el anfitrión.`,'system');toast(state.chatClosed?'Chat cerrado para toda la sala.':'Chat abierto de nuevo.')}
   }
 
-  function toggleHouseSeat(preferredIndex=0){
+  async function toggleHouseSeat(preferredIndex=0){
     if(!houseContext.enabled)return;
     if(state.houseSeatActive){
       [...state.occupants.entries()].forEach(([index,person])=>{if(person?.local)state.occupants.delete(index)});
@@ -1001,21 +1011,28 @@
       state.stream?.getAudioTracks?.().forEach(track=>{track.enabled=false});
       state.realtimeSession?.setOutgoingEnabled?.(false);
       void state.realtimeSession?.setSeatState?.(false,0).catch(error=>console.warn('Estado oyente:',error));
-      toast('Has bajado de la silla. Sigues dentro de la Sala de Casa como oyente.');
+      toast('Has bajado de la silla. La tarea queda pausada y sigues como oyente.');
     }else{
       const requested=Number(preferredIndex);
       const preferred=requested>=1&&requested<=state.count?requested:(state.isGuest?2:1);
       const index=!state.occupants.has(preferred)?preferred:[...Array(state.count)].map((_,i)=>i+1).find(i=>!state.occupants.has(i));
       if(!index){toast('No hay sillas libres en este momento.');return}
       state.houseSeatActive=true;state.houseListenerOnly=false;state.micEnabled=true;state.localSeat=index;state.pendingHouseSeat=index;
+      const stream=state.stream||await startCamera();
+      if(!stream){
+        state.houseSeatActive=false;state.houseListenerOnly=true;state.micEnabled=false;state.localSeat=0;state.pendingHouseSeat=0;
+        syncHouseDirectControls();renderSeats();renderGiftRecipients();emitHouseActivityState();
+        toast('No se puede activar la tarea sin permitir el micrófono.');
+        return;
+      }
       state.occupants.set(index,localHousePerson());
-      state.stream?.getAudioTracks?.().forEach(track=>{track.enabled=true});
+      stream.getAudioTracks?.().forEach(track=>{track.enabled=true});
       state.realtimeSession?.setOutgoingEnabled?.(true);
       void state.realtimeSession?.setSeatState?.(true,index).catch(error=>console.warn('Estado en silla:',error));
-      if(!state.realtimeSession)toast(`Has elegido la silla ${index}. El audio se activará cuando el responsable abra la sesión.`);
-      else toast(`Has subido a la silla ${index}.`);
+      if(!state.realtimeSession)toast(`Silla ${index} activa. La tarea ya puede contar aunque la Sala espere conexión.`);
+      else toast(`Has subido a la silla ${index}. Tarea activa.`);
     }
-    syncHouseDirectControls();renderSeats();renderGiftRecipients();
+    syncHouseDirectControls();renderSeats();renderGiftRecipients();emitHouseActivityState();
   }
 
   function togglePersonAudio(person){
@@ -1964,16 +1981,17 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
     void recoverLocalMedia(awayFor>700);
     if(state.remoteStream)void playRemoteAudio(false);
   });
-  window.addEventListener('focus',()=>{if(roomOpen)void recoverLocalMedia(false)});
-  window.addEventListener('pageshow',()=>{if(roomOpen)void recoverLocalMedia(true)});
+  window.addEventListener('focus',()=>{if(roomOpen)void recoverLocalMedia(false).finally(emitHouseActivityState)});
+  window.addEventListener('pageshow',()=>{if(roomOpen)void recoverLocalMedia(true).finally(emitHouseActivityState)});
 
-  window.JemmoHouseRoomControls={toggleSeat:toggleHouseSeat,toggleMic:toggleRoomMicro,getState:()=>({houseSeatActive:state.houseSeatActive,micEnabled:state.micEnabled,localSeat:state.localSeat,sessionActive:Boolean(roomOpen&&state.realtimeSession)})};
+  window.JemmoHouseRoomControls={version:'36.0-test',toggleSeat:toggleHouseSeat,toggleMic:toggleRoomMicro,getState:()=>{const audioTrack=state.stream?.getAudioTracks?.().find(track=>track.readyState==='live')||null;return{houseSeatActive:state.houseSeatActive,micEnabled:state.micEnabled,mediaActive:Boolean(audioTrack&&audioTrack.enabled),localSeat:state.localSeat,roomOpen,sessionActive:Boolean(roomOpen&&state.realtimeSession)}}};
   window.addEventListener('pagehide',()=>{void save()});
   window.addEventListener('beforeunload',stopCamera);
 })();
 </script>
 <script type="module" src="jemmo-house-room-ui.js"></script>
-<script src="jemmo-house-activity.js"></script>
-<script src="jemmo-host-task-rewards.js?v=34"></script>
+<script src="jemmo-house-activity.js?v=36"></script>
+<script src="jemmo-host-task-rewards.js?v=36"></script>
+<script src="jemmo-keep-awake.js?v=36"></script>
 </body>
 </html>

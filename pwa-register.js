@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-house-assignment-35';
+  const VERSION = 'pwa-task-active-36';
   let installPrompt = null;
 
   const isStandalone = () =>

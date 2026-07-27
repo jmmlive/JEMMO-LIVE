@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · ARRANQUE REAL DE TAREA PRUEBA 34
+/* JEMMO LIVE V1 · CRONÓMETRO VISIBLE Y ESTADO ACTIVO PRUEBA 36
    Tareas exclusivas de Emisoras formalmente asignadas a una Casa.
    Cada hora se cobra por separado. El nivel usa únicamente el 70% neto de regalos de Casa.
    MODO DE PRUEBAS: antes de producción, cálculo y abono deben validarse en backend. */
@@ -6,7 +6,7 @@
   'use strict';
   if (window.JemmoHostTaskRewards?.version) return;
 
-  const VERSION = '34.0-test';
+  const VERSION = '36.0-test';
   const params = new URLSearchParams(location.search);
   const isHouseRoom = location.pathname.toLowerCase().endsWith('salas.html') && (
     params.get('houseRoom') === '1' ||
@@ -45,7 +45,7 @@
 
   // La utilidad clean debe existir antes de resolver la Casa. En PRUEBA 33
   // se invocaba antes de inicializarse y el módulo se detenía con ReferenceError.
-  window.__JEMMO_TASK_UI_OWNER__ = 'rewards-34-loading';
+  window.__JEMMO_TASK_UI_OWNER__ = 'rewards-36-loading';
 
   let servicesPromise = null;
   let user = null;
@@ -72,6 +72,8 @@
   let attachedHouse = '';
   let lastTierSignature = '';
   let windowTimer = 0;
+  let uiTimer = 0;
+  let activity = { status: 'checking', type: 'house_room', startedAtClient: 0, baseLiveSeconds: 0, baseHouseRoomSeconds: 0, seat: 0, reason: '', wakeActive: false, wakeSupported: true };
   const unsubscribers = [];
   const houseUnsubscribers = [];
 
@@ -101,6 +103,54 @@
     const s = total % 60;
     return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   };
+  function projectedTask() {
+    const view = { ...task };
+    if (activity.status !== 'active' || !activity.startedAtClient) return view;
+    const elapsed = Math.max(0, Math.floor((Date.now() - activity.startedAtClient) / 1000));
+    view.liveSeconds = activity.baseLiveSeconds + (activity.type === 'live' ? elapsed : 0);
+    view.houseRoomSeconds = activity.baseHouseRoomSeconds + (activity.type === 'house_room' ? elapsed : 0);
+    return view;
+  }
+  function roomControlState() {
+    try { return window.JemmoHouseRoomControls?.getState?.() || {}; } catch { return {}; }
+  }
+  function activityLabel() {
+    if (activity.status === 'active') {
+      const seat = activity.seat || roomControlState().localSeat || 0;
+      return `ACTIVA · CONTANDO${seat ? ` EN SILLA ${seat}` : ''}`;
+    }
+    const controls = roomControlState();
+    if (document.hidden) return 'PAUSADA · JEMMO ESTÁ EN SEGUNDO PLANO';
+    if (controls.houseSeatActive !== true) return 'PAUSADA · SUBE A UNA SILLA';
+    if (controls.micEnabled !== true) return 'PAUSADA · ACTIVA EL MICRÓFONO';
+    if (controls.mediaActive !== true) return 'PAUSADA · PERMITE EL MICRÓFONO';
+    if (activity.reason === 'offline') return 'PAUSADA · SIN CONEXIÓN';
+    return 'PREPARANDO CRONÓMETRO…';
+  }
+  function wakeLabel() {
+    if (!activity.wakeSupported) return 'PANTALLA: NO COMPATIBLE';
+    return activity.wakeActive ? 'PANTALLA ACTIVA' : 'ACTIVANDO PANTALLA…';
+  }
+  function syncActivityBaseline() {
+    activity.baseLiveSeconds = number(task.liveSeconds);
+    activity.baseHouseRoomSeconds = number(task.houseRoomSeconds);
+    if (activity.status === 'active') activity.startedAtClient = Date.now();
+  }
+  function handleActivityEvent(event) {
+    const detail = event?.detail || {};
+    activity.status = clean(detail.status || 'inactive', 40);
+    activity.type = clean(detail.type || activity.type || 'house_room', 20);
+    activity.reason = activity.status === 'active' ? '' : activity.status;
+    activity.seat = number(detail.seat || roomControlState().localSeat);
+    syncActivityBaseline();
+    render();
+  }
+  function handleWakeEvent(event) {
+    const detail = event?.detail || {};
+    activity.wakeSupported = detail.supported !== false;
+    activity.wakeActive = detail.active === true;
+    renderClock();
+  }
   const formatDay = value => new Intl.DateTimeFormat('es-ES', { weekday: 'short', day: '2-digit', month: '2-digit' }).format(new Date(value));
   const currentTier = net => {
     let result = TIERS[0];
@@ -351,7 +401,8 @@
       .jr-task-sheet>header{position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;padding:16px 2px 13px;background:linear-gradient(180deg,#1c102b 75%,rgba(28,16,43,0));border-bottom:1px solid rgba(255,255,255,.08)}
       .jr-task-sheet>header small{display:block;color:#f7df49;font-size:10px;font-weight:900;letter-spacing:1.3px}.jr-task-sheet>header h2{margin:3px 0 0;font-size:24px}.jr-task-sheet>header button{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.18);background:#130c1d;color:#fff;font-size:26px}
       #jemmoHostTaskContent{display:grid;gap:12px;padding-top:10px}.jr-task-empty{padding:22px;border:1px solid rgba(255,255,255,.12);border-radius:18px;background:rgba(255,255,255,.05);line-height:1.45}
-      .jr-task-reward-card,.jr-task-progress-card,.jr-task-tier-card,.jr-task-window-card{border:1px solid rgba(255,255,255,.12);border-radius:18px;background:linear-gradient(145deg,rgba(117,46,163,.25),rgba(13,8,21,.92));padding:15px}
+      .jr-task-activity-card,.jr-task-reward-card,.jr-task-progress-card,.jr-task-tier-card,.jr-task-window-card{border:1px solid rgba(255,255,255,.12);border-radius:18px;background:linear-gradient(145deg,rgba(117,46,163,.25),rgba(13,8,21,.92));padding:15px}
+      .jr-task-activity-card{display:flex;justify-content:space-between;gap:10px;align-items:center;border-color:rgba(72,232,155,.55);background:linear-gradient(135deg,rgba(21,103,67,.36),rgba(18,8,28,.96))}.jr-task-activity-card.paused{border-color:rgba(255,209,65,.46);background:linear-gradient(135deg,rgba(105,73,14,.34),rgba(18,8,28,.96))}.jr-task-activity-card b{display:block;font-size:13px;color:#61efad}.jr-task-activity-card.paused b{color:#ffe05d}.jr-task-activity-card small{display:block;margin-top:3px;color:#c7b9cf;font-size:10px}.jr-task-activity-card em{font-style:normal;text-align:right;color:#e8d8ef;font-size:9px;font-weight:900}
       .jr-task-reward-card small,.jr-task-progress-title small,.jr-task-tier-card small,.jr-task-window-card>small{color:#cdb8d8;font-size:10px;font-weight:900;letter-spacing:.8px}.jr-task-reward-card strong{display:block;margin-top:3px;font-size:34px;color:#ffe843;text-shadow:0 0 15px rgba(255,232,67,.28)}.jr-task-reward-card strong em{font-size:14px;font-style:normal}.jr-task-reward-card span{display:block;color:#d7cadf;font-size:12px;line-height:1.4}
       .jr-task-progress-title{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.jr-task-progress-title b{display:block;margin-top:4px;font-size:18px}.jr-task-progress-title em{font-style:normal;color:#ffe843;font-weight:900}.jr-task-progress-card>i,.jr-task-tier-card>i{display:block;height:9px;margin:12px 0;border-radius:999px;background:#24152f;overflow:hidden}.jr-task-progress-card>i span,.jr-task-tier-card>i span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#9e37e8,#ffe946)}
       .jr-task-split{display:grid;grid-template-columns:1fr 1fr;gap:8px}.jr-task-split span{padding:10px;border-radius:13px;background:rgba(255,255,255,.055)}.jr-task-split small{display:block;color:#a995b7;font-size:9px}.jr-task-split b{display:block;margin-top:3px;font-size:13px}.jr-task-progress-card p,.jr-task-tier-card p,.jr-task-rule{margin:10px 0 0;color:#bfaec8;font-size:11px;line-height:1.45}
@@ -447,11 +498,12 @@
     const tier = currentTier(giftNet7d);
     const paid = claimedSlots(task).filter(slot => slot <= tier.hours).length;
     const allPaid = paid >= tier.hours;
-    box.classList.remove('waiting');
+    const isCounting = activity.status === 'active';
+    box.classList.toggle('waiting', !isCounting && !allPaid);
     box.classList.toggle('done', allPaid);
-    if (label) label.textContent = allPaid ? 'TAREA DIARIA COBRADA' : 'MI TAREA · TOCA PARA VER';
+    if (label) label.textContent = allPaid ? 'TAREA DIARIA COBRADA' : isCounting ? 'MI TAREA · ACTIVA AHORA' : 'MI TAREA · PAUSADA';
     count.textContent = `${fmt(tier.reward)} JEMS/HORA`;
-    mini.textContent = `${paid}/${tier.hours} horas cobradas · Nivel ${tier.code}`;
+    mini.textContent = `${activityLabel()} · ${wakeLabel()}`;
   }
 
   function render() {
@@ -465,7 +517,8 @@
 
     const tier = currentTier(giftNet7d);
     const next = nextTier(giftNet7d);
-    const seconds = totalSeconds(task);
+    const viewTask = projectedTask();
+    const seconds = totalSeconds(viewTask);
     const targetSeconds = tier.hours * HOUR_SECONDS;
     const progress = Math.min(100, Math.floor(seconds / targetSeconds * 100));
     const giftProgress = next ? Math.min(100, Math.floor(giftNet7d / next.target * 100)) : 100;
@@ -504,6 +557,7 @@
         : `FALTAN ${minutesNeeded} MIN PARA LA HORA ${nextNeededHour}`;
 
     target.innerHTML = `
+      <section class="jr-task-activity-card ${activity.status === 'active' ? '' : 'paused'}"><div><b>${activityLabel()}</b><small>${activity.status === 'active' ? 'El cronómetro avanza segundo a segundo y se guarda periódicamente en Firebase.' : 'El tiempo solo suma con la Sala visible, en una silla y con micrófono real activo.'}</small></div><em>${wakeLabel()}</em></section>
       <section class="jr-task-reward-card">
         <small>PAGO ACTUAL POR CADA HORA</small>
         <strong>${fmt(tier.reward)} <em>JEMS/HORA</em></strong>
@@ -512,7 +566,7 @@
       <section class="jr-task-progress-card">
         <div class="jr-task-progress-title"><div><small>PROGRESO DEL CICLO DE 24 HORAS</small><b>${formatClock(seconds)} / ${formatClock(targetSeconds)}</b></div><em>${progress}%</em></div>
         <i><span style="width:${progress}%"></span></i>
-        <div class="jr-task-split"><span><small>LIVE ACTIVO</small><b>${formatClock(task.liveSeconds)}</b></span><span><small>AUDIO ROOM EN SILLA</small><b>${formatClock(task.houseRoomSeconds)}</b></span></div>
+        <div class="jr-task-split"><span><small>LIVE ACTIVO</small><b>${formatClock(viewTask.liveSeconds)}</b></span><span><small>AUDIO ROOM EN SILLA</small><b>${formatClock(viewTask.houseRoomSeconds)}</b></span></div>
         <p>Escuchar abajo no suma. Cada hora completa se cobra de forma independiente y las siguientes horas continúan acumulándose.</p>
       </section>
       <section class="jr-task-hours">${hoursHtml}</section>
@@ -742,6 +796,7 @@
     }));
     houseUnsubscribers.push(s.onSnapshot(s.doc(s.db, 'casas', houseId, 'tareas', user.uid), snapshot => {
       task = snapshot.data() || {};
+      syncActivityBaseline();
       recomputeEligibility();
       syncClaimedRewardsToWallet();
       void syncTierSnapshot();
@@ -759,7 +814,13 @@
 
   async function boot() {
     try {
-      window.__JEMMO_TASK_UI_OWNER__ = 'rewards-34';
+      window.__JEMMO_TASK_UI_OWNER__ = 'rewards-36';
+      window.addEventListener('jemmo-house-activity', handleActivityEvent);
+      window.addEventListener('jemmo-wake-lock', handleWakeEvent);
+      const currentActivity = window.JemmoHouseActivity?.getState?.();
+      if (currentActivity?.running) handleActivityEvent({ detail: { ...currentActivity, status: 'active', startedAtClient: Date.now() } });
+      const currentWake = window.JemmoKeepAwake?.getState?.();
+      if (currentWake) handleWakeEvent({ detail: currentWake });
       injectTaskSheet();
       renderClock();
       const box = $('houseTaskClock');
@@ -803,6 +864,8 @@
       }));
       clearInterval(windowTimer);
       windowTimer = setInterval(() => recalculateGiftWindow(false), 60000);
+      clearInterval(uiTimer);
+      uiTimer = setInterval(() => { if (emitter) render(); }, 1000);
       document.addEventListener('visibilitychange', () => { if (!document.hidden) recalculateGiftWindow(false); });
     } catch (error) {
       eligibilityState = 'error';
@@ -823,6 +886,9 @@
 
   window.addEventListener('pagehide', () => {
     clearInterval(windowTimer);
+    clearInterval(uiTimer);
+    window.removeEventListener('jemmo-house-activity', handleActivityEvent);
+    window.removeEventListener('jemmo-wake-lock', handleWakeEvent);
     clearHouseListeners();
     unsubscribers.splice(0).forEach(stop => { try { stop(); } catch {} });
   });

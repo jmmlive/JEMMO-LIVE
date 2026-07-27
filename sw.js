@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · ASIGNACIÓN MÓVIL DIRECTA PRUEBA 35 */
-const CACHE = 'jemmo-live-v1-house-assignment-35-20260727';
+/* JEMMO LIVE V1 · CRONÓMETRO ACTIVO Y PANTALLA DESPIERTA PRUEBA 36 */
+const CACHE = 'jemmo-live-v1-task-active-36-20260727';
 const APP_SHELL = [
   './',
   './index.html',
@@ -29,6 +29,7 @@ const APP_SHELL = [
   './jemmo-houses.js',
   './jemmo-house-operations.js',
   './jemmo-house-activity.js',
+  './jemmo-keep-awake.js',
   './jemmo-host-task-rewards.js',
   './jemmo-house-finance.js',
   './jemmo-house-room-ui.js',
@@ -129,31 +130,31 @@ async function injectJemmoScripts(response, url) {
   if (UNREAD_PAGES.has(page)) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="house-assignment-35"></script>'
+      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="task-active-36"></script>'
     );
   }
   if (page === '/mensajes.html' && !html.includes('jemmo-messages-realtime.js')) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="house-assignment-35"></script>'
+      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="task-active-36"></script>'
     );
   }
   if (['/yo.html','/mensajes.html','/chili-ia.html'].includes(page) && !html.includes('jemmo-social.js')) {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="house-assignment-35"></script>'
+      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="task-active-36"></script>'
     );
   }
   if (['/yo.html','/casa-demo.html'].includes(page) && !html.includes('jemmo-role-lab.js')) {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-role-lab.js" data-jemmo-injected="house-assignment-35"></script>'
+      '<script type="module" src="./jemmo-role-lab.js" data-jemmo-injected="task-active-36"></script>'
     );
   }
   if (page === '/yo.html') {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="house-assignment-35"></script>'
+      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="task-active-36"></script>'
     );
   }
 
@@ -161,7 +162,7 @@ async function injectJemmoScripts(response, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-version', 'house-assignment-35');
+  headers.set('x-jemmo-version', 'task-active-36');
 
   return new Response(html, {
     status: response.status,

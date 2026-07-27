@@ -1,52 +1,54 @@
-JEMMO LIVE V1 · ASIGNACIÓN MÓVIL DIRECTA Y TAREA PRUEBA 35
+JEMMO LIVE V1 · CRONÓMETRO ACTIVO Y PANTALLA DESPIERTA PRUEBA 36
 Fecha: 27/07/2026
-Base instalada: JEMMO LIVE V1 · ARRANQUE REAL DE TAREA PRUEBA 34
+Base instalada: JEMMO LIVE V1 · ASIGNACIÓN MÓVIL DIRECTA Y TAREA PRUEBA 35
 
-INCIDENCIA CONFIRMADA EN MÓVIL
-- Ruth aparece correctamente en `users/{UID_DE_RUTH}` y como miembro activo de Casa Padre JEMMO.
-- Sus datos actuales son `houseId: padre`, `houseStatus: active`, `housePosition: member` y `houseRole: member`.
-- `houseRole` representa el permiso dentro de la Casa (miembro/administrador/propietario); no debe usarse como sustituto de la función laboral.
-- El campo que bloquea la tarea es `housePosition: member`, porque debe pasar a `housePosition: emitter`.
-- El panel FUNCIONES Y AGENTES mostraba un selector desplegable que no respondía de forma fiable en el móvil.
-- Al abrir GESTIÓN DE MIEMBRO solo aparecía EXPULSAR DE LA CASA; no existía una acción directa para asignar función, responsable y tarea.
-- La colección antigua `usuarios` y el documento genérico “Emisora de prueba” no identifican a Ruth y no deben decidir su estado actual.
+INCIDENCIA CONFIRMADA EN LA PRUEBA REAL DE RUTH
+- La tarea ya estaba asignada y visible: 2000 JEMS/HORA, Nivel BASE y 0/1 horas cobradas.
+- Ruth aparecía ocupando una silla y con el botón de micrófono encendido.
+- Sin embargo, el cronómetro permanecía en 00:00:00.
+- La cabecera mostraba ESPERANDO porque no existía una sesión WebRTC abierta por un responsable.
+- `jemmo-house-activity.js` exigía simultáneamente silla activa y `sessionActive: true`.
+- Por esa condición, la Sala oficial 24/7 no contabilizaba el tiempo de una Emisora cuando estaba sola o esperaba conexión.
+- El botón MICRO podía mostrarse activo aunque todavía no hubiera una pista real de micrófono abierta.
+- Android podía apagar la pantalla por inactividad, lo que además pausaba la tarea al pasar la app a segundo plano.
 
 CORRECCIÓN
-- Se elimina la dependencia del desplegable móvil para las funciones de Casa.
-- Cada miembro muestra botones táctiles directos: MIEMBRO, EMISOR/A y AGENTE.
-- La ficha GESTIÓN DE MIEMBRO incorpora el botón ASIGNAR FUNCIÓN Y ACTIVAR TAREA.
-- Al tocar EMISOR/A se actualizan directamente `users/{UID}` y `casas/{houseId}/miembros/{UID}` con `housePosition: emitter`.
-- `houseRole` se conserva como permiso de membresía; no se sobrescribe erróneamente con la función de emisora.
-- Se asigna automáticamente un propietario o agente responsable perteneciente a la Casa.
-- Se crea o actualiza `emisoras/{UID}` usando el UID real de la persona, nunca un ID automático ni el documento genérico de prueba.
-- Se crea o reactiva `casas/{houseId}/tareas/{UID}` con un ciclo real de 24 horas.
-- Cuando la persona ya es Emisor/a aparecen botones directos para cambiar el agente responsable.
-- La interfaz se actualiza inmediatamente después de guardar.
-- Los errores de Firestore muestran un mensaje visible y registran su código técnico en consola.
-- Se eliminó la opción de convertir a otro miembro en Propietario desde este control.
-- Nueva caché PWA y versionado explícito de CSS y JavaScript de Casas.
+- La tarea de Audio Room oficial cuenta cuando JEMMO está visible, la Emisora ocupa una silla, el micrófono está encendido y existe una pista de audio local viva.
+- Ya no depende de que el propietario mantenga abierta una sesión WebRTC.
+- Al subir a una silla, JEMMO solicita y abre realmente el micrófono; si el permiso falla, no inicia el contador y muestra el motivo.
+- Al bajar de la silla o silenciar el micrófono, la tarea se pausa inmediatamente.
+- El estado se publica con el evento `jemmo-house-seat-change` y se comprueba cada segundo.
+- La tarjeta superior muestra `MI TAREA · ACTIVA AHORA` y `ACTIVA · CONTANDO EN SILLA N`.
+- El panel Mis tareas proyecta el cronómetro segundo a segundo, aunque Firebase siga guardando el tiempo en bloques seguros cada 30 segundos.
+- Se añade Screen Wake Lock en LIVE y Salas para mantener la pantalla despierta mientras la vista está activa.
+- Al volver desde segundo plano se solicita nuevamente el bloqueo de pantalla.
+- El panel muestra `PANTALLA ACTIVA` cuando el navegador confirma el bloqueo.
+- Nueva caché PWA y versionado PRUEBA 36.
 
 PRUEBA CON RUTH
-1. Instalar PRUEBA 35 encima de PRUEBA 34.
-2. Entrar con Jesús en Mi Casa > Administración.
-3. Abrir Ruth y tocar ASIGNAR FUNCIÓN Y ACTIVAR TAREA; también puede hacerse desde FUNCIONES Y AGENTES.
-4. Tocar EMISOR/A.
-5. Confirmar que la ficha cambia inmediatamente a EMISOR/A y muestra a Jesús como responsable.
-6. Ruth debe cerrar por completo JEMMO, volver a abrir y entrar en Mi Casa > Sala oficial.
-7. La tarjeta debe dejar de mostrar NO ACTIVA y presentar su ciclo, nivel y recompensa por hora.
+1. Instalar PRUEBA 36 encima de PRUEBA 35.
+2. Cerrar completamente JEMMO y volver a abrirla.
+3. Ruth entra en Mi Casa > Sala oficial.
+4. Toca una silla libre y permite el micrófono si Android lo solicita.
+5. Debe verse `MI TAREA · ACTIVA AHORA` y `ACTIVA · CONTANDO EN SILLA 2`.
+6. Abrir Mis tareas y comprobar que AUDIO ROOM EN SILLA avanza 00:00:01, 00:00:02, 00:00:03...
+7. Silenciar el micrófono: debe mostrar PAUSADA y dejar de sumar.
+8. Activarlo: debe continuar desde el tiempo guardado.
+9. Mantener la Sala abierta varios minutos sin tocar el móvil: la pantalla no debe suspenderse mientras el bloqueo esté activo.
 
 ARCHIVOS DEL ZIP
 1. VERSION.txt
-2. casa-demo.html
-3. app.css
-4. jemmo-houses.js
-5. jemmo-house-operations.js
-6. pwa-register.js
-7. sw.js
-8. INTEGRIDAD_SHA256.txt
+2. salas.html
+3. live.html
+4. jemmo-house-activity.js
+5. jemmo-host-task-rewards.js
+6. jemmo-keep-awake.js
+7. pwa-register.js
+8. sw.js
+9. INTEGRIDAD_SHA256.txt
 
 INSTALACIÓN
-- Copiar y sustituir los ocho archivos del ZIP.
+- Copiar y sustituir los nueve archivos del ZIP.
 - Hacer commit y esperar la publicación.
-- Cerrar completamente JEMMO en ambos móviles y volver a abrirla para tomar la caché PRUEBA 35.
+- Cerrar completamente JEMMO en ambos móviles y volver a abrirla.
 - No modificar Firebase manualmente.
