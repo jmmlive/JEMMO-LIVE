@@ -1,22 +1,40 @@
-JEMMO LIVE V1 · TAREA ASIGNADA A LA EMISORA REAL PRUEBA 32
+JEMMO LIVE V1 · TAREA REAL EN LA CASA ACTUAL PRUEBA 33
 Fecha: 27/07/2026
-Base instalada requerida: JEMMO LIVE V1 · TAREA DE EMISORA VISIBLE Y COMPATIBILIDAD DE MEMBRESÍA PRUEBA 31
+Base instalada: JEMMO LIVE V1 · TAREA ASIGNADA A LA EMISORA REAL PRUEBA 32
 
-INCIDENCIA REAL CORREGIDA
-- La cuenta propietaria podía crear una tarea real al cambiar únicamente la vista del laboratorio de roles a Emisor/a.
-- Esa tarea quedaba guardada y seguía apareciendo incluso al volver a la vista Agente.
-- Ruth podía tener un agente responsable asignado, pero no ver su tarea si el campo housePosition antiguo seguía como miembro o estaba incompleto.
+CAUSA REAL CONFIRMADA
+- La tarjeta visible seguía mostrando el marcador estático PENDIENTE.
+- El módulo de identidad de la Sala reescribía ese texto cada segundo encima del módulo de tareas.
+- El módulo de tareas podía usar primero houseId guardado en el Perfil, aunque la Sala abierta perteneciera a otra Casa.
+- Las entradas directas con contexto de Casa podían funcionar sin depender exclusivamente del parámetro houseRoom=1.
+- Una tarea pausada por las pruebas anteriores podía dejar de servir como evidencia aunque conservara la asignación real de Emisora y agente.
 
-CORRECCIÓN
-- El laboratorio de roles de la cuenta propietaria pasa a ser exclusivamente visual y nunca crea tareas en Firebase.
-- Propietarios, agentes y administradores no muestran ni cobran tareas de Emisora.
-- Las tareas pertenecen exclusivamente al UID real de la Emisora activa de la Casa.
-- Tener assignedAgentUid en una membresía activa se reconoce como asignación efectiva de Emisora y se migra a housePosition: emitter.
-- La tarea antigua creada por el laboratorio del propietario se pausa automáticamente.
-- Los nuevos ciclos guardan housePosition, agente responsable, pago base y horas de forma explícita.
-- El reparto 70/20/10 reconoce la asignación real de Ruth; una Emisora independiente continúa en 70/30 y sin tareas.
+CORRECCIONES
+- La Casa abierta en la Audio Room pasa a ser el contexto autoritativo para tareas, actividad e identidad.
+- salas.html expone JemmoHouseRoomContext con el ID real de la Sala actual.
+- La houseId antigua del Perfil ya no sustituye a la Casa que Ruth tiene abierta.
+- El sistema reconoce también entradas directas de Casa aunque la URL no conserve houseRoom=1.
+- Solo jemmo-host-task-rewards.js controla la tarjeta de tarea.
+- jemmo-house-room-ui.js deja de volver a escribir PENDIENTE sobre la tarea real.
+- La tarjeta cambia inmediatamente a CARGANDO al iniciar el módulo y después muestra tarea activa o un motivo concreto.
+- Una tarea pausada por errores anteriores se recupera si conserva housePosition de Emisora o agente asignado.
+- Al reconocer a Ruth como Emisora real, se activa o recupera automáticamente su ciclo de 24 horas.
+- El contador de actividad usa la misma Casa abierta y suma únicamente con Ruth sentada y sesión real de audio.
+- Se conserva el sistema aprobado de cobro por horas y ventana móvil de 7 días.
+- Nueva caché PWA PRUEBA 33.
+
+ARCHIVOS DEL ZIP
+1. VERSION.txt
+2. salas.html
+3. jemmo-host-task-rewards.js
+4. jemmo-house-activity.js
+5. jemmo-house-room-ui.js
+6. pwa-register.js
+7. sw.js
+8. INTEGRIDAD_SHA256.txt
 
 INSTALACIÓN
-- Instalar directamente encima de PRUEBA 31.
-- Sustituir todos los archivos incluidos en este ZIP.
-- Después entrar con Ruth en la Audio Room de su Casa y comprobar MI TAREA.
+- Instalar directamente encima de PRUEBA 32.
+- No cambiar el rol desde el laboratorio para activar tareas.
+- Entrar con Ruth desde Mi Casa a la Sala oficial.
+- La tarjeta superior debe dejar de mostrar el texto antiguo PENDIENTE.

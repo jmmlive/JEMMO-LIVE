@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · TAREA ASIGNADA A LA EMISORA REAL PRUEBA 32 */
-const CACHE = 'jemmo-live-v1-real-emitter-task-32-20260727';
+/* JEMMO LIVE V1 · TAREA REAL EN LA CASA ACTUAL PRUEBA 33 */
+const CACHE = 'jemmo-live-v1-current-house-task-33-20260727';
 const APP_SHELL = [
   './',
   './index.html',
@@ -129,31 +129,31 @@ async function injectJemmoScripts(response, url) {
   if (UNREAD_PAGES.has(page)) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="house-room-layout-profile-28"></script>'
+      '<script src="./jemmo-unread-badge.js" data-jemmo-injected="current-house-task-33"></script>'
     );
   }
   if (page === '/mensajes.html' && !html.includes('jemmo-messages-realtime.js')) {
     html = injectBeforeBody(
       html,
-      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="house-room-layout-profile-28"></script>'
+      '<script src="./jemmo-messages-realtime.js" data-jemmo-injected="current-house-task-33"></script>'
     );
   }
   if (['/yo.html','/mensajes.html','/chili-ia.html'].includes(page) && !html.includes('jemmo-social.js')) {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="house-room-layout-profile-28"></script>'
+      '<script type="module" src="./jemmo-social.js" data-jemmo-injected="current-house-task-33"></script>'
     );
   }
   if (['/yo.html','/casa-demo.html'].includes(page) && !html.includes('jemmo-role-lab.js')) {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-role-lab.js" data-jemmo-injected="house-room-layout-profile-28"></script>'
+      '<script type="module" src="./jemmo-role-lab.js" data-jemmo-injected="current-house-task-33"></script>'
     );
   }
   if (page === '/yo.html') {
     html = injectBeforeBody(
       html,
-      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="house-room-layout-profile-28"></script>'
+      '<script type="module" src="./jemmo-cloud-profile.js" data-jemmo-injected="current-house-task-33"></script>'
     );
   }
 
@@ -161,7 +161,7 @@ async function injectJemmoScripts(response, url) {
   headers.delete('content-length');
   headers.delete('content-encoding');
   headers.set('content-type', 'text/html; charset=utf-8');
-  headers.set('x-jemmo-version', 'house-room-layout-profile-28');
+  headers.set('x-jemmo-version', 'current-house-task-33');
 
   return new Response(html, {
     status: response.status,

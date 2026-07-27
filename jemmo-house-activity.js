@@ -1,15 +1,20 @@
-/* JEMMO LIVE V1 · ACTIVIDAD DE LA EMISORA REAL PRUEBA 32
+/* JEMMO LIVE V1 · ACTIVIDAD EN LA CASA ACTUAL PRUEBA 33
    Registra tiempo LIVE y tiempo real sentado en Sala oficial con sesión, lease e idempotencia.
    Solo funciona para Emisoras formalmente asignadas a una Casa. */
 (() => {
   'use strict';
   const firebaseConfig={apiKey:'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',authDomain:'jemmo-live.firebaseapp.com',projectId:'jemmo-live',storageBucket:'jemmo-live.firebasestorage.app',messagingSenderId:'355540892255',appId:'1:355540892255:web:d15a8dd03b2915e31939ea'};
   const path=location.pathname.toLowerCase(),params=new URLSearchParams(location.search);
-  const activityType=path.endsWith('live.html')?'live':path.endsWith('salas.html')&&params.get('houseRoom')==='1'?'house_room':'';
+  const activityType=path.endsWith('live.html')?'live':path.endsWith('salas.html')&&(params.get('houseRoom')==='1'||window.JemmoHouseRoomContext?.enabled===true)?'house_room':'';
   if(!activityType)return;
 
   const DAY_MS=86400000,LEASE_MS=90000,MAX_FLUSH_SECONDS=120;
-  const requestedHouseId=String(params.get('house')||'').trim().slice(0,80);
+  const requestedHouseId=String(
+    window.JemmoHouseRoomContext?.id||
+    document.documentElement.dataset.jemmoHouseId||
+    params.get('house')||
+    ''
+  ).trim().slice(0,80);
   const targetId=activityType==='live'?'broadcastScreen':'roomView';
   const sessionId=`${activityType}_${Date.now()}_${Math.random().toString(36).slice(2,9)}`;
   let services=null,user=null,profile={},member={},houseId='',taskConfig={totalTargetMinutes:60,liveTargetMinutes:0,houseRoomTargetMinutes:0};
@@ -32,14 +37,20 @@
     return profileMatchesHouse()?(profile.housePosition||profile.houseRole||profile.house_role):'';
   }
   const authorityRole=()=>member.role||member.accountRole||(profileMatchesHouse()?(profile.role||profile.rol||profile.accountRole):'');
-  const assignedAgentUid=()=>clean(member.assignedAgentUid||(profileMatchesHouse()?profile.assignedAgentUid:'')||'',160);
+  const assignedAgentUid=()=>clean(
+    member.assignedAgentUid||
+    (member&&Object.keys(member).length?profile.assignedAgentUid:'')||
+    '',
+    160
+  );
   const blockedByManagementRole=()=>isManagementRole(explicitHousePosition())||isManagementRole(authorityRole());
   function emitterEligible(taskData={}){
     if(!memberActive()||blockedByManagementRole())return false;
     if(isEmitterRole(explicitHousePosition()))return true;
     if(assignedAgentUid())return true;
     if(isEmitterRole(member.accountRole)||(profileMatchesHouse()&&isEmitterRole(profile.role||profile.rol||profile.accountRole)))return true;
-    return !['inactive','cancelled','removed','paused'].includes(normalize(taskData.taskState))&&(isEmitterRole(taskData.housePosition||taskData.position)||Boolean(clean(taskData.assignedAgentUid,160)));
+    const taskAssigned=isEmitterRole(taskData.housePosition||taskData.position)||Boolean(clean(taskData.assignedAgentUid,160));
+    return taskAssigned&&!['cancelled','removed','deleted'].includes(normalize(taskData.taskState));
   }
   async function migrateLegacyEmitter(){
     if(!services||!user||!houseId||(isEmitterRole(member.housePosition)&&assignedAgentUid()))return;
@@ -80,7 +91,9 @@
   async function resolveMembership(){
     const s=await getServices();user=await waitUser(s);
     const userSnap=await s.getDoc(s.doc(s.db,'users',user.uid));profile=userSnap.data()||{};
-    const membershipHouse=clean(profile.houseId,80);houseId=activityType==='house_room'?(requestedHouseId||membershipHouse):membershipHouse;
+    const membershipHouse=clean(profile.houseId,80);
+    const liveRoomHouse=clean(window.JemmoHouseRoomContext?.id||document.documentElement.dataset.jemmoHouseId||requestedHouseId,80);
+    houseId=activityType==='house_room'?(liveRoomHouse||membershipHouse):membershipHouse;
     if(!houseId)return false;
     const [memberSnap,configSnap,taskSnap]=await Promise.all([
       s.getDoc(s.doc(s.db,'casas',houseId,'miembros',user.uid)),

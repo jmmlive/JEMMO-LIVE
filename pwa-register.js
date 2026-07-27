@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const VERSION = 'pwa-real-emitter-task-32';
+  const VERSION = 'pwa-current-house-task-33';
   let installPrompt = null;
 
   const isStandalone = () =>

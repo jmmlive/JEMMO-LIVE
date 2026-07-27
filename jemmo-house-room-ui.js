@@ -1,14 +1,19 @@
-/* JEMMO LIVE V1 · IDENTIDAD Y TAREAS POR HORAS DE SALA DE CASA PRUEBA 30
+/* JEMMO LIVE V1 · IDENTIDAD DE SALA Y TAREA ÚNICA PRUEBA 33
    La cabecera pertenece a la Casa y usa la identidad configurada por sus responsables. */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
 import { getFirestore, doc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 
 const params=new URLSearchParams(location.search);
-if(params.get('houseRoom')==='1'){
+if(params.get('houseRoom')==='1'||window.JemmoHouseRoomContext?.enabled===true){
   const firebaseConfig={apiKey:'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',authDomain:'jemmo-live.firebaseapp.com',projectId:'jemmo-live',storageBucket:'jemmo-live.firebasestorage.app',messagingSenderId:'355540892255',appId:'1:355540892255:web:d15a8dd03b2915e31939ea'};
   const app=getApps()[0]||initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
-  const houseId=String(params.get('house')||'').trim().slice(0,80);
+  const houseId=String(
+    window.JemmoHouseRoomContext?.id||
+    document.documentElement.dataset.jemmoHouseId||
+    params.get('house')||
+    ''
+  ).trim().slice(0,80);
   const $=id=>document.getElementById(id);
   const number=v=>Math.max(0,Number(v)||0);
   const fmt=v=>Math.round(number(v)).toLocaleString('es-ES');
@@ -50,7 +55,9 @@ if(params.get('houseRoom')==='1'){
     if($('houseBattleScore'))$('houseBattleScore').textContent=`${fmt(house.battleScore)} · ${fmt(house.battleOpponentScore)}`;
   }
   function renderTask(){
-    if(window.JemmoHostTaskRewards?.getState?.().emitter)return;
+    // La tarjeta pertenece exclusivamente al módulo de tareas remuneradas.
+    // Este módulo no vuelve a escribir PENDIENTE encima de la tarea real.
+    if(window.__JEMMO_TASK_UI_OWNER__||window.JemmoHostTaskRewards)return;
     const box=$('houseTaskClock'),count=$('houseTaskCountdown'),mini=$('houseTaskProgressMini');if(!box||!count||!mini)return;
     const end=number(task.cycleEndsAtClient),active=clean(task.taskState,20)==='active'&&end>Date.now();
     box.classList.toggle('waiting',!active);

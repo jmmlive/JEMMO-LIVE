@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · TAREA ASIGNADA A LA EMISORA REAL PRUEBA 32
+/* JEMMO LIVE V1 · TAREA REAL EN LA CASA ACTUAL PRUEBA 33
    Tareas exclusivas de Emisoras formalmente asignadas a una Casa.
    Cada hora se cobra por separado. El nivel usa únicamente el 70% neto de regalos de Casa.
    MODO DE PRUEBAS: antes de producción, cálculo y abono deben validarse en backend. */
@@ -6,9 +6,12 @@
   'use strict';
   if (window.JemmoHostTaskRewards?.version) return;
 
-  const VERSION = '32.0-test';
+  const VERSION = '33.0-test';
   const params = new URLSearchParams(location.search);
-  const isHouseRoom = location.pathname.toLowerCase().endsWith('salas.html') && params.get('houseRoom') === '1';
+  const isHouseRoom = location.pathname.toLowerCase().endsWith('salas.html') && (
+    params.get('houseRoom') === '1' ||
+    window.JemmoHouseRoomContext?.enabled === true
+  );
   if (!isHouseRoom) return;
 
   const firebaseConfig = {
@@ -40,7 +43,14 @@
   let profile = {};
   let member = {};
   let task = {};
-  let houseId = String(params.get('house') || '').trim().slice(0, 80);
+  const roomHouseId = () => clean(
+    window.JemmoHouseRoomContext?.id ||
+    document.documentElement.dataset.jemmoHouseId ||
+    params.get('house') ||
+    '',
+    80
+  );
+  let houseId = roomHouseId();
   let giftDocuments = [];
   let giftNet7d = 0;
   let giftBuckets = [];
@@ -117,8 +127,20 @@
     return profileMatchesHouse() ? (profile.housePosition || profile.houseRole || profile.house_role) : '';
   };
   const authorityRole = () => member.role || member.accountRole || (profileMatchesHouse() ? (profile.role || profile.rol || profile.accountRole) : '');
-  const assignedAgentUid = () => clean(member.assignedAgentUid || (profileMatchesHouse() ? profile.assignedAgentUid : '') || task.assignedAgentUid, 160);
-  const taskIsUsableEvidence = () => !['inactive', 'cancelled', 'removed', 'paused'].includes(normalizeRole(task.taskState));
+  const assignedAgentUid = () => clean(
+    member.assignedAgentUid ||
+    // Compatibilidad: si existe una membresía real en la Casa abierta,
+    // el agente guardado en el Perfil puede migrarse aunque houseId esté antiguo.
+    (memberExists ? profile.assignedAgentUid : '') ||
+    task.assignedAgentUid,
+    160
+  );
+  const taskIsUsableEvidence = () => {
+    const state = normalizeRole(task.taskState);
+    const hasAssignment = isEmitterRole(task.housePosition || task.position) || Boolean(clean(task.assignedAgentUid, 160));
+    // Una pausa creada por las pruebas 30-32 no debe borrar la asignación real.
+    return hasAssignment && !['cancelled', 'removed', 'deleted'].includes(state);
+  };
   const blockedByManagementRole = () => isManagementRole(explicitHousePosition()) || isManagementRole(authorityRole());
   const hasEmitterAssignmentEvidence = () => {
     if (blockedByManagementRole()) return false;
@@ -134,6 +156,7 @@
     if (eligibilityState === 'no_membership') return 'No se encontró una membresía activa en esta Casa.';
     if (eligibilityState === 'inactive') return 'Tu pertenencia a esta Casa no está activa.';
     if (eligibilityState === 'management') return 'Los propietarios, agentes y administradores no cobran tareas de Emisora.';
+    if (eligibilityState === 'error') return 'No se pudo leer la asignación. Vuelve a entrar en la Sala de tu Casa.';
     return 'La Casa todavía no te ha asignado formalmente como Emisor/a y a un agente responsable.';
   }
 
@@ -203,6 +226,57 @@
     }
   }
 
+  async function ensureEligibleTaskActive(reason = 'eligible_house_emitter') {
+    if (!emitter || !user || !houseId) return;
+    try {
+      const s = await services();
+      const ref = s.doc(s.db, 'casas', houseId, 'tareas', user.uid);
+      await s.runTransaction(s.db, async transaction => {
+        const snapshot = await transaction.get(ref);
+        const current = snapshot.data() || {};
+        const now = Date.now();
+        const end = number(current.cycleEndsAtClient);
+        const active = clean(current.taskState, 20) === 'active' && end > now;
+        if (active) return;
+        const tier = currentTier(giftNet7d);
+        transaction.set(ref, {
+          uid: user.uid,
+          displayName: clean(profile.displayName || user.displayName || user.email?.split('@')[0] || 'Emisora JEMMO', 60),
+          publicId: clean(profile.publicId, 48),
+          houseId,
+          housePosition: 'emitter',
+          assignedAgentUid: assignedAgentUid(),
+          taskState: 'active',
+          completionState: 'in_progress',
+          cycleDurationHours: 24,
+          cycleStartedAtClient: now,
+          cycleEndsAtClient: now + 86400000,
+          cycleKey: `24h-${now}`,
+          cycleNumber: Math.max(1, number(current.cycleNumber) + 1),
+          liveSeconds: 0,
+          houseRoomSeconds: 0,
+          dailyHours: tier.hours,
+          totalTargetMinutes: tier.hours * 60,
+          hourlyRewardJems: tier.reward,
+          taskTierCode: tier.code,
+          claimedHourSlots: [],
+          claimedHours: 0,
+          hourlyClaims: {},
+          rewardClaimed: false,
+          rewardAmount: 0,
+          rewardTotalClaimed: 0,
+          reviewStatus: 'pending',
+          activatedReason: reason,
+          activatedAtClient: now,
+          recoveredFromPendingAtClient: now,
+          updatedAt: s.serverTimestamp()
+        }, { merge: true });
+      });
+    } catch (error) {
+      console.warn('JEMMO tareas: activar ciclo visible', error?.code || error?.message || error);
+    }
+  }
+
   function recomputeEligibility() {
     const previous = emitter;
     if (!memberExists) {
@@ -221,6 +295,7 @@
     render();
     if (emitter) {
       void migrateLegacyEmitter();
+      void ensureEligibleTaskActive(previous ? 'task_assignment_refreshed' : 'task_rewards_ready');
       if (!previous) void window.JemmoHouseActivity?.ensureTaskCycle?.('task_rewards_ready');
     } else {
       void pauseInvalidTask();
@@ -677,7 +752,9 @@
 
   async function boot() {
     try {
+      window.__JEMMO_TASK_UI_OWNER__ = 'rewards-33';
       injectTaskSheet();
+      renderClock();
       const box = $('houseTaskClock');
       box?.addEventListener('click', openSheet);
       box?.addEventListener('keydown', event => {
@@ -703,13 +780,19 @@
       user = await waitForUser(s);
       unsubscribers.push(s.onSnapshot(s.doc(s.db, 'users', user.uid), snapshot => {
         profile = snapshot.data() || {};
-        const nextHouse = clean(profile.houseId || params.get('house'), 80);
+        // En una Sala oficial, la Casa abierta manda. El Perfil solo es respaldo.
+        const currentRoomHouse = roomHouseId();
+        const nextHouse = clean(currentRoomHouse || profile.houseId, 80);
         if (nextHouse && nextHouse !== houseId) {
           houseId = nextHouse;
           clearHouseListeners();
         }
         if (houseId) attachHouse(s);
         else { eligibilityState = 'no_membership'; render(); }
+      }, error => {
+        eligibilityState = 'error';
+        render();
+        console.warn('JEMMO tareas: perfil', error?.code || error?.message || error);
       }));
       clearInterval(windowTimer);
       windowTimer = setInterval(() => recalculateGiftWindow(false), 60000);

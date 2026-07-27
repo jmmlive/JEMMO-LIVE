@@ -504,6 +504,15 @@
     name:validHouseEntry?String(pageParams.get('houseName')||safeStoredHouseName()||'').trim().slice(0,60):'',
     direct:validHouseEntry&&requestedHouseDirect
   };
+  // Contexto autoritativo de la Sala de Casa actual.
+  // Los módulos de tareas deben usar esta Casa y nunca una houseId antigua del Perfil.
+  window.JemmoHouseRoomContext=Object.freeze({
+    enabled:houseContext.enabled,
+    id:houseContext.id,
+    name:houseContext.name,
+    direct:houseContext.direct
+  });
+  if(houseContext.id)document.documentElement.dataset.jemmoHouseId=houseContext.id;
   if(requestedHouseRoom&&!validHouseEntry){
     ['houseRoom','house','houseName','direct','mode','count','title','description'].forEach(key=>pageParams.delete(key));
     const cleanQuery=pageParams.toString();
