@@ -10,7 +10,7 @@
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   <title>Chili IA · JEMMO LIVE</title>
-  <link rel="stylesheet" href="chili-ia.css?v=38">
+  <link rel="stylesheet" href="chili-ia.css?v=45">
   <style>html.jemmo-auth-pending body{visibility:hidden}</style>
   <script>
     document.documentElement.classList.add('jemmo-auth-pending');
@@ -63,7 +63,7 @@
 
       <div class="capability-banner" id="capabilityBanner">
         <span>✦</span>
-        <div><strong>Saber JEMMO · Base oficial PRUEBA 38</strong><small>Tareas, tarifas, economía, privacidad, seguridad, rutas y soporte humano. Chili puede escuchar y leer respuestas usando la voz del dispositivo.</small></div>
+        <div><strong>Saber JEMMO · Fuente oficial PRUEBA 45</strong><small>Funcionamiento, tareas, tarifas, Monedero, pagos, retiradas, normas, seguridad financiera, Casas y soporte. Una sola fuente evita contradicciones.</small></div>
       </div>
 
       <div class="chat-log" id="chiliChatLog" role="log" aria-live="polite" aria-relevant="additions">
@@ -77,9 +77,9 @@
       </div>
 
       <div class="quick-prompts" id="quickPrompts" aria-label="Preguntas rápidas">
-        <button type="button" data-prompt="¿Cómo funcionan las tareas de 24 horas?">Tareas 24 h</button>
-        <button type="button" data-prompt="Enséñame la tabla de tarifas">Tarifas</button>
-        <button type="button" data-prompt="¿Cuándo cuenta el cronómetro de Audio Room?">Cronómetro</button>
+        <button type="button" data-prompt="Enséñame la tabla oficial de tarifas">Tarifas</button>
+        <button type="button" data-prompt="¿Qué recargas están autorizadas?">Pagos oficiales</button>
+        <button type="button" data-prompt="¿Qué ocurre si detectáis una compra falsa?">Antifraude</button>
         <button type="button" data-prompt="Quiero hablar con soporte humano">Soporte humano</button>
       </div>
 
@@ -96,10 +96,13 @@
       <div class="section-heading"><div><p class="eyebrow">BIBLIOTECA OFICIAL</p><h2 id="knowledgeTitle">Saber JEMMO</h2><p class="section-intro">Información revisada para orientar a usuarios, emisoras y agentes sin salir de la aplicación.</p></div><button class="voice-call-mini" type="button" data-open-voice-call>🎙 CONVERSAR</button></div>
       <div class="knowledge-nav" aria-label="Categorías del Saber JEMMO">
         <button type="button" data-section="tareas"><span>⏱️</span><b>Tareas y tarifas</b><small>LIVE y Audio Room</small></button>
-        <button type="button" data-prompt="Explícame el monedero y las monedas de JEMMO"><span>🪙</span><b>Economía</b><small>JEMMOS, JEMS y retiros</small></button>
-        <button type="button" data-prompt="¿Cómo funcionan las Casas y las batallas?"><span>🏠</span><b>Casas</b><small>Agentes y Emisoras</small></button>
+        <button type="button" data-article="wallet-currencies"><span>🪙</span><b>Monedero y pagos</b><small>JEMMOS, JEMS y retiradas</small></button>
+        <button type="button" data-article="community-rules"><span>§</span><b>Normas</b><small>Fuente oficial versionada</small></button>
+        <button type="button" data-article="financial-security"><span>🚨</span><b>Antifraude</b><small>Bloqueo y revisión</small></button>
+        <button type="button" data-article="houses-release"><span>🏠</span><b>Casas y Agencias</b><small>Ingreso y liberación</small></button>
         <button type="button" data-section="privacidad"><span>🔒</span><b>Privacidad</b><small>Datos y seguridad</small></button>
-        <button type="button" data-section="soporte"><span>🧑‍💻</span><b>Soporte humano</b><small>Consulta o denuncia</small></button>
+        <button type="button" data-route-direct="configuracion.html"><span>⚙️</span><b>Configuración</b><small>Cuenta, país y avisos</small></button>
+        <button type="button" data-section="soporte"><span>🧑‍💻</span><b>Soporte humano</b><small>Número, fecha y estado</small></button>
       </div>
 
       <article class="task-knowledge-card" id="tareas">
@@ -126,7 +129,13 @@
 
       <article class="privacy-card" id="privacidad">
         <span>🔐</span><div><p class="eyebrow">PRIVACIDAD Y SEGURIDAD</p><h3>Qué debe proteger JEMMO</h3><p>El correo, las contraseñas, los códigos de verificación, los datos bancarios y las conversaciones privadas no deben mostrarse públicamente. Chili no incorpora chats privados a su conocimiento. Las capturas de soporte se guardan únicamente para investigar el caso y necesitan reglas de acceso estrictas antes de producción.</p></div>
-        <button type="button" data-prompt="Explícame la privacidad y cómo se usan las capturas de soporte">PREGUNTAR A CHILI</button>
+        <button type="button" data-article="privacy">ABRIR ARTÍCULO OFICIAL</button>
+      </article>
+
+      <article class="official-source-card" id="articulos">
+        <div class="official-source-head"><div><p class="eyebrow">FUENTE ÚNICA VERSIONADA</p><h3>Normas y artículos oficiales</h3><p id="officialSourceMeta">Cargando la fuente oficial…</p></div><a href="configuracion.html">⚙ CONFIGURACIÓN</a></div>
+        <div class="official-categories" id="officialCategories" aria-label="Filtrar artículos oficiales"></div>
+        <div class="official-articles" id="officialArticles"></div>
       </article>
     </section>
 
@@ -151,7 +160,10 @@
           <label><span>Motivo *</span><select id="supportCategory" name="category" required></select></label>
           <label><span>Dónde ocurrió *</span><select name="location" required><option value="">Selecciona el lugar</option><option value="wallet">Monedero o recarga</option><option value="live">LIVE</option><option value="audio_room">Audio Room o Sala</option><option value="messages">Mensajes privados</option><option value="profile">Perfil o Destello</option><option value="access">Acceso a la aplicación</option><option value="other">Otro lugar</option></select></label>
         </div>
-        <label><span>Persona, ID JEMMO o referencia relacionada</span><input name="target" maxlength="100" placeholder="Ejemplo: JEMMO-1000002 o nombre de la Sala"></label>
+        <div class="support-fields two">
+          <label><span>Fecha aproximada del incidente *</span><input name="incidentDate" type="datetime-local" required></label>
+          <label><span>Persona, ID JEMMO o referencia relacionada</span><input name="target" maxlength="100" placeholder="Ejemplo: JEMMO-1000002"></label>
+        </div>
         <label><span>Explica exactamente qué pasó *</span><textarea name="description" rows="5" maxlength="1600" minlength="20" required placeholder="Indica qué ocurrió, cuándo, qué esperabas que pasara y qué aparece en pantalla. En denuncias, incluye la frase o conducta que debe revisarse."></textarea><small>Entre 20 y 1.600 caracteres. No escribas contraseñas ni códigos.</small></label>
         <div class="evidence-zone" id="evidenceZone">
           <label class="evidence-picker" for="supportEvidence"><span>📷</span><b>ADJUNTAR CAPTURA OBLIGATORIA</b><small>PNG, JPG o WEBP · máximo original 15 MB</small></label>
@@ -160,7 +172,7 @@
         </div>
         <label class="support-consent"><input type="checkbox" required><span>Confirmo que la información es verdadera y autorizo su uso para revisar este caso.</span></label>
         <button class="support-submit" id="supportSubmit" type="submit">ENVIAR A SOPORTE HUMANO</button>
-        <p class="support-send-state" id="supportSendState">La solicitud se guardará en Firebase con estado PENDIENTE y una referencia.</p>
+        <p class="support-send-state" id="supportSendState">La solicitud generará un número de caso, fecha de creación y estado PENDIENTE.</p>
       </form>
       <div class="support-history"><div><p class="eyebrow">SEGUIMIENTO</p><h3>Mis últimas solicitudes</h3></div><div id="supportTicketsList"><p class="empty-tickets">Cargando solicitudes…</p></div></div>
     </section>
@@ -253,8 +265,8 @@
   <div class="toast" id="chiliToast" role="status" aria-live="polite"></div>
 
   <script type="module" src="jemmo-session.js"></script>
-  <script src="pwa-register.js"></script>
-  <script type="module" src="jemmo-chili.js?v=38"></script>
+  <script src="pwa-register.js?v=45"></script>
+  <script type="module" src="jemmo-chili.js?v=45"></script>
   <script type="module" src="jemmo-social.js"></script>
 </body>
 </html>

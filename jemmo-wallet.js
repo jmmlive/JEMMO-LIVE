@@ -1,12 +1,12 @@
 /* =========================================================
-   JEMMO LIVE · SEGURIDAD ECONÓMICA Y AUTORREGALOS PRUEBA 44
+   JEMMO LIVE · PAGOS AUTORIZADOS Y SEGURIDAD FINANCIERA PRUEBA 45
    Un solo saldo y un solo libro económico para toda la app
    ========================================================= */
 (() => {
   'use strict';
   if (window.JemmoWallet?.version) return;
 
-  const VERSION = '7.5.0-test';
+  const VERSION = '7.6.0-test-prueba45';
   const FINANCE_KEY = 'jemmo_finance_v1';
   const CLOUD_GIFT_QUEUE_KEY = 'jemmo_cloud_gift_queue_v1';
   const CLOUD_SECURITY_QUEUE_KEY = 'jemmo_cloud_security_queue_v1';
@@ -20,6 +20,7 @@
   let financeMemory = null;
   let financeSavePromise = null;
   let storageDbPromise = null;
+  const rechargeAuthorizationTokens = new Set();
   const byId = id => document.getElementById(id);
   const nowId = (prefix = 'op') => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
   const currentUid = () => String(window.__jemmoAuthenticatedUid || authenticatedUid || localStorage.getItem('jemmo_active_uid') || 'local-user');
@@ -84,6 +85,38 @@
     try { window.dispatchEvent(new CustomEvent('jemmo-security-event', { detail: entry })); } catch {}
     try { window.JemmoHouseFinance?.enqueueSecurityEvent?.(entry); } catch {}
     return entry;
+  }
+
+  function activeFinancialSecurityEvents() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(CLOUD_SECURITY_QUEUE_KEY) || '[]');
+      const events = Array.isArray(parsed) ? parsed : [];
+      const holdTypes = new Set(['unauthorized_recharge_blocked','financial_operation_quarantined','payment_source_invalid','chargeback_watch']);
+      return events.filter(event => event && holdTypes.has(String(event.type || '')) && event.resolved !== true);
+    } catch { return []; }
+  }
+
+  function issueRechargeAuthorization() {
+    const token = nowId('payauth');
+    rechargeAuthorizationTokens.add(token);
+    setTimeout(() => rechargeAuthorizationTokens.delete(token), 10 * 60 * 1000);
+    return token;
+  }
+
+  function validateRechargeAuthorization(token, meta = {}) {
+    const value = String(token || '').trim();
+    if (value && rechargeAuthorizationTokens.has(value)) {
+      rechargeAuthorizationTokens.delete(value);
+      return { ok: true };
+    }
+    const securityEvent = queueSecurityEvent({
+      type: 'unauthorized_recharge_blocked',
+      actorUid: currentUid(),
+      surface: meta.surface || 'wallet',
+      reason: 'missing_official_payment_authorization',
+      message: 'Recarga bloqueada: la operación no se inició desde el Monedero oficial.'
+    });
+    return { ok: false, blocked: true, reason: 'unauthorized-recharge', message: securityEvent.message, securityEvent };
   }
 
   function blockSelfGift(senderUid, recipientUid, meta = {}, wallet = null) {
@@ -698,11 +731,13 @@
     return released;
   }
 
-  function registerRecharge({ method, usd, jemmos, bonus = 0, network = '' }) {
+  function registerRecharge({ method, usd, jemmos, bonus = 0, network = '', authorizationToken = '', surface = 'wallet' }) {
     const info = METHOD_INFO[method];
     usd = Math.max(0, Number(usd) || 0);
     jemmos = Math.max(0, Math.floor(Number(jemmos) || 0));
     if (!info || !usd || !jemmos) return { ok: false, reason: 'invalid' };
+    const authorization = validateRechargeAuthorization(authorizationToken, { surface, method });
+    if (!authorization.ok) return authorization;
     if (method === 'google' && isCuba()) return { ok: false, reason: 'country' };
 
     const uid = currentUid();
@@ -789,7 +824,9 @@
         usd: Number(meta.usd),
         jemmos: amount,
         bonus: Number(meta.bonus) || 0,
-        network: meta.network || ''
+        network: meta.network || '',
+        authorizationToken: meta.authorizationToken || '',
+        surface: meta.surface || meta.source || 'wallet-api'
       }).wallet || getWallet();
     }
     const wallet = getWallet();
@@ -1149,6 +1186,12 @@
 
   function executeWithdrawal() {
     releasePending(false);
+    const financialAlerts = activeFinancialSecurityEvents();
+    if (financialAlerts.length) {
+      queueSecurityEvent({ type:'financial_operation_quarantined', actorUid:currentUid(), surface:'withdrawal', reason:'active_financial_alert', message:'Retirada bloqueada temporalmente por una alerta financiera activa.' });
+      toast('Retirada bloqueada: existe una alerta financiera pendiente de revisión. Abre Chili > Soporte.');
+      return;
+    }
     const result = withdrawalPreview();
     const address = String(byId('jw-withdraw-address')?.value || '').trim();
     const wallet = getWallet();
@@ -1219,6 +1262,7 @@
       .jw-tabs{display:flex;gap:7px;margin:12px -2px 10px;padding:2px;overflow-x:auto;scrollbar-width:none}.jw-tabs::-webkit-scrollbar{display:none}.jw-tab{flex:0 0 auto;min-height:36px;padding:0 12px;border:1px solid #572769;border-radius:999px;background:#14031b;color:#bfaec6;font-size:8px;font-weight:1000}.jw-tab.active{border-color:var(--jw-gold);background:linear-gradient(135deg,#5c3d08,#2a1204);color:#ffe28b;box-shadow:0 0 15px #ffd34e2a}
       .jw-view{display:grid;gap:10px}.jw-view[hidden]{display:none!important}.jw-card{padding:13px;border:1px solid #542267;border-radius:18px;background:#110117d9}.jw-card h3{margin:0;font-size:14px}.jw-card>p{margin:5px 0 0;color:#ad9eb3;font-size:9px;line-height:1.45}.jw-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.jw-shortcut{min-height:68px;padding:8px 5px;border:1px solid #643078;border-radius:15px;background:#1b0524;color:#fff;font-size:9px;font-weight:950}.jw-shortcut span{display:block;margin-bottom:4px;font-size:22px}.jw-shortcut.gold{border-color:#8b6721;background:#2d1d06;color:#ffe18a}
       .jw-methods{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.jw-method-choice{min-height:70px;padding:10px;border:1px solid #5c286c;border-radius:15px;background:#13021a;color:#fff;text-align:left}.jw-method-choice.active{border-color:#ffd34e;background:linear-gradient(145deg,#3a2708,#180d03);box-shadow:0 0 15px #ffd34e22}.jw-method-choice:disabled{opacity:.45}.jw-method-choice b{display:block;font-size:10px}.jw-method-choice small{display:block;margin-top:5px;color:#a898ae;font-size:7.5px;line-height:1.35}.jw-method-choice.active small{color:#dac895}
+      .jw-policy-links{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.jw-policy-links a{padding:7px 8px;border:1px solid #6a2b78;border-radius:9px;background:#1b0422;color:#fff;text-decoration:none;font-size:7px;font-weight:950}.jw-security-card{border-color:#75531f!important;background:linear-gradient(150deg,#201404,#100213)!important}
       .jw-packages{display:grid;grid-template-columns:1fr 1fr;gap:9px}.jw-package{min-height:82px;padding:10px;border:1px solid #7b5b1e;border-radius:17px;background:radial-gradient(circle at 80% 10%,#ffcf4730,transparent 36%),linear-gradient(150deg,#3b2607,#170d03);color:#fff;text-align:left}.jw-package strong{display:block;color:var(--jw-gold);font-size:18px}.jw-package small{display:block;margin-top:5px;color:#d6c298;font-size:8px}.jw-package span{display:inline-block;margin-top:8px;padding:4px 7px;border-radius:999px;background:var(--jw-gold);color:#2b1703;font-size:7px;font-weight:1000}
       .jw-field{display:grid;gap:6px}.jw-field>span{color:#e6dbe9;font-size:9px;font-weight:900}.jw-field input,.jw-field select{width:100%;min-height:45px;border:1px solid #5c2a6d;border-radius:13px;background:#09000d;color:#fff;padding:0 12px;outline:none}.jw-field input:focus,.jw-field select:focus{border-color:var(--jw-gold);box-shadow:0 0 0 3px #ffd34e1d}.jw-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.jw-preview{padding:11px;border:1px dashed #6c377d;border-radius:14px;background:#0b010f;color:#bfaec5;font-size:9px;line-height:1.5}.jw-preview b{color:#ffe17c}.jw-primary{width:100%;min-height:47px;border:0;border-radius:14px;background:linear-gradient(90deg,var(--jw-gold),#d63aff);color:#1c031f;font-weight:1000}.jw-primary:disabled{opacity:.45}.jw-secondary{width:100%;min-height:42px;border:1px solid #673079;border-radius:13px;background:#210529;color:#fff;font-weight:900}.jw-note{padding:10px;border:1px solid #6e5320;border-radius:13px;background:#251706;color:#dbc991;font-size:8px;line-height:1.45}.jw-receipt{padding:11px;border:1px solid #2f7653;border-radius:14px;background:#0b291d}.jw-receipt[hidden]{display:none!important}.jw-receipt small{display:block;color:#8fd5ae;font-size:7px;font-weight:1000}.jw-receipt b{display:block;margin-top:5px;color:#65e8a2;font-size:11px}.jw-receipt span{display:block;margin-top:4px;color:#a5c9b5;font-size:8px;line-height:1.4}
       .jw-history{display:grid;gap:8px}.jw-empty{padding:24px 12px;border:1px dashed #50305a;border-radius:16px;color:#8f8095;text-align:center;font-size:9px}.jw-movement{display:grid;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;gap:9px;padding:10px;border:1px solid #482057;border-radius:14px;background:#0d0112}.jw-movement-icon{width:36px;height:36px;border-radius:12px;background:#2b0736;display:grid;place-items:center;font-size:18px}.jw-movement-copy{min-width:0}.jw-movement-copy b{display:block;font-size:9.5px}.jw-movement-copy small{display:block;margin-top:3px;color:#94869a;font-size:7.5px;line-height:1.35}.jw-movement-amount{text-align:right;font-size:9px;font-weight:1000;white-space:nowrap}.jw-movement-amount.positive{color:#62e6a1}.jw-movement-amount.negative{color:#ff8fa4}.jw-movement-amount.neutral{color:#ffe17b}.jw-rate{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;border:1px solid #482057;border-radius:13px;background:#0d0112;color:#a99bad;font-size:8px}.jw-rate b{color:#ffe17b}.jw-toast{position:fixed;z-index:2147483647;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);width:max-content;max-width:calc(100% - 32px);padding:10px 13px;border:1px solid #815f23;border-radius:999px;background:#1c1004;color:#ffe494;font:900 9px/1.35 Inter,system-ui,sans-serif;text-align:center;opacity:0;pointer-events:none;transition:.2s}.jw-toast.show{opacity:1;transform:translate(-50%,0)}
@@ -1242,12 +1286,13 @@
         <div class="jw-tabs" role="tablist"><button class="jw-tab active" data-jw-tab="summary">RESUMEN</button><button class="jw-tab" data-jw-tab="recharge">RECARGAR</button><button class="jw-tab" data-jw-tab="exchange">CAMBIAR</button><button class="jw-tab" data-jw-tab="withdraw">RETIRAR</button><button class="jw-tab" data-jw-tab="history">HISTORIAL</button></div>
         <div class="jw-view" data-jw-view="summary">
           <article class="jw-card"><h3>Un monedero para toda la aplicación</h3><p>Las recargas aumentan JEMMOS, los regalos descuentan JEMMOS y crean el reparto financiero, y las retiradas usan únicamente JEMS confirmados.</p><div class="jw-actions"><button class="jw-shortcut gold" data-jw-go="recharge"><span>🪙</span>Recargar</button><button class="jw-shortcut" data-jw-go="exchange"><span>⇄</span>Cambiar</button><button class="jw-shortcut" data-jw-go="withdraw"><span>↗</span>Retirar JEMS</button></div></article>
-          <article class="jw-card"><h3>Reglas activas</h3><p>10.000 JEMS = 1 USD · retirada mínima 100.000 JEMS · la comisión de retirada la paga quien retira.</p></article>
+          <article class="jw-card"><h3>Reglas activas</h3><p>10.000 JEMS = 1 USD · retirada mínima 100.000 JEMS · solo JEMS confirmados.</p><div class="jw-policy-links"><a href="chili-ia.html?article=withdrawals#articulos">REGLAS DE RETIRADA</a><a href="configuracion.html#pagos">MÉTODOS Y PAÍS</a></div></article>
+          <article class="jw-card jw-security-card"><h3>🛡️ Seguridad financiera</h3><p>Solo una recarga iniciada y confirmada desde este Monedero puede acreditar JEMMOS. Una compra extraña se bloquea, queda en seguimiento y puede impedir retiradas hasta revisión.</p><div class="jw-policy-links"><a href="chili-ia.html?article=financial-security#articulos">CÓMO PROTEGE JEMMO</a><a href="chili-ia.html?preset=fraud#soporte">REPORTAR MOVIMIENTO</a></div></article>
           <article class="jw-card"><h3>Últimos movimientos</h3><p>Recargas, regalos, cambios y retiradas quedan guardados por cuenta.</p><div class="jw-history" id="jw-recent"></div></article>
         </div>
         <div class="jw-view" data-jw-view="recharge" hidden>
           <div class="jw-receipt" id="jw-recharge-receipt" hidden><small>ÚLTIMA RECARGA REGISTRADA</small><b id="jw-recharge-receipt-title">—</b><span id="jw-recharge-receipt-copy">—</span></div>
-          <article class="jw-card"><h3>Elige el método</h3><p>La operación es ficticia, pero el saldo, la red, la comisión, la fecha y el ingreso se registran como una operación completa de prueba.</p><div class="jw-methods" id="jw-recharge-methods"></div></article>
+          <article class="jw-card"><h3>Elige un método autorizado</h3><p>Solo estos botones pueden iniciar una recarga. En producción el proveedor deberá confirmar el recibo antes de acreditar saldo.</p><div class="jw-methods" id="jw-recharge-methods"></div><div class="jw-policy-links"><a href="chili-ia.html?article=authorized-payments#articulos">MÉTODOS OFICIALES</a></div></article>
           <article class="jw-card" id="jw-package-card"><h3 id="jw-package-title">Paquetes</h3><p id="jw-package-copy">Selecciona una recarga.</p><div class="jw-packages" id="jw-recharge-packages"></div></article>
           <article class="jw-card" id="jw-crypto-card" hidden><h3>Recarga cripto simulada</h3><p>Comprueba siempre que la red seleccionada coincide con la red de envío.</p><div class="jw-form-grid"><label class="jw-field"><span>Cantidad</span><input id="jw-crypto-amount" type="number" inputmode="decimal" min="1" step="1" value="10"></label><label class="jw-field"><span>Red</span><select id="jw-crypto-network"></select></label></div><div class="jw-preview" id="jw-crypto-preview"></div><button class="jw-primary" id="jw-crypto-submit" type="button">SIMULAR RECARGA</button></article>
           <p class="jw-note">USDT admite Binance Smart Chain BEP20, TRON TRC20 y Ethereum ERC20. USDC admite Binance BEP20 y Ethereum ERC20. No se mueve dinero real.</p>
@@ -1267,7 +1312,7 @@
           <label class="jw-field"><span>Dirección o identificador</span><input id="jw-withdraw-address" maxlength="80" placeholder="Dirección de cartera o ID de pago"></label>
           <div class="jw-preview" id="jw-withdraw-preview"></div>
           <button class="jw-primary" id="jw-withdraw-confirm" type="button">CONFIRMAR RETIRADA</button>
-          <p class="jw-note">Retirada ficticia: los JEMS bajan, el pago queda anotado y no sale dinero real.</p>
+          <p class="jw-note">Retirada ficticia: no sale dinero real. Si existe una alerta por fraude, recarga no reconocida o contracargo, la retirada queda bloqueada para revisión.</p><div class="jw-policy-links"><a href="chili-ia.html?article=financial-security#articulos">SEGURIDAD FINANCIERA</a><a href="chili-ia.html#soporte">SOPORTE</a></div>
         </div>
         <div class="jw-view" data-jw-view="history" hidden><article class="jw-card"><h3>Historial completo</h3><p>Todos los movimientos de esta cuenta.</p></article><div class="jw-history" id="jw-history"></div></div>
       </section>
@@ -1384,7 +1429,7 @@
     if (!info || !usd || !jemmos) return toast('No se pudo preparar esta recarga.');
     if (data.method === 'google' && isCuba()) return toast('Google Play no está disponible para Cuba.');
     ensureUi();
-    pendingRecharge = { method: data.method, usd, jemmos, bonus: Number(data.bonus) || 0, network: String(data.network || '') };
+    pendingRecharge = { method: data.method, usd, jemmos, bonus: Number(data.bonus) || 0, network: String(data.network || ''), authorizationToken: issueRechargeAuthorization(), surface: 'official-wallet-ui' };
     byId('jw-confirm-method').textContent = info.name;
     const cryptoCode = data.method === 'usdt' ? 'USDT' : data.method === 'usdc' ? 'USDC' : '';
     byId('jw-confirm-usd').textContent = cryptoCode
@@ -1413,6 +1458,7 @@
         button.disabled = false;
         button.textContent = 'CONFIRMAR RECARGA';
       }
+      if (result.blocked || result.reason === 'unauthorized-recharge') return toast(result.message || 'Recarga bloqueada y enviada a revisión.');
       return toast('No se pudo registrar la recarga.');
     }
     try {
@@ -1425,6 +1471,7 @@
         button.disabled = false;
         button.textContent = 'REINTENTAR RECARGA';
       }
+      pendingRecharge.authorizationToken = issueRechargeAuthorization();
       return toast('No se pudo guardar el saldo ni en el respaldo seguro del móvil. Libera espacio del navegador y vuelve a intentarlo.');
     }
     closeRechargeConfirmation();
@@ -1816,7 +1863,8 @@
     render,
     formatNumber,
     formatMoney,
-    getSecurityEvents: () => readJson(CLOUD_SECURITY_QUEUE_KEY, [])
+    getSecurityEvents: () => readJson(CLOUD_SECURITY_QUEUE_KEY, []),
+    getActiveFinancialAlerts: activeFinancialSecurityEvents
   });
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });

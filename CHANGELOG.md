@@ -43,3 +43,10 @@
 
 ## Límite técnico actual
 La detección automática real de personas, menores, armas o situaciones peligrosas no está incluida en el ZIP local. Requiere un servicio de moderación con IA, backend seguro, almacenamiento de incidencias y consola de moderadores. Esta versión integra el flujo y los puntos de conexión (`window.JemmoSafety.report`).
+## 28/07/2026 · PRUEBA 45 · Centro oficial y seguridad financiera
+- Fuente única para Chili, Configuración, normas, pagos y soporte.
+- Configuración real y accesos globales.
+- Recargas directas no autorizadas bloqueadas antes de acreditar saldo.
+- Retiradas retenidas cuando existe una alerta financiera activa.
+- PWA actualizada y pruebas técnicas documentadas.
+

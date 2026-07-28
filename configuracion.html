@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es" class="jemmo-auth-pending">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#09000f">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <title>Configuración · JEMMO LIVE</title>
+  <link rel="stylesheet" href="configuracion.css?v=45">
+  <style>html.jemmo-auth-pending body{visibility:hidden}</style>
+  <script>
+    document.documentElement.classList.add('jemmo-auth-pending');
+    setTimeout(()=>{if(!document.documentElement.classList.contains('jemmo-auth-pending'))return;let uid='';try{uid=localStorage.getItem('jemmo_active_uid')||''}catch{}if(!uid)try{uid=sessionStorage.getItem('jemmo_active_uid')||''}catch{}if(uid)document.documentElement.classList.remove('jemmo-auth-pending');else location.replace('acceso.html?sesion=timeout')},5500);
+  </script>
+</head>
+<body>
+  <header class="settings-topbar">
+    <button id="settingsBack" type="button" aria-label="Volver">‹</button>
+    <a class="settings-brand" href="inicio.html"><img src="jemmo-logo-header.webp" alt="JEMMO LIVE"></a>
+    <a class="chili-top-link" href="chili-ia.html?s=configuration#saber"><img src="chili-avatar.webp" alt=""><span><b>Chili IA</b><small>AYUDA OFICIAL</small></span></a>
+  </header>
+
+  <main class="settings-shell">
+    <section class="settings-hero">
+      <div><p>CONFIGURACIÓN OFICIAL</p><h1>Cuenta, privacidad y pagos</h1><span>Los controles personales se guardan aquí. Las normas se consultan desde una única fuente versionada para evitar contradicciones.</span></div>
+      <b id="policyVersionBadge">PRUEBA 45</b>
+    </section>
+
+    <nav class="settings-jump" aria-label="Secciones de configuración">
+      <a href="#cuenta">Cuenta</a><a href="#seguridad">Seguridad</a><a href="#privacidad">Privacidad</a><a href="#notificaciones">Avisos</a><a href="#pais">País</a><a href="#pagos">Pagos</a><a href="#normas">Normas</a>
+    </nav>
+
+    <section class="settings-card" id="cuenta">
+      <div class="card-heading"><span>👤</span><div><small>CUENTA</small><h2>Identidad y acceso</h2><p>Información de la sesión actual y acciones de acceso.</p></div></div>
+      <div class="account-summary"><img id="settingsAvatar" src="jemmo-fish-nav.webp" alt=""><div><b id="settingsName">Cuenta JEMMO</b><span id="settingsPublicId">ID pendiente</span><small id="settingsUid">Sesión autenticada</small></div></div>
+      <div class="setting-links"><a href="yo.html">Editar perfil <i>›</i></a><a href="acceso.html?recuperar=1">Cambiar o recuperar contraseña <i>›</i></a><button id="closeSessionButton" type="button">Cerrar sesión en este dispositivo <i>›</i></button></div>
+    </section>
+
+    <section class="settings-card" id="seguridad">
+      <div class="card-heading"><span>🛡️</span><div><small>SEGURIDAD</small><h2>Protección de cuenta y dinero</h2><p>Controles personales; las reglas oficiales se abren en Chili.</p></div></div>
+      <label class="toggle-row"><span><b>Confirmar operaciones económicas</b><small>Exigir confirmación antes de recargar, regalar, cambiar o retirar.</small></span><input type="checkbox" name="confirmEconomy" checked disabled><i></i></label>
+      <label class="toggle-row"><span><b>Avisos de seguridad</b><small>Recibir alertas por movimientos extraños o cambios sensibles.</small></span><input type="checkbox" name="securityAlerts" checked><i></i></label>
+      <label class="toggle-row"><span><b>Bloquear retirada con alerta activa</b><small>La retirada queda en revisión hasta resolver la incidencia.</small></span><input type="checkbox" name="withdrawalHold" checked disabled><i></i></label>
+      <div class="setting-links"><a href="chili-ia.html?article=financial-security#articulos">Leer seguridad financiera <i>›</i></a><a href="chili-ia.html?preset=fraud#soporte">Reportar movimiento no reconocido <i>›</i></a></div>
+      <div class="security-state" id="securityState"><span>✓</span><div><b>Sin alertas financieras locales</b><small>La validación real del proveedor deberá ejecutarse en backend antes de producción.</small></div></div>
+    </section>
+
+    <section class="settings-card" id="privacidad">
+      <div class="card-heading"><span>🔒</span><div><small>PRIVACIDAD</small><h2>Visibilidad y contacto</h2><p>Preferencias personales separadas de las normas oficiales.</p></div></div>
+      <label class="select-row"><span><b>Quién puede ver mi actividad</b><small>Presencia y estado público.</small></span><select name="activityVisibility"><option value="everyone">Todos</option><option value="followers">Seguidores</option><option value="friends">Amigos</option><option value="nobody">Nadie</option></select></label>
+      <label class="select-row"><span><b>Quién puede enviarme mensajes</b><small>Los bloqueos siempre tienen prioridad.</small></span><select name="messagePermission"><option value="everyone">Todos</option><option value="followers">Seguidores</option><option value="friends">Amigos</option></select></label>
+      <label class="toggle-row"><span><b>Mostrar país en el perfil</b><small>La ciudad y el teléfono permanecen bajo control del perfil.</small></span><input type="checkbox" name="showCountry" checked><i></i></label>
+      <div class="setting-links"><a href="chili-ia.html?article=privacy#articulos">Leer política de privacidad <i>›</i></a></div>
+    </section>
+
+    <section class="settings-card" id="notificaciones">
+      <div class="card-heading"><span>🔔</span><div><small>NOTIFICACIONES</small><h2>Avisos de JEMMO</h2><p>El permiso del sistema depende del navegador y del móvil.</p></div></div>
+      <label class="toggle-row"><span><b>Mensajes y seguidores</b><small>Nuevos mensajes, solicitudes y relaciones.</small></span><input type="checkbox" name="notifySocial" checked><i></i></label>
+      <label class="toggle-row"><span><b>Tareas y cronómetro</b><small>Inicio, pausa, hora completa, cobro y caducidad.</small></span><input type="checkbox" name="notifyTasks" checked><i></i></label>
+      <label class="toggle-row"><span><b>Pagos y retiradas</b><small>Confirmaciones, revisiones y estados económicos.</small></span><input type="checkbox" name="notifyFinance" checked><i></i></label>
+      <button class="notification-button" id="notificationPermission" type="button">COMPROBAR PERMISO DEL MÓVIL</button>
+      <p class="notification-state" id="notificationState">Estado del permiso: comprobando…</p>
+    </section>
+
+    <section class="settings-card" id="pais">
+      <div class="card-heading"><span>🌍</span><div><small>PAÍS E IDIOMA</small><h2>Disponibilidad regional</h2><p>El país controla métodos visibles y requisitos de pago.</p></div></div>
+      <label class="select-row"><span><b>País principal</b><small>Debe coincidir con la información real del usuario y del proveedor.</small></span><select id="countrySelect" name="country"><option value="ES">España</option><option value="CU">Cuba</option><option value="MX">México</option><option value="CO">Colombia</option><option value="DO">República Dominicana</option><option value="VE">Venezuela</option><option value="AR">Argentina</option><option value="CL">Chile</option><option value="PE">Perú</option><option value="US">Estados Unidos</option><option value="OTHER">Otro país</option></select></label>
+      <label class="select-row"><span><b>Idioma de la aplicación</b><small>PRUEBA 45 mantiene español como idioma principal.</small></span><select name="language"><option value="es">Español</option></select></label>
+      <p class="country-note" id="countryPaymentNote">Los métodos se actualizarán según el país seleccionado.</p>
+    </section>
+
+    <section class="settings-card" id="pagos">
+      <div class="card-heading"><span>💳</span><div><small>PAGOS</small><h2>Métodos oficiales</h2><p>Solo el Monedero oficial puede iniciar una recarga.</p></div></div>
+      <div class="payment-methods" id="paymentMethods"></div>
+      <div class="payment-warning"><span>!</span><p><b>No se acredita saldo por aplicaciones modificadas, enlaces externos ni comprobantes enviados por chat.</b> Una operación extraña se bloquea y pasa a revisión antes de permitir regalos o retiradas.</p></div>
+      <div class="setting-links"><button type="button" id="openWalletFromSettings">Abrir Monedero <i>›</i></button><a href="chili-ia.html?article=authorized-payments#articulos">Leer métodos autorizados <i>›</i></a></div>
+    </section>
+
+    <section class="settings-card official-index" id="normas">
+      <div class="card-heading"><span>§</span><div><small>FUENTE ÚNICA</small><h2>Normas y artículos oficiales</h2><p id="officialSourceText">Cargando fuente versionada…</p></div></div>
+      <div class="official-article-list" id="officialArticleList"></div>
+      <a class="open-chili-center" href="chili-ia.html#saber">ABRIR CENTRO OFICIAL CHILI</a>
+    </section>
+
+    <button class="save-settings" id="saveSettings" type="button">GUARDAR CONFIGURACIÓN</button>
+    <p class="save-state" id="saveState">Los ajustes personales se guardan en este dispositivo para la cuenta activa.</p>
+  </main>
+
+  <div class="settings-toast" id="settingsToast" role="status" aria-live="polite"></div>
+  <script type="module" src="jemmo-session.js"></script>
+  <script src="pwa-register.js?v=45"></script>
+  <script src="jemmo-wallet.js?v=45"></script>
+  <script type="module" src="jemmo-settings.js?v=45"></script>
+</body>
+</html>

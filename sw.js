@@ -1,5 +1,11 @@
-const CACHE='jemmo-live-v1-gift-security-global-tasks-44-20260728';
-const CORE=['./','./inicio.html','./yo.html','./live.html','./salas.html','./pwa-register.js','./jemmo-wallet.js','./jemmo-house-finance.js','./jemmo-house-activity.js','./jemmo-host-task-rewards.js','./jemmo-messages-realtime.js','./jemmo-house-operations.js','./jemmo-room-realtime.js','./jemmo-house-room-ui.js','./jemmo-house-pet.js','./jemmo-house-pet.css','./manifest.webmanifest'];
+const CACHE='jemmo-live-v1-official-center-financial-security-45-20260728';
+const CORE=[
+  './','./inicio.html','./yo.html','./live.html','./salas.html','./configuracion.html','./chili-ia.html',
+  './pwa-register.js','./jemmo-wallet.js','./jemmo-official-policies.js','./jemmo-settings.js','./jemmo-chili.js','./jemmo-chili-knowledge.js',
+  './configuracion.css','./chili-ia.css','./jemmo-house-finance.js','./jemmo-house-activity.js','./jemmo-host-task-rewards.js',
+  './jemmo-messages-realtime.js','./jemmo-house-operations.js','./jemmo-room-realtime.js','./jemmo-house-room-ui.js',
+  './jemmo-house-pet.js','./jemmo-house-pet.css','./manifest.webmanifest'
+];
 self.addEventListener('install',event=>{event.waitUntil((async()=>{const cache=await caches.open(CACHE);await Promise.allSettled(CORE.map(url=>cache.add(new Request(url,{cache:'reload'}))));await self.skipWaiting()})())});
 self.addEventListener('activate',event=>{event.waitUntil((async()=>{const keys=await caches.keys();await Promise.all(keys.filter(key=>key!==CACHE&&key.startsWith('jemmo')).map(key=>caches.delete(key)));await self.clients.claim()})())});
 self.addEventListener('message',event=>{if(event.data?.type==='SKIP_WAITING')self.skipWaiting()});

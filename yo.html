@@ -714,12 +714,12 @@
     <div class="search-hint">Escribe, por ejemplo: idioma, seguridad, ayuda o perfil.</div>
     <nav class="menu-list" id="menuList">
       <button data-search="mi perfil editar perfil foto nombre biografia avatar apariencia" data-route="yo.html"><span>👤</span><span><b>Mi perfil</b></span><i>›</i></button>
-      <button data-search="configuracion idioma permisos camara microfono preferencias aplicacion notificaciones" data-menu-action="Configuración"><span>⚙️</span><span><b>Configuración</b><small>Idioma y ajustes de la aplicación</small></span><i>›</i></button>
+      <button data-search="configuracion idioma permisos camara microfono preferencias aplicacion notificaciones pagos pais" data-route="configuracion.html"><span>⚙️</span><span><b>Configuración</b><small>Cuenta, seguridad, privacidad, país y pagos</small></span><i>›</i></button>
       <button data-search="tienda universo temas burbujas marcos silla avatar entradas regalos inventario personalizacion" data-route="jemmo-universo.html"><span>✦</span><span><b>JEMMO Universo</b><small>Tienda, inventario y personalización</small></span><i>›</i></button>
-      <button data-search="seguridad privacidad contraseña dispositivos usuarios bloqueados verificacion" data-route="chili-ia.html#privacidad"><span>🔒</span><span><b>Seguridad y privacidad</b><small>Cuenta, contraseña y bloqueos</small></span><i>›</i></button>
+      <button data-search="seguridad privacidad contraseña dispositivos usuarios bloqueados verificacion" data-route="configuracion.html#seguridad"><span>🔒</span><span><b>Seguridad y privacidad</b><small>Cuenta, contraseña y bloqueos</small></span><i>›</i></button>
       <button class="jf-owner-button" data-search="jemmo finanzas ingresos pagos gastos beneficio propietario privado" data-open-finance><span>📊</span><span><b>JEMMO Finanzas</b><small>Acceso privado del propietario</small></span><i>🔒</i></button>
       <button data-search="ayuda soporte problemas contacto preguntas denuncia captura humano" data-route="chili-ia.html#soporte"><span>❓</span><span><b>Ayuda y soporte</b><small>Contacta con el equipo JEMMO</small></span><i>›</i></button>
-      <button data-search="normas comunidad convivencia seguridad contenido permitido" data-menu-action="Normas de la comunidad"><span>§</span><span><b>Normas de la comunidad</b></span><i>›</i></button>
+      <button data-search="normas comunidad convivencia seguridad contenido permitido" data-route="chili-ia.html?article=community-rules#articulos"><span>§</span><span><b>Normas de la comunidad</b><small>Fuente oficial versionada</small></span><i>›</i></button>
       <button class="logout-item" data-search="cerrar sesion salir desconectar cuenta" id="logoutButton"><span>↪</span><span><b>Cerrar sesión</b></span><i>›</i></button>
     </nav>
     <div class="quick-results" id="quickResults" hidden>
@@ -728,8 +728,8 @@
       <button data-route="salas.html">🎙️ Salas <i>›</i></button>
       <button data-route="jemmo-universo.html">✦ JEMMO Universo <i>›</i></button>
       <button data-route="mensajes.html">💬 Mensajes <i>›</i></button>
-      <button data-menu-action="Idioma">🌍 Idioma <i>›</i></button>
-      <button data-menu-action="Seguridad y privacidad">🔒 Seguridad y privacidad <i>›</i></button>
+      <button data-route="configuracion.html#pais">🌍 Idioma y país <i>›</i></button>
+      <button data-route="configuracion.html#seguridad">🔒 Seguridad y privacidad <i>›</i></button>
     </div>
     <p class="role-note">El menú se adaptará al rol del usuario: usuario, emisor, agente o colaborador.</p>
   </aside>
@@ -920,9 +920,9 @@
 
   <script type="module" src="jemmo-session.js"></script>
   <script type="module" src="jemmo-social.js"></script>
-  <script src="pwa-register.js"></script>
+  <script src="pwa-register.js?v=45"></script>
   <script src="jemmo-profile-storage.js"></script>
-  <script src="jemmo-wallet.js"></script>
+  <script src="jemmo-wallet.js?v=45"></script>
   <script src="jemmo-house-finance.js"></script>
   <script src="app.js"></script>
   <script>

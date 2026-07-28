@@ -1254,6 +1254,9 @@
           <button id="liveMirror">⇆<small>Espejo OFF</small></button>
           <button id="liveComments">💬<small>Comentarios</small></button>
           <button id="roomControls">⚙<small>Controles</small></button>
+          <button id="officialHelpButton">✦<small>Chili ayuda</small></button>
+          <button id="officialRulesButton">§<small>Normas</small></button>
+          <button id="officialConfigButton">🔒<small>Configuración</small></button>
         </div>
       </section>
 
@@ -1353,11 +1356,11 @@
     <nav class="jl-menu-list">
       <a href="yo.html"><span>👤</span><span><b>Mi perfil</b><small>Cuenta y apariencia</small></span><i>›</i></a>
       <button type="button"><span>🪙</span><span><b>Monedero</b><small>Saldo, recargas y retiros</small></span><i>›</i></button>
-      <button type="button"><span>⚙️</span><span><b>Configuración</b><small>Idioma y permisos</small></span><i>›</i></button>
+      <a href="configuracion.html"><span>⚙️</span><span><b>Configuración</b><small>Cuenta, seguridad, país y pagos</small></span><i>›</i></a>
       <a href="chili-ia.html#soporte"><span>?</span><span><b>Ayuda y soporte</b><small>Soporte humano y asistencia</small></span><i>›</i></a>
       <a href="acceso.html" data-jemmo-logout><span>↪</span><span><b>Cerrar sesión</b></span><i>›</i></a>
     </nav>
-    <div class="jl-version">JEMMO LIVE V1 · SALAS RUTH Y TAREAS LIVE PRUEBA 08</div>
+    <div class="jl-version">JEMMO LIVE V1 · CENTRO OFICIAL Y SEGURIDAD FINANCIERA PRUEBA 45</div>
   </aside>
 
   <div class="jl-toast" id="toast"></div>
@@ -1381,8 +1384,8 @@
   </nav>
 
   <script type="module" src="jemmo-session.js"></script>
-  <script src="pwa-register.js"></script>
-  <script src="jemmo-wallet.js"></script>
+  <script src="pwa-register.js?v=45"></script>
+  <script src="jemmo-wallet.js?v=45"></script>
   <script src="jemmo-house-finance.js"></script>
   <script src="jemmo-prep-storage.js"></script>
   <script type="module" src="jemmo-personalization-runtime.js"></script>
@@ -2107,6 +2110,9 @@
       closeSheets();
     });
     $("settingsButton").addEventListener("click",()=>openSheet("settingsSheet"));
+    $("officialHelpButton")?.addEventListener("click",()=>{ location.href="chili-ia.html?preset=live-help"; });
+    $("officialRulesButton")?.addEventListener("click",()=>{ location.href="chili-ia.html?article=community-rules#articulos"; });
+    $("officialConfigButton")?.addEventListener("click",()=>{ location.href="configuracion.html#seguridad"; });
     $("stickersButton").addEventListener("click",()=>openSheet("stickersSheet"));
     $("giftsButton").addEventListener("click",()=>openSheet("giftsSheet"));
     $("functionsButton").addEventListener("click",()=>openSheet("functionsSheet"));
@@ -2138,6 +2144,10 @@
     document.querySelectorAll("[data-module]").forEach(button=>{
       button.addEventListener("click",event=>{
         event.preventDefault();event.stopPropagation();
+        if(button.dataset.module==="rules"){
+          location.href="chili-ia.html?article=community-rules#articulos";
+          return;
+        }
         const data=moduleData[button.dataset.module];
         if(!data) return;
         $("moduleTitle").textContent=data.title;
@@ -2502,7 +2512,7 @@
     $("menuOpen").addEventListener("click",openMenu);
     $("menuClose").addEventListener("click",closeMenu);
     menuBackdrop.addEventListener("click",closeMenu);
-    $("helpButton").addEventListener("click",()=>showToast("Activa cámara, revisa los datos guardados y pulsa iniciar LIVE.",3400));
+    $("helpButton").addEventListener("click",()=>{location.href="chili-ia.html?preset=live-help"});
     document.querySelectorAll(".jl-menu-list button").forEach(button=>button.addEventListener("click",()=>showToast("Esta función se completa en su módulo correspondiente.")));
 
     document.addEventListener("click",event=>{

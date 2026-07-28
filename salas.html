@@ -433,6 +433,9 @@
   <button class="jr-setting" id="roomChatSetting" type="button" data-action="chat"><span>💬</span><b>Chat ABIERTO<small>Cerrar o volver a abrir los mensajes</small></b><i>›</i></button>
   <button class="jr-setting" type="button" data-action="minor"><span>🛡️</span><b>Posible menor<small>Proteger, registrar y solicitar revisión</small></b><i>›</i></button>
   <button class="jr-setting" type="button" data-action="permissions"><span>🔒</span><b>Permisos de sillas<small>Solicitudes, invitaciones y cierre</small></b><i>›</i></button>
+  <button class="jr-setting" type="button" data-action="official-help"><span>✦</span><b>Chili · Ayuda oficial<small>Funcionamiento, tareas y soporte</small></b><i>›</i></button>
+  <button class="jr-setting" type="button" data-action="official-rules"><span>§</span><b>Normas oficiales<small>Una única fuente versionada</small></b><i>›</i></button>
+  <button class="jr-setting" type="button" data-action="official-config"><span>⚙️</span><b>Configuración<small>Cuenta, seguridad, privacidad y pagos</small></b><i>›</i></button>
   <button class="jr-setting danger" type="button" data-action="close"><span>⛔</span><b>Finalizar sala<small>Pide confirmación antes de cerrar</small></b><i>›</i></button>
 </section>
 
@@ -468,8 +471,8 @@
 <div class="jr-toast" id="toast" role="status"></div>
 
 <script type="module" src="jemmo-session.js"></script>
-<script src="pwa-register.js?v=44"></script>
-<script src="jemmo-wallet.js"></script>
+<script src="pwa-register.js?v=45"></script>
+<script src="jemmo-wallet.js?v=45"></script>
 <script src="jemmo-house-finance.js"></script>
 <script src="jemmo-prep-storage.js"></script>
 <script type="module" src="jemmo-room-realtime.js?v=42"></script>
@@ -1859,7 +1862,7 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
 
   $('startRoom').addEventListener('click',enterRoom);
   $('leaveRoom').addEventListener('click',()=>leaveRoom(true));
-  $('helpButton').addEventListener('click',()=>toast('Completa los datos, entra y pulsa INVITAR para probar audio o cámara en otro móvil.'));
+  $('helpButton').addEventListener('click',()=>{location.href='chili-ia.html?preset=room-help'});
   $('settingsButton').addEventListener('click',()=>openSheet('settingsSheet'));
   $('houseSeatButton').addEventListener('click',toggleHouseSeat);
   $('houseMicButton').addEventListener('click',()=>toggleRoomMicro());
@@ -1953,6 +1956,12 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
       toggleRoomChat();
     }else if(action==='minor'){
       toast('Posible menor: protección activada y caso preparado para revisión.');
+    }else if(action==='official-help'){
+      location.href='chili-ia.html?preset=room-help';
+    }else if(action==='official-rules'){
+      location.href='chili-ia.html?article=community-rules#articulos';
+    }else if(action==='official-config'){
+      location.href='configuracion.html#seguridad';
     }else if(action==='close'){
       closeSheets();
       leaveRoom(true);

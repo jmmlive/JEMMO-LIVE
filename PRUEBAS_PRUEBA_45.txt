@@ -1,0 +1,24 @@
+JEMMO LIVE · PRUEBAS TÉCNICAS PRUEBA 45
+Fecha: 28/07/2026
+
+RESULTADOS
+[OK] ZIP base: 124 archivos, `unzip -t` sin errores.
+[OK] Integridad base: 17/17 hashes internos coincidentes.
+[OK] Sintaxis JavaScript: jemmo-wallet.js, pwa-register.js y sw.js.
+[OK] Sintaxis de módulos: jemmo-official-policies.js, jemmo-chili-knowledge.js, jemmo-chili.js y jemmo-settings.js.
+[OK] Sintaxis de scripts internos: inicio.html, yo.html, live.html, salas.html, chili-ia.html y configuracion.html.
+[OK] Referencias locales de scripts, hojas de estilo e imágenes en las páginas modificadas.
+[OK] Fuente oficial: versión 45, 13 artículos, 11 niveles LIVE y 9 categorías de soporte.
+[OK] Audio Room: tarifa oficial 800 JEMS/hora completa.
+[OK] Chili: “recarga falsa” resuelve a `financial-security`.
+[OK] Monedero: llamada directa de recarga bloqueada, saldo 0 antes y después, alerta registrada.
+[OK] Rutas oficiales: Configuración y Normas enlazadas desde Inicio, Perfil, LIVE y Salas.
+[OK] PWA: caché y registro actualizados a PRUEBA 45.
+
+NO EJECUTADO EN ESTA ENTREGA
+- Pago real con Google Play, tarjeta, Epay, USDT o USDC.
+- Validación de recibos, webhooks, contracargos o bloqueo autoritativo del backend.
+- Prueba monetaria en producción.
+
+MOTIVO
+La economía continúa declarada como simulación. Estas pruebas necesitan proveedores configurados, credenciales seguras, backend desplegado y reglas de producción.

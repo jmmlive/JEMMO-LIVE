@@ -1,72 +1,19 @@
-JEMMO LIVE V1 · SEGURIDAD DE REGALOS Y ACCESO GLOBAL A MIS TAREAS PRUEBA 44
+JEMMO LIVE V1 · CENTRO OFICIAL CHILI, CONFIGURACIÓN, NORMAS, PAGOS Y SEGURIDAD FINANCIERA PRUEBA 45
 Fecha: 28/07/2026
+Base verificada: JEMMO LIVE V1 · SEGURIDAD DE REGALOS Y ACCESO GLOBAL A MIS TAREAS PRUEBA 44
+ZIP base recibido: JEMMO-LIVE-main (16) (1).zip
+SHA-256 de la base recibida: e984df500d555fdc342c984eed86bce39e4dc8ae7dca88c4e826e9e56274ad86
 
-Base verificada:
-- Archivo recibido: JEMMO-LIVE-main (15).zip.
-- Versión detectada: JEMMO LIVE V1 · TAREA REAL UNIFICADA EN LIVE Y AUDIO ROOM PRUEBA 43.
-- SHA-256 de la base recibida: f5c5df5c9ae40dda0a8c32f99aa3203da67652940ff0114915d2d097584cb7ca.
+ESTADO
+- Entrega completa preparada sobre una base de 124 archivos verificada sin errores.
+- Economía y pagos continúan en MODO DE PRUEBAS.
+- La protección del navegador es defensiva, no sustituye la validación de recibos y operaciones en backend.
 
-Objetivo oficial:
-1. Impedir que cualquier cuenta se envíe regalos a sí misma.
-2. Hacer que solo los regalos recibidos en LIVE incrementen el nivel de la tarea.
-3. Limitar el tiempo remunerable a un máximo de 3 horas en LIVE y 2 horas en Audio Room por ciclo.
-4. Mantener un acceso permanente a MIS TAREAS desde Inicio, Perfil, LIVE y Audio Room.
-5. Mostrar el historial real de tareas cobradas, completadas, pausadas, detenidas y pendientes.
-
-Seguridad de autorregalos:
-- El bloqueo central se ejecuta cuando senderUid === recipientUid antes de consultar o descontar saldo, consumir lotes, crear movimientos, repartir porcentajes, acreditar JEMS, sincronizar regalos o modificar el progreso de tareas.
-- Respuesta oficial visible: “No puedes enviarte regalos a ti mismo.”
-- El intento bloqueado registra un evento de seguridad sin movimiento económico.
-- LIVE y Audio Room excluyen la propia cuenta de los destinatarios, la muestran como “TÚ” y mantienen su botón deshabilitado incluso después de terminar otro envío.
-- Mensajes y Destellos aplican la misma protección y bloquean la doble pulsación durante la operación.
-- Batalla de Casas conserva su destinatario económico sintético de Casa y no se interpreta como autorregalo personal.
-- Alimentar la mascota sigue funcionando como compra de la Casa mediante spendJemmos; no se trata como regalo a una persona.
-
-Reglas de tareas:
-- Solo cuentan para subir de nivel los documentos de regalos con taskProgressMode = live, source = live-gift o contexto LIVE heredado.
-- Audio Room, Perfil, Mensajes, Destellos y Batalla no incrementan giftNet7d ni el nivel de la tarea.
-- LIVE: máximo 3 horas remunerables por ciclo.
-- Audio Room: máximo 2 horas remunerables por ciclo.
-- El nivel S mantiene 4 horas totales, pero obliga a combinar modos: 3 LIVE + 1 Audio Room o 2 LIVE + 2 Audio Room. No se pueden cobrar 4 horas en un único modo.
-- Audio Room conserva su tarifa fija de 800 JEMS por hora; LIVE usa la tarifa del nivel alcanzado.
-- Los documentos de tarea guardan liveMaxHours, audioRoomMaxHours, giftProgressSource = live_only y rewardRatePolicy = mode_specific_v2.
-
-Acceso global a MIS TAREAS:
-- Inicio: tarjeta permanente MIS TAREAS con estado compacto.
-- Perfil: acción MIS TAREAS.
-- LIVE: pestaña compacta real y acceso desde Ajustes.
-- Audio Room oficial de Casa: pestaña real por Emisora y acceso desde Ajustes.
-- El panel consulta el mismo documento casas/{houseId}/tareas/{uid} y añade historial desde casas/{houseId}/historialTareas y users/{uid}/recompensasTareas.
-
-Archivos modificados:
-- inicio.html
-- yo.html
-- live.html
-- salas.html
-- jemmo-wallet.js
-- jemmo-house-finance.js
-- jemmo-host-task-rewards.js
-- jemmo-house-activity.js
-- jemmo-house-operations.js
-- jemmo-messages-realtime.js
-- jemmo-house-pet.js
-- pwa-register.js
-- sw.js
-- VERSION.txt
-- LEEME_INSTALACION_PRUEBA_44.txt
-- CAMBIOS_PRUEBA_44.md
-- PRUEBAS_PRUEBA_44.txt
-- INTEGRIDAD_SHA256.txt
-
-Pruebas técnicas superadas:
-- Sintaxis Node de todos los JavaScript modificados.
-- Sintaxis de todos los scripts inline de Inicio, Perfil, LIVE y Salas.
-- Autorregalo: bloqueado, saldo intacto, sin movimiento económico, sin cola de regalo y con evento de seguridad.
-- Regalo válido a otra cuenta: descuento correcto y reparto 70% al receptor en modo de pruebas.
-- Compra de alimento de mascota: aceptada sin activar la protección de autorregalo.
-- Nivel S: cuarta hora bloqueada si solo existe actividad LIVE y habilitada al completar Audio Room.
-
-Importante antes de producción:
-- Toda la economía continúa en MODO DE PRUEBAS.
-- La base recibida no contiene firestore.rules ni Cloud Functions desplegables.
-- Antes de activar dinero real o publicar la economía en producción, el mismo bloqueo senderUid !== recipientUid, la idempotencia y el reparto deben imponerse en backend confiable mediante reglas y/o Cloud Functions; la protección incluida en PRUEBA 44 endurece la interfaz, el monedero y la ruta de sincronización actuales, pero no sustituye un backend autoritativo.
+ALCANCE PRINCIPAL
+1. Chili IA usa una única fuente oficial versionada para normas, tareas, tarifas, Monedero, regalos, pagos, retiradas, seguridad, privacidad, Casas, Agencias y soporte.
+2. Nueva página Configuración con cuenta, seguridad, privacidad, notificaciones, país, idioma y métodos de pago.
+3. Accesos oficiales desde Inicio, Perfil, LIVE, Salas, Configuración y Monedero.
+4. Soporte humano ampliado con fecha aproximada del incidente, captura obligatoria, número de caso, fecha y estados.
+5. Seguridad financiera local: rechazo de recargas no iniciadas desde el Monedero oficial, registro de alerta y bloqueo temporal de retiradas con alertas activas.
+6. Google Play se oculta para Cuba en la configuración de métodos.
+7. PWA y caché actualizadas a PRUEBA 45.

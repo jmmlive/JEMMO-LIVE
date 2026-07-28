@@ -1,0 +1,17 @@
+JEMMO LIVE · INSTALACIÓN PRUEBA 45
+
+1. Conserva este ZIP completo sin borrar archivos.
+2. Sube la carpeta `JEMMO-LIVE-main` completa al mismo alojamiento usado para la PWA.
+3. No mezcles archivos sueltos de pruebas anteriores.
+4. Abre JEMMO LIVE, cierra completamente la PWA y vuelve a abrirla para activar la caché PRUEBA 45.
+5. Comprueba:
+   - Inicio > menú > Configuración.
+   - Perfil > Configuración y Normas.
+   - LIVE > Ayuda, Normas y Configuración.
+   - Salas > Ajustes > Chili, Normas y Configuración.
+   - Chili > Artículos oficiales > Seguridad financiera.
+   - Configuración > país Cuba: Google Play no debe aparecer.
+6. Guarda también el registro Word de PRUEBA 45 como documentación del proyecto.
+
+IMPORTANTE
+No utilizar esta protección local como sistema de cobro real. Antes de publicar pagos en Play Store hay que conectar el backend financiero, validar recibos y endurecer Firebase.

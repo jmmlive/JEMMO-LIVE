@@ -1,4 +1,4 @@
-import { answerQuestion, SUGGESTIONS, TASK_TIERS, AUDIO_ROOM_RATE, SUPPORT_CATEGORIES } from './jemmo-chili-knowledge.js?v=38';
+import { answerQuestion, SUGGESTIONS, TASK_TIERS, AUDIO_ROOM_RATE, SUPPORT_CATEGORIES, JEMMO_POLICY_META, JEMMO_ARTICLES } from './jemmo-chili-knowledge.js?v=45';
 
 const $ = (selector, root=document) => root.querySelector(selector);
 const $$ = (selector, root=document) => [...root.querySelectorAll(selector)];
@@ -128,7 +128,9 @@ function createActions(actions=[]){
     const button=document.createElement('button'); button.type='button'; button.textContent=action.label;
     button.addEventListener('click',()=>{
       if(action.route){ location.assign(action.route); return; }
-      if(action.section){ scrollToSection(action.section); return; }
+      if(action.wallet){ window.JemmoWallet?.open?.('summary'); if(!window.JemmoWallet?.open) location.assign('yo.html?monedero=1'); return; }
+      if(action.article){ openOfficialArticle(action.article); return; }
+      if(action.section){ if(action.preset) presetSupport(action.preset); scrollToSection(action.section); return; }
       if(action.voice){ openVoiceCall(); return; }
       if(action.prompt) submitQuestion(action.prompt);
     }); row.append(button);
@@ -181,6 +183,45 @@ function renderSupportCategories(){
   select.innerHTML='<option value="">Selecciona el motivo</option>'+SUPPORT_CATEGORIES.map(item=>`<option value="${item.id}">${item.icon} ${item.label}</option>`).join('');
 }
 
+function presetSupport(category=''){
+  const value=String(category||'').trim();
+  const select=$('#supportCategory');
+  if(select && SUPPORT_CATEGORIES.some(item=>item.id===value)) select.value=value;
+}
+function runOfficialAction(action={}){
+  if(action.route){location.assign(action.route);return}
+  if(action.wallet){window.JemmoWallet?.open?.('summary');if(!window.JemmoWallet?.open)location.assign('yo.html?monedero=1');return}
+  if(action.article){openOfficialArticle(action.article);return}
+  if(action.section){if(action.preset)presetSupport(action.preset);scrollToSection(action.section);return}
+  if(action.voice){openVoiceCall();return}
+  if(action.prompt)submitQuestion(action.prompt);
+}
+function renderOfficialArticles(category='all'){
+  const host=$('#officialArticles'); if(!host)return;
+  const items=category==='all'?JEMMO_ARTICLES:JEMMO_ARTICLES.filter(article=>article.category===category);
+  host.innerHTML='';
+  items.forEach(article=>{
+    const details=document.createElement('details');details.className='official-article';details.dataset.articleId=article.id;
+    const summary=document.createElement('summary');summary.innerHTML=`<span>${article.icon}</span><div><b>${article.title}</b><small>${article.summary}</small></div><i>⌄</i>`;
+    const body=document.createElement('div');body.className='official-article-body';
+    const paragraph=document.createElement('p');paragraph.append(formatText(article.body));body.append(paragraph);
+    const meta=document.createElement('div');meta.className='official-article-meta';meta.innerHTML=`<span>${JEMMO_POLICY_META.release}</span><span>${article.category.toUpperCase()}</span><span>${article.updatedAt}</span>`;body.append(meta);
+    if(article.actions?.length){const actions=document.createElement('div');actions.className='official-article-actions';article.actions.forEach(action=>{const button=document.createElement('button');button.type='button';button.textContent=action.label;button.addEventListener('click',()=>runOfficialAction(action));actions.append(button)});body.append(actions)}
+    details.append(summary,body);host.append(details);
+  });
+}
+function renderOfficialCenter(){
+  const meta=$('#officialSourceMeta');if(meta)meta.textContent=`${JEMMO_POLICY_META.title} · ${JEMMO_POLICY_META.release} · ${JEMMO_POLICY_META.publishedAt}.`;
+  const categories=[['all','Todos'],['normas','Normas'],['tareas','Tareas'],['pagos','Pagos'],['seguridad','Seguridad'],['privacidad','Privacidad'],['casas','Casas'],['soporte','Soporte']];
+  const nav=$('#officialCategories');if(nav){nav.innerHTML='';categories.forEach(([id,label],index)=>{const button=document.createElement('button');button.type='button';button.textContent=label;button.classList.toggle('active',index===0);button.addEventListener('click',()=>{nav.querySelectorAll('button').forEach(node=>node.classList.toggle('active',node===button));renderOfficialArticles(id)});nav.append(button)})}
+  renderOfficialArticles('all');
+}
+function openOfficialArticle(id){
+  scrollToSection('articulos');
+  const target=document.querySelector(`[data-article-id="${CSS.escape(String(id||''))}"]`);
+  if(target){target.open=true;setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'center'}),180)}
+}
+
 async function compressEvidence(file){
   if(!file || !file.type.startsWith('image/')) throw new Error('image-required');
   if(file.size>15*1024*1024) throw new Error('image-too-large');
@@ -220,7 +261,7 @@ function ticketTime(value){
   const ms=Number(value?.toMillis?.()||value||0); if(!ms) return 'Pendiente de sincronizar';
   return new Intl.DateTimeFormat('es-ES',{dateStyle:'short',timeStyle:'short'}).format(new Date(ms));
 }
-function ticketStatus(value){ return ({pending:'PENDIENTE',reviewing:'EN REVISIÓN',resolved:'RESUELTO',closed:'CERRADO'})[value]||'PENDIENTE'; }
+function ticketStatus(value){ return ({pending:'PENDIENTE',reviewing:'EN REVISIÓN','needs-info':'NECESITA INFORMACIÓN',resolved:'RESUELTO',closed:'CERRADO'})[value]||'PENDIENTE'; }
 function renderTickets(items=[]){
   const list=$('#supportTicketsList'); if(!list) return;
   if(!items.length){ list.innerHTML='<p class="empty-tickets">Todavía no tienes solicitudes registradas.</p>'; return; }
@@ -237,9 +278,10 @@ async function submitSupport(event){
   event.preventDefault();
   const button=$('#supportSubmit'); const data=new FormData(supportForm);
   const category=text(data.get('category'),30); const categoryInfo=SUPPORT_CATEGORIES.find(item=>item.id===category);
-  const description=text(data.get('description'),1600); const locationValue=text(data.get('location'),40); const target=text(data.get('target'),100);
+  const description=text(data.get('description'),1600); const locationValue=text(data.get('location'),40); const target=text(data.get('target'),100); const incidentDate=text(data.get('incidentDate'),40);
   if(!categoryInfo){ showModal('Selecciona el motivo','Indica si se trata de monedero, acceso, tareas, fallo técnico, comportamiento, posible menor u otro.','!'); return; }
   if(description.length<20){ showModal('Explica el problema','Escribe al menos 20 caracteres para que soporte pueda entender qué ocurrió.','✎'); return; }
+  if(!incidentDate){ showModal('Indica la fecha','Selecciona la fecha y hora aproximada del incidente.','🕘'); return; }
   if(!selectedEvidence){ showModal('Falta la captura','Adjunta una captura del problema o de la conversación. Es obligatoria para enviar la solicitud.','📷'); return; }
   if(!currentUid || currentUid==='guest'){ showModal('Sesión no verificada','Cierra y vuelve a abrir JEMMO antes de enviar la solicitud.','🔐'); return; }
   button.disabled=true; button.textContent='ENVIANDO…'; $('#supportSendState').textContent='Guardando solicitud y evidencia de prueba…';
@@ -248,14 +290,14 @@ async function submitSupport(event){
     const profile=window.JemmoSession?.readLocalProfile?.(currentUid)||{};
     const payload={
       requesterUid:currentUid, requesterName:text(profile.name||profile.displayName||'',80), requesterPublicId:text(profile.publicId||profile.id||'',40),
-      category, categoryLabel:categoryInfo.label, location:locationValue, target, description, status:'pending', priority:category==='minor'?'urgent':category==='abuse'||category==='identity'?'high':'normal',
+      category, categoryLabel:categoryInfo.label, location:locationValue, target, incidentDate, description, status:'pending', priority:categoryInfo.priority||'normal',
       evidenceDataUrl:selectedEvidence.dataUrl, evidenceType:'image/jpeg', evidenceWidth:selectedEvidence.width, evidenceHeight:selectedEvidence.height, evidenceOriginalName:selectedEvidence.originalName, evidenceOriginalSize:selectedEvidence.originalSize,
-      source:'chili-ia', appVersion:'38', mode:'test', createdAtClient:now, createdAt:s.serverTimestamp(), updatedAt:s.serverTimestamp()
+      source:'chili-ia', appVersion:'45', officialSourceId:JEMMO_POLICY_META.id, officialSourceVersion:JEMMO_POLICY_META.version, mode:'test', createdAtClient:now, createdAt:s.serverTimestamp(), updatedAt:s.serverTimestamp()
     };
     await s.setDoc(ticketRef,payload);
-    if(['abuse','minor','identity'].includes(category)){
+    if(['abuse','minor','identity','fraud'].includes(category)){
       const reportRef=s.doc(s.collection(s.db,'denuncias'));
-      await s.setDoc(reportRef,{reporterUid:currentUid,targetUid:'',targetReference:target,conversationId:'',reason:category,status:'pending',priority:payload.priority,supportTicketId:ticketRef.id,location:locationValue,description,createdAtClient:now,createdAt:s.serverTimestamp(),version:2});
+      await s.setDoc(reportRef,{reporterUid:currentUid,targetUid:'',targetReference:target,conversationId:'',reason:category,status:'pending',priority:payload.priority,supportTicketId:ticketRef.id,location:locationValue,incidentDate,description,createdAtClient:now,createdAt:s.serverTimestamp(),version:3});
     }
     const reference=supportReference(ticketRef.id); supportForm.reset(); clearEvidence(); $('#supportSendState').textContent=`Solicitud ${reference} registrada. Estado: PENDIENTE.`;
     showModal('Solicitud registrada',`Referencia ${reference}. El caso ha quedado pendiente para revisión humana. Guarda esta referencia.`,category==='minor'?'🛡️':'✓'); await loadTickets();
@@ -268,6 +310,8 @@ input.addEventListener('input',resizeInput);
 input.addEventListener('keydown',event=>{ if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();form.requestSubmit();} });
 $$('[data-prompt]').forEach(button=>button.addEventListener('click',()=>submitQuestion(button.dataset.prompt)));
 $$('[data-section]').forEach(button=>button.addEventListener('click',()=>scrollToSection(button.dataset.section)));
+$$('[data-article]').forEach(button=>button.addEventListener('click',()=>openOfficialArticle(button.dataset.article)));
+$$('[data-route-direct]').forEach(button=>button.addEventListener('click',()=>location.assign(button.dataset.routeDirect)));
 $('#clearChat').addEventListener('click',clearHistory);
 $('#chiliBack').addEventListener('click',()=>location.assign('inicio.html'));
 $('#chiliShare').addEventListener('click',async()=>{
@@ -310,8 +354,8 @@ async function initializeIdentity(uid){
   history=await readHistory(); renderHistory(); loadTickets();
 }
 
-renderTaskTable(); renderSupportCategories(); setupVoice(); resizeInput();
+renderTaskTable(); renderSupportCategories(); renderOfficialCenter(); setupVoice(); resizeInput();
 window.addEventListener('jemmo-auth-ready',event=>initializeIdentity(event.detail?.uid));
 setTimeout(()=>{ if(currentUid==='guest'){ let uid=''; try{uid=localStorage.getItem('jemmo_active_uid')||sessionStorage.getItem('jemmo_active_uid')||'';}catch{} initializeIdentity(uid); } },900);
-setTimeout(()=>{ const id=location.hash.replace('#',''); if(id) scrollToSection(id); },500);
+setTimeout(()=>{ const params=new URLSearchParams(location.search); const preset=params.get('preset'); const article=params.get('article'); if(preset)presetSupport(preset); const id=location.hash.replace('#',''); if(id)scrollToSection(id); if(article)openOfficialArticle(article); },500);
 window.JemmoChili={ask:submitQuestion,suggestions:SUGGESTIONS,openVoiceCall,openSupport:()=>scrollToSection('soporte')};
