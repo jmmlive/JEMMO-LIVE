@@ -1,0 +1,51 @@
+JEMMO LIVE V1 · PRUEBA 44
+SEGURIDAD DE REGALOS Y ACCESO GLOBAL A MIS TAREAS
+Fecha: 28/07/2026
+
+BASE USADA
+- JEMMO-LIVE-main (15).zip
+- Versión detectada: PRUEBA 43 · TAREA REAL UNIFICADA EN LIVE Y AUDIO ROOM.
+
+OPCIÓN RECOMENDADA
+1. Haz una copia de seguridad de la carpeta actual de JEMMO LIVE.
+2. Descomprime JEMMO-LIVE-main (16).zip.
+3. Sustituye el proyecto publicado por la carpeta completa JEMMO-LIVE-main.
+4. Publica todos los archivos conservando exactamente sus nombres.
+5. Abre la PWA con conexión, ciérrala y vuelve a abrirla para que el service worker PRUEBA 44 elimine la caché anterior.
+6. No borres perfiles, usuarios ni documentos de Firebase.
+
+OPCIÓN INCREMENTAL
+1. Descomprime JEMMO-LIVE-PRUEBA-44-SEGURIDAD-REGALOS-MIS-TAREAS.zip.
+2. Copia el contenido de su carpeta JEMMO-LIVE-main encima de la base PRUEBA 43.
+3. Acepta sustituir los archivos coincidentes.
+4. Publica los archivos y fuerza la actualización de la PWA.
+
+ARCHIVOS DE CÓDIGO QUE SE SUSTITUYEN
+- inicio.html
+- yo.html
+- live.html
+- salas.html
+- jemmo-wallet.js
+- jemmo-house-finance.js
+- jemmo-host-task-rewards.js
+- jemmo-house-activity.js
+- jemmo-house-operations.js
+- jemmo-messages-realtime.js
+- jemmo-house-pet.js
+- pwa-register.js
+- sw.js
+
+PRUEBA MÓVIL OBLIGATORIA CON JESÚS Y RUTH
+1. Jesús en su propio LIVE: su cuenta debe aparecer como “TÚ”, deshabilitada; al intentar una ruta antigua debe mostrarse “No puedes enviarte regalos a ti mismo.” y el saldo no cambia.
+2. Audio Room: la silla propia no puede seleccionarse con ALL ni individualmente.
+3. Ruth envía un regalo real de prueba a Jesús en LIVE: debe descontarse una sola vez, repartirse y aumentar únicamente el progreso de regalos LIVE.
+4. Ruth envía un regalo en Audio Room: debe registrarse económicamente, pero no debe aumentar el nivel de tarea.
+5. Repetir desde Mensajes y Destellos: no deben incrementar el nivel.
+6. Verificar que la mascota acepta alimento pagado; es una compra, no un regalo personal.
+7. Completar 3 horas LIVE en una cuenta de nivel S simulada: no debe habilitar una cuarta hora LIVE.
+8. Añadir 1 hora de Audio Room: debe habilitar la cuarta hora combinada.
+9. Abrir MIS TAREAS desde Inicio, Perfil, LIVE y Audio Room y comprobar que todos muestran el mismo ciclo y el historial.
+10. Cerrar y volver a abrir la PWA para confirmar que no reaparece la versión anterior desde caché.
+
+ADVERTENCIA DE PRODUCCIÓN
+La economía sigue en MODO DE PRUEBAS. No se debe activar dinero real hasta desplegar validación autoritativa en backend/Cloud Functions y reglas Firestore seguras.

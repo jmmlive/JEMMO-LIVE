@@ -286,6 +286,7 @@
   async function sendCurrentGift() {
     if (state.giftBusy || !state.currentConversationId || !state.currentPeer || !state.user || !state.sdk) return;
     if (state.blockedByMe) { toast('Desbloquea a esta persona antes de enviar regalos.'); return; }
+    if (String(state.currentPeer.uid || '') === String(state.user.uid || '')) { toast('No puedes enviarte regalos a ti mismo.'); return; }
     const gift = currentGift();
     const quantity = MESSAGE_GIFT_QUANTITIES.includes(state.giftQuantity) ? state.giftQuantity : 1;
     const total = gift.cost * quantity;
@@ -317,7 +318,8 @@
     if (!result.ok) {
       state.giftBusy = false;
       updateGiftDialog();
-      if (result.duplicate) toast('Doble toque bloqueado: este regalo ya se registró.');
+      if (result.blocked || result.reason === 'self-gift') toast('No puedes enviarte regalos a ti mismo.');
+      else if (result.duplicate) toast('Doble toque bloqueado: este regalo ya se registró.');
       else { toast(`Saldo insuficiente. Faltan ${formatJemmos(result.missing)} JEMMOS.`); walletApi.openRecharge?.(); }
       return;
     }

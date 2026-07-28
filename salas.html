@@ -468,7 +468,7 @@
 <div class="jr-toast" id="toast" role="status"></div>
 
 <script type="module" src="jemmo-session.js"></script>
-<script src="pwa-register.js?v=37"></script>
+<script src="pwa-register.js?v=44"></script>
 <script src="jemmo-wallet.js"></script>
 <script src="jemmo-house-finance.js"></script>
 <script src="jemmo-prep-storage.js"></script>
@@ -1652,13 +1652,17 @@
     chat.scrollTop=chat.scrollHeight;
   }
 
+  function isSelfRecipient(person){return Boolean(person&&(person.local===true||String(person.uid||"")===String(state.ownUid||activeUid())))}
+  function eligibleRecipientEntries(){return [...state.occupants.entries()].filter(([,person])=>!isSelfRecipient(person))}
   function selectedRecipientIndexes(){
-    return [...state.selectedRecipients].map(Number).filter(index=>state.occupants.has(index));
+    const eligible=new Set(eligibleRecipientEntries().map(([index])=>Number(index)));
+    [...state.selectedRecipients].forEach(index=>{if(!eligible.has(Number(index)))state.selectedRecipients.delete(index)});
+    return [...state.selectedRecipients].map(Number).filter(index=>eligible.has(index));
   }
 
   function recipientLabel(){
     const indexes=selectedRecipientIndexes();
-    if(indexes.length&&indexes.length===state.occupants.size)return`ALL (${indexes.length})`;
+    if(indexes.length&&indexes.length===eligibleRecipientEntries().length)return`ALL (${indexes.length})`;
     const names=indexes.map(index=>occupantFor(index)?.name).filter(Boolean);
     return names.length?names.join(', '):'Nadie seleccionado';
   }
@@ -1692,15 +1696,16 @@
     const container=$('giftRecipients');
     container.innerHTML='';
     const occupied=[...state.occupants.entries()];
-    [...state.selectedRecipients].forEach(index=>{if(!state.occupants.has(Number(index)))state.selectedRecipients.delete(index)});
-    const allSelected=occupied.length>0&&occupied.every(([index])=>state.selectedRecipients.has(index));
+    const eligible=occupied.filter(([,person])=>!isSelfRecipient(person));
+    [...state.selectedRecipients].forEach(index=>{if(!eligible.some(([candidate])=>Number(candidate)===Number(index)))state.selectedRecipients.delete(index)});
+    const allSelected=eligible.length>0&&eligible.every(([index])=>state.selectedRecipients.has(index));
     const all=document.createElement('button');
     all.type='button';
     all.className=`jr-btn jr-recipient all ${allSelected?'active':''}`;
     all.innerHTML='<span>ALL</span><b>Todas</b>';
     all.addEventListener('click',()=>{
       state.selectedRecipients.clear();
-      if(!allSelected)occupied.forEach(([index])=>state.selectedRecipients.add(index));
+      if(!allSelected)eligible.forEach(([index])=>state.selectedRecipients.add(index));
       renderGiftRecipients();
     });
     container.append(all);
@@ -1709,8 +1714,13 @@
       const btn=document.createElement('button');
       btn.type='button';
       btn.className=`jr-btn jr-recipient ${state.selectedRecipients.has(index)?'active':''}`;
-      btn.innerHTML=`<img src="${person.photo}" alt=""><b>${person.name}</b>`;
-      btn.addEventListener('click',()=>{
+      btn.innerHTML=`<img src="${person.photo}" alt=""><b>${isSelfRecipient(person)?`${person.name} · TÚ`:person.name}</b>`;
+      if(isSelfRecipient(person)){
+        btn.dataset.selfRecipient='true';
+        btn.disabled=true;
+        btn.setAttribute('aria-disabled','true');
+        btn.title='No puedes enviarte regalos a ti mismo.';
+      }else btn.addEventListener('click',()=>{
         if(state.selectedRecipients.has(index))state.selectedRecipients.delete(index);
         else state.selectedRecipients.add(index);
         renderGiftRecipients();
@@ -1736,7 +1746,7 @@
   function setGiftSending(active){
     state.giftSending=active;
     document.querySelectorAll('[data-gift]').forEach(button=>button.disabled=active);
-    document.querySelectorAll('.jr-quantity,.jr-recipient').forEach(button=>button.disabled=active);
+    document.querySelectorAll('.jr-quantity,.jr-recipient').forEach(button=>button.disabled=active||button.dataset.selfRecipient==='true');
   }
 
   function sendGift(gift,unitPrice){
@@ -1744,7 +1754,7 @@
     setGiftSending(true);
     const release=()=>setTimeout(()=>setGiftSending(false),1000);
     const indexes=selectedRecipientIndexes();
-    if(!indexes.length){toast('Selecciona a quién enviar el regalo.');release();return}
+    if(!indexes.length){toast(eligibleRecipientEntries().length?'Selecciona a quién enviar el regalo.':'No puedes enviarte regalos a ti mismo.');release();return}
     const recipients=indexes.length;
     const totalGifts=recipients*state.giftQuantity;
     const totalCoins=totalGifts*unitPrice;
@@ -1772,8 +1782,11 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
       if(result?.ok)spent=result;
     });
     if(failed||!spent){
-      toast('No se pudo completar el envío. Revisa el saldo y vuelve a intentarlo.');
-      if(failed?.missing)openRoomWallet('recharge');
+      if(failed?.blocked||failed?.reason==='self-gift')toast('No puedes enviarte regalos a ti mismo.');
+      else{
+        toast('No se pudo completar el envío. Revisa el saldo y vuelve a intentarlo.');
+        if(failed?.missing)openRoomWallet('recharge');
+      }
       release();
       return;
     }
@@ -2026,8 +2039,8 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
 })();
 </script>
 <script type="module" src="jemmo-house-room-ui.js?v=43"></script>
-<script src="jemmo-house-activity.js?v=43"></script>
-<script src="jemmo-host-task-rewards.js?v=43"></script>
-<script src="jemmo-keep-awake.js?v=43"></script>
+<script src="jemmo-house-activity.js?v=44"></script>
+<script src="jemmo-host-task-rewards.js?v=44"></script>
+<script src="jemmo-keep-awake.js?v=44"></script>
 </body>
 </html>

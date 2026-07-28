@@ -440,7 +440,7 @@
     if(!pendingGift||paymentLock)return;
     const gift=pendingGift;paymentLock=true;const button=el('jhp-confirm-pay');button.disabled=true;button.textContent='REGISTRANDO…';
     const operationId=`pet-feed:${house.id}:${uid()}:${gift.key}:${Math.floor(now()/2000)}`;
-    const spent=window.JemmoWallet?.spendCoins?.(gift.price,{title:'Alimento para mascota de Casa',giftName:gift.name,detail:`${gift.name} · ${state.houseName} · +${gift.xp} XP`,context:'Mascota / Pecera de Casa',source:'house-pet-feed',idempotencyKey:operationId});
+    const spent=window.JemmoWallet?.spendJemmos?.(gift.price,{title:'Alimento para mascota de Casa',detail:`${gift.name} · ${state.houseName} · +${gift.xp} XP`,itemId:`house-pet-feed:${house.id}:${gift.key}`,category:'house-pet',context:'Mascota / Pecera de Casa',source:'house-pet-feed',idempotencyKey:operationId});
     if(!spent?.ok){
       closeConfirm();
       if(spent?.duplicate)showToast('Doble toque bloqueado: este alimento ya se registró.');

@@ -1,14 +1,15 @@
 /* =========================================================
-   JEMMO LIVE · MONEDERO Y ECONOMÍA DE CASAS PRUEBA 23
+   JEMMO LIVE · SEGURIDAD ECONÓMICA Y AUTORREGALOS PRUEBA 44
    Un solo saldo y un solo libro económico para toda la app
    ========================================================= */
 (() => {
   'use strict';
   if (window.JemmoWallet?.version) return;
 
-  const VERSION = '7.4.2-test';
+  const VERSION = '7.5.0-test';
   const FINANCE_KEY = 'jemmo_finance_v1';
   const CLOUD_GIFT_QUEUE_KEY = 'jemmo_cloud_gift_queue_v1';
+  const CLOUD_SECURITY_QUEUE_KEY = 'jemmo_cloud_security_queue_v1';
   const STORAGE_DB = 'jemmo_live_durable_v1';
   const STORAGE_DB_VERSION = 1;
   const WALLET_STORE = 'wallets';
@@ -56,6 +57,55 @@
     } catch {}
     try { window.dispatchEvent(new CustomEvent('jemmo-gift-registered', { detail })); } catch {}
     try { window.JemmoHouseFinance?.enqueueGift?.(detail); } catch {}
+  }
+
+  function queueSecurityEvent(detail = {}) {
+    const eventId = String(detail.eventId || nowId('security')).trim();
+    const entry = {
+      eventId,
+      type: String(detail.type || 'gift_security').trim().slice(0, 60),
+      actorUid: String(detail.actorUid || currentUid()).trim().slice(0, 160),
+      targetUid: String(detail.targetUid || '').trim().slice(0, 160),
+      surface: String(detail.surface || detail.source || detail.context || 'gift').trim().slice(0, 80),
+      reason: String(detail.reason || 'blocked').trim().slice(0, 100),
+      message: String(detail.message || '').trim().slice(0, 180),
+      movementCreated: false,
+      createdAtClient: Number(detail.createdAtClient || Date.now()),
+      simulation: true
+    };
+    try {
+      const parsed = JSON.parse(localStorage.getItem(CLOUD_SECURITY_QUEUE_KEY) || '[]');
+      const queue = Array.isArray(parsed) ? parsed.filter(item => item && item.eventId) : [];
+      const index = queue.findIndex(item => item.eventId === eventId);
+      if (index >= 0) queue[index] = { ...queue[index], ...entry };
+      else queue.unshift(entry);
+      localStorage.setItem(CLOUD_SECURITY_QUEUE_KEY, JSON.stringify(queue.slice(0, 240)));
+    } catch {}
+    try { window.dispatchEvent(new CustomEvent('jemmo-security-event', { detail: entry })); } catch {}
+    try { window.JemmoHouseFinance?.enqueueSecurityEvent?.(entry); } catch {}
+    return entry;
+  }
+
+  function blockSelfGift(senderUid, recipientUid, meta = {}, wallet = null) {
+    const message = 'No puedes enviarte regalos a ti mismo.';
+    const securityEvent = queueSecurityEvent({
+      type: 'self_gift_blocked',
+      actorUid: senderUid,
+      targetUid: recipientUid,
+      surface: meta.source || meta.context || 'gift',
+      reason: 'sender_equals_recipient',
+      message
+    });
+    return {
+      ok: false,
+      blocked: true,
+      reason: 'self-gift',
+      code: 'self-gift',
+      message,
+      securityEvent,
+      wallet: wallet || getWallet(senderUid),
+      missing: 0
+    };
   }
   const isQuotaError = error => Boolean(error && (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED' || error.code === 22 || error.code === 1014));
 
@@ -768,8 +818,15 @@
 
   function spendCoins(amount, meta = {}) {
     amount = Math.max(0, Math.floor(Number(amount) || 0));
-    const senderUid = currentUid();
+    const senderUid = String(currentUid() || '').trim();
+    const recipientUid = String(meta.recipientUid || senderUid).trim();
     const wallet = getWallet(senderUid);
+
+    // PRUEBA 44: el bloqueo se ejecuta antes de consultar saldo, consumir lotes,
+    // crear movimientos, repartir porcentajes o modificar tareas.
+    if (senderUid && recipientUid && senderUid === recipientUid) {
+      return blockSelfGift(senderUid, recipientUid, meta, wallet);
+    }
     if (!amount || wallet.jemmos < amount) {
       return { ok: false, wallet, missing: Math.max(0, amount - wallet.jemmos) };
     }
@@ -787,7 +844,6 @@
     wallet.coins = wallet.jemmos;
 
     const settings = state.settings;
-    const recipientUid = String(meta.recipientUid || senderUid);
     const storedMember = state.membership[recipientUid] || { hasHouse: false, houseId: '', houseName: '', agentUid: '' };
     const hintedHouseId = String(meta.houseId || '').trim().slice(0, 80);
     const member = hintedHouseId && meta.hasHouse !== false
@@ -1669,7 +1725,8 @@
         context: 'LIVE', source: 'live-gift', idempotencyKey
       });
       if (!result.ok) {
-        if (result.duplicate) toast('Doble toque bloqueado: el regalo ya se registró.');
+        if (result.blocked || result.reason === 'self-gift') toast(result.message || 'No puedes enviarte regalos a ti mismo.');
+        else if (result.duplicate) toast('Doble toque bloqueado: el regalo ya se registró.');
         else {
           toast(`Saldo insuficiente. Faltan ${formatNumber(result.missing)} JEMMOS.`);
           open('recharge');
@@ -1758,7 +1815,8 @@
     showTab,
     render,
     formatNumber,
-    formatMoney
+    formatMoney,
+    getSecurityEvents: () => readJson(CLOUD_SECURITY_QUEUE_KEY, [])
   });
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });

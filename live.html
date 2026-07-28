@@ -2183,26 +2183,29 @@
 
     function liveRecipientList(){
       const params=new URLSearchParams(location.search);
-      const hostUid=String(params.get("hostUid")||activeUid());
+      const ownUid=activeUid();
+      const hostUid=String(params.get("hostUid")||ownUid);
       const hostName=String(params.get("hostName")||$("hostName")?.textContent||"Emisor").trim();
-      const list=[{key:"host",uid:hostUid,name:hostName,photo:$("hostAvatar")?.src||"jemmo-fish-nav.webp"}];
+      const list=[{key:"host",uid:hostUid,name:hostName,photo:$("hostAvatar")?.src||"jemmo-fish-nav.webp",self:hostUid===ownUid}];
       document.querySelectorAll(".jl-seat.occupied,.jl-seat.request").forEach(seat=>{
         const number=Number(seat.dataset.seat);
         const name=seat.dataset.name||(number===1?"Luna":number===3?"Alex":`Silla ${number}`);
         const uid=String(seat.dataset.uid||seat.dataset.userUid||`seat-${number}`);
-        list.push({key:`seat${number}`,uid,name,photo:seat.dataset.photo||"jemmo-fish-nav.webp"});
+        list.push({key:`seat${number}`,uid,name,photo:seat.dataset.photo||"jemmo-fish-nav.webp",self:uid===ownUid});
       });
       return list;
     }
+    function eligibleLiveRecipients(){return liveRecipientList().filter(item=>!item.self)}
     function selectedLiveRecipients(){
-      const available=new Set(liveRecipientList().map(item=>item.key));
+      const eligible=eligibleLiveRecipients();
+      const available=new Set(eligible.map(item=>item.key));
       [...state.giftRecipients].forEach(key=>{if(!available.has(key))state.giftRecipients.delete(key)});
-      return liveRecipientList().filter(item=>state.giftRecipients.has(item.key));
+      return eligible.filter(item=>state.giftRecipients.has(item.key));
     }
     function liveRecipientLabel(){
       const selected=selectedLiveRecipients();
       if(!selected.length)return "Nadie seleccionado";
-      if(selected.length===liveRecipientList().length)return `ALL (${selected.length})`;
+      if(selected.length===eligibleLiveRecipients().length&&selected.length)return `ALL (${selected.length})`;
       return selected.map(item=>item.name).join(", ");
     }
     function renderLiveGiftRecipients(){
@@ -2210,21 +2213,27 @@
       if(!container)return;
       container.innerHTML="";
       const recipients=liveRecipientList();
-      const allSelected=recipients.length>0&&recipients.every(item=>state.giftRecipients.has(item.key));
+      const eligible=recipients.filter(item=>!item.self);
+      const allSelected=eligible.length>0&&eligible.every(item=>state.giftRecipients.has(item.key));
       const all=document.createElement("button");
       all.type="button";all.className=`jl-gift-recipient all ${allSelected?"active":""}`;
       all.innerHTML='<span>ALL</span><b>Todas</b>';
       all.addEventListener("click",()=>{
         state.giftRecipients.clear();
-        if(!allSelected) recipients.forEach(item=>state.giftRecipients.add(item.key));
+        if(!allSelected) eligible.forEach(item=>state.giftRecipients.add(item.key));
         renderLiveGiftRecipients();
       });
       container.append(all);
       recipients.forEach(item=>{
         const button=document.createElement("button");
         button.type="button";button.className=`jl-gift-recipient ${state.giftRecipients.has(item.key)?"active":""}`;
-        button.innerHTML=`<img src="${item.photo}" alt=""><b>${item.name}</b>`;
-        button.addEventListener("click",()=>{
+        button.innerHTML=`<img src="${item.photo}" alt=""><b>${item.self?`${item.name} · TÚ`:item.name}</b>`;
+        if(item.self){
+          button.dataset.selfRecipient="true";
+          button.disabled=true;
+          button.setAttribute("aria-disabled","true");
+          button.title="No puedes enviarte regalos a ti mismo.";
+        }else button.addEventListener("click",()=>{
           if(state.giftRecipients.has(item.key))state.giftRecipients.delete(item.key);else state.giftRecipients.add(item.key);
           renderLiveGiftRecipients();
         });
@@ -2259,12 +2268,13 @@
     }
     function setLiveGiftSending(active){
       giftSending=active;
-      document.querySelectorAll("[data-live-gift],[data-live-quantity],.jl-gift-recipient").forEach(button=>button.disabled=active);
+      document.querySelectorAll("[data-live-gift],[data-live-quantity],.jl-gift-recipient").forEach(button=>button.disabled=active||button.dataset.selfRecipient==="true");
     }
     function sendLiveGift(button){
       if(giftSending){showToast("El regalo anterior todavía se está registrando.");return}
       const recipients=selectedLiveRecipients();
-      if(!recipients.length){showToast("Selecciona a quién enviar el regalo.");return}
+      if(liveRecipientList().some(item=>item.self&&state.giftRecipients.has(item.key))){showToast("No puedes enviarte regalos a ti mismo.");state.giftRecipients.delete("host");renderLiveGiftRecipients();return}
+      if(!recipients.length){showToast(eligibleLiveRecipients().length?"Selecciona a quién enviar el regalo.":"No puedes enviarte regalos a ti mismo.");return}
       const unitCost=Number(button.dataset.liveCost||0);
       const giftIcon=button.dataset.liveGift||"🎁";
       const giftName=button.dataset.liveName||"Regalo";
@@ -2290,8 +2300,11 @@
         if(result?.ok)spent=result;
       });
       if(failed||!spent){
-        showToast("No se pudo completar el envío. Revisa el saldo y vuelve a intentarlo.");
-        if(failed?.missing)window.JemmoWallet?.open?.("recharge");
+        if(failed?.blocked||failed?.reason==="self-gift")showToast("No puedes enviarte regalos a ti mismo.");
+        else{
+          showToast("No se pudo completar el envío. Revisa el saldo y vuelve a intentarlo.");
+          if(failed?.missing)window.JemmoWallet?.open?.("recharge");
+        }
       }else{
         state.balance=spent.wallet.jemmos;
         state.gifts+=totalGifts;
@@ -2551,8 +2564,8 @@
     updateChecks();
   })();
   </script>
-<script src="jemmo-house-activity.js?v=43"></script>
-<script src="jemmo-host-task-rewards.js?v=43"></script>
-<script src="jemmo-keep-awake.js?v=43"></script>
+<script src="jemmo-house-activity.js?v=44"></script>
+<script src="jemmo-host-task-rewards.js?v=44"></script>
+<script src="jemmo-keep-awake.js?v=44"></script>
 </body>
 </html>

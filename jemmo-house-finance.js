@@ -1,12 +1,13 @@
-/* JEMMO LIVE V1 · ECONOMÍA DE CASAS, INDEPENDIENTES Y AGENTES PRUEBA 30
+/* JEMMO LIVE V1 · SEGURIDAD ECONÓMICA Y REGALOS LIVE PRUEBA 44
    Sincroniza regalos, reparto 70/20/10 y auditoría en Firestore.
    MODO DE PRUEBAS: no mueve dinero real. */
 (() => {
   'use strict';
   if (window.JemmoHouseFinance?.version) return;
 
-  const VERSION = '30.0-test';
+  const VERSION = '44.0-test';
   const QUEUE_KEY = 'jemmo_cloud_gift_queue_v1';
+  const SECURITY_QUEUE_KEY = 'jemmo_cloud_security_queue_v1';
   const firebaseConfig = {
     apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
     authDomain: 'jemmo-live.firebaseapp.com',
@@ -43,6 +44,31 @@
     catch {
       try { localStorage.setItem(QUEUE_KEY, JSON.stringify(queue.slice(0, 60))); } catch {}
     }
+  }
+
+  function readSecurityQueue() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(SECURITY_QUEUE_KEY) || '[]');
+      return Array.isArray(parsed) ? parsed.filter(item => item && item.eventId).slice(0, 240) : [];
+    } catch { return []; }
+  }
+
+  function writeSecurityQueue(queue) {
+    try { localStorage.setItem(SECURITY_QUEUE_KEY, JSON.stringify(queue.slice(0, 240))); }
+    catch {
+      try { localStorage.setItem(SECURITY_QUEUE_KEY, JSON.stringify(queue.slice(0, 60))); } catch {}
+    }
+  }
+
+  function enqueueSecurityEvent(detail) {
+    if (!detail?.eventId) return;
+    const queue = readSecurityQueue();
+    const index = queue.findIndex(item => item.eventId === detail.eventId);
+    const entry = { ...detail, queuedAtClient: Number(detail.queuedAtClient || Date.now()), attempts: Number(detail.attempts || 0) };
+    if (index >= 0) queue[index] = { ...queue[index], ...entry };
+    else queue.unshift(entry);
+    writeSecurityQueue(queue);
+    void drainSecurityQueue();
   }
 
   function enqueueGift(detail) {
@@ -124,6 +150,54 @@
     return { hasHouse, houseId: hasHouse ? houseId : '', houseName: hasHouse ? houseName : '', agentUid, recipientProfile: profile, member, house };
   }
 
+  async function syncSecurityEvent(detail = {}) {
+    const s = await services();
+    const user = await waitForUser(s);
+    const eventId = clean(detail.eventId, 180);
+    if (!eventId) return { skipped: true };
+    const actorUid = clean(detail.actorUid || user.uid, 160);
+    const targetUid = clean(detail.targetUid, 160);
+    const common = {
+      eventId,
+      type: clean(detail.type || 'gift_security', 60),
+      actorUid,
+      targetUid,
+      surface: clean(detail.surface || 'gift', 80),
+      reason: clean(detail.reason || 'blocked', 100),
+      message: clean(detail.message || '', 180),
+      movementCreated: false,
+      createdAtClient: Number(detail.createdAtClient || Date.now()),
+      simulation: true,
+      schemaVersion: 1,
+      createdAt: s.serverTimestamp()
+    };
+    await Promise.all([
+      s.setDoc(s.doc(s.db, 'securityEvents', eventId), common, { merge: true }),
+      actorUid ? s.setDoc(s.doc(s.db, 'users', actorUid, 'securityEvents', eventId), common, { merge: true }) : Promise.resolve()
+    ]);
+    return { ok: true, eventId };
+  }
+
+  async function drainSecurityQueue() {
+    if (!navigator.onLine) return;
+    let queue = readSecurityQueue();
+    for (const item of [...queue].reverse()) {
+      try {
+        await syncSecurityEvent(item);
+        queue = queue.filter(entry => entry.eventId !== item.eventId);
+        writeSecurityQueue(queue);
+      } catch (error) {
+        queue = queue.map(entry => entry.eventId === item.eventId ? {
+          ...entry,
+          attempts: number(entry.attempts) + 1,
+          lastAttemptAtClient: Date.now(),
+          lastError: clean(error?.code || error?.message || error, 120)
+        } : entry).filter(entry => number(entry.attempts) < 12);
+        writeSecurityQueue(queue);
+      }
+    }
+  }
+
   function splitFor(detail, hasHouse) {
     const total = number(detail.total);
     const emitterTotal = Math.floor(total * 0.70);
@@ -161,7 +235,13 @@
     const operationId = clean(detail.operationId, 180);
     const senderUid = clean(detail.senderUid || user.uid, 160);
     const recipientUid = clean(detail.recipientUid, 160);
-    if (!operationId || isSyntheticUid(recipientUid) || detail.economicType === 'house-battle') return { skipped: true };
+    if (!operationId) return { skipped: true };
+    if (senderUid && recipientUid && senderUid === recipientUid) {
+      const eventId = `self_gift_${operationId}`;
+      await syncSecurityEvent({ eventId, type: 'self_gift_blocked_cloud', actorUid: senderUid, targetUid: recipientUid, surface: detail.source || detail.context || 'gift', reason: 'sender_equals_recipient', message: 'No puedes enviarte regalos a ti mismo.', createdAtClient: Number(detail.createdAtClient || Date.now()) });
+      return { blocked: true, reason: 'self-gift', eventId };
+    }
+    if (isSyntheticUid(recipientUid) || detail.economicType === 'house-battle') return { skipped: true };
 
     const membership = await resolveMembership(s, recipientUid, detail);
     const split = splitFor(detail, membership.hasHouse);
@@ -171,6 +251,10 @@
     const recipientName = clean(detail.recipientName || membership.recipientProfile.displayName || 'Usuario JEMMO', 80);
     const giftName = clean(detail.giftName || 'Regalo JEMMO', 100);
     const context = clean(detail.context || detail.source || 'Regalo', 80);
+    const source = clean(detail.source || '', 80);
+    const economicType = clean(detail.economicType || 'emitter-gift', 40);
+    const normalizedContext = normalizeRole(context);
+    const taskProgressMode = source === 'live-gift' || normalizedContext === 'live' ? 'live' : 'none';
     const reference = clean(detail.reference || detail.detail || '', 240);
     const day = dayKey(createdAtClient);
 
@@ -187,6 +271,9 @@
         recipientName,
         giftName,
         context,
+        source,
+        economicType,
+        taskProgressMode,
         reference,
         totalJemmos: split.total,
         emitterTotal: split.emitterTotal,
@@ -318,6 +405,8 @@
         appTotal: split.appTotal,
         agentTotal: split.agentTotal,
         status: split.status,
+        source,
+        taskProgressMode,
         createdAtClient,
         createdAt: s.serverTimestamp(),
         simulation: true,
@@ -486,12 +575,13 @@
   }
 
   window.addEventListener('jemmo-gift-registered', event => enqueueGift(event.detail || {}));
-  window.addEventListener('online', () => { void drainQueue(); void reconcilePending(); });
-  window.addEventListener('pageshow', () => { void drainQueue(); void reconcilePending(); });
+  window.addEventListener('jemmo-security-event', event => enqueueSecurityEvent(event.detail || {}));
+  window.addEventListener('online', () => { void drainQueue(); void drainSecurityQueue(); void reconcilePending(); });
+  window.addEventListener('pageshow', () => { void drainQueue(); void drainSecurityQueue(); void reconcilePending(); });
 
   const previewSplit = (total, pendingSpent = 0, hasHouse = true) => splitFor({ total: number(total), sourceMethods: [{ risk: 'reversible', amount: number(pendingSpent) }, { risk: 'confirmed', amount: Math.max(0, number(total) - number(pendingSpent)) }] }, Boolean(hasHouse));
-  window.JemmoHouseFinance = Object.freeze({ version: VERSION, enqueueGift, syncGift, drainQueue, reconcilePending, previewSplit, getQueue: readQueue });
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => { void drainQueue(); void reconcilePending(); }, { once: true });
-  else { void drainQueue(); void reconcilePending(); }
+  window.JemmoHouseFinance = Object.freeze({ version: VERSION, enqueueGift, enqueueSecurityEvent, syncGift, syncSecurityEvent, drainQueue, drainSecurityQueue, reconcilePending, previewSplit, getQueue: readQueue, getSecurityQueue: readSecurityQueue });
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => { void drainQueue(); void drainSecurityQueue(); void reconcilePending(); }, { once: true });
+  else { void drainQueue(); void drainSecurityQueue(); void reconcilePending(); }
   setInterval(() => void reconcilePending(), 5 * 60 * 1000);
 })();

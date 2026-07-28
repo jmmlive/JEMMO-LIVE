@@ -1,0 +1,40 @@
+JEMMO LIVE · RESULTADOS TÉCNICOS PRUEBA 44
+Fecha: 28/07/2026
+
+1. SINTAXIS
+- JavaScript externo modificado: APROBADO.
+- Scripts inline de inicio.html, yo.html, live.html y salas.html: APROBADO.
+
+2. MONEDERO AISLADO
+- Saldo inicial: 1.000 JEMMOS.
+- Autorregalo de 100 JEMMOS: BLOQUEADO.
+- Mensaje: “No puedes enviarte regalos a ti mismo.”
+- Saldo posterior: 1.000 JEMMOS.
+- Movimientos de regalo creados: 0.
+- Entradas en cola cloud de regalos: 0.
+- Eventos de seguridad: 1.
+
+3. REGALO VÁLIDO
+- Envío a otra cuenta: APROBADO.
+- Coste: 100 JEMMOS.
+- Saldo remitente posterior: 900 JEMMOS.
+- JEMS del receptor: 70.
+- Operación económica registrada: 1.
+
+4. MASCOTA
+- Compra de alimento de 50 JEMMOS mediante spendJemmos: APROBADA.
+- Saldo posterior: 850 JEMMOS.
+
+5. TAREAS
+- Nivel S detectado con 4 horas totales.
+- Límite LIVE: 3 horas.
+- Límite Audio Room: 2 horas.
+- Cuarta hora con 4 horas solo LIVE: BLOQUEADA.
+- Cuarta hora con 3 LIVE + 1 Audio Room: HABILITADA.
+- Combinación 2 LIVE + 2 Audio Room: HABILITADA.
+
+6. PENDIENTE DE PRUEBA REAL
+- Validación móvil con dos cuentas y Firebase real.
+- Verificación de actualización de PWA publicada.
+- Comprobación visual en Redmi 14C y móvil de Ruth.
+- Estas pruebas requieren publicar la entrega; no se simulan como aprobadas en este registro.

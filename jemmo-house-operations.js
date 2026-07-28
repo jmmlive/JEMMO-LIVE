@@ -1,5 +1,5 @@
-/* JEMMO LIVE V1 · ADMINISTRACIÓN DE TARIFAS POR MODALIDAD PRUEBA 37
-   Botones táctiles para función, agente responsable y activación real de la tarea. */
+/* JEMMO LIVE V1 · SEGURIDAD DE REGALOS Y LÍMITES DE TAREA PRUEBA 44
+   Administración de Emisoras, ciclos, historial y tarifas por modalidad. */
 const firebaseConfig = {
   apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
   authDomain: 'jemmo-live.firebaseapp.com',
@@ -39,6 +39,8 @@ const formatDate = value => {
   catch { return new Date(millis).toLocaleString('es-ES'); }
 };
 const DAY_MS = 24 * 60 * 60 * 1000;
+const LIVE_MAX_HOURS = 3;
+const AUDIO_ROOM_MAX_HOURS = 2;
 const countdown = value => { const total = Math.max(0, Math.ceil(number(value) / 1000)); const h = Math.floor(total / 3600), m = Math.floor(total % 3600 / 60), s = total % 60; return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; };
 
 const DEFAULT_TASK_CONFIG = {
@@ -166,8 +168,10 @@ function currentTask(uid) {
 function taskStatus(task) {
   const dailyHours = Math.max(1, number(task.dailyHours || Math.ceil(number(task.totalTargetMinutes || 60) / 60)));
   const totalTargetMinutes = dailyHours * 60;
-  const totalSeconds = number(task.liveSeconds) + number(task.houseRoomSeconds);
-  const payableHours = Math.floor(number(task.liveSeconds) / 3600) + Math.floor(number(task.houseRoomSeconds) / 3600);
+  const cappedLiveSeconds = Math.min(number(task.liveSeconds), LIVE_MAX_HOURS * 3600);
+  const cappedRoomSeconds = Math.min(number(task.houseRoomSeconds), AUDIO_ROOM_MAX_HOURS * 3600);
+  const totalSeconds = Math.min(dailyHours * 3600, cappedLiveSeconds + cappedRoomSeconds);
+  const payableHours = Math.min(Math.floor(number(task.liveSeconds) / 3600), LIVE_MAX_HOURS) + Math.min(Math.floor(number(task.houseRoomSeconds) / 3600), AUDIO_ROOM_MAX_HOURS);
   const paidSlots = Array.isArray(task.claimedHourSlots) ? [...new Set(task.claimedHourSlots.map(number).filter(slot => slot >= 1 && slot <= 4))] : [];
   const end = Number(task.cycleEndsAtClient || 0);
   const active = clean(task.taskState, 20) === 'active' && end > Date.now();
@@ -532,9 +536,9 @@ function renderOwnTasks() {
   const reward = number(task.hourlyRewardJems || 2000), tier = clean(task.taskTierCode || 'BASE', 10), giftNet = number(task.giftNet7d);
   target.innerHTML = `
     <div class="house-task-deadline ${status.active ? 'active' : ''}"><div><small>TAREA DIARIA · ${status.dailyHours} HORA${status.dailyHours===1?'':'S'}</small><b data-task-countdown="${number(task.cycleEndsAtClient)}">${headline}</b><span>Cada bloque completo de 60 minutos se cobra por separado.</span></div><em class="${status.allPaid ? 'done' : ''}">${status.allPaid ? 'TODO COBRADO' : `${status.paidHours}/${status.dailyHours} HORAS COBRADAS`}</em></div>
-    <article class="house-task-progress"><div><span>⏱</span><div><b>TIEMPO TOTAL</b><small>${formatDuration(status.totalSeconds)} de ${String(status.dailyHours).padStart(2,'0')}:00:00</small></div><em>${totalPercent}%</em></div><i><span style="width:${totalPercent}%"></span></i><p>Cuenta LIVE activo y Audio Room oficial solo mientras ocupa una silla.</p></article>
+    <article class="house-task-progress"><div><span>⏱</span><div><b>TIEMPO TOTAL VÁLIDO</b><small>${formatDuration(status.totalSeconds)} de ${String(status.dailyHours).padStart(2,'0')}:00:00</small></div><em>${totalPercent}%</em></div><i><span style="width:${totalPercent}%"></span></i><p>Cuenta LIVE activo hasta 3 horas y Audio Room oficial en silla hasta 2 horas. Los minutos parciales de modalidades distintas no se mezclan.</p></article>
     <div class="house-emitter-metrics four"><span><small>LIVE</small><b>${formatDuration(task.liveSeconds)}</b></span><span><small>SALA EN SILLA</small><b>${formatDuration(task.houseRoomSeconds)}</b></span><span><small>NIVEL</small><b>${escapeHtml(tier)}</b></span><span><small>PAGO POR HORA</small><b>${formatJems(reward)}</b></span></div>
-    <div class="house-task-review"><span>REGALOS NETOS · 7 DÍAS NATURALES</span><b>${formatJems(giftNet)}</b><small>Solo cuenta el 70% neto de regalos recibidos como Emisora de esta Casa. Los lotes diarios salen de la ventana al terminar su séptimo día.</small></div>`;
+    <div class="house-task-review"><span>REGALOS NETOS LIVE · 7 DÍAS NATURALES</span><b>${formatJems(giftNet)}</b><small>Solo cuenta el 70% neto de regalos recibidos dentro de LIVE. Audio Room, Perfil, Mensajes, Destellos y Batalla no incrementan el nivel. Los lotes diarios salen de la ventana al terminar su séptimo día.</small></div>`;
 }
 
 function renderEmitters() {
@@ -575,7 +579,7 @@ function renderEmitters() {
 function renderTaskAdmin() {
   const target = $('#houseTaskAdmin'); if (!target) return;
   target.hidden = !state.isAdmin; if (!state.isAdmin) return;
-  target.innerHTML = `<div class="house-workspace-title"><h2>REGLAS AUTOMÁTICAS DE TAREAS</h2><span>Ciclo individual de 24 horas</span></div><div class="house-task-config"><label>Quién tiene tarea<input value="Solo Emisor/a formal de la Casa" disabled></label><label>Cobro<input value="Cada bloque completo de 60 minutos" disabled></label><label>Nivel<input value="70% neto de regalos · 7 días naturales" disabled></label></div><p class="house-module-note">BASE: 2.000 JEMS/h y 1 hora. Niveles I y H: 2 horas. Desde G hasta A: 3 horas. Nivel S: 4 horas. El nivel sube o baja automáticamente al entrar o salir cada lote diario de la ventana de siete días. Una Emisora independiente no tiene tarea y sus regalos se reparten 70% Emisora / 30% JEMMO LIVE.</p>`;
+  target.innerHTML = `<div class="house-workspace-title"><h2>REGLAS AUTOMÁTICAS DE TAREAS</h2><span>Ciclo individual de 24 horas</span></div><div class="house-task-config"><label>Quién tiene tarea<input value="Solo Emisor/a formal de la Casa" disabled></label><label>Cobro<input value="Cada bloque completo de 60 minutos" disabled></label><label>Nivel<input value="70% neto de regalos recibidos en LIVE · 7 días" disabled></label></div><p class="house-module-note">BASE: 2.000 JEMS/h y 1 hora. Niveles I y H: 2 horas. Desde G hasta A: 3 horas. Nivel S: 4 horas totales combinadas. LIVE admite como máximo 3 horas y Audio Room como máximo 2 horas por ciclo; por ello, el nivel S requiere combinar modalidades. Audio Room paga siempre 800 JEMS por hora y sus regalos no suben el nivel. Una Emisora independiente no tiene tarea y sus regalos se reparten 70% Emisora / 30% JEMMO LIVE.</p>`;
 }
 
 function renderAssignments() {
@@ -613,6 +617,10 @@ async function saveTaskConfig(event) {
     giftWindowDays: 7,
     minActiveDays: 1,
     cycleHours: 24,
+    liveMaxHours: LIVE_MAX_HOURS,
+    audioRoomMaxHours: AUDIO_ROOM_MAX_HOURS,
+    giftProgressSource: 'live_only',
+    rewardRatePolicy: 'mode_specific_v2',
     updatedBy: state.user.uid,
     updatedAt: state.services.serverTimestamp()
   };
@@ -699,7 +707,7 @@ function newTaskCycle(uid, reason, current = {}) {
   const fallbackAgentUid = clean(emitter.assignedAgentUid || current.assignedAgentUid || defaultAgentUid(), 160);
   const fallbackAgent = availableAgents().find(agent => agent.uid === fallbackAgentUid);
   const fallbackAgentName = clean(emitter.assignedAgentName || current.assignedAgentName || fallbackAgent?.name || 'Responsable de Casa', 80);
-  return { uid, housePosition: 'emitter', assignedAgentUid: fallbackAgentUid, assignedAgentName: fallbackAgentName, taskState: 'active', completionState: 'in_progress', cycleDurationHours: 24, cycleStartedAtClient: now, cycleEndsAtClient: now + DAY_MS, cycleKey: `24h-${now}`, cycleNumber: Math.max(1, Number(current.cycleNumber || 0) + 1), liveSeconds: 0, houseRoomSeconds: 0, totalTargetMinutes: 60, dailyHours: 1, hourlyRewardJems: 2000, liveHourlyRewardJems: 2000, audioRoomHourlyRewardJems: 800, rewardRatePolicy: 'mode_specific_v1', taskTierCode: 'BASE', claimedHourSlots: [], claimedHours: 0, hourlyClaims: {}, reviewStatus: 'pending', activatedReason: reason, activatedAtClient: Number(current.activatedAtClient || now), updatedAt: state.services.serverTimestamp() };
+  return { uid, housePosition: 'emitter', assignedAgentUid: fallbackAgentUid, assignedAgentName: fallbackAgentName, taskState: 'active', completionState: 'in_progress', cycleDurationHours: 24, cycleStartedAtClient: now, cycleEndsAtClient: now + DAY_MS, cycleKey: `24h-${now}`, cycleNumber: Math.max(1, Number(current.cycleNumber || 0) + 1), liveSeconds: 0, houseRoomSeconds: 0, totalTargetMinutes: 60, dailyHours: 1, hourlyRewardJems: 2000, liveHourlyRewardJems: 2000, audioRoomHourlyRewardJems: 800, liveMaxHours: LIVE_MAX_HOURS, audioRoomMaxHours: AUDIO_ROOM_MAX_HOURS, giftProgressSource: 'live_only', rewardRatePolicy: 'mode_specific_v2', taskTierCode: 'BASE', claimedHourSlots: [], claimedHours: 0, hourlyClaims: {}, reviewStatus: 'pending', activatedReason: reason, activatedAtClient: Number(current.activatedAtClient || now), updatedAt: state.services.serverTimestamp() };
 }
 
 async function activateTask(uid, reason = 'emitter_assigned', force = false) {
