@@ -162,7 +162,7 @@
 </div>
 
 <script type="module" src="jemmo-session.js"></script>
-<script src="pwa-register.js?v=46"></script>
+<script src="pwa-register.js?v=47"></script>
 <script type="module">
   import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
   import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
@@ -235,6 +235,6 @@
   $('openPublicAchievements').addEventListener('click',openAchievements);$('achievementClose').addEventListener('click',closeAchievements);$('achievementBackdrop').addEventListener('click',closeAchievements);$('backButton').addEventListener('click',()=>{if(history.length>1)history.back();else location.href='mensajes.html'});$('quickAvatar').addEventListener('click',openFull);$('openFullProfile').addEventListener('click',openFull);$('quickFollowButton').addEventListener('click',toggleFollow);$('fullFollowButton').addEventListener('click',toggleFollow);$('quickMessageButton').addEventListener('click',()=>startMessage(false));$('fullMessageButton').addEventListener('click',()=>startMessage(false));$('fullGiftButton').addEventListener('click',()=>startMessage(true));$('moreTopButton').addEventListener('click',openMenu);$('moreFullButton').addEventListener('click',openMenu);$('sheetClose').addEventListener('click',closeMenu);$('sheetBackdrop').addEventListener('click',closeMenu);$('copyIdButton').addEventListener('click',()=>target?.publicId&&copyPublicId(target.publicId));$('copyProfileId').addEventListener('click',()=>{if(target?.publicId)copyPublicId(target.publicId);closeMenu()});$('shareProfile').addEventListener('click',()=>{if(target?.publicId)sharePublicId(target.publicId,target.name);closeMenu()});$('securityButton').addEventListener('click',securityAction);$('fullAvatar').addEventListener('click',()=>target?.avatarData&&openViewer({type:'photo',url:target.avatarData,title:`Foto de ${target.name}`}));$('coverButton').addEventListener('click',()=>target?.coverData&&openViewer({type:'photo',url:target.coverData,title:`Portada de ${target.name}`}));$('viewerClose').addEventListener('click',closeViewer);$('mediaViewer').addEventListener('click',event=>{if(event.target===$('mediaViewer'))closeViewer()});document.querySelectorAll('[data-tab]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-tab]').forEach(item=>item.classList.toggle('active',item===button));document.querySelectorAll('[data-panel]').forEach(panel=>panel.hidden=panel.dataset.panel!==button.dataset.tab)}));addEventListener('keydown',event=>{if(event.key==='Escape'){closeMenu();closeViewer();closeAchievements()}});addEventListener('beforeunload',()=>{stopFollowers();stopFollowing()});
   onAuthStateChanged(auth,user=>{if(!user)return;currentUser=user;loadProfile()});
 </script>
-<script type="module" src="jemmo-live-presence.js?v=46"></script>
+<script type="module" src="jemmo-live-presence.js?v=47"></script>
 </body>
 </html>

@@ -1,0 +1,24 @@
+JEMMO LIVE V1 · INSTALACIÓN PRUEBA 47
+
+ENTREGA INCREMENTAL SOBRE PRUEBA 46
+
+1. Conserva una copia completa de la PRUEBA 46.
+2. Sube todos los archivos incluidos en este ZIP respetando exactamente sus nombres.
+3. Es obligatorio subir el archivo nuevo `jemmo-live-webrtc.js`.
+4. Sube juntos, como mínimo:
+   - live.html
+   - jemmo-live-presence.js
+   - jemmo-live-webrtc.js
+   - perfil-publico.html
+   - sw.js
+   - pwa-register.js
+5. No subas únicamente live.html: sin el módulo WebRTC el espectador no recibirá a Ruth.
+6. Publica mediante HTTPS; cámara, micrófono, service worker y WebRTC no deben probarse desde file://.
+7. Cierra completamente la PWA en los dos móviles y vuelve a abrirla.
+8. Si aparece una interfaz antigua, borra los datos del sitio o reinstala la PWA para forzar la caché PRUEBA 47.
+9. Ejecuta PRUEBAS_PRUEBA_47.txt en este orden: Ruth inicia, Jesús entra desde Inicio, audio, reconexión, perfil y finalización.
+
+NO PUBLICAR COMO PRODUCCIÓN TODAVÍA
+- Las reglas de Firestore siguen siendo temporales de prueba.
+- Falta validar esta conexión real entre los móviles de Ruth y Jesús.
+- Una infraestructura de producción debe disponer de TURN propio para redes NAT restrictivas, además de métricas, limpieza de sesiones y seguridad backend.

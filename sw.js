@@ -1,7 +1,7 @@
-const CACHE='jemmo-live-v1-live-presence-share-46-20260728';
+const CACHE='jemmo-live-v1-viewer-webrtc-47-20260728';
 const CORE=[
   './','./inicio.html','./yo.html','./live.html','./perfil-publico.html','./directos.html','./salas.html','./configuracion.html','./chili-ia.html',
-  './pwa-register.js','./jemmo-live-presence.js','./jemmo-wallet.js','./jemmo-official-policies.js','./jemmo-settings.js','./jemmo-chili.js','./jemmo-chili-knowledge.js',
+  './pwa-register.js','./jemmo-live-presence.js','./jemmo-live-webrtc.js','./jemmo-wallet.js','./jemmo-official-policies.js','./jemmo-settings.js','./jemmo-chili.js','./jemmo-chili-knowledge.js',
   './configuracion.css','./chili-ia.css','./jemmo-house-finance.js','./jemmo-house-activity.js','./jemmo-host-task-rewards.js',
   './jemmo-messages-realtime.js','./jemmo-house-operations.js','./jemmo-room-realtime.js','./jemmo-house-room-ui.js',
   './jemmo-house-pet.js','./jemmo-house-pet.css','./manifest.webmanifest'

@@ -11,7 +11,7 @@ const HEARTBEAT_MS=20000;
 const STALE_MS=90000;
 const clean=(value,max=180)=>String(value??'').trim().slice(0,max);
 const activeNow=data=>Boolean(data?.active===true&&data?.status==='live'&&Date.now()-Number(data?.heartbeatAtMs||0)<=STALE_MS);
-const liveRoute=(uid,name='')=>new URL(`live.html?watch=${encodeURIComponent(uid)}&hostUid=${encodeURIComponent(uid)}&hostName=${encodeURIComponent(name||'Emisor')}`,location.href).href;
+const liveRoute=(uid,name='')=>new URL(`live.html?mode=viewer&watch=${encodeURIComponent(uid)}&hostUid=${encodeURIComponent(uid)}&hostName=${encodeURIComponent(name||'Emisor')}`,location.href).href;
 const profileRoute=uid=>new URL(`perfil-publico.html?uid=${encodeURIComponent(uid)}&view=quick`,location.href).href;
 
 let currentUser=null;
@@ -75,7 +75,7 @@ async function publishStart(detail={}){
     heartbeatAt:serverTimestamp(),
     heartbeatAtMs:now,
     updatedAt:serverTimestamp(),
-    version:46
+    version:47
   };
   try{
     await setDoc(doc(db,PRESENCE_COLLECTION,uid),payload,{merge:true});
@@ -94,7 +94,7 @@ async function heartbeat(){
   const now=Date.now();
   try{
     await setDoc(doc(db,PRESENCE_COLLECTION,currentUser.uid),{
-      active:true,status:'live',heartbeatAt:serverTimestamp(),heartbeatAtMs:now,updatedAt:serverTimestamp(),version:46
+      active:true,status:'live',heartbeatAt:serverTimestamp(),heartbeatAtMs:now,updatedAt:serverTimestamp(),version:47
     },{merge:true});
   }catch(error){console.warn('JEMMO LIVE: no se pudo actualizar el latido de presencia.',error)}
 }
@@ -108,7 +108,7 @@ async function publishEnd(reason='manual'){
   const now=Date.now();
   try{
     await setDoc(doc(db,PRESENCE_COLLECTION,currentUser.uid),{
-      active:false,status:'ended',endReason:clean(reason,40),endedAt:serverTimestamp(),endedAtMs:now,heartbeatAt:serverTimestamp(),heartbeatAtMs:now,updatedAt:serverTimestamp(),version:46
+      active:false,status:'ended',endReason:clean(reason,40),endedAt:serverTimestamp(),endedAtMs:now,heartbeatAt:serverTimestamp(),heartbeatAtMs:now,updatedAt:serverTimestamp(),version:47
     },{merge:true});
   }catch(error){console.warn('JEMMO LIVE: no se pudo cerrar la presencia.',error)}
 }
@@ -209,4 +209,4 @@ if(targetUid&&(document.getElementById('quickLiveAlert')||document.getElementByI
   setInterval(()=>renderProfilePresence(lastProfilePresence),15000);
 }
 
-window.JemmoLivePresence=Object.freeze({version:'46.0',isFresh:activeNow,liveRoute,profileRoute,getLastStart:()=>({...lastStartDetail})});
+window.JemmoLivePresence=Object.freeze({version:'47.0',isFresh:activeNow,liveRoute,profileRoute,getLastStart:()=>({...lastStartDetail})});

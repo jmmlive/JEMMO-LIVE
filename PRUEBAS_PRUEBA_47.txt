@@ -1,0 +1,63 @@
+JEMMO LIVE V1 · PRUEBAS PRUEBA 47
+ENTRADA COMO ESPECTADOR Y RECEPCIÓN WEBRTC
+Fecha: 28/07/2026
+
+PREPARACIÓN
+1. Subir juntos todos los archivos de la entrega PRUEBA 47.
+2. Cerrar completamente la PWA de Ruth y la de Jesús.
+3. Volver a abrir ambas aplicaciones con conexión activa.
+4. No mezclar live.html o sw.js de PRUEBA 46 con jemmo-live-webrtc.js de PRUEBA 47.
+
+PRUEBA A · RUTH INICIA SU LIVE
+1. Ruth abre el botón inferior Live.
+2. Activa cámara y micrófono.
+3. Comprueba portada, título, descripción y visibilidad Pública.
+4. Pulsa INICIAR TRANSMISIÓN LIVE.
+5. Resultado esperado: Ruth permanece en su pantalla de emisión.
+6. En Firestore deben quedar activos livePresences/{UID_RUTH} y liveSignals/{UID_RUTH}.
+
+PRUEBA B · ENTRADA DESDE INICIO
+1. Jesús abre Inicio.
+2. Toca la tarjeta real de Ruth en PERSONAS EN DIRECTO.
+3. Resultado obligatorio: NO aparece PREPARA TU LIVE ni ACTIVAR CÁMARA.
+4. Debe abrirse directamente el LIVE de Ruth en modo espectador.
+5. Debe mostrarse “Conectando audio y vídeo” y después la imagen remota.
+6. La cámara y el micrófono de Jesús no deben solicitarse ni activarse.
+
+PRUEBA C · AUDIO EN ANDROID
+1. Cuando aparezca el vídeo, comprobar si se oye a Ruth.
+2. Si Android bloquea el audio, pulsar TOCA PARA ESCUCHAR.
+3. Resultado esperado: broadcastVideo queda reproduciendo con muted=false y volumen activo.
+
+PRUEBA D · RECONEXIÓN
+1. En el móvil de Jesús apagar datos durante 5-10 segundos y volver a activarlos.
+2. La app debe intentar recuperar la conexión automáticamente hasta 3 veces.
+3. Si no vuelve sola, pulsar RECONECTAR AUDIO Y VÍDEO.
+4. Resultado esperado: se crea una nueva sesión de espectador y regresan las pistas remotas.
+
+PRUEBA E · ENTRADA DESDE PERFIL
+1. Jesús abre el perfil público de Ruth.
+2. Pulsa ENTRAR AL LIVE.
+3. Debe abrir exactamente el mismo flujo de espectador de la Prueba B.
+4. Nunca debe abrir la preparación de cámara de Jesús.
+
+PRUEBA F · CAMBIO DE CÁMARA Y MICRÓFONO
+1. Ruth cambia entre cámara frontal y trasera durante el LIVE.
+2. Jesús debe continuar dentro y recibir la nueva pista de vídeo.
+3. Ruth silencia y reactiva el micrófono.
+4. El audio debe detenerse y regresar sin obligar a Jesús a salir.
+
+PRUEBA G · FINALIZACIÓN
+1. Ruth pulsa EN DIRECTO × y confirma finalizar.
+2. Jesús debe ver “El LIVE ha finalizado”.
+3. La tarjeta de Ruth debe desaparecer de Inicio.
+4. livePresences/{UID_RUTH} y liveSignals/{UID_RUTH} deben quedar inactivos/terminados.
+
+PRUEBA H · DIAGNÓSTICO DE RED
+Si después de tres reconexiones aparece el aviso de TURN:
+1. Confirmar que Ruth y Jesús están en redes distintas y que ninguna usa VPN/proxy restrictivo.
+2. Probar una vez con Wi-Fi y otra con datos móviles.
+3. Si solo falla en combinaciones concretas de red, configurar un servidor TURN propio en window.JEMMO_RTC_CONFIG antes de producción.
+
+CRITERIO DE APROBACIÓN REAL
+La PRUEBA 47 queda aprobada únicamente cuando Ruth transmite desde su móvil y Jesús ve y oye esa transmisión desde el suyo entrando tanto desde Inicio como desde el perfil.
