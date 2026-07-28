@@ -1,0 +1,11 @@
+JEMMO LIVE V1 · INSTALACIÓN PRUEBA 46
+
+1. Realiza una copia de seguridad de la PRUEBA 45 instalada.
+2. Sustituye el proyecto por el ZIP completo PRUEBA 46 o sube todos los archivos del ZIP incremental respetando sus nombres.
+3. Es obligatorio subir el archivo nuevo `jemmo-live-presence.js`.
+4. Sube juntos `live.html`, `inicio.html`, `perfil-publico.html`, `sw.js` y `pwa-register.js` para evitar mezclar cachés.
+5. Publica mediante HTTPS.
+6. Cierra completamente la PWA/Chrome y vuelve a abrir. Si persiste una versión antigua, borra los datos del sitio o reinstala la PWA.
+7. Ejecuta las pruebas A-E con Ruth transmitiendo y Jesús observando desde otro móvil.
+
+No publiques todavía como producción. Las reglas Firebase continúan en modo temporal de pruebas y falta cerrar la recepción WebRTC remota y las reglas de seguridad de `livePresences`.

@@ -28,6 +28,8 @@
     .sheet-backdrop{position:fixed;z-index:100;inset:0;background:#020003d8;backdrop-filter:blur(5px)}.action-sheet{position:fixed;z-index:101;left:50%;bottom:0;transform:translateX(-50%);width:min(100%,520px);padding:14px 14px calc(18px + var(--safe-bottom));border:1px solid #74308e;border-radius:24px 24px 0 0;background:linear-gradient(180deg,#25052f,#08000d);box-shadow:0 -20px 60px #000}.sheet-head{display:flex;align-items:center;justify-content:space-between}.sheet-head strong{font-size:18px}.sheet-close{width:38px;height:38px;border:0;border-radius:12px;background:#3a0d45;font-size:24px}.sheet-list{display:grid;gap:8px;margin-top:13px}.sheet-list button{min-height:48px;border:1px solid #572368;border-radius:14px;background:#14021a;text-align:left;padding:0 14px;font-size:10px;font-weight:900}.sheet-list button.danger{border-color:#713042;color:#ffc2cc;background:#22070d}
     .viewer{position:fixed;z-index:120;inset:0;padding:18px;display:grid;place-items:center;background:#020003ed;backdrop-filter:blur(7px)}.viewer-card{position:relative;width:min(100%,470px);max-height:calc(100svh - 36px);padding:12px;border:1px solid #8438a0;border-radius:22px;background:#100116;overflow:auto}.viewer-close{position:absolute;right:16px;top:16px;z-index:2;width:42px;height:42px;border:0;border-radius:50%;background:#26062fcc;color:#fff;font-size:26px}.viewer-media img,.viewer-media video{display:block;width:100%;max-height:78svh;border-radius:16px;object-fit:contain;background:#000}.viewer-title{padding:10px 5px 2px;font-weight:900}
 
+
+    .profile-live-alert{margin-top:12px;min-height:62px;padding:10px 11px;border:1px solid #ff526f;border-radius:17px;background:linear-gradient(105deg,#430611,#22020a 58%,#5b0820);box-shadow:0 0 22px #ff244b2d;text-decoration:none;display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:9px;align-items:center}.profile-live-alert .live-pulse{width:30px;height:30px;border-radius:50%;background:#ff284d;box-shadow:0 0 0 0 #ff284d88;display:grid;place-items:center;font-size:12px;animation:profileLivePulse 1.6s infinite}.profile-live-alert small{display:block;color:#ff9aad;font-size:8px;font-weight:1000;letter-spacing:.08em}.profile-live-alert strong{display:block;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:11px}.profile-live-alert b{padding:9px 10px;border-radius:11px;background:#fff;color:#30030c;font-size:8px;white-space:nowrap}@keyframes profileLivePulse{70%{box-shadow:0 0 0 9px #ff284d00}100%{box-shadow:0 0 0 0 #ff284d00}}.presence.live{border-color:#ff536d;background:#2b050d;color:#ffd6dd}.presence.live .presence-dot{background:#ff294d;box-shadow:0 0 10px #ff294d}
     @media(max-width:380px){button.profile-level{width:46px;min-height:66px}.public-app{padding-left:9px;padding-right:9px}.profile-top{grid-template-columns:76px minmax(0,1fr) 46px;gap:9px}.avatar-button{width:76px;height:76px}.profile-side{min-width:46px}.profile-level{width:44px;min-height:53px}.presence{width:46px}.identity-title h1{font-size:20px}.profile-actions{grid-template-columns:1fr 1fr 44px 44px}.profile-action{min-height:45px}.quick-main{grid-template-columns:80px minmax(0,1fr)}.quick-avatar{width:80px;height:80px}.info-grid{grid-template-columns:1fr}}
   
     /* PRUEBA 21 · logros visibles desde la zona del nivel */
@@ -61,6 +63,7 @@
         </div>
       </div>
       <p class="quick-bio" id="quickBio"></p>
+      <a class="profile-live-alert" id="quickLiveAlert" href="live.html" hidden><span class="live-pulse">●</span><span><small>🔴 EN LIVE AHORA</small><strong data-live-title>En directo en JEMMO LIVE</strong></span><b>ENTRAR AL LIVE</b></a>
       <div class="quick-stats">
         <div class="quick-stat"><div><b id="quickFollowers">0</b><span>Seguidores</span></div></div>
         <div class="quick-stat"><div><b id="quickFollowing">0</b><span>Seguidos</span></div></div>
@@ -92,6 +95,7 @@
         </div>
         <button class="profile-banner" id="coverButton" type="button" aria-label="Ampliar portada"><img id="coverImage" alt="Portada del perfil"></button>
         <p class="bio" id="fullBio"></p>
+        <a class="profile-live-alert" id="fullLiveAlert" href="live.html" hidden><span class="live-pulse">●</span><span><small>🔴 EN LIVE AHORA</small><strong data-live-title>En directo en JEMMO LIVE</strong></span><b>ENTRAR AL LIVE</b></a>
         <div class="profile-stats">
           <button class="profile-stat" type="button"><b id="fullFollowers">0</b><span>Seguidores</span></button>
           <button class="profile-stat" type="button"><b id="fullFollowing">0</b><span>Seguidos</span></button>
@@ -158,7 +162,7 @@
 </div>
 
 <script type="module" src="jemmo-session.js"></script>
-<script src="pwa-register.js"></script>
+<script src="pwa-register.js?v=46"></script>
 <script type="module">
   import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
   import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
@@ -218,7 +222,8 @@
     $('fullName').textContent=profile.name;$('fullUsername').textContent=profile.username?`@${profile.username}`:'Sin nombre de usuario';$('fullPublicId').textContent=profile.publicId||'Pendiente';$('fullPlace').textContent=`📍 ${[profile.country,profile.city].filter(Boolean).join(' · ')||'Sin ubicación'}`;$('fullBio').textContent=profile.bio;$('fullVerified').hidden=!profile.verified;$('levelNumber').textContent=profile.level;$('levelName').textContent=levelName(profile.level);$('publicAchievementCount').textContent=profile.achievements;renderAchievements(profile);$('fullFans').textContent=formatNumber(profile.fans);$('fullFriends').textContent=formatNumber(profile.friends);
     if(profile.avatarData){['quickAvatar','fullAvatar'].forEach(id=>$(id).classList.add('has-image'));$('quickAvatarImage').src=profile.avatarData;$('fullAvatarImage').src=profile.avatarData}else{['quickAvatar','fullAvatar'].forEach(id=>$(id).classList.remove('has-image'))}
     if(profile.coverData){$('coverImage').src=profile.coverData;$('coverButton').classList.add('has-cover');const x=Math.max(0,Math.min(100,Number(profile.coverPosition?.x)||50)),y=Math.max(0,Math.min(100,Number(profile.coverPosition?.y)||50));$('coverImage').style.objectPosition=`${x}% ${y}%`}else $('coverButton').classList.remove('has-cover');
-    $('presence').classList.toggle('offline',!profile.online);$('presenceLabel').textContent=profile.online?'EN LÍNEA':'FUERA';renderSocials(profile);renderMedia('videosGrid',profile.videos,'video');renderMedia('photosGrid',profile.photos,'photo');renderPosts(profile);renderInfo(profile);setStatus('',false,false);
+    $('presence').dataset.profileOnline=profile.online?'1':'0';$('presence').classList.toggle('offline',!profile.online);$('presenceLabel').textContent=profile.online?'EN LÍNEA':'FUERA';renderSocials(profile);renderMedia('videosGrid',profile.videos,'video');renderMedia('photosGrid',profile.photos,'photo');renderPosts(profile);renderInfo(profile);setStatus('',false,false);
+    window.dispatchEvent(new CustomEvent('jemmo-public-profile-rendered',{detail:{uid:profile.uid}}));
     if(currentUser?.uid===profile.uid){$('quickMessageButton').textContent='MI PERFIL';$('fullMessageButton').textContent='MI PERFIL';$('fullGiftButton').hidden=true;$('securityButton').hidden=true}
   }
 
@@ -230,5 +235,6 @@
   $('openPublicAchievements').addEventListener('click',openAchievements);$('achievementClose').addEventListener('click',closeAchievements);$('achievementBackdrop').addEventListener('click',closeAchievements);$('backButton').addEventListener('click',()=>{if(history.length>1)history.back();else location.href='mensajes.html'});$('quickAvatar').addEventListener('click',openFull);$('openFullProfile').addEventListener('click',openFull);$('quickFollowButton').addEventListener('click',toggleFollow);$('fullFollowButton').addEventListener('click',toggleFollow);$('quickMessageButton').addEventListener('click',()=>startMessage(false));$('fullMessageButton').addEventListener('click',()=>startMessage(false));$('fullGiftButton').addEventListener('click',()=>startMessage(true));$('moreTopButton').addEventListener('click',openMenu);$('moreFullButton').addEventListener('click',openMenu);$('sheetClose').addEventListener('click',closeMenu);$('sheetBackdrop').addEventListener('click',closeMenu);$('copyIdButton').addEventListener('click',()=>target?.publicId&&copyPublicId(target.publicId));$('copyProfileId').addEventListener('click',()=>{if(target?.publicId)copyPublicId(target.publicId);closeMenu()});$('shareProfile').addEventListener('click',()=>{if(target?.publicId)sharePublicId(target.publicId,target.name);closeMenu()});$('securityButton').addEventListener('click',securityAction);$('fullAvatar').addEventListener('click',()=>target?.avatarData&&openViewer({type:'photo',url:target.avatarData,title:`Foto de ${target.name}`}));$('coverButton').addEventListener('click',()=>target?.coverData&&openViewer({type:'photo',url:target.coverData,title:`Portada de ${target.name}`}));$('viewerClose').addEventListener('click',closeViewer);$('mediaViewer').addEventListener('click',event=>{if(event.target===$('mediaViewer'))closeViewer()});document.querySelectorAll('[data-tab]').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('[data-tab]').forEach(item=>item.classList.toggle('active',item===button));document.querySelectorAll('[data-panel]').forEach(panel=>panel.hidden=panel.dataset.panel!==button.dataset.tab)}));addEventListener('keydown',event=>{if(event.key==='Escape'){closeMenu();closeViewer();closeAchievements()}});addEventListener('beforeunload',()=>{stopFollowers();stopFollowing()});
   onAuthStateChanged(auth,user=>{if(!user)return;currentUser=user;loadProfile()});
 </script>
+<script type="module" src="jemmo-live-presence.js?v=46"></script>
 </body>
 </html>

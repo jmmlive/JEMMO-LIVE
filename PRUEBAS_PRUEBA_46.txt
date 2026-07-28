@@ -1,0 +1,49 @@
+JEMMO LIVE V1 · PRUEBAS PRUEBA 46
+Fecha: 28/07/2026
+
+PRUEBA A · PUBLICACIÓN DE PRESENCIA
+1. Ruth inicia sesión en su móvil.
+2. Abre LIVE, activa cámara, prepara portada, título y descripción.
+3. Deja Visibilidad en Público.
+4. Pulsa INICIAR TRANSMISIÓN LIVE.
+5. Resultado esperado: en Firebase aparece `livePresences/{UID_DE_RUTH}` con `active: true`, `status: live`, título y `heartbeatAtMs`.
+
+PRUEBA B · PERFIL PÚBLICO
+1. Jesús abre el perfil público de Ruth desde su móvil.
+2. Resultado esperado: banda roja EN LIVE AHORA, título real y botón ENTRAR AL LIVE.
+3. El indicador lateral debe mostrar EN LIVE, no solamente EN LÍNEA.
+
+PRUEBA C · INICIO
+1. Jesús vuelve a Inicio.
+2. En PERSONAS EN DIRECTO debe aparecer Ruth automáticamente.
+3. No deben aparecer Luna, Alex, Mía ni King como datos ficticios.
+4. La tarjeta debe mostrar el nombre y título real de Ruth.
+
+PRUEBA D · COMPARTIR
+1. Dentro del LIVE de Ruth, localizar el botón rojo con flecha de compartir en la barra inferior.
+2. Pulsarlo sin abrir Ajustes.
+3. Android debe abrir el panel Compartir con título, texto y enlace del LIVE.
+4. En un navegador sin Web Share, el enlace debe copiarse al portapapeles.
+
+PRUEBA E · FINALIZACIÓN
+1. Ruth pulsa EN DIRECTO × y confirma finalizar.
+2. Resultado esperado: `active: false`, `status: ended`.
+3. La banda EN LIVE debe desaparecer del perfil.
+4. La tarjeta de Ruth debe desaparecer de Inicio.
+
+PRUEBA F · CAÍDA ABRUPTA
+1. Ruth inicia LIVE y después pierde conexión o cierra la aplicación sin finalizar.
+2. Esperar un máximo aproximado de 90 segundos.
+3. Resultado esperado: Inicio y Perfil dejan de considerar válida la presencia sin latido.
+
+PRUEBA G · PRIVACIDAD
+1. Repetir con Visibilidad Seguidores y Privado.
+2. Resultado esperado: no debe mostrarse como LIVE público en Inicio ni en el aviso público del perfil.
+
+PRUEBA H · PWA
+1. Subir todos los archivos de PRUEBA 46.
+2. Cerrar completamente la PWA y volver a abrirla.
+3. Confirmar que se carga la botonera nueva y no una versión antigua almacenada en caché.
+
+NOTA
+La entrada al enlace identifica correctamente el UID del anfitrión. La recepción remota de audio/vídeo debe validarse en la prueba WebRTC prioritaria separada.

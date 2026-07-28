@@ -1,3 +1,15 @@
+# CHANGELOG
+
+## PRUEBA 46 · 28/07/2026
+### Presencia LIVE real en perfil e Inicio y Compartir visible
+- Firebase publica y cierra `livePresences/{uid}` con latido de 20 segundos.
+- Inicio elimina directos ficticios y muestra transmisiones públicas activas.
+- Perfil público muestra EN LIVE AHORA y el título real.
+- Compartir queda visible en la barra inferior y envía una URL identificada por UID.
+- Presencias sin latido caducan visualmente a los 90 segundos.
+- PWA actualizada a caché PRUEBA 46.
+- Se mantiene registrado como pendiente prioritario el visor WebRTC remoto real.
+
 # Changelog v0.6.2
 
 - Restaurado el recorte ancho del logo del encabezado (`object-fit: cover`).

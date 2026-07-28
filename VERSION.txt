@@ -1,19 +1,27 @@
-JEMMO LIVE V1 · CENTRO OFICIAL CHILI, CONFIGURACIÓN, NORMAS, PAGOS Y SEGURIDAD FINANCIERA PRUEBA 45
+JEMMO LIVE V1 · PRESENCIA LIVE REAL EN PERFIL E INICIO Y COMPARTIR PRUEBA 46
 Fecha: 28/07/2026
-Base verificada: JEMMO LIVE V1 · SEGURIDAD DE REGALOS Y ACCESO GLOBAL A MIS TAREAS PRUEBA 44
-ZIP base recibido: JEMMO-LIVE-main (16) (1).zip
-SHA-256 de la base recibida: e984df500d555fdc342c984eed86bce39e4dc8ae7dca88c4e826e9e56274ad86
+Base verificada: JEMMO LIVE V1 · CENTRO OFICIAL CHILI, CONFIGURACIÓN, NORMAS, PAGOS Y SEGURIDAD FINANCIERA PRUEBA 45
+ZIP base recibido: JEMMO-LIVE-main (17) (1).zip
+SHA-256 de la base recibida: 7d407cf58cf219a4b3944c8db588cc1ba0a8ff53d91ac7507bb7ca979024f098
 
 ESTADO
-- Entrega completa preparada sobre una base de 124 archivos verificada sin errores.
+- Base original verificada sin errores de compresión y con todos los hashes internos correctos.
+- Presencia LIVE real sincronizada mediante Firebase por UID.
+- Inicio ya no utiliza tarjetas ficticias en PERSONAS EN DIRECTO.
+- El perfil público avisa cuando la persona está transmitiendo.
+- Compartir está visible directamente dentro del LIVE.
 - Economía y pagos continúan en MODO DE PRUEBAS.
-- La protección del navegador es defensiva, no sustituye la validación de recibos y operaciones en backend.
 
 ALCANCE PRINCIPAL
-1. Chili IA usa una única fuente oficial versionada para normas, tareas, tarifas, Monedero, regalos, pagos, retiradas, seguridad, privacidad, Casas, Agencias y soporte.
-2. Nueva página Configuración con cuenta, seguridad, privacidad, notificaciones, país, idioma y métodos de pago.
-3. Accesos oficiales desde Inicio, Perfil, LIVE, Salas, Configuración y Monedero.
-4. Soporte humano ampliado con fecha aproximada del incidente, captura obligatoria, número de caso, fecha y estados.
-5. Seguridad financiera local: rechazo de recargas no iniciadas desde el Monedero oficial, registro de alerta y bloqueo temporal de retiradas con alertas activas.
-6. Google Play se oculta para Cuba en la configuración de métodos.
-7. PWA y caché actualizadas a PRUEBA 45.
+1. Al pulsar INICIAR TRANSMISIÓN LIVE se publica `livePresences/{uid}` con estado, UID, nombre, título, visibilidad, enlace, hora de inicio y latido.
+2. El latido se actualiza cada 20 segundos y una presencia con más de 90 segundos sin actividad se considera caducada.
+3. Al finalizar el LIVE, la presencia se marca como terminada y desaparece de las superficies públicas.
+4. Inicio consulta Firebase y muestra únicamente transmisiones públicas activas y reales.
+5. El perfil público muestra EN LIVE AHORA, el título y ENTRAR AL LIVE mientras la presencia sea válida.
+6. Se añadió un botón Compartir visible en la barra inferior del LIVE y se conserva el acceso secundario de Ajustes.
+7. Web Share comparte título, mensaje y URL; sin Web Share copia el enlace al portapapeles.
+8. PWA y caché actualizadas a PRUEBA 46.
+
+LÍMITE CONOCIDO
+- Esta entrega resuelve descubrimiento, presencia y compartición. La recepción remota real de audio y vídeo por el espectador continúa siendo la corrección WebRTC prioritaria y debe validarse entre los móviles de Ruth y Jesús.
+- Antes de producción, las reglas de Firestore deben permitir escribir `livePresences/{uid}` solo al propietario autenticado y limitar las lecturas públicas a presencias activas y públicas.
