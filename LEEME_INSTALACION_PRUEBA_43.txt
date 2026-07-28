@@ -1,0 +1,32 @@
+JEMMO LIVE V1 · PRUEBA 43
+TAREA REAL UNIFICADA EN LIVE Y AUDIO ROOM
+
+INSTALACIÓN MÓVIL
+1. Abre el ZIP.
+2. Copia los archivos de la raíz.
+3. Sustituye los archivos con el mismo nombre en el repositorio JEMMO LIVE.
+4. Publica los cambios.
+5. Cierra completamente la PWA en ambos móviles y vuelve a abrirla.
+6. Si todavía aparece REINICIAR TAREAS DE PRUEBA, borra una vez la caché/datos del sitio o reinstala la PWA: esa pantalla pertenece a la caché antigua.
+
+ARCHIVOS DE APLICACIÓN
+- VERSION.txt
+- live.html
+- salas.html
+- jemmo-house-activity.js
+- jemmo-host-task-rewards.js
+- pwa-register.js
+- sw.js
+
+PRUEBA REAL CON RUTH
+A. En Audio Room, comprobar que la pestaña ACTIVA/PAUSADA sigue funcionando.
+B. Iniciar LIVE desde la cuenta de Ruth.
+C. Confirmar que no aparecen Tarea 1, Tarea 2 ni REINICIAR TAREAS DE PRUEBA.
+D. Confirmar que aparece una pestaña compacta ACTIVA con tiempo real.
+E. Tocar la pestaña y abrir Mis tareas; revisar el desglose LIVE y AUDIO ROOM.
+F. Finalizar el LIVE y comprobar que la tarea queda PAUSADA y conserva el tiempo.
+
+IMPORTANTE
+- Esta entrega es incremental y debe instalarse sobre PRUEBA 42.
+- No borres otros archivos del proyecto.
+- La economía continúa en MODO DE PRUEBAS.

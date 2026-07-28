@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · TAREA COMPACTA POR EMISORA Y ENTRADA SIN SILLA PRUEBA 42
+/* JEMMO LIVE V1 · TAREA REAL UNIFICADA EN LIVE Y AUDIO ROOM PRUEBA 43
    Tareas exclusivas de Emisoras formalmente asignadas a una Casa.
    Cada hora se cobra por separado. El nivel usa únicamente el 70% neto de regalos de Casa.
    MODO DE PRUEBAS: antes de producción, cálculo y abono deben validarse en backend. */
@@ -6,13 +6,15 @@
   'use strict';
   if (window.JemmoHostTaskRewards?.version) return;
 
-  const VERSION = '42.0-test';
+  const VERSION = '43.0-test';
   const params = new URLSearchParams(location.search);
-  const isHouseRoom = location.pathname.toLowerCase().endsWith('salas.html') && (
+  const pagePath = location.pathname.toLowerCase();
+  const isLivePage = pagePath.endsWith('live.html');
+  const isHouseRoom = pagePath.endsWith('salas.html') && (
     params.get('houseRoom') === '1' ||
     window.JemmoHouseRoomContext?.enabled === true
   );
-  if (!isHouseRoom) return;
+  if (!isHouseRoom && !isLivePage) return;
 
   const firebaseConfig = {
     apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
@@ -46,7 +48,7 @@
 
   // La utilidad clean debe existir antes de resolver la Casa. En PRUEBA 33
   // se invocaba antes de inicializarse y el módulo se detenía con ReferenceError.
-  window.__JEMMO_TASK_UI_OWNER__ = 'rewards-37-loading';
+  window.__JEMMO_TASK_UI_OWNER__ = 'rewards-43-loading';
 
   let servicesPromise = null;
   let user = null;
@@ -74,7 +76,7 @@
   let lastTierSignature = '';
   let windowTimer = 0;
   let uiTimer = 0;
-  let activity = { status: 'checking', type: 'house_room', startedAtClient: 0, baseLiveSeconds: 0, baseHouseRoomSeconds: 0, seat: 0, reason: '', wakeActive: false, wakeSupported: true };
+  let activity = { status: 'checking', type: isLivePage ? 'live' : 'house_room', startedAtClient: 0, baseLiveSeconds: 0, baseHouseRoomSeconds: 0, seat: 0, reason: '', wakeActive: false, wakeSupported: true };
   const unsubscribers = [];
   const houseUnsubscribers = [];
   const seatTaskUnsubscribers = new Map();
@@ -143,7 +145,8 @@
     const done = completion === 'paid' || value.rewardClaimed === true;
     const css = done ? 'done' : ended ? 'stopped' : recent ? 'active' : 'paused';
     const label = done ? 'COBRADA' : ended ? 'DETENIDA' : recent ? 'ACTIVA' : 'PAUSADA';
-    return { css, label, seconds: number(view.houseRoomSeconds) };
+    const seconds = isLivePage ? number(view.liveSeconds) : number(view.houseRoomSeconds);
+    return { css, label, seconds };
   }
   function clearSeatTaskListeners() {
     seatTaskUnsubscribers.forEach(stop => { try { stop(); } catch {} });
@@ -151,6 +154,7 @@
     seatTasks.clear();
   }
   function syncSeatTaskTabs() {
+    if (!isHouseRoom) return;
     const seats = [...document.querySelectorAll('#seatsGrid .jr-seat[data-uid]')];
     seats.forEach(seat => {
       seat.classList.remove('has-task-tab');
@@ -170,6 +174,7 @@
     });
   }
   async function syncSeatTaskListeners() {
+    if (!isHouseRoom) return;
     if (!user || !houseId) { clearSeatTaskListeners(); syncSeatTaskTabs(); return; }
     const uids = new Set([...document.querySelectorAll('#seatsGrid .jr-seat[data-uid]')].map(node => clean(node.dataset.uid, 160)).filter(uid => uid && uid !== user.uid));
     for (const [uid, stop] of [...seatTaskUnsubscribers.entries()]) {
@@ -191,25 +196,38 @@
     syncSeatTaskTabs();
   }
   function handleSeatsRendered() {
+    if (!isHouseRoom) return;
     syncSeatTaskTabs();
     void syncSeatTaskListeners();
   }
   function roomControlState() {
-    try { return window.JemmoHouseRoomControls?.getState?.() || {}; } catch { return {}; }
+    try {
+      if (isLivePage) return window.JemmoLiveTaskControls?.getState?.() || {};
+      return window.JemmoHouseRoomControls?.getState?.() || {};
+    } catch { return {}; }
   }
   function activityLabel() {
+    const controls = roomControlState();
     if (activity.status === 'active') {
-      const controls = roomControlState();
+      if (isLivePage) return 'ACTIVA · LIVE CONTANDO';
       const seat = activity.seat || controls.localSeat || 0;
       if (controls.moderatedMuted === true) return `ACTIVA · SILENCIO DE MODERACIÓN${seat ? ` · SILLA ${seat}` : ''}`;
       return `ACTIVA · CONTANDO${seat ? ` EN SILLA ${seat}` : ''}`;
     }
-    const controls = roomControlState();
     if (document.hidden) return 'PAUSADA · JEMMO ESTÁ EN SEGUNDO PLANO';
+    if (activity.reason === 'offline') return 'PAUSADA · SIN CONEXIÓN';
+    if (isLivePage) {
+      const reasons = Array.isArray(controls.pauseReasons) ? controls.pauseReasons : [];
+      if (controls.liveOpen !== true) return 'PAUSADA · INICIA EL LIVE';
+      if (reasons.includes('safety')) return 'PAUSADA · REVISIÓN DE SEGURIDAD';
+      if (reasons.includes('camera') || controls.cameraEnabled === false || controls.videoTrackLive === false) return 'PAUSADA · ACTIVA LA CÁMARA';
+      if (reasons.includes('microphone')) return 'PAUSADA · ACTIVA EL MICRÓFONO';
+      if (reasons.includes('inactivity')) return 'PAUSADA · CONFIRMA ACTIVIDAD';
+      return 'PREPARANDO CRONÓMETRO REAL…';
+    }
     if (controls.houseSeatActive !== true) return 'PAUSADA · SUBE A UNA SILLA';
     if (controls.micEnabled !== true) return 'PAUSADA · ACTIVA EL MICRÓFONO';
     if (controls.mediaActive !== true) return 'PAUSADA · PERMITE EL MICRÓFONO';
-    if (activity.reason === 'offline') return 'PAUSADA · SIN CONEXIÓN';
     return 'PREPARANDO CRONÓMETRO…';
   }
   function wakeLabel() {
@@ -544,6 +562,9 @@
       .jr-task-window-card{display:grid;gap:8px}.jr-task-window-row{display:grid;grid-template-columns:1fr auto;gap:10px;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.045)}.jr-task-window-row b{font-size:12px}.jr-task-window-row span{color:#a995b7;font-size:10px}.jr-task-window-row em{font-style:normal;color:#f4dd4c;font-weight:900;font-size:12px}
       .jr-task-levels{border:1px solid rgba(255,255,255,.11);border-radius:15px;background:#0d0913;overflow:hidden}.jr-task-levels summary{cursor:pointer;padding:13px 14px;color:#f1de4b;font-size:11px;font-weight:900}.jr-task-levels>div{display:grid;gap:6px;padding:0 10px 12px}.jr-task-levels span{display:grid;grid-template-columns:48px 1fr auto;gap:8px;align-items:center;padding:9px;border-radius:11px;background:rgba(255,255,255,.04)}.jr-task-levels span.active{outline:1px solid #f0d941;background:rgba(240,217,65,.09)}.jr-task-levels b{font-size:11px}.jr-task-levels small{color:#bbaac4;font-size:10px}.jr-task-levels em{font-style:normal;text-align:right;color:#f1df4b;font-size:10px;font-weight:900}
       body.jemmo-house-room #houseTaskClock{display:none!important}
+      body.live-running #taskCard.active,body.live-running #taskCard.done{border-color:#43e397;background:#0b3a29;color:#8ff6c4}
+      body.live-running #taskCard.paused{border-color:#f3a23b;background:#432408;color:#ffd08d}
+      body.live-running #taskCard.stopped{border-color:#ea647c;background:#3d0b17;color:#ff9cad}
       body.jemmo-house-room .jr-seat.has-task-tab .jr-seat-person-label{bottom:18%!important}
       body.jemmo-house-room .jr-seat-task-tab{position:absolute;z-index:8;left:9%;right:9%;bottom:3%;height:12px;padding:0 4px;border:1px solid rgba(255,255,255,.24);border-radius:999px;display:flex;align-items:center;justify-content:center;gap:3px;background:#3b0d14;color:#ffd6df;box-shadow:0 1px 6px rgba(0,0,0,.6);font-size:5.6px;line-height:1;font-weight:1000;white-space:nowrap;overflow:hidden;pointer-events:none}.jr-seat-task-tab i{width:4px;height:4px;border-radius:50%;background:currentColor;box-shadow:0 0 5px currentColor;flex:0 0 auto}.jr-seat-task-tab span,.jr-seat-task-tab b{margin:0!important;max-width:none!important;font-size:inherit!important;line-height:1!important;overflow:visible!important}.jr-seat-task-tab.active,.jr-seat-task-tab.done{border-color:#43e397;background:#0b3a29;color:#8ff6c4}.jr-seat-task-tab.paused{border-color:#f3a23b;background:#432408;color:#ffd08d}.jr-seat-task-tab.stopped{border-color:#ea647c;background:#3d0b17;color:#ff9cad}
       @media(max-width:380px){.jr-task-claim-grid,.jr-task-rate-pair{grid-template-columns:1fr}.jr-task-sheet{padding-left:11px;padding-right:11px}.jr-task-levels span{grid-template-columns:42px 1fr}.jr-task-levels em{grid-column:2;text-align:left}}
@@ -614,6 +635,21 @@
     const managementHidden = !emitter && eligibilityState === 'management';
     const setting = $('jemmoHostTaskSetting');
     if (setting) setting.hidden = managementHidden;
+    if (isLivePage) {
+      const card = $('taskCard');
+      const text = $('taskText');
+      const time = $('taskTime');
+      if (!card) return;
+      if (!emitter) { card.hidden = true; return; }
+      const visual = compactTaskVisual(task, true);
+      card.hidden = false;
+      card.classList.remove('active', 'paused', 'stopped', 'done', 'complete');
+      card.classList.add(visual.css);
+      if (text) text.textContent = visual.label;
+      if (time) time.textContent = compactClock(visual.seconds);
+      card.setAttribute('aria-label', `Abrir mis tareas reales · ${visual.label.toLowerCase()} · ${compactClock(visual.seconds)}`);
+      return;
+    }
     syncSeatTaskTabs();
   }
 
@@ -681,7 +717,7 @@
     }
 
     target.innerHTML = `
-      <section class="jr-task-activity-card ${activity.status === 'active' ? '' : 'paused'}"><div><b>${activityLabel()}</b><small>${activity.status === 'active' ? (roomControlState().moderatedMuted === true ? 'La moderación ha silenciado el audio, pero la presencia en silla continúa contando.' : 'El cronómetro avanza segundo a segundo y se guarda periódicamente en Firebase.') : 'El tiempo solo suma con la Sala visible, en una silla y con micrófono real activo.'}</small></div><em>${wakeLabel()}</em></section>
+      <section class="jr-task-activity-card ${activity.status === 'active' ? '' : 'paused'}"><div><b>${activityLabel()}</b><small>${activity.status === 'active' ? (isLivePage ? 'El LIVE real está sumando tiempo y se guarda periódicamente en Firebase.' : (roomControlState().moderatedMuted === true ? 'La moderación ha silenciado el audio, pero la presencia en silla continúa contando.' : 'El cronómetro avanza segundo a segundo y se guarda periódicamente en Firebase.')) : (isLivePage ? 'El tiempo solo suma con el LIVE visible, cámara real y controles de tarea activos.' : 'El tiempo solo suma con la Sala visible, en una silla y con micrófono real activo.')}</small></div><em>${wakeLabel()}</em></section>
       <section class="jr-task-reward-card">
         <small>TARIFAS DE TAREA · NIVEL ${tier.code}</small>
         <div class="jr-task-rate-pair"><span><small>LIVE</small><b>${fmt(tier.reward)} JEMS/HORA</b></span><span><small>AUDIO ROOM · FIJO</small><b>${fmt(AUDIO_ROOM_REWARD)} JEMS/HORA</b></span></div>
@@ -966,10 +1002,10 @@
 
   async function boot() {
     try {
-      window.__JEMMO_TASK_UI_OWNER__ = 'rewards-42';
+      window.__JEMMO_TASK_UI_OWNER__ = 'rewards-43';
       window.addEventListener('jemmo-house-activity', handleActivityEvent);
       window.addEventListener('jemmo-wake-lock', handleWakeEvent);
-      window.addEventListener('jemmo-room-seats-rendered', handleSeatsRendered);
+      if (isHouseRoom) window.addEventListener('jemmo-room-seats-rendered', handleSeatsRendered);
       const currentActivity = window.JemmoHouseActivity?.getState?.();
       if (currentActivity?.running) handleActivityEvent({ detail: { ...currentActivity, status: 'active', startedAtClient: Date.now() } });
       const currentWake = window.JemmoKeepAwake?.getState?.();
@@ -977,29 +1013,37 @@
       injectTaskSheet();
       renderClock();
       const box = $('houseTaskClock');
-      box?.addEventListener('click', openSheet);
-      box?.addEventListener('keydown', event => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          openSheet();
-        }
-      });
+      if (isHouseRoom) {
+        box?.addEventListener('click', openSheet);
+        box?.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openSheet();
+          }
+        });
+      }
+      if (isLivePage) $('taskCard')?.addEventListener('click', openSheet);
       const settings = $('settingsSheet');
       if (settings && !$('jemmoHostTaskSetting')) {
         const button = document.createElement('button');
-        button.className = 'jr-setting';
         button.id = 'jemmoHostTaskSetting';
         button.type = 'button';
-        button.innerHTML = '<span>📋</span><b>Mis tareas<small>Horas, nivel, regalos y cobros</small></b><i>›</i>';
+        if (isLivePage) {
+          button.innerHTML = '📋<small>Mis tareas</small>';
+          settings.querySelector('.jl-sheet-grid')?.append(button);
+        } else {
+          button.className = 'jr-setting';
+          button.innerHTML = '<span>📋</span><b>Mis tareas<small>Horas, nivel, regalos y cobros</small></b><i>›</i>';
+          settings.insertBefore(button, settings.querySelector('[data-action="minor"]'));
+        }
         button.addEventListener('click', () => {
-          document.querySelectorAll('[data-close]').forEach(node => node.click());
+          document.querySelectorAll('[data-close],[data-close-sheet]').forEach(node => node.click());
           openSheet();
         });
-        settings.insertBefore(button, settings.querySelector('[data-action="minor"]'));
       }
       const s = await services();
       user = await waitForUser(s);
-      void syncSeatTaskListeners();
+      if (isHouseRoom) void syncSeatTaskListeners();
       unsubscribers.push(s.onSnapshot(s.doc(s.db, 'users', user.uid), snapshot => {
         profile = snapshot.data() || {};
         // En una Sala oficial, la Casa abierta manda. El Perfil solo es respaldo.
@@ -1020,8 +1064,8 @@
       windowTimer = setInterval(() => recalculateGiftWindow(false), 60000);
       clearInterval(uiTimer);
       uiTimer = setInterval(() => {
-        syncSeatTaskTabs();
-        if (emitter) render();
+        if (isHouseRoom) syncSeatTaskTabs();
+        if (emitter || isLivePage) render();
       }, 1000);
       document.addEventListener('visibilitychange', () => { if (!document.hidden) recalculateGiftWindow(false); });
     } catch (error) {
@@ -1038,7 +1082,7 @@
     clearInterval(uiTimer);
     window.removeEventListener('jemmo-house-activity', handleActivityEvent);
     window.removeEventListener('jemmo-wake-lock', handleWakeEvent);
-    window.removeEventListener('jemmo-room-seats-rendered', handleSeatsRendered);
+    if (isHouseRoom) window.removeEventListener('jemmo-room-seats-rendered', handleSeatsRendered);
     clearSeatTaskListeners();
     clearHouseListeners();
     unsubscribers.splice(0).forEach(stop => { try { stop(); } catch {} });

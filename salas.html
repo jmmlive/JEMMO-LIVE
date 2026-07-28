@@ -2020,14 +2020,14 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   window.addEventListener('focus',()=>{if(roomOpen)void recoverLocalMedia(false).finally(emitHouseActivityState)});
   window.addEventListener('pageshow',()=>{if(roomOpen)void recoverLocalMedia(true).finally(emitHouseActivityState)});
 
-  window.JemmoHouseRoomControls={version:'42.0-test',toggleSeat:toggleHouseSeat,toggleMic:toggleRoomMicro,getState:()=>{const audioTrack=state.stream?.getAudioTracks?.().find(track=>track.readyState==='live')||null;return{houseSeatActive:state.houseSeatActive,micEnabled:state.micEnabled,mediaActive:Boolean(audioTrack&&audioTrack.enabled),mediaTrackLive:Boolean(audioTrack),taskMediaActive:Boolean(audioTrack&&(audioTrack.enabled||state.moderatedMuted)),moderatedMuted:state.moderatedMuted,moderatedByUid:state.moderatedByUid,moderatedMutedAt:state.moderatedMutedAt,localSeat:state.localSeat,roomOpen,sessionActive:Boolean(roomOpen&&state.realtimeSession)}}};
+  window.JemmoHouseRoomControls={version:'43.0-test',toggleSeat:toggleHouseSeat,toggleMic:toggleRoomMicro,getState:()=>{const audioTrack=state.stream?.getAudioTracks?.().find(track=>track.readyState==='live')||null;return{houseSeatActive:state.houseSeatActive,micEnabled:state.micEnabled,mediaActive:Boolean(audioTrack&&audioTrack.enabled),mediaTrackLive:Boolean(audioTrack),taskMediaActive:Boolean(audioTrack&&(audioTrack.enabled||state.moderatedMuted)),moderatedMuted:state.moderatedMuted,moderatedByUid:state.moderatedByUid,moderatedMutedAt:state.moderatedMutedAt,localSeat:state.localSeat,roomOpen,sessionActive:Boolean(roomOpen&&state.realtimeSession)}}};
   window.addEventListener('pagehide',()=>{void save()});
   window.addEventListener('beforeunload',stopCamera);
 })();
 </script>
-<script type="module" src="jemmo-house-room-ui.js?v=42"></script>
-<script src="jemmo-house-activity.js?v=42"></script>
-<script src="jemmo-host-task-rewards.js?v=42"></script>
-<script src="jemmo-keep-awake.js?v=42"></script>
+<script type="module" src="jemmo-house-room-ui.js?v=43"></script>
+<script src="jemmo-house-activity.js?v=43"></script>
+<script src="jemmo-host-task-rewards.js?v=43"></script>
+<script src="jemmo-keep-awake.js?v=43"></script>
 </body>
 </html>

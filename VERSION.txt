@@ -1,49 +1,50 @@
-JEMMO LIVE V1 · ENTRADA SIN SILLA Y TAREA COMPACTA POR EMISORA PRUEBA 42
+JEMMO LIVE V1 · TAREA REAL UNIFICADA EN LIVE Y AUDIO ROOM PRUEBA 43
 Fecha: 28/07/2026
 
 Base verificada:
-- JEMMO LIVE V1 · PECERA FUTURISTA Y ALIMENTACIÓN DUAL PRUEBA 41.
-- Base completa recibida: JEMMO-LIVE-main (14).zip.
+- JEMMO LIVE V1 · ENTRADA SIN SILLA Y TAREA COMPACTA POR EMISORA PRUEBA 42.
+- PRUEBA 42 preparada sobre JEMMO-LIVE-main (14).zip.
 
-Correcciones oficiales:
-1. Entrada sin silla automática en la Audio Room oficial de una Casa.
-   - Jesús, Ruth, Elsa, propietario, anfitrión y cualquier otra persona entran abajo como oyentes.
-   - Las 20 sillas permanecen libres hasta que alguien toque voluntariamente una silla o pulse SUBIR.
-   - BAJAR conserva a la persona dentro de la Sala, fuera de las sillas y con la tarea pausada.
-   - El propietario/anfitrión mantiene los controles de administración aunque no esté sentado.
+Incidencia confirmada por las capturas móviles:
+1. La Audio Room oficial ya muestra correctamente la pestaña compacta real de Ruth: ACTIVA/PAUSADA y tiempo acumulado.
+2. LIVE personal todavía mostraba dos tareas ficticias de 60 segundos guardadas solo en localStorage.
+3. El panel de LIVE incluía el botón REINICIAR TAREAS DE PRUEBA y no consultaba la tarea real de Firebase.
 
-2. Sincronización real del estado de silla.
-   - Firebase registra por separado hostSeatStatus/hostSeat y guestSeatStatus/guestSeat.
-   - Ambos móviles dejan de mostrar al anfitrión en la silla 1 cuando realmente está como oyente.
-   - Subir, bajar y bajar por moderación se reflejan en los dos dispositivos.
-
-3. Tarea compacta por Emisora.
-   - Desaparece la tarjeta grande general de tarea de la cabecera.
-   - Cada Emisora sentada muestra una pestaña pequeña dentro de su propia silla.
-   - La pestaña enseña el tiempo de Audio Room y estado visual: verde activa/cobrada, naranja pausada y rojo detenida.
-   - No se muestran importes privados de otras Emisoras.
-   - El detalle completo de la tarea continúa disponible en Ajustes > Mis tareas.
-
-4. Mascota compacta arriba.
-   - El botón MASCOTA deja de flotar sobre el chat y los controles inferiores.
-   - En la Sala de Casa queda integrado como botón pequeño en la franja superior de información.
-   - La pecera, evolución, alimentación gratuita y alimentación con JEMMOS permanecen intactas.
+Corrección oficial:
+1. LIVE personal deja de crear, contar, guardar o reiniciar tareas ficticias.
+2. LIVE usa el mismo documento real de la Emisora en Firebase: casas/{houseId}/tareas/{uid}.
+3. La pestaña compacta de LIVE adopta el mismo lenguaje visual de Audio Room:
+   - Verde: ACTIVA o COBRADA.
+   - Naranja: PAUSADA.
+   - Rojo: DETENIDA.
+   - Muestra el tiempo real acumulado en LIVE.
+4. La pestaña solo aparece a una Emisora formalmente vinculada a una Casa y con tarea real.
+5. Al tocar la pestaña se abre el panel completo Mis tareas, conservado como vista conjunta de:
+   - estado real;
+   - horas y cobros;
+   - progreso LIVE y Audio Room por separado;
+   - nivel, tarifas y ventana de regalos de siete días.
+6. El mismo panel real queda accesible desde Ajustes > Mis tareas tanto en LIVE como en Audio Room.
+7. La actividad real de LIVE se pausa cuando el directo no está visible o una regla de cámara, micrófono, conexión, segundo plano, inactividad o seguridad la detiene.
+8. Audio Room de la Casa conserva intactas las 20 sillas, entrada como oyente, pestaña por Emisora y botón MASCOTA.
+9. Se renovó la caché PWA para impedir que el móvil conserve el panel ficticio anterior.
 
 Archivos que deben sustituirse:
+- live.html
 - salas.html
-- jemmo-room-realtime.js
-- jemmo-house-room-ui.js
+- jemmo-house-activity.js
 - jemmo-host-task-rewards.js
-- jemmo-house-pet.css
-- jemmo-house-pet.js
 - pwa-register.js
 - sw.js
 - VERSION.txt
 
-No se modifica:
-- Acceso, Inicio, LIVE personal, Mensajes, Perfil, monedero, economía, regalos ni Chili IA.
-- La lógica de pago sigue en MODO DE PRUEBAS.
-
 Archivos auxiliares del ZIP incremental:
-- LEEME_INSTALACION_PRUEBA_42.txt
+- LEEME_INSTALACION_PRUEBA_43.txt
 - INTEGRIDAD_SHA256.txt
+
+Pendiente obligatoria después de publicar:
+- Probar con Ruth que LIVE muestra su tarea real, que el tiempo aumenta en Firebase y que al finalizar queda PAUSADA sin volver a las tareas ficticias.
+
+No se modifica:
+- Acceso, Inicio, Mensajes, Perfil, monedero, regalos, Chili IA, WebRTC de Salas, sillas ni pecera.
+- La economía y los pagos continúan en MODO DE PRUEBAS.
