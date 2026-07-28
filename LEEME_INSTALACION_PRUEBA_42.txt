@@ -1,0 +1,51 @@
+JEMMO LIVE V1 · PRUEBA 42
+ENTRADA SIN SILLA Y TAREA COMPACTA POR EMISORA
+
+BASE OBLIGATORIA
+- JEMMO LIVE V1 · PECERA FUTURISTA Y ALIMENTACIÓN DUAL PRUEBA 41.
+- Archivo revisado: JEMMO-LIVE-main (14).zip.
+
+INSTALACIÓN
+1. Descomprime este ZIP.
+2. Copia en la raíz del proyecto y sustituye estos 9 archivos:
+   - VERSION.txt
+   - salas.html
+   - jemmo-room-realtime.js
+   - jemmo-house-room-ui.js
+   - jemmo-host-task-rewards.js
+   - jemmo-house-pet.css
+   - jemmo-house-pet.js
+   - pwa-register.js
+   - sw.js
+3. No borres ni sustituyas otros archivos del proyecto.
+4. Publica la actualización.
+5. Cierra completamente la PWA JEMMO LIVE y vuelve a abrirla. Si todavía aparece la versión anterior, ciérrala y ábrela una segunda vez para que el nuevo service worker tome el control.
+
+PRUEBA MÓVIL OBLIGATORIA CON DOS CUENTAS
+A. Jesús abre la Audio Room oficial de la Casa:
+   - Debe entrar abajo como oyente.
+   - La silla 1 debe permanecer libre.
+   - Debe conservar Ajustes, moderación y Finalizar.
+
+B. Ruth entra en la misma Sala:
+   - Debe entrar abajo como oyente.
+   - No debe aparecer automáticamente en ninguna silla.
+
+C. Subida voluntaria:
+   - Ruth toca una silla libre o pulsa SUBIR.
+   - Solo entonces debe aparecer sentada en ambos móviles.
+   - Si es Emisora de la Casa, debajo de su foto debe aparecer su pestaña compacta de tarea.
+
+D. Estados de tarea:
+   - Verde: tarea activa o cobrada.
+   - Naranja: tarea pausada.
+   - Rojo: tarea detenida/inactiva.
+   - Al pulsar BAJAR, Ruth debe seguir dentro de la Sala como oyente y su tarea debe quedar pausada.
+
+E. Mascota:
+   - El botón MASCOTA debe verse pequeño en la franja superior.
+   - No debe tapar el chat ni los controles inferiores.
+
+IMPORTANTE
+- La economía y los pagos continúan en MODO DE PRUEBAS.
+- Esta entrega no modifica Acceso, Inicio, LIVE personal, Mensajes, Perfil, monedero, regalos ni Chili IA.

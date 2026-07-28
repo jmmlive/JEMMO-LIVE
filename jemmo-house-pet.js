@@ -1,10 +1,10 @@
-/* JEMMO LIVE V1 · PECERA FUTURISTA Y ALIMENTACIÓN DUAL · PRUEBA 41 */
+/* JEMMO LIVE V1 · PECERA FUTURISTA CON ACCESO COMPACTO SUPERIOR · PRUEBA 42 */
 (()=>{
   'use strict';
-  if(window.__JEMMO_HOUSE_PET_41__)return;
-  window.__JEMMO_HOUSE_PET_41__=true;
+  if(window.__JEMMO_HOUSE_PET_42__)return;
+  window.__JEMMO_HOUSE_PET_42__=true;
 
-  const VERSION='41.0.0-test';
+  const VERSION='42.0.0-test';
   const DB_NAME='jemmo-house-pet-v1';
   const DB_STORE='states';
   const DAY=24*60*60*1000;
@@ -286,7 +286,11 @@
     launch=document.createElement('button');
     launch.id='jhp-launch';launch.type='button';launch.hidden=!isHouseContext();launch.setAttribute('aria-label','Abrir mascota de la Casa');
     launch.innerHTML=`<span class="jhp-launch-fish">${fishSvg(true)}</span><span>MASCOTA</span>`;
-    document.body.append(launch);
+    const houseTop=document.getElementById('houseRoomInfo');
+    if(document.body.classList.contains('jemmo-house-room')&&houseTop){
+      launch.classList.add('jhp-launch-top');
+      houseTop.append(launch);
+    }else document.body.append(launch);
 
     overlay=document.createElement('section');
     overlay.id='jhp-overlay';overlay.hidden=true;overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-label','Pecera de la Casa');
@@ -476,7 +480,13 @@
     createUi();
     if(isHouseContext())launch.hidden=false;
     load();
-    const observer=new MutationObserver(()=>{if(isHouseContext()&&launch)launch.hidden=false});observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true});
+    const observer=new MutationObserver(()=>{
+      if(isHouseContext()&&launch)launch.hidden=false;
+      const houseTop=document.getElementById('houseRoomInfo');
+      if(launch&&houseTop&&document.body.classList.contains('jemmo-house-room')&&!launch.classList.contains('jhp-launch-top')){
+        launch.classList.add('jhp-launch-top');houseTop.append(launch);
+      }
+    });observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true});
   }
 
   window.JemmoHousePet={version:VERSION,open,close,getState:()=>normalizeState(state),addProgress,refresh:load};

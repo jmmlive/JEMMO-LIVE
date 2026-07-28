@@ -383,13 +383,22 @@ function makeSession({ role, roomId, roomRef, houseRoomRef, permanentHouseRoom =
       return outgoing;
     },
     async setSeatState(seated, seat = 0) {
-      if (role !== 'guest') return;
-      await updateDoc(roomRef, {
-        guestSeatStatus: seated ? 'seated' : 'listener',
-        guestSeat: seated ? Math.max(1, Number(seat) || 1) : 0,
-        guestSeatUpdatedAtMs: Date.now(),
+      const prefix = role === 'host' ? 'host' : 'guest';
+      const update = {
+        [`${prefix}SeatStatus`]: seated ? 'seated' : 'listener',
+        [`${prefix}Seat`]: seated ? Math.max(1, Number(seat) || 1) : 0,
+        [`${prefix}SeatUpdatedAtMs`]: Date.now(),
         updatedAt: serverTimestamp()
-      });
+      };
+      await updateDoc(roomRef, update);
+      if (role === 'host' && houseRoomRef) {
+        await setDoc(houseRoomRef, {
+          hostSeatStatus: update.hostSeatStatus,
+          hostSeat: update.hostSeat,
+          hostSeatUpdatedAtMs: update.hostSeatUpdatedAtMs,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+      }
     },
     renegotiate: reason => role === 'host' ? renegotiate?.(reason || 'manual') : requestRenegotiation?.(reason || 'manual'),
     requestRenegotiation: reason => requestRenegotiation?.(reason || 'manual'),
@@ -468,6 +477,8 @@ async function getRoomPreview(code) {
     hostUid: clean(data.hostUid, 160),
     hostName: clean(data.hostName) || 'Anfitrión',
     hostPhoto: safeProfilePhoto(data.hostPhoto),
+    hostSeatStatus: clean(data.hostSeatStatus, 20) || 'listener',
+    hostSeat: Math.max(0, Number(data.hostSeat) || 0),
     houseId: clean(data.houseId, 80),
     houseName: clean(data.houseName, 60),
     status: clean(data.status) || 'open'
@@ -601,6 +612,9 @@ async function createHostSession(options = {}) {
     hostName: profile.name,
     hostPhoto: profile.photo,
     hostVerified: profile.verified,
+    hostSeatStatus: options.listenOnly ? 'listener' : 'seated',
+    hostSeat: options.listenOnly ? 0 : Math.max(1, Number(options.seat) || 1),
+    hostSeatUpdatedAtMs: Date.now(),
     houseId,
     houseName,
     officialHouseRoom: Boolean(houseId),
@@ -623,7 +637,9 @@ async function createHostSession(options = {}) {
       roomId: id, activeRoomId: id, joinUrl, mode: options.mode === 'camera' ? 'camera' : 'audio',
       count: Number(options.count) || 20, capacity: Number(options.count) || 20, title: clean(options.title, 60), description: clean(options.description, 180),
       roomTitle: clean(options.roomOwnerTitle || options.title, 60), roomDescription: clean(options.roomOwnerDescription || options.description, 180), roomPhoto: safeProfilePhoto(options.roomOwnerPhoto || options.cover),
-      hostUid: user.uid, hostName: profile.name, hostVip: Boolean(profile.vip), houseId, houseName,
+      hostUid: user.uid, hostName: profile.name, hostVip: Boolean(profile.vip),
+      hostSeatStatus: options.listenOnly ? 'listener' : 'seated', hostSeat: options.listenOnly ? 0 : Math.max(1, Number(options.seat) || 1),
+      houseId, houseName,
       openedAt: serverTimestamp(), updatedAt: serverTimestamp(), sessionExpiresAtMs: Date.now() + (permanentHouseRoom ? 8 : 2) * 60 * 60 * 1000
     }, { merge: true });
   }
@@ -792,6 +808,14 @@ async function joinGuestSession(code, options = {}) {
     if (!roomSnapshot.exists()) return;
     const room = roomSnapshot.data() || {};
     if (room.status === 'ended') options.onStatus?.({ state: 'closed', text: 'El anfitrión finalizó la sala' });
+    options.onRemoteProfile?.({
+      uid: clean(room.hostUid, 160) || preview.hostUid,
+      name: clean(room.hostName) || preview.hostName,
+      photo: safeProfilePhoto(room.hostPhoto || preview.hostPhoto),
+      verified: Boolean(room.hostVerified),
+      seatStatus: clean(room.hostSeatStatus, 20) || 'listener',
+      seat: Math.max(0, Number(room.hostSeat) || 0)
+    });
     if (typeof room.chatClosed === 'boolean') options.onChatState?.(Boolean(room.chatClosed));
     const moderation = room.moderationAction || null;
     if (moderation?.id && moderation.id !== moderationActionSeen) {
@@ -817,7 +841,7 @@ async function joinGuestSession(code, options = {}) {
   });
   const { setChatClosed, sendModerationAction } = configureRoomControls({ roomRef, user });
   options.onLocalProfile?.(profile);
-  options.onRemoteProfile?.({ uid: preview.hostUid || clean(data.hostUid, 160), name: preview.hostName, photo: safeProfilePhoto(preview.hostPhoto), verified: Boolean(data.hostVerified) });
+  options.onRemoteProfile?.({ uid: preview.hostUid || clean(data.hostUid, 160), name: preview.hostName, photo: safeProfilePhoto(preview.hostPhoto), verified: Boolean(data.hostVerified), seatStatus: clean(data.hostSeatStatus, 20) || preview.hostSeatStatus || 'listener', seat: Math.max(0, Number(data.hostSeat) || Number(preview.hostSeat) || 0) });
   options.onStatus?.({ state: 'connecting', text: 'Entrando en la sala…' });
   return makeSession({
     role: 'guest', roomId: preview.roomId, roomRef, peer, remoteStream, unsubs,
@@ -835,7 +859,7 @@ async function getCurrentProfile() {
 }
 
 window.JemmoRoomRealtime = Object.freeze({
-  version: '1.8.1-test',
+  version: '1.9.0-test',
   getCurrentProfile,
   getHouseRoomAccess,
   getRoomPreview,

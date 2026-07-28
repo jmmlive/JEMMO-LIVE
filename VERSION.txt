@@ -1,26 +1,49 @@
-JEMMO LIVE V1 · PECERA FUTURISTA Y ALIMENTACIÓN DUAL PRUEBA 41
-Fecha: 27/07/2026
+JEMMO LIVE V1 · ENTRADA SIN SILLA Y TAREA COMPACTA POR EMISORA PRUEBA 42
+Fecha: 28/07/2026
 
-Base compatible:
-- JEMMO LIVE V1 · MASCOTA Y PECERA DE CASA PRUEBA 39
-- Sustituye únicamente jemmo-house-pet.css y jemmo-house-pet.js.
+Base verificada:
+- JEMMO LIVE V1 · PECERA FUTURISTA Y ALIMENTACIÓN DUAL PRUEBA 41.
+- Base completa recibida: JEMMO-LIVE-main (14).zip.
 
-Correcciones y ampliaciones:
-- Diseño completamente responsive sin desbordamiento horizontal en móvil.
-- Textos de XP y tiempos de espera completos, sin cortes.
-- Chicharro oficial rediseñado en SVG 2.5D: violeta/malva neón, detalles dorados, ojo azul y J dorada visible.
-- Movimiento autónomo por defecto, reacción al tocarlo y seguimiento del dedo en el agua.
-- Evolución visual automática en cinco niveles según XP.
-- Alimentación gratuita cada 24 horas con +4 XP para progresión lenta.
-- Alimentación con regalos de 500, 2.000 y 5.000 JEMMOS, con +20, +70 y +180 XP.
-- Confirmación previa, bloqueo de doble toque e idempotencia en el monedero.
-- Persistencia en IndexedDB y sincronización con casas/{houseId}/mascota/actual.
-- Registro de acciones en casas/{houseId}/mascotaAcciones/{actionId}.
-- Conserva la API window.JemmoHousePet.addProgress(...) para tareas y regalos externos.
+Correcciones oficiales:
+1. Entrada sin silla automática en la Audio Room oficial de una Casa.
+   - Jesús, Ruth, Elsa, propietario, anfitrión y cualquier otra persona entran abajo como oyentes.
+   - Las 20 sillas permanecen libres hasta que alguien toque voluntariamente una silla o pulse SUBIR.
+   - BAJAR conserva a la persona dentro de la Sala, fuera de las sillas y con la tarea pausada.
+   - El propietario/anfitrión mantiene los controles de administración aunque no esté sentado.
 
-Estado económico:
-MODO DE PRUEBAS. Los JEMMOS utilizados son el saldo de pruebas del monedero actual.
+2. Sincronización real del estado de silla.
+   - Firebase registra por separado hostSeatStatus/hostSeat y guestSeatStatus/guestSeat.
+   - Ambos móviles dejan de mostrar al anfitrión en la silla 1 cuando realmente está como oyente.
+   - Subir, bajar y bajar por moderación se reflejan en los dos dispositivos.
 
-Instalación:
-Copiar los dos archivos jemmo-house-pet.css y jemmo-house-pet.js en la raíz del repositorio y sustituir los anteriores.
-No sustituir salas.html, casa-demo.html, pwa-register.js, sw.js, WebRTC, tareas ni Chili.
+3. Tarea compacta por Emisora.
+   - Desaparece la tarjeta grande general de tarea de la cabecera.
+   - Cada Emisora sentada muestra una pestaña pequeña dentro de su propia silla.
+   - La pestaña enseña el tiempo de Audio Room y estado visual: verde activa/cobrada, naranja pausada y rojo detenida.
+   - No se muestran importes privados de otras Emisoras.
+   - El detalle completo de la tarea continúa disponible en Ajustes > Mis tareas.
+
+4. Mascota compacta arriba.
+   - El botón MASCOTA deja de flotar sobre el chat y los controles inferiores.
+   - En la Sala de Casa queda integrado como botón pequeño en la franja superior de información.
+   - La pecera, evolución, alimentación gratuita y alimentación con JEMMOS permanecen intactas.
+
+Archivos que deben sustituirse:
+- salas.html
+- jemmo-room-realtime.js
+- jemmo-house-room-ui.js
+- jemmo-host-task-rewards.js
+- jemmo-house-pet.css
+- jemmo-house-pet.js
+- pwa-register.js
+- sw.js
+- VERSION.txt
+
+No se modifica:
+- Acceso, Inicio, LIVE personal, Mensajes, Perfil, monedero, economía, regalos ni Chili IA.
+- La lógica de pago sigue en MODO DE PRUEBAS.
+
+Archivos auxiliares del ZIP incremental:
+- LEEME_INSTALACION_PRUEBA_42.txt
+- INTEGRIDAD_SHA256.txt

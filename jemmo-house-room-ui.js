@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · IDENTIDAD DE SALA Y TARIFA AUDIO ROOM PRUEBA 37
+/* JEMMO LIVE V1 · IDENTIDAD DE SALA SIN TARJETA GLOBAL DE TAREA PRUEBA 42
    La cabecera pertenece a la Casa y usa la identidad configurada por sus responsables. */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
@@ -55,17 +55,10 @@ if(params.get('houseRoom')==='1'||window.JemmoHouseRoomContext?.enabled===true){
     if($('houseBattleScore'))$('houseBattleScore').textContent=`${fmt(house.battleScore)} · ${fmt(house.battleOpponentScore)}`;
   }
   function renderTask(){
-    // La tarjeta pertenece exclusivamente al módulo de tareas remuneradas.
-    // Este módulo no vuelve a escribir PENDIENTE encima de la tarea real.
-    if(window.__JEMMO_TASK_UI_OWNER__||window.JemmoHostTaskRewards)return;
-    const box=$('houseTaskClock'),count=$('houseTaskCountdown'),mini=$('houseTaskProgressMini');if(!box||!count||!mini)return;
-    const end=number(task.cycleEndsAtClient),active=clean(task.taskState,20)==='active'&&end>Date.now();
-    box.classList.toggle('waiting',!active);
-    if(!active){count.textContent=task.taskState==='expired'?'CICLO VENCIDO':'PENDIENTE';mini.textContent='Se activa al ingresar como Emisor/a';return}
-    const hours=Math.max(1,number(task.dailyHours||Math.ceil(number(task.totalTargetMinutes||60)/60)));
-    const paid=Array.isArray(task.claimedHourSlots)?task.claimedHourSlots.filter(slot=>number(slot)<=hours).length:0;
-    count.textContent=`${fmt(task.audioRoomHourlyRewardJems||800)} JEMS/HORA`;
-    mini.textContent=`AUDIO ROOM · ${paid}/${hours} horas cobradas · Nivel ${clean(task.taskTierCode||'BASE',10)}`;
+    // PRUEBA 42: la tarjeta global desaparece. Cada Emisora lleva una pestaña
+    // compacta en su propia silla; el detalle completo continúa en Ajustes.
+    const box=$('houseTaskClock');if(box)box.hidden=true;
+    window.dispatchEvent(new CustomEvent('jemmo-house-task-snapshot',{detail:{houseId,uid:user?.uid||'',task:{...task}}}));
   }
   async function boot(){
     try{

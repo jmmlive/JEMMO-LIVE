@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · TARIFAS POR MODALIDAD Y SILENCIO MODERADO PRUEBA 37
+/* JEMMO LIVE V1 · TAREA COMPACTA POR EMISORA Y ENTRADA SIN SILLA PRUEBA 42
    Tareas exclusivas de Emisoras formalmente asignadas a una Casa.
    Cada hora se cobra por separado. El nivel usa únicamente el 70% neto de regalos de Casa.
    MODO DE PRUEBAS: antes de producción, cálculo y abono deben validarse en backend. */
@@ -6,7 +6,7 @@
   'use strict';
   if (window.JemmoHostTaskRewards?.version) return;
 
-  const VERSION = '37.0-test';
+  const VERSION = '42.0-test';
   const params = new URLSearchParams(location.search);
   const isHouseRoom = location.pathname.toLowerCase().endsWith('salas.html') && (
     params.get('houseRoom') === '1' ||
@@ -77,6 +77,8 @@
   let activity = { status: 'checking', type: 'house_room', startedAtClient: 0, baseLiveSeconds: 0, baseHouseRoomSeconds: 0, seat: 0, reason: '', wakeActive: false, wakeSupported: true };
   const unsubscribers = [];
   const houseUnsubscribers = [];
+  const seatTaskUnsubscribers = new Map();
+  const seatTasks = new Map();
 
   const number = value => Math.max(0, Math.floor(Number(value) || 0));
   const fmt = value => number(value).toLocaleString('es-ES');
@@ -111,6 +113,86 @@
     view.liveSeconds = activity.baseLiveSeconds + (activity.type === 'live' ? elapsed : 0);
     view.houseRoomSeconds = activity.baseHouseRoomSeconds + (activity.type === 'house_room' ? elapsed : 0);
     return view;
+  }
+
+  function compactClock(seconds) {
+    const total = number(seconds);
+    const h = Math.floor(total / 3600);
+    const m = Math.floor((total % 3600) / 60);
+    const s = total % 60;
+    return h ? `${h}:${String(m).padStart(2, '0')}` : `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  }
+  function emitterTaskDocument(value = {}) {
+    const position = clean(value.housePosition, 30).toLowerCase();
+    const role = clean(value.accountRole || value.role, 30).toLowerCase();
+    return position === 'emitter' || role === 'emisor' || role === 'emisora' || role === 'emitter';
+  }
+  function remoteTaskProjection(value = {}) {
+    const view = { ...value };
+    const recent = clean(value.lastActivityType, 30) === 'house_room' && Date.now() - number(value.lastActivityAtClient) <= 90000;
+    if (recent) view.houseRoomSeconds = number(value.houseRoomSeconds) + Math.max(0, Math.floor((Date.now() - number(value.lastActivityAtClient)) / 1000));
+    return { view, recent };
+  }
+  function compactTaskVisual(value = {}, current = false) {
+    const remote = current ? null : remoteTaskProjection(value);
+    const view = current ? projectedTask() : remote.view;
+    const recent = current ? activity.status === 'active' : remote.recent;
+    const taskState = clean(value.taskState, 20).toLowerCase();
+    const completion = clean(value.completionState, 20).toLowerCase();
+    const ended = taskState === 'expired' || taskState === 'inactive' || completion === 'expired' || completion === 'inactive';
+    const done = completion === 'paid' || value.rewardClaimed === true;
+    const css = done ? 'done' : ended ? 'stopped' : recent ? 'active' : 'paused';
+    const label = done ? 'COBRADA' : ended ? 'DETENIDA' : recent ? 'ACTIVA' : 'PAUSADA';
+    return { css, label, seconds: number(view.houseRoomSeconds) };
+  }
+  function clearSeatTaskListeners() {
+    seatTaskUnsubscribers.forEach(stop => { try { stop(); } catch {} });
+    seatTaskUnsubscribers.clear();
+    seatTasks.clear();
+  }
+  function syncSeatTaskTabs() {
+    const seats = [...document.querySelectorAll('#seatsGrid .jr-seat[data-uid]')];
+    seats.forEach(seat => {
+      seat.classList.remove('has-task-tab');
+      seat.querySelectorAll('.jr-seat-task-tab').forEach(node => node.remove());
+      const uid = clean(seat.dataset.uid, 160);
+      if (!uid) return;
+      const current = Boolean(user && uid === user.uid);
+      const value = current ? task : (seatTasks.get(uid) || {});
+      if (current ? !emitter : !emitterTaskDocument(value)) return;
+      const visual = compactTaskVisual(value, current);
+      const tab = document.createElement('span');
+      tab.className = `jr-seat-task-tab ${visual.css}`;
+      tab.setAttribute('aria-label', `Tarea ${visual.label.toLowerCase()} · ${compactClock(visual.seconds)}`);
+      tab.innerHTML = `<i></i><span>${visual.label}</span><b>${compactClock(visual.seconds)}</b>`;
+      seat.classList.add('has-task-tab');
+      seat.append(tab);
+    });
+  }
+  async function syncSeatTaskListeners() {
+    if (!user || !houseId) { clearSeatTaskListeners(); syncSeatTaskTabs(); return; }
+    const uids = new Set([...document.querySelectorAll('#seatsGrid .jr-seat[data-uid]')].map(node => clean(node.dataset.uid, 160)).filter(uid => uid && uid !== user.uid));
+    for (const [uid, stop] of [...seatTaskUnsubscribers.entries()]) {
+      if (uids.has(uid)) continue;
+      try { stop(); } catch {}
+      seatTaskUnsubscribers.delete(uid);
+      seatTasks.delete(uid);
+    }
+    if (!uids.size) { syncSeatTaskTabs(); return; }
+    const s = await services();
+    uids.forEach(uid => {
+      if (seatTaskUnsubscribers.has(uid)) return;
+      const stop = s.onSnapshot(s.doc(s.db, 'casas', houseId, 'tareas', uid), snapshot => {
+        seatTasks.set(uid, snapshot.data() || {});
+        syncSeatTaskTabs();
+      }, error => console.warn('JEMMO tareas: pestaña de Emisora', uid, error?.code || error?.message || error));
+      seatTaskUnsubscribers.set(uid, stop);
+    });
+    syncSeatTaskTabs();
+  }
+  function handleSeatsRendered() {
+    syncSeatTaskTabs();
+    void syncSeatTaskListeners();
   }
   function roomControlState() {
     try { return window.JemmoHouseRoomControls?.getState?.() || {}; } catch { return {}; }
@@ -461,6 +543,9 @@
       .jr-task-tier-card{display:grid;grid-template-columns:1fr auto;gap:8px}.jr-task-tier-card>div b{display:block;margin-top:4px}.jr-task-tier-card>div span{display:block;margin-top:3px;color:#bfaec8;font-size:11px}.jr-task-tier-card>em{font-style:normal;color:#ffe843;font-weight:900}.jr-task-tier-card>i,.jr-task-tier-card>p{grid-column:1/-1}
       .jr-task-window-card{display:grid;gap:8px}.jr-task-window-row{display:grid;grid-template-columns:1fr auto;gap:10px;padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.045)}.jr-task-window-row b{font-size:12px}.jr-task-window-row span{color:#a995b7;font-size:10px}.jr-task-window-row em{font-style:normal;color:#f4dd4c;font-weight:900;font-size:12px}
       .jr-task-levels{border:1px solid rgba(255,255,255,.11);border-radius:15px;background:#0d0913;overflow:hidden}.jr-task-levels summary{cursor:pointer;padding:13px 14px;color:#f1de4b;font-size:11px;font-weight:900}.jr-task-levels>div{display:grid;gap:6px;padding:0 10px 12px}.jr-task-levels span{display:grid;grid-template-columns:48px 1fr auto;gap:8px;align-items:center;padding:9px;border-radius:11px;background:rgba(255,255,255,.04)}.jr-task-levels span.active{outline:1px solid #f0d941;background:rgba(240,217,65,.09)}.jr-task-levels b{font-size:11px}.jr-task-levels small{color:#bbaac4;font-size:10px}.jr-task-levels em{font-style:normal;text-align:right;color:#f1df4b;font-size:10px;font-weight:900}
+      body.jemmo-house-room #houseTaskClock{display:none!important}
+      body.jemmo-house-room .jr-seat.has-task-tab .jr-seat-person-label{bottom:18%!important}
+      body.jemmo-house-room .jr-seat-task-tab{position:absolute;z-index:8;left:9%;right:9%;bottom:3%;height:12px;padding:0 4px;border:1px solid rgba(255,255,255,.24);border-radius:999px;display:flex;align-items:center;justify-content:center;gap:3px;background:#3b0d14;color:#ffd6df;box-shadow:0 1px 6px rgba(0,0,0,.6);font-size:5.6px;line-height:1;font-weight:1000;white-space:nowrap;overflow:hidden;pointer-events:none}.jr-seat-task-tab i{width:4px;height:4px;border-radius:50%;background:currentColor;box-shadow:0 0 5px currentColor;flex:0 0 auto}.jr-seat-task-tab span,.jr-seat-task-tab b{margin:0!important;max-width:none!important;font-size:inherit!important;line-height:1!important;overflow:visible!important}.jr-seat-task-tab.active,.jr-seat-task-tab.done{border-color:#43e397;background:#0b3a29;color:#8ff6c4}.jr-seat-task-tab.paused{border-color:#f3a23b;background:#432408;color:#ffd08d}.jr-seat-task-tab.stopped{border-color:#ea647c;background:#3d0b17;color:#ff9cad}
       @media(max-width:380px){.jr-task-claim-grid,.jr-task-rate-pair{grid-template-columns:1fr}.jr-task-sheet{padding-left:11px;padding-right:11px}.jr-task-levels span{grid-template-columns:42px 1fr}.jr-task-levels em{grid-column:2;text-align:left}}
     `;
     document.head.appendChild(style);
@@ -525,35 +610,11 @@
 
   function renderClock() {
     const box = $('houseTaskClock');
-    const label = box?.querySelector('small');
-    const count = $('houseTaskCountdown');
-    const mini = $('houseTaskProgressMini');
-    if (!box || !count || !mini) return;
+    if (box) box.hidden = true;
     const managementHidden = !emitter && eligibilityState === 'management';
-    box.hidden = managementHidden;
     const setting = $('jemmoHostTaskSetting');
     if (setting) setting.hidden = managementHidden;
-    if (managementHidden) return;
-    box.setAttribute('role', 'button');
-    box.setAttribute('tabindex', '0');
-    box.setAttribute('aria-label', emitter ? 'Abrir mis tareas de Emisora' : 'Consultar estado de tareas de Casa');
-    if (!emitter) {
-      box.classList.add('waiting');
-      box.classList.remove('done');
-      if (label) label.textContent = eligibilityState === 'checking' ? 'COMPROBANDO TAREA' : 'TAREA DE CASA';
-      count.textContent = eligibilityState === 'checking' ? 'CARGANDO…' : 'NO ACTIVA';
-      mini.textContent = eligibilityMessage();
-      return;
-    }
-    const tier = currentTier(giftNet7d);
-    const paid = claimedSlots(task).filter(slot => slot <= tier.hours).length;
-    const allPaid = paid >= tier.hours;
-    const isCounting = activity.status === 'active';
-    box.classList.toggle('waiting', !isCounting && !allPaid);
-    box.classList.toggle('done', allPaid);
-    if (label) label.textContent = allPaid ? 'TAREA DIARIA COBRADA' : isCounting ? 'MI TAREA · ACTIVA AHORA' : 'MI TAREA · PAUSADA';
-    count.textContent = `${fmt(AUDIO_ROOM_REWARD)} JEMS/HORA`;
-    mini.textContent = `AUDIO ROOM · ${activityLabel()} · ${wakeLabel()}`;
+    syncSeatTaskTabs();
   }
 
   function render() {
@@ -859,6 +920,7 @@
 
   function clearHouseListeners() {
     houseUnsubscribers.splice(0).forEach(stop => { try { stop(); } catch {} });
+    clearSeatTaskListeners();
     attachedHouse = '';
     giftDocuments = [];
     giftBuckets = [];
@@ -899,13 +961,15 @@
       giftDocuments = snapshot.docs.map(document => document.data() || {});
       recalculateGiftWindow(true);
     }, error => console.warn('JEMMO tareas: regalos 7 días', error?.code || error?.message || error)));
+    void syncSeatTaskListeners();
   }
 
   async function boot() {
     try {
-      window.__JEMMO_TASK_UI_OWNER__ = 'rewards-36';
+      window.__JEMMO_TASK_UI_OWNER__ = 'rewards-42';
       window.addEventListener('jemmo-house-activity', handleActivityEvent);
       window.addEventListener('jemmo-wake-lock', handleWakeEvent);
+      window.addEventListener('jemmo-room-seats-rendered', handleSeatsRendered);
       const currentActivity = window.JemmoHouseActivity?.getState?.();
       if (currentActivity?.running) handleActivityEvent({ detail: { ...currentActivity, status: 'active', startedAtClient: Date.now() } });
       const currentWake = window.JemmoKeepAwake?.getState?.();
@@ -935,6 +999,7 @@
       }
       const s = await services();
       user = await waitForUser(s);
+      void syncSeatTaskListeners();
       unsubscribers.push(s.onSnapshot(s.doc(s.db, 'users', user.uid), snapshot => {
         profile = snapshot.data() || {};
         // En una Sala oficial, la Casa abierta manda. El Perfil solo es respaldo.
@@ -954,21 +1019,16 @@
       clearInterval(windowTimer);
       windowTimer = setInterval(() => recalculateGiftWindow(false), 60000);
       clearInterval(uiTimer);
-      uiTimer = setInterval(() => { if (emitter) render(); }, 1000);
+      uiTimer = setInterval(() => {
+        syncSeatTaskTabs();
+        if (emitter) render();
+      }, 1000);
       document.addEventListener('visibilitychange', () => { if (!document.hidden) recalculateGiftWindow(false); });
     } catch (error) {
       eligibilityState = 'error';
       const box = $('houseTaskClock');
-      const label = box?.querySelector('small');
-      const count = $('houseTaskCountdown');
-      const mini = $('houseTaskProgressMini');
-      if (box && count && mini) {
-        box.hidden = false;
-        box.classList.add('waiting');
-        if (label) label.textContent = 'TAREA NO CARGADA';
-        count.textContent = 'REENTRAR';
-        mini.textContent = 'No se pudo iniciar el módulo. Sal de la Sala y vuelve a entrar.';
-      }
+      if (box) box.hidden = true;
+      syncSeatTaskTabs();
       console.warn('JEMMO tareas remuneradas:', error?.code || error?.message || error);
     }
   }
@@ -978,6 +1038,8 @@
     clearInterval(uiTimer);
     window.removeEventListener('jemmo-house-activity', handleActivityEvent);
     window.removeEventListener('jemmo-wake-lock', handleWakeEvent);
+    window.removeEventListener('jemmo-room-seats-rendered', handleSeatsRendered);
+    clearSeatTaskListeners();
     clearHouseListeners();
     unsubscribers.splice(0).forEach(stop => { try { stop(); } catch {} });
   });
