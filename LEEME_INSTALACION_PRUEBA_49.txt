@@ -1,0 +1,42 @@
+JEMMO LIVE · INSTALACIÓN PRUEBA 49
+Fecha: 29/07/2026
+
+ORDEN OBLIGATORIO
+
+1. CONSERVAR UNA COPIA
+- Guardar el ZIP completo y el registro Word/PDF.
+- No mezclar archivos sueltos de PRUEBA 47 con PRUEBA 49.
+
+2. PUBLICAR EL PROYECTO COMPLETO
+- Sustituir la versión web publicada por el contenido completo de este ZIP.
+- Confirmar que existen:
+  jemmo-live-webrtc.js
+  jemmo-live-presence.js
+  jemmo-live-rtc-config.js
+  live.html
+  sw.js
+
+3. PUBLICAR REGLAS FIRESTORE
+- Abrir FIRESTORE_REGLAS_WEBRTC_PRUEBA_49.txt.
+- Copiar únicamente los bloques match /livePresences y match /liveSignals.
+- Pegarlos dentro de match /databases/{database}/documents de las reglas actuales.
+- No borrar las reglas existentes de users, monedero, Casas, tareas o mensajes.
+- Publicar y revisar que Firebase no muestre error de sintaxis.
+
+4. ACTUALIZAR LOS DOS MÓVILES
+- Ruth y Jesús deben abrir la misma publicación PRUEBA 49.
+- Cerrar completamente la PWA y volver a abrirla para que el service worker cambie de caché.
+- No probar un móvil con PRUEBA 47 y el otro con PRUEBA 49.
+
+5. PRUEBA EN AMBOS SENTIDOS
+- Ejecutar PRUEBAS_PRUEBA_49.txt.
+- Primero Ruth como anfitriona y Jesús como espectador.
+- Después Jesús como anfitrión y Ruth como espectadora.
+
+6. TURN
+- Esta entrega no contiene credenciales TURN reales.
+- Para producción, configurar window.JEMMO_RTC_CREDENTIALS_ENDPOINT en jemmo-live-rtc-config.js o antes de cargarlo.
+- El backend debe devolver iceServers con credenciales temporales.
+
+NO PUBLICAR COMO PRODUCCIÓN MASIVA TODAVÍA
+El modo actual es P2P protegido y sirve para prueba funcional/piloto. Para muchos espectadores simultáneos se debe desplegar SFU y TURN antes de abrir JEMMO LIVE al público.

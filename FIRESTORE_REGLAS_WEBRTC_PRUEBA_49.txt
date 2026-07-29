@@ -1,0 +1,184 @@
+JEMMO LIVE · BLOQUE ADITIVO DE REGLAS FIRESTORE · PRUEBA 49
+Fecha: 29/07/2026
+
+IMPORTANTE
+- Este bloque NO sustituye las reglas actuales.
+- Debe copiarse DENTRO de:
+  match /databases/{database}/documents {
+    ...PEGAR AQUÍ...
+  }
+- Publicar las reglas antes de probar entre dos móviles.
+- Mantener también todas las reglas existentes de users, monedero, Casas, tareas y mensajes.
+
+// ─────────────────────────────────────────────────────────────
+// JEMMO LIVE · Presencia pública autenticada · PRUEBA 49
+// ─────────────────────────────────────────────────────────────
+match /livePresences/{hostUid} {
+  function signedIn() {
+    return request.auth != null;
+  }
+
+  function isHost() {
+    return signedIn() && request.auth.uid == hostUid;
+  }
+
+  allow get, list: if signedIn();
+  allow create, update: if isHost()
+    && request.resource.data.uid == hostUid
+    && request.resource.data.hostUid == hostUid;
+  allow delete: if isHost();
+}
+
+// ─────────────────────────────────────────────────────────────
+// JEMMO LIVE · Señalización WebRTC autenticada · PRUEBA 49
+// ─────────────────────────────────────────────────────────────
+match /liveSignals/{hostUid} {
+  function signedIn() {
+    return request.auth != null;
+  }
+
+  function isHost() {
+    return signedIn() && request.auth.uid == hostUid;
+  }
+
+  // El documento de sala puede consultarlo cualquier usuario autenticado.
+  // Solo el propio anfitrión puede crearlo, actualizarlo o eliminarlo.
+  allow get: if signedIn();
+  allow list: if false;
+  allow create, update: if isHost()
+    && request.resource.data.hostUid == hostUid;
+  allow delete: if isHost();
+
+  match /viewers/{sessionId} {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isHost() {
+      return signedIn() && request.auth.uid == hostUid;
+    }
+
+    function isViewerExisting() {
+      return signedIn() && resource.data.viewerUid == request.auth.uid;
+    }
+
+    function stableOwnership() {
+      return request.resource.data.viewerUid == resource.data.viewerUid
+        && request.resource.data.hostUid == resource.data.hostUid
+        && request.resource.data.hostUid == hostUid;
+    }
+
+    function viewerCreateFields() {
+      return request.resource.data.keys().hasOnly([
+        'viewerUid', 'hostUid', 'status',
+        'offerRevision', 'answerRevision',
+        'createdAt', 'createdAtMs', 'updatedAt', 'updatedAtMs',
+        'userAgent', 'protocol', 'turnConfigured', 'version'
+      ]);
+    }
+
+    function viewerUpdateFields() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+        'offer', 'offerRevision', 'offerIceComplete', 'offerIceTimedOut',
+        'offerCandidates', 'status', 'requestedAt', 'requestedAtMs',
+        'updatedAt', 'updatedAtMs', 'version'
+      ]);
+    }
+
+    function hostUpdateFields() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+        'answer', 'answerRevision', 'answerIceComplete', 'answerIceTimedOut',
+        'answerCandidates', 'status', 'hostUid', 'media',
+        'answeredAt', 'answeredAtMs', 'connectedAt', 'connectedAtMs',
+        'endedAt', 'endedAtMs', 'endReason',
+        'capacity', 'errorCode', 'errorMessage',
+        'updatedAt', 'updatedAtMs', 'protocol', 'version'
+      ]);
+    }
+
+    // El anfitrión necesita listar las solicitudes de su propia sala.
+    allow list: if isHost();
+    allow get: if isHost() || isViewerExisting();
+
+    // El espectador crea únicamente una sesión a su nombre para este host.
+    allow create: if signedIn()
+      && request.resource.data.viewerUid == request.auth.uid
+      && request.resource.data.hostUid == hostUid
+      && request.resource.data.status == 'initializing'
+      && request.resource.data.offerRevision == 0
+      && request.resource.data.answerRevision == 0
+      && viewerCreateFields();
+
+    // El espectador solo puede publicar su oferta o cerrar su propia sesión.
+    allow update: if isViewerExisting()
+      && stableOwnership()
+      && viewerUpdateFields();
+
+    // El anfitrión solo puede publicar respuesta, estado y diagnóstico.
+    allow update: if isHost()
+      && stableOwnership()
+      && hostUpdateFields();
+
+    allow delete: if isHost() || isViewerExisting();
+
+    match /viewerCandidates/{candidateId} {
+      function signedIn() {
+        return request.auth != null;
+      }
+
+      function isHost() {
+        return signedIn() && request.auth.uid == hostUid;
+      }
+
+      function isSessionViewer() {
+        return signedIn()
+          && exists(/databases/$(database)/documents/liveSignals/$(hostUid)/viewers/$(sessionId))
+          && get(/databases/$(database)/documents/liveSignals/$(hostUid)/viewers/$(sessionId)).data.viewerUid == request.auth.uid;
+      }
+
+      allow get, list: if isHost() || isSessionViewer();
+      allow create: if isSessionViewer()
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.keys().hasOnly([
+          'candidate', 'sdpMid', 'sdpMLineIndex', 'usernameFragment',
+          'ownerUid', 'createdAt', 'createdAtMs', 'version'
+        ]);
+      allow update: if false;
+      allow delete: if isHost() || isSessionViewer();
+    }
+
+    match /hostCandidates/{candidateId} {
+      function signedIn() {
+        return request.auth != null;
+      }
+
+      function isHost() {
+        return signedIn() && request.auth.uid == hostUid;
+      }
+
+      function isSessionViewer() {
+        return signedIn()
+          && exists(/databases/$(database)/documents/liveSignals/$(hostUid)/viewers/$(sessionId))
+          && get(/databases/$(database)/documents/liveSignals/$(hostUid)/viewers/$(sessionId)).data.viewerUid == request.auth.uid;
+      }
+
+      allow get, list: if isHost() || isSessionViewer();
+      allow create: if isHost()
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.keys().hasOnly([
+          'candidate', 'sdpMid', 'sdpMLineIndex', 'usernameFragment',
+          'ownerUid', 'createdAt', 'createdAtMs', 'version'
+        ]);
+      allow update: if false;
+      allow delete: if isHost() || isSessionViewer();
+    }
+  }
+}
+
+COMPROBACIÓN MÍNIMA DESPUÉS DE PUBLICAR
+1. Ruth inicia LIVE y permanece en la pantalla de transmisión.
+2. En Firestore debe aparecer liveSignals/{uidDeRuth} con active=true, status=live, streamReady=true y version=49.
+3. Jesús entra desde PERSONAS EN DIRECTO.
+4. Debe aparecer un documento en liveSignals/{uidDeRuth}/viewers/{sessionId}.
+5. El estado debe avanzar: initializing → requesting → answered → connected.
+6. Si aparece permission-error, las reglas no se publicaron correctamente o otro bloque superior está denegando el acceso.

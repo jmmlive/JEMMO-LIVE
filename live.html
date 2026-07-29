@@ -1101,7 +1101,7 @@
     .jl-chatbar.chat-closed form{opacity:.68}.jl-chatbar.chat-closed input{cursor:not-allowed}
 
 
-    /* PRUEBA 47 · ENTRADA REMOTA COMO ESPECTADOR */
+    /* PRUEBA 49 · LIVE ROBUSTO, DIAGNÓSTICO ICE Y RECUPERACIÓN */
     html.jemmo-viewer-route #prepScreen{display:none!important}
     html.jemmo-viewer-route #broadcastScreen{display:block!important}
     body.viewer-mode{overflow:hidden;background:#000}
@@ -1218,7 +1218,7 @@
 
     <div class="jl-summary">
       <section class="jl-checklist">
-        <div class="jl-check" id="checkCamera"><span class="jl-dot"></span>Cámara</div>
+        <div class="jl-check" id="checkCamera"><span class="jl-dot"></span>Cámara + micrófono</div>
         <div class="jl-check" id="checkCover"><span class="jl-dot"></span>Portada</div>
         <div class="jl-check" id="checkTitle"><span class="jl-dot"></span>Título</div>
         <div class="jl-check" id="checkDescription"><span class="jl-dot"></span>Descripción</div>
@@ -1431,11 +1431,12 @@
   </nav>
 
   <script type="module" src="jemmo-session.js"></script>
-  <script src="pwa-register.js?v=47"></script>
+  <script src="pwa-register.js?v=49"></script>
   <script src="jemmo-wallet.js?v=46"></script>
   <script src="jemmo-house-finance.js"></script>
-  <script type="module" src="jemmo-live-presence.js?v=47"></script>
-  <script type="module" src="jemmo-live-webrtc.js?v=47"></script>
+  <script type="module" src="jemmo-live-presence.js?v=49"></script>
+  <script src="jemmo-live-rtc-config.js?v=49"></script>
+  <script type="module" src="jemmo-live-webrtc.js?v=49"></script>
   <script src="jemmo-prep-storage.js"></script>
   <script type="module" src="jemmo-personalization-runtime.js"></script>
   <script>
@@ -1757,9 +1758,11 @@
         audio:false,
         video:{
           facingMode:{ideal:facingMode},
-          width:{ideal:1920},
-          height:{ideal:1080},
-          frameRate:{ideal:30,max:30}
+          width:{ideal:720,max:1280},
+          height:{ideal:1280,max:1920},
+          aspectRatio:{ideal:9/16},
+          frameRate:{ideal:24,max:30},
+          resizeMode:"crop-and-scale"
         }
       };
     }
@@ -1794,7 +1797,7 @@
       videos.pip.hidden=true;
 
       try{
-        await ensureAudio().catch(()=>{});
+        if(state.mic) await ensureAudio();
         if(mode==="both"){
           state.mainStream=await navigator.mediaDevices.getUserMedia(cameraConstraints("environment"));
           try{
@@ -1858,17 +1861,20 @@
     }
     document.querySelectorAll(".jl-filter").forEach(button=>button.addEventListener("click",()=>applyFilter(button.dataset.filter)));
 
-    function toggle(button,key){
+    async function toggle(button,key){
       state[key]=!state[key];
       button.classList.toggle("on",state[key]);
       if(key==="mic"){
+        if(state.mic&&!state.audioStream?.getAudioTracks().some(track=>track.readyState==="live")){
+          try{await ensureAudio()}catch(error){state.mic=false;button.classList.remove("on");showToast("No se pudo activar el micrófono. Revisa el permiso.",3600)}
+        }
         state.audioStream?.getAudioTracks().forEach(track=>track.enabled=state.mic);
       }
       if(key==="comments") $("chatLayer").hidden=!state.comments;
       updateChecks();
     }
-    $("micToggle").addEventListener("click",()=>toggle($("micToggle"),"mic"));
-    $("chatToggle").addEventListener("click",()=>toggle($("chatToggle"),"comments"));
+    $("micToggle").addEventListener("click",()=>void toggle($("micToggle"),"mic"));
+    $("chatToggle").addEventListener("click",()=>void toggle($("chatToggle"),"comments"));
 
     function profilePayload(){
       return {
@@ -1969,22 +1975,28 @@
     function hasCamera(){
       return Boolean(state.mainStream?.getVideoTracks().some(t=>t.readyState==="live"));
     }
+    function hasMicrophone(){
+      return Boolean(state.mic&&state.audioStream?.getAudioTracks().some(t=>t.readyState==="live"&&t.enabled));
+    }
     function setCheck(id,ok){
       $(id).classList.toggle("ok",ok);
     }
     function updateChecks(){
       const camera=hasCamera();
+      const microphone=hasMicrophone();
+      const mediaReady=camera&&microphone;
       const cover=Boolean(state.coverData);
       const title=Boolean($("liveTitle").value.trim());
       const description=Boolean($("liveDescription").value.trim());
-      setCheck("checkCamera",camera);
+      setCheck("checkCamera",mediaReady);
       setCheck("checkCover",cover);
       setCheck("checkTitle",title);
       setCheck("checkDescription",description);
-      const ready=camera&&cover&&title&&description;
+      const ready=mediaReady&&cover&&title&&description;
       $("launchLive").disabled=!ready||state.liveLocked;
       const missing=[];
       if(!camera) missing.push("cámara");
+      if(!microphone) missing.push("micrófono");
       if(!cover) missing.push("portada");
       if(!title) missing.push("título");
       if(!description) missing.push("descripción");
@@ -1999,8 +2011,17 @@
         return;
       }
       const connection=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
-      text.textContent=connection?.effectiveType?`Buena · ${connection.effectiveType.toUpperCase()}`:"Buena";
-      text.style.color="#9eeec2";
+      const type=String(connection?.effectiveType||"").toLowerCase();
+      const downlink=Number(connection?.downlink||0);
+      const saveData=Boolean(connection?.saveData);
+      let label="Conectada";
+      let color="#9eeec2";
+      if(saveData){label="Ahorro de datos activo";color="#ffd36a"}
+      else if(type==="slow-2g"||type==="2g"){label="Muy débil · 2G";color="#ff6d83"}
+      else if(type==="3g"){label=`Limitada · 3G${downlink?` · ${downlink.toFixed(1)} Mbps`:""}`;color="#ffd36a"}
+      else if(type==="4g"){label=`Móvil · 4G${downlink?` · ${downlink.toFixed(1)} Mbps`:""}`;color=downlink&&downlink<1.2?"#ffd36a":"#9eeec2"}
+      text.textContent=label;
+      text.style.color=color;
     }
     function varColor(name,fallback){
       return getComputedStyle(document.documentElement).getPropertyValue(name).trim()||fallback;
@@ -2018,7 +2039,22 @@
       }else{
         videos.broadcastPip.hidden=true;
       }
-      if(state.live) window.dispatchEvent(new CustomEvent("jemmo-live-webrtc-host-stream",{detail:{stream:compose(state.mainStream)}}));
+      if(state.live){
+        const hostStream=compose(state.mainStream);
+        window.__jemmoLiveHostStream=hostStream;
+        if(window.__jemmoLiveHostIntent)window.__jemmoLiveHostIntent.stream=hostStream;
+        if(window.JemmoLiveRTC?.replaceHostTracks) void window.JemmoLiveRTC.replaceHostTracks(hostStream);
+        else window.dispatchEvent(new CustomEvent("jemmo-live-webrtc-host-stream",{detail:{stream:hostStream}}));
+      }
+    }
+
+    async function waitForLiveRtcApi(timeoutMs=5000){
+      const started=Date.now();
+      while(Date.now()-started<timeoutMs){
+        if(window.JemmoLiveRTC?.startHost) return window.JemmoLiveRTC;
+        await new Promise(resolve=>setTimeout(resolve,100));
+      }
+      return null;
     }
 
     $("launchLive").addEventListener("click",async()=>{
@@ -2026,6 +2062,21 @@
       if($("launchLive").disabled) return;
       if(state.liveLocked){
         showToast("La función LIVE está pendiente de revisión de moderación.",3800);
+        return;
+      }
+      const hostStream=compose(state.mainStream);
+      const hostIntent={active:true,hostUid:activeUid(),stream:hostStream,title:$("liveTitle").value.trim()};
+      window.__jemmoLiveHostStream=hostStream;
+      window.__jemmoLiveHostIntent=hostIntent;
+      const rtcApi=await waitForLiveRtcApi();
+      if(!rtcApi){
+        showToast("No se cargó el transporte WebRTC. Cierra JEMMO, vuelve a abrirla y reintenta.",5200);
+        return;
+      }
+      let transportReady=false;
+      try{transportReady=Boolean(await rtcApi.startHost(hostIntent))}catch(error){console.error("JEMMO LIVE: no se inició WebRTC.",error)}
+      if(!transportReady){
+        showToast("No se pudo preparar la conexión del LIVE. Revisa Firestore, Internet y vuelve a intentarlo.",5600);
         return;
       }
       state.live=true;
@@ -2048,8 +2099,7 @@
       await refreshBroadcast();
       emitLiveTaskState();
       showEventTicker("Tu LIVE ha comenzado · cámara activa y controles compactos","🔴");
-      window.dispatchEvent(new CustomEvent("jemmo-live-presence-start",{detail:{title:$("liveTitle").value.trim(),description:$("liveDescription").value.trim(),visibility:$("liveVisibility").value}}));
-      window.dispatchEvent(new CustomEvent("jemmo-live-webrtc-host-start",{detail:{hostUid:activeUid(),stream:compose(state.mainStream),title:$("liveTitle").value.trim()}}));
+      window.dispatchEvent(new CustomEvent("jemmo-live-presence-start",{detail:{title:$("liveTitle").value.trim(),description:$("liveDescription").value.trim(),visibility:$("liveVisibility").value,signalReady:true,protocol:"jemmo-live-webrtc-v2"}}));
       showLiveEntrance();
       playFishSplash();
     });
@@ -2066,7 +2116,9 @@
     function endBroadcast({reason="manual",message=""}={}){
       if(!state.live) return;
       window.dispatchEvent(new CustomEvent("jemmo-live-presence-end",{detail:{reason}}));
-      window.dispatchEvent(new CustomEvent("jemmo-live-webrtc-host-end",{detail:{reason}}));
+      if(window.__jemmoLiveHostIntent)window.__jemmoLiveHostIntent.active=false;
+      if(window.JemmoLiveRTC?.stopHost) void window.JemmoLiveRTC.stopHost(reason);
+      else window.dispatchEvent(new CustomEvent("jemmo-live-webrtc-host-end",{detail:{reason}}));
       state.live=false;
       $("broadcastScreen").hidden=true;
       $("prepScreen").hidden=false;
@@ -2548,7 +2600,19 @@
     }
     $("shareLive").addEventListener("click",shareCurrentLive);
     $("shareLiveQuick").addEventListener("click",shareCurrentLive);
-    window.addEventListener("jemmo-live-presence-error",()=>showToast("El LIVE comenzó, pero no pudo publicarse en Inicio. Comprueba la conexión.",4300));
+    window.addEventListener("jemmo-live-presence-error",()=>{
+      showToast("El LIVE no pudo publicarse de forma segura. Se detendrá para evitar una transmisión invisible.",5200);
+      if(state.live) endBroadcast({reason:"presence-error"});
+      else if(window.JemmoLiveRTC?.stopHost) void window.JemmoLiveRTC.stopHost("presence-error");
+    });
+    window.addEventListener("jemmo-live-webrtc-state",event=>{
+      if(viewerMode)return;
+      const detail=event.detail||{};
+      if(detail.status==="host-error"||detail.status==="host-listener-error"){
+        showToast(detail.message||"La señalización del LIVE no pudo iniciarse. Revisa Firestore.",5600);
+        if(state.live) endBroadcast({reason:"signaling-error"});
+      }
+    });
     async function setMicrophone(enabled){
       state.mic=enabled;
       if(enabled&&!state.audioStream?.getAudioTracks().some(track=>track.readyState==="live"))await ensureAudio().catch(()=>{});
@@ -2564,7 +2628,13 @@
         showToast("Micrófono silenciado. Si supera 3 minutos, la tarea se pausará.",3600);
       }
       emitLiveTaskState();
-      if(state.live&&!viewerMode)window.dispatchEvent(new CustomEvent("jemmo-live-webrtc-host-stream",{detail:{stream:compose(state.mainStream)}}));
+      if(state.live&&!viewerMode){
+        const hostStream=compose(state.mainStream);
+        window.__jemmoLiveHostStream=hostStream;
+        if(window.__jemmoLiveHostIntent)window.__jemmoLiveHostIntent.stream=hostStream;
+        if(window.JemmoLiveRTC?.replaceHostTracks) void window.JemmoLiveRTC.replaceHostTracks(hostStream);
+        else window.dispatchEvent(new CustomEvent("jemmo-live-webrtc-host-stream",{detail:{stream:hostStream}}));
+      }
     }
     function setLiveCamera(enabled,{safety=false}={}){
       state.cameraEnabled=enabled;

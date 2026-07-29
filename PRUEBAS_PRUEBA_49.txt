@@ -1,0 +1,78 @@
+JEMMO LIVE · PROTOCOLO DE PRUEBAS PRUEBA 49
+Fecha: 29/07/2026
+
+PRECONDICIONES
+[ ] Misma publicación PRUEBA 49 en ambos móviles.
+[ ] Reglas FIRESTORE_REGLAS_WEBRTC_PRUEBA_49 publicadas.
+[ ] Ruth y Jesús con sesión Firebase iniciada.
+[ ] Cámara y micrófono concedidos al anfitrión.
+[ ] Espectador sin activar cámara ni micrófono.
+
+A. RUTH TRANSMITE / JESÚS OBSERVA
+[ ] Ruth prepara portada, título y descripción.
+[ ] Cámara y micrófono aparecen correctos.
+[ ] Ruth pulsa INICIAR LIVE.
+[ ] Ruth aparece en PERSONAS EN DIRECTO solo después de preparar señalización.
+[ ] Jesús toca la tarjeta de Ruth.
+[ ] Jesús entra como espectador sin ver PREPARA TU LIVE.
+[ ] Estado Firestore: initializing -> requesting -> answered -> connected.
+[ ] Jesús recibe vídeo de Ruth.
+[ ] Jesús activa sonido con TOCA PARA ESCUCHAR si Android lo requiere.
+[ ] Jesús recibe audio de Ruth.
+[ ] Cambiar cámara en Ruth no corta definitivamente el vídeo.
+[ ] Silenciar/reactivar micrófono actualiza el audio.
+[ ] RECONECTAR AUDIO Y VÍDEO recupera una interrupción.
+[ ] Al finalizar Ruth, Jesús recibe LIVE FINALIZADO.
+
+B. JESÚS TRANSMITE / RUTH OBSERVA
+[ ] Repetir todos los puntos anteriores invirtiendo los papeles.
+
+C. CAMBIOS DE RED
+[ ] Pasar espectador de Wi-Fi a datos móviles.
+[ ] Pasar anfitrión de Wi-Fi a datos móviles.
+[ ] Cortar Internet del espectador durante 10-20 s y recuperarlo.
+[ ] Comprobar reconexión automática o botón manual.
+[ ] En red débil, el LIVE puede perder calidad, pero no debe quedar girando sin explicación.
+
+D. CONCURRENCIA P2P DE PILOTO
+[ ] Entrar con un segundo espectador.
+[ ] Entrar con un tercer espectador.
+[ ] Vigilar temperatura, batería y subida del anfitrión.
+[ ] No superar 8 espectadores en esta arquitectura.
+
+E. DIAGNÓSTICO FIRESTORE
+Documento de sala esperado:
+liveSignals/{hostUid}
+  active=true
+  status=live
+  streamReady=true
+  version=49
+  heartbeatAtMs actualizado
+
+Documento de sesión esperado:
+liveSignals/{hostUid}/viewers/{sessionId}
+  viewerUid correcto
+  hostUid correcto
+  offerRevision=1
+  answerRevision=1
+  offerCandidates.total > 0 normalmente
+  answerCandidates.total > 0 normalmente
+  status=connected
+
+F. CRITERIOS DE FALLO
+- permission-error: reglas no publicadas o conflicto con reglas superiores.
+- answer-timeout: anfitrión no leyó/respondió la solicitud.
+- room-stale: sala sin latido o versión distinta.
+- host-media-missing: anfitrión sin pista de cámara activa.
+- ice-failed/connect-timeout sin relay: falta TURN para esa combinación de redes.
+- no-inbound-media: conexión abierta, pero no llegan bytes RTP.
+- capacity: límite P2P alcanzado; no aumentar para producción, migrar a SFU.
+
+RESULTADO FINAL
+Ruth -> Jesús:  [ ] APROBADO  [ ] FALLÓ
+Jesús -> Ruth:  [ ] APROBADO  [ ] FALLÓ
+Cambio de red:  [ ] APROBADO  [ ] FALLÓ
+Audio Android: [ ] APROBADO  [ ] FALLÓ
+Observaciones:
+____________________________________________________________
+____________________________________________________________

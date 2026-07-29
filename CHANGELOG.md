@@ -1,5 +1,18 @@
 # CHANGELOG
 
+## PRUEBA 49 · 29/07/2026
+### Transmisión LIVE robusta, señalización segura y preparación TURN/SFU
+- Sesión del espectador creada antes de ICE.
+- SDP de oferta/respuesta publicado con candidatos integrados.
+- Trickle ICE conservado como respaldo.
+- Presencia pública condicionada a `signalReady`.
+- Reconexión automática y verificación de tráfico RTP.
+- Bitrate adaptativo y estado de red no engañoso.
+- Reglas Firestore aditivas para presencia, sala, sesiones y candidatos.
+- Soporte para credenciales TURN temporales mediante backend.
+- Límite P2P protector y arquitectura SFU documentada.
+- Caché PWA actualizada a PRUEBA 49.
+
 ## PRUEBA 46 · 28/07/2026
 ### Presencia LIVE real en perfil e Inicio y Compartir visible
 - Firebase publica y cierra `livePresences/{uid}` con latido de 20 segundos.

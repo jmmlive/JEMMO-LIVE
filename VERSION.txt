@@ -1,46 +1,54 @@
-JEMMO LIVE V1 · ENTRADA COMO ESPECTADOR Y RECEPCIÓN WEBRTC PRUEBA 47
-Fecha: 28/07/2026
-Base corregida: JEMMO LIVE V1 · PRESENCIA LIVE REAL EN PERFIL E INICIO Y COMPARTIR PRUEBA 46
+JEMMO LIVE V1 · TRANSMISIÓN LIVE ROBUSTA, SEÑALIZACIÓN SEGURA Y PREPARACIÓN TURN/SFU PRUEBA 49
+Fecha: 29/07/2026
+Base recibida: JEMMO LIVE V1 · ENTRADA COMO ESPECTADOR Y RECEPCIÓN WEBRTC PRUEBA 47
 
-INCIDENCIA CONFIRMADA
-- Ruth aparecía correctamente en PERSONAS EN DIRECTO y en su perfil con EN LIVE AHORA.
-- Al tocar su tarjeta o ENTRAR AL LIVE, Jesús era enviado a la pantalla propia PREPARA TU LIVE / ACTIVAR CÁMARA.
-- La presencia identificaba el UID del anfitrión, pero live.html no distinguía entre anfitrión y espectador y no contenía transporte WebRTC para recibir audio/vídeo remoto.
+OBJETIVO
+Corregir el bloqueo indefinido “Entrando al LIVE”, impedir directos visibles sin señalización real, mejorar la recuperación ante cambios de red y dejar una frontera técnica clara entre pruebas P2P y una plataforma preparada para audiencia masiva.
 
-CORRECCIÓN PRUEBA 47
-1. Ruta explícita de espectador: live.html?mode=viewer&watch={uid}&hostUid={uid}.
-2. live.html detecta el modo espectador antes de pintar la pantalla y nunca solicita cámara ni micrófono al visitante.
-3. El visitante entra directamente a la pantalla del LIVE remoto, sin barra inferior de navegación ni controles de preparación.
-4. Nuevo módulo jemmo-live-webrtc.js con señalización por Firestore y una conexión RTCPeerConnection independiente por espectador.
-5. El espectador crea oferta recvonly de audio/vídeo; el anfitrión responde con las pistas reales de su cámara y micrófono.
-6. ICE candidates separados por sesión, reconexión automática, recuperación manual y reasignación de srcObject.
-7. Botón visible RECONECTAR AUDIO Y VÍDEO.
-8. Botón TOCA PARA ESCUCHAR cuando Android bloquea la reproducción automática con sonido.
-9. Cambio de cámara y reactivación de micrófono actualizan las pistas enviadas sin sacar al espectador.
-10. Al finalizar Ruth, la presencia y la señalización se cierran y Jesús ve que el LIVE terminó.
-11. Caché PWA elevada a PRUEBA 47 e inclusión obligatoria del nuevo módulo WebRTC.
+CAUSAS CONFIRMADAS EN LA BASE RECIBIDA
+1. El ZIP recibido seguía identificado y construido como PRUEBA 47; no contenía la corrección anunciada como PRUEBA 48.
+2. La oferta WebRTC se publicaba antes de finalizar la recopilación ICE.
+3. Los candidatos ICE podían escribirse en subcolecciones antes de que existiera la sesión padre del espectador.
+4. El SDP dependía demasiado de la llegada puntual de subcolecciones ICE.
+5. No existía un archivo instalable de reglas Firestore para liveSignals y sus subcolecciones.
+6. La presencia EN LIVE y la sala WebRTC arrancaban en paralelo, permitiendo mostrar un LIVE cuya señalización hubiera fallado.
+7. Un documento antiguo status=ended podía cerrar por carrera una transmisión nueva.
+8. Solo había STUN. En NAT móvil restrictivo la conexión directa no está garantizada sin TURN.
+9. La topología era P2P por espectador; el consumo de subida del anfitrión crece linealmente y no sirve para miles de espectadores.
 
-ARQUITECTURA DE PRUEBA
-- Descubrimiento: livePresences/{hostUid}
-- Sala de señalización: liveSignals/{hostUid}
-- Sesión por espectador: liveSignals/{hostUid}/viewers/{sessionId}
-- ICE del espectador: viewerCandidates
-- ICE del anfitrión: hostCandidates
-- Transporte multimedia: WebRTC P2P
+CORRECCIONES PRUEBA 49
+- Sesión Firestore creada antes de recopilar o publicar ICE.
+- Oferta y respuesta esperan ICE y guardan SDP completo con candidatos integrados.
+- Trickle ICE permanece como respaldo.
+- Estados y errores diferenciados: permisos, sala ausente, cámara ausente, respuesta agotada, ICE fallido, medio sin tráfico y límite P2P.
+- Recuperación automática hasta 4 intentos y botón manual de reconexión.
+- Verificación de bytes RTP entrantes: una conexión abierta sin audio/vídeo ya no queda girando indefinidamente.
+- Protección contra documentos ended antiguos durante el arranque.
+- La presencia pública solo se activa con signalReady=true después de preparar WebRTC.
+- Si falla la publicación de presencia, el transporte se detiene para evitar un LIVE invisible.
+- Cámara y micrófono activos obligatorios antes de INICIAR LIVE.
+- Parámetros de cámara 720x1280 ideal, 24 fps, máximo 30 fps.
+- Bitrate adaptativo según 2G/3G/4G y ahorro de datos; audio priorizado.
+- Soporte para credenciales TURN temporales desde un endpoint backend autenticado.
+- Límite protector P2P configurable, 8 por defecto y máximo técnico configurado de 20.
+- Reglas Firestore aditivas y documentadas.
+- Caché PWA elevada a PRUEBA 49.
 
-ESTADO DE VALIDACIÓN
-- Sintaxis JavaScript: aprobada.
-- Estructura HTML e IDs: aprobada.
-- Separación anfitrión/espectador: aprobada en código.
-- Publicación de señalización y reconexión: implementada.
-- Prueba real Ruth (Cuba) → Jesús (Tenerife): pendiente de ejecutar en los dos móviles después de instalar esta entrega.
+ARCHIVOS PRINCIPALES
+- jemmo-live-webrtc.js
+- jemmo-live-presence.js
+- jemmo-live-rtc-config.js
+- live.html
+- FIRESTORE_REGLAS_WEBRTC_PRUEBA_49.txt
+- ARQUITECTURA_LIVE_PRUEBA_49.md
+- PRUEBAS_PRUEBA_49.txt
+- LEEME_INSTALACION_PRUEBA_49.txt
 
-LÍMITE TÉCNICO DE RED
-La prueba utiliza servidores STUN. En redes móviles con NAT restrictivo puede ser necesario configurar un servidor TURN de producción mediante window.JEMMO_RTC_CONFIG. No se deben usar servidores TURN públicos sin control ni credenciales propias.
-
-SEGURIDAD ANTES DE PRODUCCIÓN
-- Proteger liveSignals y sus subcolecciones con reglas autenticadas.
-- Permitir al anfitrión leer solicitudes de sus espectadores y escribir respuestas/candidatos de anfitrión.
-- Permitir al espectador escribir únicamente su propia sesión y sus candidatos.
-- Limitar tamaño, tipo, antigüedad y campos permitidos de ofertas, respuestas y candidatos.
-- Añadir expiración/limpieza backend de sesiones antiguas.
+ESTADO REAL
+- Integridad ZIP original: aprobada.
+- Auditoría estática completa: aprobada.
+- Sintaxis JavaScript e inline: aprobada.
+- IDs HTML, referencias locales y caché PWA: aprobados.
+- Prueba real Ruth ↔ Jesús en redes móviles distintas: obligatoria después de publicar las reglas.
+- TURN de producción: interfaz preparada, servidor/credenciales todavía deben desplegarse.
+- Audiencia masiva: requiere SFU/infraestructura backend; no puede resolverse únicamente con un ZIP PWA estático.
