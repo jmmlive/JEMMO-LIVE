@@ -8,7 +8,6 @@ import {
   getFirestore,
   limit,
   onSnapshot,
-  orderBy,
   query,
   serverTimestamp,
   setDoc,
@@ -20,21 +19,40 @@ const app=getApps()[0]||initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 
-const VERSION=49;
-const PROTOCOL='jemmo-live-webrtc-v2';
+const VERSION=52;
+const PROTOCOL='jemmo-live-webrtc-v3';
 const SIGNAL_COLLECTION='liveSignals';
 const PRESENCE_COLLECTION='livePresences';
-const PRESENCE_STALE_MS=90000;
-const ROOM_STALE_MS=70000;
+const PRESENCE_STALE_MS=180000;
+const ROOM_STALE_MS=120000;
 const ICE_GATHER_TIMEOUT_MS=8500;
 const ANSWER_TIMEOUT_MS=16000;
 const CONNECT_TIMEOUT_MS=28000;
 const MEDIA_TIMEOUT_MS=12000;
 const AUTO_RETRY_LIMIT=4;
 const DEFAULT_MAX_P2P_VIEWERS=8;
-const SESSION_MAX_AGE_MS=4*60*1000;
+const FIRESTORE_READ_TIMEOUT_MS=10000;
+const FIRESTORE_WRITE_TIMEOUT_MS=12000;
 const clean=(value,max=180)=>String(value??'').trim().slice(0,max);
 const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+
+function withTimeout(promise,timeoutMs,code,message){
+  let timer=0;
+  const timeout=new Promise((_,reject)=>{
+    timer=setTimeout(()=>reject(Object.assign(new Error(message),{code})),timeoutMs);
+  });
+  return Promise.race([Promise.resolve(promise),timeout]).finally(()=>clearTimeout(timer));
+}
+
+function isTimeoutError(error){
+  return firestoreCode(error).includes('timeout');
+}
+
+function firestoreFailureDetail(error,action){
+  if(isPermissionError(error))return permissionMessage(action);
+  if(isTimeoutError(error))return `Firestore no respondió a tiempo al ${action}. Comprueba la conexión de ambos móviles y vuelve a intentarlo.`;
+  return clean(error?.message||`No se pudo ${action}.`,260);
+}
 
 const params=new URLSearchParams(location.search);
 const routeHostUid=clean(params.get('hostUid')||params.get('watch')||'',180);
@@ -90,11 +108,13 @@ let activeRoomSeen=false;
 let authReadyResolve=null;
 const authReady=new Promise(resolve=>{authReadyResolve=resolve});
 let hostStartPromise=null;
+let viewerStartPromise=null;
 
 const ui={
   prep:()=>document.getElementById('prepScreen'),
   broadcast:()=>document.getElementById('broadcastScreen'),
   video:()=>document.getElementById('broadcastVideo'),
+  backdrop:()=>document.getElementById('broadcastBackdrop'),
   pip:()=>document.getElementById('broadcastPip'),
   nav:()=>document.getElementById('bottomNav'),
   hostName:()=>document.querySelector('.jl-host b'),
@@ -160,12 +180,25 @@ function setViewerStatus(status,message='',options={}){
   dispatchState(status,{message,detail:options.detail||'',code:options.code||'',...(viewerState?diagnosticDetail(viewerState):{})});
 }
 
+function heartbeatMs(data){
+  const serverValue=Number(data?.heartbeatAt?.toMillis?.()||0);
+  return serverValue||Number(data?.heartbeatAtMs||0);
+}
+
+function freshLiveRecord(data,maxAge){
+  if(data?.active!==true||data?.status!=='live')return false;
+  const stamp=heartbeatMs(data);
+  if(!stamp)return true;
+  const age=Date.now()-stamp;
+  return age<=maxAge&&age>-10*60*1000;
+}
+
 function freshPresence(data){
-  return Boolean(data?.active===true&&data?.status==='live'&&Date.now()-Number(data?.heartbeatAtMs||0)<=PRESENCE_STALE_MS);
+  return freshLiveRecord(data,PRESENCE_STALE_MS);
 }
 
 function freshRoom(data){
-  return Boolean(data?.active===true&&data?.status==='live'&&Date.now()-Number(data?.heartbeatAtMs||0)<=ROOM_STALE_MS);
+  return freshLiveRecord(data,ROOM_STALE_MS);
 }
 
 function safeImage(value){
@@ -234,7 +267,7 @@ function isPermissionError(error){
 }
 
 function permissionMessage(action='usar la señalización'){
-  return `Firestore bloqueó ${action}. Debes añadir el bloque FIRESTORE_REGLAS_WEBRTC_PRUEBA_49 a las reglas actuales y publicarlas.`;
+  return `Firestore bloqueó ${action}. Debes añadir el bloque FIRESTORE_REGLAS_WEBRTC_PRUEBA_52 a las reglas actuales y publicarlas.`;
 }
 
 
@@ -428,11 +461,10 @@ async function answerViewer(viewerSnapshot){
   const id=viewerSnapshot.id;
   const data=viewerSnapshot.data()||{};
   const offerRevision=Math.max(0,Number(data.offerRevision)||0);
-  if(!data.offer||offerRevision<1||['ended','closed','rejected','left','capacity'].includes(data.status))return;
+  if(!data.offer||offerRevision<1||data.status!=='requesting')return;
   if(clean(data.hostUid,180)!==hostState.uid)return;
+  if(clean(data.roomSessionId,180)!==hostState.roomSessionId)return;
   if(!clean(data.viewerUid,180))return;
-  const createdAtMs=Number(data.createdAtMs||0);
-  if(!createdAtMs||Date.now()-createdAtMs>SESSION_MAX_AGE_MS||createdAtMs<hostState.startedAtMs-10000)return;
 
   const existing=hostState.sessions.get(id);
   if(existing&&existing.offerRevision>=offerRevision)return;
@@ -450,6 +482,7 @@ async function answerViewer(viewerSnapshot){
   hostState.sessions.set(id,session);
 
   pc.addEventListener('icecandidate',event=>{
+    if(hostState?.sessions.get(id)!==session)return;
     const candidate=serializeCandidate(event.candidate);
     if(candidate)void publishIceCandidate(viewerRef,'hostCandidates',candidate,hostState?.uid||'');
   });
@@ -493,7 +526,7 @@ async function answerViewer(viewerSnapshot){
     const gathering=await waitForIceGatheringComplete(pc);
     const fullAnswer=serializeDescription(pc.localDescription);
     const summary=candidateSummary(fullAnswer?.sdp);
-    await setDoc(viewerRef,{
+    await withTimeout(setDoc(viewerRef,{
       answer:fullAnswer,
       answerRevision:offerRevision,
       answerIceComplete:gathering.complete,
@@ -508,7 +541,7 @@ async function answerViewer(viewerSnapshot){
       updatedAtMs:Date.now(),
       protocol:PROTOCOL,
       version:VERSION
-    },{merge:true});
+    },{merge:true}),FIRESTORE_WRITE_TIMEOUT_MS,'firestore-answer-timeout','Firestore no confirmó la respuesta del anfitrión.');
     const timeout=setTimeout(()=>{
       if(hostState?.sessions.get(id)===session&&!session.connected)closeHostSession(id,'host-connect-timeout');
     },CONNECT_TIMEOUT_MS+8000);
@@ -550,15 +583,17 @@ async function startHostInternal(detail={}){
 
   const uid=currentUser.uid;
   const roomRef=doc(db,SIGNAL_COLLECTION,uid);
+  const roomSessionId=randomId();
   const startedAtMs=Date.now();
-  const state={uid,roomRef,stream,media,sessions:new Map(),unsubViewers:null,heartbeat:0,startedAtMs};
+  const state={uid,roomRef,roomSessionId,stream,media,sessions:new Map(),unsubViewers:null,heartbeat:0,startedAtMs};
   hostState=state;
   window.__jemmoLiveHostIntent={...(window.__jemmoLiveHostIntent||{}),...detail,active:true,stream};
   window.__jemmoLiveHostStream=stream;
 
   try{
-    await setDoc(roomRef,{
+    await withTimeout(setDoc(roomRef,{
       hostUid:uid,
+      roomSessionId,
       active:true,
       status:'live',
       protocol:PROTOCOL,
@@ -574,24 +609,23 @@ async function startHostInternal(detail={}){
       heartbeatAtMs:Date.now(),
       userAgent:clean(navigator.userAgent,240),
       version:VERSION
-    },{merge:true});
+    },{merge:true}),FIRESTORE_WRITE_TIMEOUT_MS,'firestore-room-timeout','Firestore no confirmó la creación de la sala LIVE.');
   }catch(error){
     hostState=null;
     const denied=isPermissionError(error);
-    dispatchState('host-error',{code:denied?'firestore-permission':'room-write',message:denied?permissionMessage('crear la sala LIVE'):clean(error?.message,260),permissionDenied:denied});
+    dispatchState('host-error',{code:denied?'firestore-permission':isTimeoutError(error)?'firestore-timeout':'room-write',message:firestoreFailureDetail(error,'crear la sala LIVE'),permissionDenied:denied});
     return false;
   }
 
   try{
     const viewersQuery=query(
       collection(roomRef,'viewers'),
-      where('createdAtMs','>=',startedAtMs-10000),
-      orderBy('createdAtMs','asc'),
+      where('roomSessionId','==',roomSessionId),
       limit(60)
     );
     state.unsubViewers=onSnapshot(viewersQuery,snapshot=>{
       snapshot.docChanges().forEach(change=>{
-        if(change.type==='removed'){closeHostSession(change.doc.id,'removed');return}
+        if(change.type==='removed'){closeHostSession(change.doc.id,'removed',{mark:false});return}
         void answerViewer(change.doc);
       });
     },error=>{
@@ -614,7 +648,7 @@ async function startHostInternal(detail={}){
     },{merge:true}).catch(error=>dispatchState('host-heartbeat-error',{error:clean(error?.message,220),permissionDenied:isPermissionError(error)}));
   },15000);
   pendingHostStart=null;
-  dispatchState('host-ready',{hostUid:uid,audioReady:Boolean(media.audio),videoReady:Boolean(media.video),maxP2PViewers});
+  dispatchState('host-ready',{hostUid:uid,roomSessionId,audioReady:Boolean(media.audio),videoReady:Boolean(media.video),maxP2PViewers});
   return true;
 }
 
@@ -659,7 +693,9 @@ function closeViewerPeer(reason='closed',{mark=true,clearMedia=true}={}){
   try{state.pc.close()}catch{}
   if(clearMedia){
     const video=ui.video();
+    const backdrop=ui.backdrop();
     if(video){video.pause();video.srcObject=null;video.muted=true}
+    if(backdrop){backdrop.pause();backdrop.srcObject=null;backdrop.muted=true}
   }
   if(mark)void setDoc(state.viewerRef,{status:reason,updatedAt:serverTimestamp(),updatedAtMs:Date.now(),version:VERSION},{merge:true}).catch(()=>{});
 }
@@ -687,7 +723,8 @@ async function waitForRoomReady(roomRef,timeoutMs=9000){
   const started=Date.now();
   let last=null;
   while(Date.now()-started<timeoutMs){
-    const snap=await getDoc(roomRef);
+    let snap;
+    try{snap=await withTimeout(getDoc(roomRef),4000,'firestore-room-read-timeout','Firestore no respondió al comprobar la sala.')}catch{await wait(700);continue}
     if(snap.exists()){
       last=snap.data()||{};
       if(freshRoom(last)&&last.streamReady)return last;
@@ -700,14 +737,16 @@ async function waitForRoomReady(roomRef,timeoutMs=9000){
 async function validatePresenceAndRoom(){
   const presenceRef=doc(db,PRESENCE_COLLECTION,routeHostUid);
   const roomRef=doc(db,SIGNAL_COLLECTION,routeHostUid);
-  const [presenceSnap,roomSnap]=await Promise.all([getDoc(presenceRef),getDoc(roomRef)]);
+  const [presenceSnap,roomSnap]=await withTimeout(Promise.all([getDoc(presenceRef),getDoc(roomRef)]),FIRESTORE_READ_TIMEOUT_MS,'firestore-read-timeout','Firestore no respondió al comprobar el LIVE.');
   if(!presenceSnap.exists())throw Object.assign(new Error('Esta transmisión ya no está disponible.'),{code:'presence-missing'});
   const presence=presenceSnap.data()||{};
   if(!freshPresence(presence))throw Object.assign(new Error('El LIVE ha finalizado o perdió la conexión.'),{code:'presence-stale'});
   renderHostIdentity(presence);
   let room=roomSnap.exists()?roomSnap.data()||{}:null;
   if(!freshRoom(room)||!room?.streamReady)room=await waitForRoomReady(roomRef);
-  if(!freshRoom(room))throw Object.assign(new Error('El emisor está visible como EN LIVE, pero su sala de señalización no está activa. Debe instalar la misma PRUEBA 50 y reiniciar el directo.'),{code:'room-not-ready'});
+  if(!freshRoom(room))throw Object.assign(new Error('El emisor está visible como EN LIVE, pero su sala de señalización no está activa. Ambos móviles deben usar la PRUEBA 52.'),{code:'room-not-ready'});
+  if(clean(room.hostUid,180)!==routeHostUid)throw Object.assign(new Error('La sala LIVE no coincide con el UID real del emisor.'),{code:'host-uid-mismatch'});
+  if(clean(room.protocol,80)!==PROTOCOL||!clean(room.roomSessionId,180))throw Object.assign(new Error('El emisor usa una versión antigua de la conexión LIVE. Debe actualizar a PRUEBA 52 y reiniciar el directo.'),{code:'protocol-mismatch'});
   if(!room.streamReady)throw Object.assign(new Error('El emisor inició el LIVE sin una pista de cámara disponible.'),{code:'host-media-missing'});
   return{presence,room,roomRef};
 }
@@ -746,7 +785,7 @@ function explainIceFailure(state){
   return 'La negociación ICE falló incluso con las rutas disponibles. Comprueba la cobertura y vuelve a conectar.';
 }
 
-async function startViewer({manual=false}={}){
+async function startViewerInternal({manual=false}={}){
   if(!viewerRoute||!currentUser)return false;
   if(!window.RTCPeerConnection){setViewerStatus('error','Este móvil no admite WebRTC',{detail:'Actualiza Chrome o abre JEMMO LIVE en un navegador compatible.',code:'webrtc-unsupported'});return false}
   if(!navigator.onLine){setViewerStatus('offline','Sin conexión a Internet',{detail:'Cuando vuelva la red, JEMMO intentará entrar de nuevo.',reconnect:true,code:'offline'});return false}
@@ -760,7 +799,11 @@ async function startViewer({manual=false}={}){
     validated=await validatePresenceAndRoom();
   }catch(error){
     const denied=isPermissionError(error);
-    setViewerStatus(denied?'error':'ended',denied?'Firestore bloqueó la conexión':error.message,{detail:denied?permissionMessage('leer la presencia o la sala LIVE'):'Pulsa RECONECTAR si el emisor sigue transmitiendo.',reconnect:true,code:denied?'firestore-permission':clean(error?.code||'validation',80)});
+    const code=clean(error?.code||'validation',80);
+    const terminal=['presence-missing','presence-stale'].includes(code);
+    const title=denied?'Firestore bloqueó la conexión':isTimeoutError(error)?'Firestore no respondió':error.message;
+    const detail=denied?permissionMessage('leer la presencia o la sala LIVE'):isTimeoutError(error)?firestoreFailureDetail(error,'comprobar el LIVE'):'Pulsa RECONECTAR si el emisor sigue transmitiendo.';
+    setViewerStatus(terminal?'ended':'error',title,{detail,reconnect:true,code:denied?'firestore-permission':isTimeoutError(error)?'firestore-timeout':code});
     return false;
   }
 
@@ -776,17 +819,19 @@ async function startViewer({manual=false}={}){
   const remoteStream=new MediaStream();
   const queued=[];
   const seenCandidates=new Set();
+  const roomSessionId=clean(validated.room.roomSessionId,180);
   const state={
-    id,roomRef,viewerRef,pc,remoteStream,queued,unsubDoc:null,unsubCandidates:null,timers:[],statsTimer:0,
+    id,roomRef,viewerRef,roomSessionId,pc,remoteStream,queued,unsubDoc:null,unsubCandidates:null,timers:[],statsTimer:0,
     receivedAudio:false,receivedVideo:false,connected:false,answerReceived:false,mediaFlowing:false,lastInboundBytes:0,
     localCandidateSummary:null,remoteCandidateSummary:null,createdAtMs:Date.now(),offerRevision:1
   };
   viewerState=state;
 
   try{
-    await setDoc(viewerRef,{
+    await withTimeout(setDoc(viewerRef,{
       viewerUid:currentUser.uid,
       hostUid:routeHostUid,
+      roomSessionId,
       status:'initializing',
       offerRevision:0,
       answerRevision:0,
@@ -798,11 +843,11 @@ async function startViewer({manual=false}={}){
       protocol:PROTOCOL,
       turnConfigured,
       version:VERSION
-    });
+    }),FIRESTORE_WRITE_TIMEOUT_MS,'firestore-session-timeout','Firestore no confirmó la sesión del espectador.');
   }catch(error){
     closeViewerPeer('session-create-error',{mark:false});
     const denied=isPermissionError(error);
-    setViewerStatus('error','No se pudo crear la sesión del espectador',{detail:denied?permissionMessage('crear la sesión del espectador'):clean(error?.message||'Error de Firestore.',260),reconnect:true,code:denied?'firestore-permission':'session-create'});
+    setViewerStatus('error','No se pudo crear la sesión del espectador',{detail:firestoreFailureDetail(error,'crear la sesión del espectador'),reconnect:true,code:denied?'firestore-permission':isTimeoutError(error)?'firestore-timeout':'session-create'});
     return false;
   }
 
@@ -815,11 +860,19 @@ async function startViewer({manual=false}={}){
     if(track.kind==='audio')state.receivedAudio=true;
     if(track.kind==='video')state.receivedVideo=true;
     const video=ui.video();
+    const backdrop=ui.backdrop();
     if(video&&video.srcObject!==remoteStream){
       video.srcObject=remoteStream;
       video.autoplay=true;
       video.muted=true;
       video.playsInline=true;
+    }
+    if(backdrop&&backdrop.srcObject!==remoteStream){
+      backdrop.srcObject=remoteStream;
+      backdrop.autoplay=true;
+      backdrop.muted=true;
+      backdrop.playsInline=true;
+      void backdrop.play().catch(()=>{});
     }
     track.addEventListener('unmute',()=>{state.mediaFlowing=true;void tryPlayRemote()});
     track.addEventListener('mute',()=>dispatchState('remote-track-muted',{kind:track.kind,...diagnosticDetail(state)}));
@@ -832,6 +885,7 @@ async function startViewer({manual=false}={}){
     void tryPlayRemote();
   });
   pc.addEventListener('icecandidate',event=>{
+    if(viewerState!==state)return;
     const candidate=serializeCandidate(event.candidate);
     if(candidate)void publishIceCandidate(viewerRef,'viewerCandidates',candidate,currentUser?.uid||'');
   });
@@ -885,6 +939,10 @@ async function startViewer({manual=false}={}){
       closeViewerPeer('permission-error',{mark:false});
       setViewerStatus('error','Firestore bloqueó la respuesta del emisor',{detail:permissionMessage('publicar la respuesta del anfitrión'),reconnect:true,code:'firestore-permission'});
     }
+    if(data.status==='answer-error'){
+      closeViewerPeer('answer-error',{mark:false});
+      setViewerStatus('error','El emisor no pudo responder',{detail:clean(data.errorMessage||'Error al preparar la respuesta WebRTC.',260),reconnect:true,code:'answer-error'});
+    }
     if(data.status==='ended'){
       closeViewerPeer('ended',{mark:false});
       setViewerStatus('ended','El emisor finalizó el LIVE',{detail:'Puedes volver a Inicio.',reconnect:false,quick:false,code:'ended'});
@@ -912,7 +970,7 @@ async function startViewer({manual=false}={}){
     const gathering=await waitForIceGatheringComplete(pc);
     const fullOffer=serializeDescription(pc.localDescription);
     state.localCandidateSummary=candidateSummary(fullOffer?.sdp);
-    await setDoc(viewerRef,{
+    await withTimeout(setDoc(viewerRef,{
       offer:fullOffer,
       offerRevision:state.offerRevision,
       offerIceComplete:gathering.complete,
@@ -925,21 +983,21 @@ async function startViewer({manual=false}={}){
       updatedAtMs:Date.now(),
       protocol:PROTOCOL,
       version:VERSION
-    },{merge:true});
+    },{merge:true}),FIRESTORE_WRITE_TIMEOUT_MS,'firestore-offer-timeout','Firestore no confirmó la oferta del espectador.');
   }catch(error){
     console.error('JEMMO WebRTC: no se pudo crear la oferta.',error);
     closeViewerPeer('offer-error');
     const denied=isPermissionError(error);
-    setViewerStatus('error','No se pudo iniciar la conexión',{detail:denied?permissionMessage('publicar la oferta del espectador'):clean(error?.message||'Error al preparar audio y vídeo.',260),reconnect:true,code:denied?'firestore-permission':'offer-error'});
+    setViewerStatus('error','No se pudo iniciar la conexión',{detail:firestoreFailureDetail(error,'publicar la oferta del espectador'),reconnect:true,code:denied?'firestore-permission':isTimeoutError(error)?'firestore-timeout':'offer-error'});
     return false;
   }
 
   const answerTimer=setTimeout(async()=>{
     if(viewerState!==state||state.answerReceived)return;
     let room=null;
-    try{const snap=await getDoc(roomRef);room=snap.exists()?snap.data()||{}:null}catch{}
+    try{const snap=await withTimeout(getDoc(roomRef),4000,'firestore-room-read-timeout','Firestore no respondió al revisar la sala.');room=snap.exists()?snap.data()||{}:null}catch{}
     if(!freshRoom(room))scheduleReconnect('La sala de señalización del emisor dejó de responder.',{code:'room-stale'});
-    else scheduleReconnect('El emisor está en LIVE, pero no recibió o no pudo responder la solicitud. Revisa las reglas Firestore y que ambos móviles tengan PRUEBA 50.',{code:'answer-timeout'});
+    else scheduleReconnect('El emisor está en LIVE, pero no recibió o no pudo responder la solicitud. Revisa las reglas Firestore PRUEBA 52 y confirma que ambos móviles estén actualizados.',{code:'answer-timeout'});
   },ANSWER_TIMEOUT_MS);
   state.timers.push(answerTimer);
 
@@ -948,6 +1006,12 @@ async function startViewer({manual=false}={}){
   },CONNECT_TIMEOUT_MS);
   state.timers.push(connectTimer);
   return true;
+}
+
+function startViewer(options={}){
+  if(viewerStartPromise)return viewerStartPromise;
+  viewerStartPromise=startViewerInternal(options).finally(()=>{viewerStartPromise=null});
+  return viewerStartPromise;
 }
 
 function scheduleReconnect(reason,{code='retry'}={}){
@@ -1072,7 +1136,10 @@ onAuthStateChanged(auth,user=>{
   currentUser=user||null;
   if(authReadyResolve){authReadyResolve(currentUser);authReadyResolve=null}
   bindNetworkListeners();
-  if(!currentUser)return;
+  if(!currentUser){
+    if(viewerRoute)setViewerStatus('error','La sesión de Firebase no está activa',{detail:'Vuelve a iniciar sesión con tu cuenta real antes de entrar al LIVE. El UID guardado localmente no sustituye Firebase Authentication.',reconnect:false,quick:false,code:'auth-required'});
+    return;
+  }
   const intent=pendingHostStart||window.__jemmoLiveHostIntent;
   if(!viewerRoute&&intent?.active){pendingHostStart=null;void startHost({...intent,stream:intent.stream||window.__jemmoLiveHostStream||null})}
   if(viewerRoute){watchPresence();watchRoom();void startViewer()}
@@ -1101,6 +1168,7 @@ window.JemmoLiveRTC=Object.freeze({
     signaling:viewerState?.pc?.signalingState||null,
     sessionId:viewerState?.id||null,
     hostSessions:hostState?.sessions.size||0,
+    roomSessionId:viewerState?.roomSessionId||hostState?.roomSessionId||null,
     turnConfigured
   })
 });

@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## PRUEBA 52 · 29/07/2026
+### UID Firebase, sesión única y cámara natural
+- Señalización basada exclusivamente en Firebase Authentication UID y `users/{uid}`.
+- `roomSessionId` nuevo por cada inicio para aislar sesiones antiguas.
+- Eliminado el filtro por reloj del espectador.
+- Timeouts y errores accionables en lecturas/escrituras Firestore.
+- Protocolo `jemmo-live-webrtc-v3` y reglas Firestore PRUEBA 52.
+- Cámara nativa sin 9:16 forzado; vídeo completo con fondo desenfocado cuando la proporción no coincide.
+- Caché PWA actualizada a PRUEBA 52.
+
 ## PRUEBA 51 · 29/07/2026
 ### Cámara vertical a pantalla completa sin doble zoom
 - Corregida la regresión visual introducida en PRUEBA 50.

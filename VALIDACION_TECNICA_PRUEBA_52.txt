@@ -1,0 +1,44 @@
+JEMMO LIVE · VALIDACIÓN TÉCNICA PRUEBA 52
+Fecha: 29/07/2026
+
+[OK] Sintaxis JavaScript: jemmo-live-webrtc.js
+[OK] Sintaxis JavaScript: jemmo-live-presence.js
+[OK] Sintaxis JavaScript: jemmo-live-rtc-config.js
+[OK] Sintaxis JavaScript: pwa-register.js
+[OK] Sintaxis JavaScript: sw.js
+[OK] HTML sin identificadores duplicados
+[OK] Elemento HTML presente: mainVideo
+[OK] Elemento HTML presente: mainBackdrop
+[OK] Elemento HTML presente: broadcastVideo
+[OK] Elemento HTML presente: broadcastBackdrop
+[OK] Elemento HTML presente: viewerConnection
+[OK] Elemento HTML presente: viewerReconnect
+[OK] Sintaxis script inline live.html #1
+[OK] Sintaxis script inline live.html #2
+[OK] Sintaxis script inline live.html #12
+[OK] Versión WebRTC 52
+[OK] Protocolo WebRTC v3
+[OK] Presencia v3 y versión 52
+[OK] Sala con roomSessionId
+[OK] Sin filtro por reloj del espectador
+[OK] Timeouts Firestore críticos
+[OK] Bloqueo de arranque simultáneo del espectador
+[OK] Validación UID/protocolo/sesión
+[OK] Runtime no consulta colección emisoras
+[OK] Sin aspectRatio 9/16 forzado
+[OK] resizeMode none conservado
+[OK] Encuadre contain/cover adaptativo
+[OK] Fondo de cámara desenfocado
+[OK] Zoom neutro separado
+[OK] Recursos live con v=52
+[OK] Caché PWA PRUEBA 52
+[OK] Reglas usan UID autenticado
+[OK] Reglas exigen roomSessionId activo
+[OK] Reglas contienen campos de oferta y respuesta
+[OK] Ruta de Ruth documentada
+[OK] VERSION.txt identifica PRUEBA 52
+[OK] Recursos locales de live.html existentes
+[OK] Git diff sin errores de espacios
+
+RESULTADO: 38/38 comprobaciones aprobadas.
+NOTA: la prueba WebRTC real requiere dos móviles, reglas publicadas y acceso a Firebase/Internet.

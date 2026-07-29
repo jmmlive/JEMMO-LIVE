@@ -1,27 +1,37 @@
-JEMMO LIVE V1 · CÁMARA VERTICAL A PANTALLA COMPLETA SIN DOBLE ZOOM PRUEBA 51
+JEMMO LIVE V1 · UID FIREBASE, SESIÓN ÚNICA Y CÁMARA NATURAL PRUEBA 52
 Fecha: 29/07/2026
-Base: PRUEBA 50 · ENCUADRE NATURAL DE CÁMARA SIN ZOOM EXCESIVO
+Base: PRUEBA 51 · CÁMARA VERTICAL A PANTALLA COMPLETA SIN DOBLE ZOOM
 
-INCIDENCIA CONFIRMADA
-La emisión dejó de mostrar el primer plano excesivo, pero la cámara apareció casi cuadrada y con dos franjas negras grandes. La captura de prueba confirmó que el vídeo no ocupaba la superficie LIVE.
+INCIDENCIAS CONFIRMADAS
+1. Ruth inicia el LIVE y aparece como EN LIVE, pero Jesús puede quedar indefinidamente en “Entrando al LIVE” sin recibir audio ni vídeo.
+2. La cámara vuelve a recortar demasiado la cara cuando `cover` llena una pantalla vertical con una pista de proporción diferente.
+3. Existía riesgo de mezclar solicitudes antiguas con un LIVE nuevo y de rechazar sesiones válidas por diferencias entre la hora de los dos móviles.
 
-CAUSA
-PRUEBA 50 retiró la preferencia `aspectRatio: 9/16` y cambió el ajuste visual a `contain`. Algunos Android seleccionaron una resolución cercana a 1:1; `contain` conservó esa imagen completa, pero dejó gran parte de la pantalla vacía.
+CAUSA TÉCNICA
+- La consulta del anfitrión dependía de `createdAtMs` generado por el reloj del espectador.
+- La sesión no tenía un identificador exclusivo del inicio de LIVE.
+- Algunas operaciones Firestore no tenían límite de espera visible para el usuario.
+- PRUEBA 51 combinó preferencia 9:16 y `object-fit: cover`; esa combinación puede recortar lateralmente y aparentar zoom.
 
-CORRECCIONES PRUEBA 51
-- Se recupera `aspectRatio: { ideal: 9/16 }` para orientar la selección hacia una pista vertical.
-- Se mantiene `resizeMode: "none"`; queda prohibido volver a `crop-and-scale`.
-- La preparación y la emisión usan `object-fit: cover` para ocupar toda la pantalla.
-- El espectador también recibe la imagen a pantalla completa.
-- La captura solicita 720 × 1280 como resolución ideal, sin exigir recorte artificial.
-- Si el móvil expone control de zoom, se normaliza al valor neutro 1x dentro de sus límites.
-- El modo espejo solo invierte horizontalmente y no amplía la imagen.
-- Caché PWA y versiones de recursos elevadas a PRUEBA 51.
+CORRECCIONES PRUEBA 52
+- Firebase Authentication UID es la única identidad de señalización; no se consulta `emisoras`.
+- Ruth se identifica por su UID real: pVJq1ohc6mY8zuoED2S6Q7hsocS2.
+- Cada inicio genera un `roomSessionId` nuevo y todas las sesiones del espectador deben usarlo.
+- Se elimina la dependencia del reloj del otro móvil para aceptar solicitudes.
+- Firestore tiene tiempos máximos de lectura/escritura y errores accionables; no queda cargando sin explicación.
+- Se bloquean arranques simultáneos duplicados del espectador.
+- La captura conserva el formato nativo y solicita zoom neutro 1x cuando existe ese control.
+- El vídeo principal usa `contain` cuando la proporción no coincide y una copia desenfocada llena el fondo; no hay franjas negras ni recorte de la cara.
+- Protocolo WebRTC actualizado a `jemmo-live-webrtc-v3`.
+- Caché PWA y recursos actualizados a PRUEBA 52.
 
-RESULTADO ESPERADO
-Pantalla LIVE completa, sin franjas negras grandes y sin el doble zoom de PRUEBA 49.
+ACCIÓN OBLIGATORIA
+Publicar en Firebase las reglas incluidas en `FIRESTORE_REGLAS_WEBRTC_PRUEBA_52.txt`. Subir los archivos a GitHub sin publicar esas reglas puede mantener bloqueada la señalización.
+
+LÍMITE CONOCIDO
+Si la sesión llega a ICE failed después de completar oferta y respuesta, la señalización ya funciona; algunas redes móviles necesitarán un servicio TURN propio con credenciales temporales. No se incluyen credenciales públicas inseguras.
 
 ESTADO
-- Revisión estática: aprobada.
-- Sintaxis JavaScript: aprobada.
-- Prueba real móvil: pendiente tras publicar.
+- Revisión estática y sintaxis JavaScript: aprobadas.
+- Validaciones estructurales automáticas: aprobadas.
+- Prueba real entre los dos móviles: pendiente después de publicar archivos y reglas.

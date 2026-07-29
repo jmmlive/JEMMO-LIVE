@@ -1,0 +1,41 @@
+JEMMO LIVE · INSTALACIÓN PRUEBA 52
+Fecha: 29/07/2026
+
+BASE
+Preparada directamente sobre la base recibida JEMMO-LIVE-main (17) (3).zip, identificada como PRUEBA 51.
+
+CONTENIDO
+Parche incremental de 17 archivos preparado para sustituir únicamente lo necesario sobre PRUEBA 51.
+
+INSTALACIÓN EN GITHUB
+1. Descomprimir el ZIP del parche.
+2. Entrar en la raíz del repositorio JEMMO-LIVE.
+3. Subir todos los archivos extraídos, conservando sus nombres.
+4. Sustituir los archivos que GitHub indique como existentes.
+5. No borrar ningún otro archivo del repositorio.
+6. No subir el ZIP directamente.
+7. Confirmar el commit y la publicación de GitHub Pages.
+
+PASO FIREBASE OBLIGATORIO
+1. Abrir Firebase Console.
+2. Entrar en Firestore Database > Reglas.
+3. Localizar los bloques anteriores `match /livePresences/{hostUid}` y `match /liveSignals/{hostUid}`.
+4. Sustituir esos bloques por los de FIRESTORE_REGLAS_WEBRTC_PRUEBA_52.txt.
+5. Mantener las demás reglas de users, Casas, tareas, mensajes y monedero.
+6. Pulsar PUBLICAR.
+
+ACTUALIZACIÓN EN LOS DOS MÓVILES
+1. Cerrar JEMMO LIVE completamente.
+2. Abrir la PWA de nuevo.
+3. Recargar una vez si todavía aparece PRUEBA 51.
+4. Confirmar PRUEBA 52 en la parte inferior del menú de LIVE.
+5. Ruth y Jesús deben usar la misma versión durante la prueba.
+
+NO HACER
+- No cambiar el UID de Ruth por un documento de `emisoras`.
+- No pegar credenciales TURN permanentes en archivos públicos.
+- No mezclar reglas PRUEBA 49 y PRUEBA 52 duplicando los mismos `match`.
+- No probar con una versión distinta en cada móvil.
+
+RUTA CORRECTA DE RUTH
+liveSignals/pVJq1ohc6mY8zuoED2S6Q7hsocS2

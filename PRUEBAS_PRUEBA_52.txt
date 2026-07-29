@@ -1,0 +1,53 @@
+JEMMO LIVE · PROTOCOLO DE PRUEBAS PRUEBA 52
+Fecha: 29/07/2026
+
+A. PUBLICACIÓN
+[ ] Subir todos los archivos del parche a la raíz del repositorio, sustituyendo los existentes.
+[ ] No subir el ZIP directamente.
+[ ] Publicar los bloques de FIRESTORE_REGLAS_WEBRTC_PRUEBA_52.txt en Firebase.
+[ ] Esperar a que GitHub Pages termine de publicar.
+[ ] Cerrar completamente la PWA en ambos móviles y volver a abrirla.
+[ ] Confirmar que el menú de LIVE muestra PRUEBA 52.
+
+B. CUENTA DE RUTH / ANFITRIÓN
+[ ] Ruth inicia sesión con su cuenta Firebase real.
+[ ] Activa cámara y micrófono.
+[ ] Pulsa INICIAR LIVE.
+[ ] En Firestore aparece liveSignals/pVJq1ohc6mY8zuoED2S6Q7hsocS2.
+[ ] hostUid = pVJq1ohc6mY8zuoED2S6Q7hsocS2.
+[ ] active = true y status = live.
+[ ] protocol = jemmo-live-webrtc-v3.
+[ ] roomSessionId existe y no está vacío.
+[ ] streamReady = true.
+[ ] version = 52.
+
+C. CUENTA DE JESÚS / ESPECTADOR
+[ ] Jesús entra tocando la tarjeta real de Ruth en PERSONAS EN DIRECTO.
+[ ] No se solicita cámara ni micrófono al espectador.
+[ ] Se crea liveSignals/{uidDeRuth}/viewers/{sessionId}.
+[ ] El documento usa el mismo roomSessionId de la sala de Ruth.
+[ ] El estado avanza: initializing → requesting → answered → connected.
+[ ] Se recibe vídeo.
+[ ] Al tocar TOCA PARA ESCUCHAR se recibe audio.
+[ ] El indicador no queda girando indefinidamente.
+
+D. CÁMARA
+[ ] La cara no aparece ampliada hasta perder frente, barbilla o laterales.
+[ ] La imagen principal conserva el cuadro natural de la cámara.
+[ ] No aparecen franjas negras grandes.
+[ ] Si la proporción no coincide, el fondo se ve desenfocado detrás del vídeo completo.
+[ ] Cambiar cámara frontal/trasera mantiene el encuadre natural.
+[ ] Espejo ON/OFF no aumenta la imagen.
+[ ] El espectador ve el mismo cuadro, sin segundo recorte.
+
+E. DIAGNÓSTICO
+[ ] permission-error: las reglas no se publicaron o existe otro bloque incompatible.
+[ ] firestore-timeout: revisar conexión y repetir; la pantalla debe mostrar el error.
+[ ] answer-timeout: confirmar que ambos móviles tienen PRUEBA 52 y revisar reglas.
+[ ] ICE failed después de answered: señalización correcta; configurar TURN para esa red.
+
+F. CIERRE Y REGRESIÓN
+[ ] Finalizar LIVE cambia sala y presencia a ended/inactive.
+[ ] La tarjeta de Ruth desaparece de PERSONAS EN DIRECTO.
+[ ] Un nuevo LIVE crea un roomSessionId distinto.
+[ ] Una sesión antigua no se conecta al nuevo LIVE.

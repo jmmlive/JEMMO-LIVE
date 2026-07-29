@@ -1,17 +1,21 @@
-# JEMMO LIVE V1 · PRUEBA 51
+# JEMMO LIVE V1 · PRUEBA 52
 
-## Cámara vertical a pantalla completa sin doble zoom
+## UID Firebase, sesión única y cámara natural
 
-PRUEBA 51 sustituye la corrección de cámara de PRUEBA 50.
+PRUEBA 52 corrige conjuntamente la entrada del espectador y el encuadre de cámara.
 
-PRUEBA 50 eliminó el acercamiento excesivo, pero al retirar también la preferencia vertical permitió que algunos Android entregaran vídeo cuadrado. El uso posterior de `contain` produjo franjas negras grandes arriba y abajo durante el LIVE.
+### Conexión LIVE
+- La señalización usa el UID real de Firebase Authentication; no depende de `emisoras`.
+- Cada inicio crea un `roomSessionId` nuevo.
+- El anfitrión solo atiende solicitudes de esa sesión.
+- Se elimina la dependencia de la hora de los dos móviles.
+- Firestore muestra errores por permisos, conexión o timeout y deja de cargar indefinidamente.
 
-### Corrección definitiva
-- Se recupera `aspectRatio: 9/16` únicamente como preferencia de captura.
-- Se mantiene `resizeMode: none`; no se vuelve a activar `crop-and-scale`.
-- El vídeo ocupa toda la pantalla mediante `cover`.
-- Se solicita zoom neutro `1x` cuando la cámara informa de control de zoom.
-- La corrección afecta al emisor, la preparación, la cámara secundaria y el espectador.
+### Cámara
+- No se fuerza 9:16 ni recorte digital.
+- La imagen principal conserva el cuadro completo.
+- Una copia desenfocada rellena la pantalla cuando la proporción no coincide.
+- Se evita tanto el zoom excesivo como las franjas negras.
 
-### Instalación
-Extrae los archivos del ZIP y súbelos a la raíz del repositorio, sustituyendo los archivos con el mismo nombre. No subas el ZIP directamente.
+### Instalación crítica
+Además de subir los archivos a GitHub, deben publicarse los bloques de `FIRESTORE_REGLAS_WEBRTC_PRUEBA_52.txt` en Firebase. Ambos móviles deben abrir PRUEBA 52 antes de probar.
