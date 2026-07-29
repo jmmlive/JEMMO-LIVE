@@ -1,0 +1,25 @@
+JEMMO LIVE PRUEBA 53 · INSTALACIÓN
+
+ENTREGA COMPLETA
+- Descomprimir el ZIP completo.
+- Subir el contenido de la carpeta raíz al repositorio, sustituyendo archivos iguales.
+- No subir el ZIP como un único archivo al repositorio.
+
+ENTREGA INCREMENTAL
+- Descomprimir el ZIP incremental.
+- Subir únicamente sus archivos respetando carpetas, incluida functions/.
+
+FIREBASE
+- Publicar FIRESTORE_REGLAS_WEBRTC_PRUEBA_53.txt de forma aditiva.
+- Mantener todas las reglas existentes de usuarios, Casas, economía y mensajes.
+- Si las reglas de salas usan listas cerradas, añadir los cuatro campos de estado de cámara indicados.
+
+CACHÉ MÓVIL
+1. Cerrar la PWA en ambos móviles.
+2. Abrir Chrome y cargar el sitio una vez.
+3. Volver a abrir la PWA.
+4. Si conserva una versión antigua, borrar datos del sitio y reinstalar la PWA.
+
+TURN
+- Seguir TURN_DESPLIEGUE_PRUEBA_53.md.
+- Subir functions/ no despliega automáticamente la función.

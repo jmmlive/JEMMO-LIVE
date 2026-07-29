@@ -1,5 +1,5 @@
 /*
- * JEMMO LIVE · CONFIGURACIÓN ICE/TURN · PRUEBA 52
+ * JEMMO LIVE · CONFIGURACIÓN ICE/TURN · PRUEBA 53
  *
  * Esta entrega usa STUN por defecto. Para producción, el backend debe entregar
  * credenciales TURN de corta duración y definir window.JEMMO_RTC_CONFIG antes

@@ -291,7 +291,7 @@
     .jr-room-entry{position:absolute;z-index:20;left:50%;top:18%;transform:translate(-50%,-20px);width:min(88%,390px);padding:11px 14px;border:1px solid var(--jemmo-equipped-theme-accent,#d84dff);border-radius:18px;background:#100217ed;color:#fff;text-align:center;font-size:11px;font-weight:1000;box-shadow:0 14px 45px #000c,0 0 24px color-mix(in srgb,var(--jemmo-equipped-theme-accent,#d84dff) 55%,transparent);opacity:0;pointer-events:none}
     .jr-room-entry.show{animation:jrEntry 2.8s ease both}.jr-room-entry.wave{background:linear-gradient(90deg,#22052c,#7b23a8,#22052c)}.jr-room-entry.comet{border-color:#ffd65b;background:linear-gradient(110deg,#12020d,#4b2c02,#26002e)}
     @keyframes jrEntry{0%{opacity:0;transform:translate(-65%,-15px) scale(.9)}18%,72%{opacity:1;transform:translate(-50%,0) scale(1)}100%{opacity:0;transform:translate(-35%,12px) scale(.96)}}
-    .jr-camera-off{position:absolute;inset:0;display:grid;place-content:center;gap:5px;background:linear-gradient(145deg,#140319,#020003);color:#d8c5dd;text-align:center}.jr-camera-off span{font-size:25px}.jr-camera-off b{font-size:8px;letter-spacing:.08em}
+    .jr-camera-off{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:5px;padding:10px;background:radial-gradient(circle at 50% 24%,#3d164b 0,#140319 48%,#020003 100%);color:#fff;text-align:center}.jr-camera-off img{width:48px;height:48px;border:2px solid #ffd54f;border-radius:50%;object-fit:cover;background:#26052f;box-shadow:0 0 14px #b43fe566}.jr-camera-off b{max-width:92%;font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.jr-camera-off small{font-size:7px;font-weight:900;letter-spacing:.08em;color:#ffd76a;text-transform:uppercase}
     .jr-chat-closed .jr-compose{opacity:.68}.jr-chat-closed .jr-compose input{cursor:not-allowed}
     .jr-profile-card{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px;border:1px solid #6d2a80;border-radius:18px;background:linear-gradient(145deg,#21052a,#0c010f)}
     .jr-profile-card img{width:64px;height:64px;border-radius:50%;display:block;object-fit:cover;object-position:50% 50%;background:#2b0733}.jr-profile-card h3,.jr-profile-card p{margin:0}.jr-profile-card h3{font-size:15px}.jr-profile-card p{margin-top:4px;color:#c9b9ce;font-size:10px;line-height:1.4}.jr-profile-more{width:42px;height:42px;border:1px solid #7c338f;border-radius:14px;background:#1a0321;color:#fff;font-size:24px;font-weight:1000}
@@ -471,11 +471,12 @@
 <div class="jr-toast" id="toast" role="status"></div>
 
 <script type="module" src="jemmo-session.js"></script>
-<script src="pwa-register.js?v=50"></script>
+<script src="pwa-register.js?v=53"></script>
 <script src="jemmo-wallet.js?v=45"></script>
 <script src="jemmo-house-finance.js"></script>
 <script src="jemmo-prep-storage.js"></script>
-<script type="module" src="jemmo-room-realtime.js?v=42"></script>
+<script src="jemmo-live-rtc-config.js?v=53"></script>
+<script type="module" src="jemmo-room-realtime.js?v=53"></script>
 <script type="module" src="jemmo-personalization-runtime.js"></script>
 <script>
 (()=>{
@@ -551,6 +552,8 @@
     remoteUid:'',
     remoteConnected:false,
     remoteSeatActive:false,
+    remoteCameraEnabled:true,
+    cameraToggleBusy:false,
     ownName:'Jesús',
     ownPhoto:'',
     ownUid:activeUid(),
@@ -875,11 +878,16 @@
 
   function seatMarkup(index,person){
     if(state.mode==='camera'&&person?.local){
-      const media=state.cameraEnabled?`<video class="jr-seat-video" id="hostCameraVideo" autoplay muted playsinline></video>`:`<div class="jr-camera-off"><span>📷</span><b>CÁMARA APAGADA</b></div>`;
-      return `${media}<div class="jr-seat-overlay"><b>${person.name}</b><small>${state.cameraEnabled?person.role:'Cámara apagada'}</small></div>
-        <span class="jr-mic">${state.cameraEnabled?'🎥':'🚫'}</span><span class="jr-number">${index}</span>${giftBadge(index)}`;
+      if(!state.cameraEnabled){
+        return `<div class="jr-camera-off"><img src="${person.photo||'jemmo-fish-nav.webp'}" alt=""><b>${person.name}</b><small>Cámara pausada</small></div><span class="jr-mic">⏸</span><span class="jr-number">${index}</span>${giftBadge(index)}`;
+      }
+      return `<video class="jr-seat-video" id="hostCameraVideo" autoplay muted playsinline></video><div class="jr-seat-overlay"><b>${person.name}</b><small>${person.role}</small></div>
+        <span class="jr-mic">🎥</span><span class="jr-number">${index}</span>${giftBadge(index)}`;
     }
     if(state.mode==='camera'&&person?.remote){
+      if(!state.remoteCameraEnabled){
+        return `<div class="jr-camera-off"><img src="${person.photo||'jemmo-fish-nav.webp'}" alt=""><b>${person.name}</b><small>Cámara pausada</small></div><span class="jr-mic">⏸</span><span class="jr-number">${index}</span>${giftBadge(index)}`;
+      }
       return `<video class="jr-seat-video" id="remoteRoomVideo" autoplay muted playsinline></video>
         <div class="jr-seat-overlay"><b>${person.name}</b><small>${person.role}</small></div>
         <span class="jr-mic">${state.remoteConnected?'🎥':'⌛'}</span><span class="jr-number">${index}</span>${giftBadge(index)}`;
@@ -998,15 +1006,62 @@
     state.micEnabled=next;
     if(!next){state.moderatedMuted=false;state.moderatedByUid='';state.moderatedMutedAt=0}
     state.stream?.getAudioTracks?.().forEach(track=>{track.enabled=state.micEnabled});
+    state.realtimeSession?.setMediaEnabled?.('audio',state.micEnabled);
     syncHouseDirectControls();updateRoomControlLabels();renderSeats();emitHouseActivityState();
     toast(state.micEnabled?'Micrófono activado. La tarea puede contar si estás en una silla.':'Micrófono silenciado. La tarea queda pausada.');
   }
-  function toggleRoomCamera(force){
+  async function acquireReplacementVideoTrack(){
+    const replacement=await navigator.mediaDevices.getUserMedia({
+      video:{facingMode:{ideal:'user'},width:{ideal:720,max:1280},height:{ideal:1280,max:1920},frameRate:{ideal:24,max:30},resizeMode:{ideal:'none'}},
+      audio:false
+    });
+    const nextTrack=replacement.getVideoTracks()[0]||null;
+    if(!nextTrack)throw new Error('No se obtuvo una pista de cámara.');
+    const previous=state.stream?.getVideoTracks?.()[0]||null;
+    if(!(state.stream instanceof MediaStream))state.stream=new MediaStream();
+    if(previous){state.stream.removeTrack(previous);try{previous.stop()}catch{}}
+    nextTrack.enabled=true;
+    state.stream.addTrack(nextTrack);
+    return nextTrack;
+  }
+  async function toggleRoomCamera(force){
     if(state.mode!=='camera'){toast('La cámara solo está disponible en Sala con cámara.');return}
-    state.cameraEnabled=typeof force==='boolean'?force:!state.cameraEnabled;
-    state.stream?.getVideoTracks?.().forEach(track=>{track.enabled=state.cameraEnabled});
-    updateRoomControlLabels();renderSeats();attachRoomStreams();
-    toast(state.cameraEnabled?'Cámara reactivada.':'Cámara apagada. Sigues dentro de la sala.');
+    if(state.cameraToggleBusy)return;
+    const next=typeof force==='boolean'?force:!state.cameraEnabled;
+    state.cameraToggleBusy=true;
+    try{
+      if(!next){
+        state.cameraEnabled=false;
+        state.stream?.getVideoTracks?.().forEach(track=>{track.enabled=false});
+        state.realtimeSession?.setMediaEnabled?.('video',false);
+        await state.realtimeSession?.setCameraEnabled?.(false).catch(error=>console.warn('Estado remoto de cámara pausada:',error));
+        updateRoomControlLabels();renderSeats();attachRoomStreams();
+        toast('Cámara pausada. Los demás verán tu avatar, nombre y “Cámara pausada”.');
+        return;
+      }
+      let track=state.stream?.getVideoTracks?.().find(item=>item.readyState==='live')||null;
+      if(!track||track.muted)track=await acquireReplacementVideoTrack();
+      track.enabled=true;
+      state.cameraEnabled=true;
+      state.realtimeSession?.setMediaEnabled?.('video',true);
+      await state.realtimeSession?.replaceLocalStream?.(state.stream);
+      await state.realtimeSession?.setCameraEnabled?.(true).catch(error=>console.warn('Estado remoto de cámara activa:',error));
+      updateRoomControlLabels();renderSeats();attachRoomStreams();
+      setTimeout(async()=>{
+        const current=state.stream?.getVideoTracks?.().find(item=>item.readyState==='live')||null;
+        if(state.cameraEnabled&&current?.muted){
+          try{await acquireReplacementVideoTrack();renderSeats();attachRoomStreams()}catch(error){console.warn('Recuperación de cámara tras pausa:',error)}
+        }
+      },900);
+      toast('Cámara reactivada sin salir de la sala.');
+    }catch(error){
+      state.cameraEnabled=false;
+      state.stream?.getVideoTracks?.().forEach(track=>{track.enabled=false});
+      state.realtimeSession?.setMediaEnabled?.('video',false);
+      await state.realtimeSession?.setCameraEnabled?.(false).catch(()=>{});
+      updateRoomControlLabels();renderSeats();attachRoomStreams();
+      toast(error?.message||'No se pudo reactivar la cámara.');
+    }finally{state.cameraToggleBusy=false}
   }
   function toggleRoomChat(force,{silent=false,sync=true}={}){
     if(sync&&state.isGuest){toast('Solo el anfitrión puede cerrar o abrir el chat.');return}
@@ -1177,7 +1232,7 @@
     }
     try{
       const stream=await navigator.mediaDevices.getUserMedia({
-        video:state.mode==='camera'?{facingMode:'user',width:{ideal:1280},height:{ideal:720}}:false,
+        video:state.mode==='camera'?{facingMode:{ideal:'user'},width:{ideal:720,max:1280},height:{ideal:1280,max:1920},frameRate:{ideal:24,max:30},resizeMode:{ideal:'none'}}:false,
         audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}
       });
       state.stream=stream;
@@ -1235,6 +1290,7 @@
     state.remoteName=String(profile.name||state.remoteName||'Invitada');
     state.remotePhoto=String(profile.photo||state.remotePhoto||'jemmo-fish-nav.webp');
     state.remoteUid=incomingUid||String(state.remoteUid||'');
+    if(typeof profile.cameraEnabled==='boolean')state.remoteCameraEnabled=profile.cameraEnabled;
     if(houseContext.enabled){
       const status=String(profile.seatStatus||'').toLowerCase();
       state.remoteSeatActive=status?status==='seated':state.remoteSeatActive;
@@ -1332,6 +1388,7 @@
       onOutgoingMediaNeeded:()=>recoverLocalMedia(true),
       onRemoteStream:handleRemoteStream,onRemoteProfile:handleRemoteProfile,onLocalProfile:profile=>{state.ownUid=profile.uid||state.ownUid;state.ownName=profile.name||state.ownName;state.ownPhoto=profile.photo||state.ownPhoto;applyVipProfile(profile);if(state.ownPhoto&&!houseContext.enabled)$('roomAvatar').src=state.ownPhoto;defaultOccupants();renderSeats();renderGiftRecipients()},onStatus:handleRealtimeStatus,onMessage:handleRoomMessage,onChatState:handleRemoteChatState,onModeration:handleRoomModeration
     });
+    await state.realtimeSession.setCameraEnabled?.(state.cameraEnabled).catch(error=>console.warn('Estado inicial de cámara:',error));
     if(houseContext.enabled){
       state.realtimeSession.setOutgoingEnabled?.(state.houseSeatActive);
       await state.realtimeSession.setSeatState?.(state.houseSeatActive,state.localSeat||0).catch(error=>console.warn('Estado inicial del responsable:',error));
@@ -1365,6 +1422,7 @@
     state.realtimeSession=null;
     state.remoteStream=null;
     state.remoteConnected=false;
+    state.remoteCameraEnabled=true;
     state.remoteAudioBlocked=false;
     state.remoteAudioPlaying=false;
     showAudioUnlock(false);
@@ -1391,6 +1449,7 @@
     state.remotePhoto=state.remotePhoto||'jemmo-fish-nav.webp';
     state.remoteConnected=false;
     state.remoteSeatActive=false;
+    state.remoteCameraEnabled=true;
     state.micEnabled=!houseContext.enabled;
     state.cameraEnabled=state.mode==='camera';state.chatClosed=false;updateRoomControlLabels();toggleRoomChat(false,{silent:true,sync:false});
     const title=$('roomTitle').value.trim();
@@ -1470,6 +1529,7 @@
       const api=await waitRealtimeApi();
       state.realtimeSession=await api.joinGuestSession(meta.roomId,{mode:state.mode,localStream:stream,listenOnly:asListener,seat:state.localSeat,onRemoteStream:handleRemoteStream,onRemoteProfile:handleRemoteProfile,onLocalProfile:profile=>{state.ownUid=profile.uid||state.ownUid;state.ownName=profile.name||state.ownName||'Usuario JEMMO';state.ownPhoto=profile.photo||state.ownPhoto||'jemmo-fish-nav.webp';applyVipProfile(profile);defaultOccupants();renderSeats();renderGiftRecipients()},onStatus:handleRealtimeStatus,onMessage:handleRoomMessage,onChatState:handleRemoteChatState,onModeration:handleRoomModeration});
       state.realtimeSession.setOutgoingEnabled?.(!asListener);
+      await state.realtimeSession.setCameraEnabled?.(state.cameraEnabled&&!asListener).catch(error=>console.warn('Estado inicial de cámara invitada:',error));
       addChat(asListener?'JEMMO: Has entrado como oyente. Toca una silla libre para subir.':`JEMMO: Has entrado en la sala de ${meta.hostName||'la Casa'}.`,'system');
     }catch(error){
       console.warn('Unión a sala:',error);
@@ -1512,6 +1572,7 @@
     state.remotePhoto='jemmo-fish-nav.webp';
     state.remoteConnected=false;
     state.remoteSeatActive=false;
+    state.remoteCameraEnabled=true;
     state.micEnabled=false;
     state.cameraEnabled=false;
     state.chatClosed=false;
@@ -1973,7 +2034,10 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   async function recoverLocalMedia(force=false){
     if(!roomOpen||mediaRecoveryBusy)return false;
     const tracks=state.stream?.getTracks?.()||[];
-    const unhealthy=!tracks.length||tracks.some(track=>track.readyState!=='live'||track.muted);
+    const required=tracks.filter(track=>track.kind==='audio'||(track.kind==='video'&&state.mode==='camera'&&state.cameraEnabled));
+    const missingAudio=!tracks.some(track=>track.kind==='audio'&&track.readyState==='live');
+    const missingRequiredVideo=state.mode==='camera'&&state.cameraEnabled&&!tracks.some(track=>track.kind==='video'&&track.readyState==='live');
+    const unhealthy=missingAudio||missingRequiredVideo||required.some(track=>track.readyState!=='live'||track.muted);
     if(!force&&!unhealthy&&Date.now()-lastMediaRecoveryAt<2500)return true;
     mediaRecoveryBusy=true;
     try{
@@ -2042,7 +2106,7 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   window.addEventListener('focus',()=>{if(roomOpen)void recoverLocalMedia(false).finally(emitHouseActivityState)});
   window.addEventListener('pageshow',()=>{if(roomOpen)void recoverLocalMedia(true).finally(emitHouseActivityState)});
 
-  window.JemmoHouseRoomControls={version:'43.0-test',toggleSeat:toggleHouseSeat,toggleMic:toggleRoomMicro,getState:()=>{const audioTrack=state.stream?.getAudioTracks?.().find(track=>track.readyState==='live')||null;return{houseSeatActive:state.houseSeatActive,micEnabled:state.micEnabled,mediaActive:Boolean(audioTrack&&audioTrack.enabled),mediaTrackLive:Boolean(audioTrack),taskMediaActive:Boolean(audioTrack&&(audioTrack.enabled||state.moderatedMuted)),moderatedMuted:state.moderatedMuted,moderatedByUid:state.moderatedByUid,moderatedMutedAt:state.moderatedMutedAt,localSeat:state.localSeat,roomOpen,sessionActive:Boolean(roomOpen&&state.realtimeSession)}}};
+  window.JemmoHouseRoomControls={version:'53.0',toggleSeat:toggleHouseSeat,toggleMic:toggleRoomMicro,getState:()=>{const audioTrack=state.stream?.getAudioTracks?.().find(track=>track.readyState==='live')||null;return{houseSeatActive:state.houseSeatActive,micEnabled:state.micEnabled,mediaActive:Boolean(audioTrack&&audioTrack.enabled),mediaTrackLive:Boolean(audioTrack),taskMediaActive:Boolean(audioTrack&&(audioTrack.enabled||state.moderatedMuted)),moderatedMuted:state.moderatedMuted,moderatedByUid:state.moderatedByUid,moderatedMutedAt:state.moderatedMutedAt,localSeat:state.localSeat,roomOpen,sessionActive:Boolean(roomOpen&&state.realtimeSession)}}};
   window.addEventListener('pagehide',()=>{void save()});
   window.addEventListener('beforeunload',stopCamera);
 })();

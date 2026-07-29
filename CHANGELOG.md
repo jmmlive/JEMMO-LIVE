@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## PRUEBA 53 · 29/07/2026
+### LIVE estable, cámara pausada y TURN desplegable
+- Reconexión automática acotada a 3 intentos y una ventana de 90 segundos.
+- Recuperación confirmada únicamente al detectar bytes RTP entrantes.
+- Estados terminales para permisos, protocolo, aforo y medios del anfitrión.
+- Vídeo LIVE siempre completo con `contain` y fondo desenfocado.
+- Estado de cámara sincronizado en Salas para anfitrión e invitado.
+- Tarjeta de cámara pausada con avatar, nombre y texto explícito.
+- Reactivación mediante sustitución de pista sin renegociaciones innecesarias.
+- Cloud Function autenticada para credenciales TURN temporales.
+- Protocolo `jemmo-live-webrtc-v4` y caché PRUEBA 53.
+
 ## PRUEBA 52 · 29/07/2026
 ### UID Firebase, sesión única y cámara natural
 - Señalización basada exclusivamente en Firebase Authentication UID y `users/{uid}`.

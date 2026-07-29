@@ -1,0 +1,20 @@
+JEMMO LIVE · VALIDACIÓN TÉCNICA PRUEBA 53
+Fecha: 29/07/2026
+
+VALIDACIONES EJECUTADAS
+- Integridad del ZIP base PRUEBA 52.
+- Estructura y archivos obligatorios.
+- Sintaxis de JavaScript externo.
+- Sintaxis de scripts inline en HTML.
+- Referencias de caché y versiones.
+- Máquina de reconexión acotada.
+- Sincronización explícita de cámara pausada.
+- Sustitución de pistas y recuperación diferenciada.
+- Sintaxis de Cloud Function TURN.
+- Generación y prueba de ZIP completo e incremental.
+
+LÍMITES DE LA VALIDACIÓN
+- Una revisión estática no demuestra conectividad entre dos operadoras móviles.
+- TURN requiere servidor coturn y despliegue real.
+- Las reglas deben publicarse en Firebase; incluir el archivo en GitHub no las activa.
+- La prueba física Jesús ↔ Ruth sigue siendo obligatoria.

@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · SALA DE CASA AMPLIADA Y FOTO DE PERFIL PRUEBA 28
+/* JEMMO LIVE V1 · CÁMARA PAUSADA SIN PANTALLA NEGRA Y REPLACE TRACK · PRUEBA 53
    Señalización WebRTC, chat y moderación de prueba mediante Firestore. No es infraestructura de producción.
    La Sala de Casa usa el avatar real del perfil, sillas ampliadas y chat colocado en la zona inferior. */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
@@ -28,12 +28,62 @@ const app = getApps()[0] || initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const ROOM_COLLECTION = 'salasPruebaWebRTC';
-const RTC_CONFIG = {
-  iceServers: [
-    { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302', 'stun:stun.cloudflare.com:3478', 'stun:global.stun.twilio.com:3478'] }
-  ],
-  iceCandidatePoolSize: 6
-};
+const DEFAULT_STUN_SERVERS = [
+  { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302', 'stun:stun.cloudflare.com:3478', 'stun:global.stun.twilio.com:3478'] }
+];
+let rtcCredentialsPromise = null;
+
+function configuredRtcConfig() {
+  const configured = window.JEMMO_RTC_CONFIG && typeof window.JEMMO_RTC_CONFIG === 'object'
+    ? window.JEMMO_RTC_CONFIG
+    : {};
+  const iceServers = Array.isArray(configured.iceServers) && configured.iceServers.length
+    ? configured.iceServers
+    : DEFAULT_STUN_SERVERS;
+  return { ...configured, iceServers, iceCandidatePoolSize: Number(configured.iceCandidatePoolSize || 6) };
+}
+
+function configHasTurn(config) {
+  return (config?.iceServers || []).some(server => {
+    const urls = Array.isArray(server?.urls) ? server.urls : [server?.urls];
+    return urls.some(url => /^turns?:/i.test(String(url || '')));
+  });
+}
+
+async function resolveRtcConfig(user) {
+  const current = configuredRtcConfig();
+  if (configHasTurn(current)) return current;
+  const endpoint = String(window.JEMMO_RTC_CREDENTIALS_ENDPOINT || '').trim();
+  if (!endpoint || !user?.getIdToken) return current;
+  if (!rtcCredentialsPromise) {
+    rtcCredentialsPromise = (async () => {
+      const token = await user.getIdToken();
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+        cache: 'no-store',
+        credentials: 'omit',
+        mode: 'cors'
+      });
+      if (!response.ok) throw new Error(`TURN no disponible (${response.status}).`);
+      const payload = await response.json();
+      if (!Array.isArray(payload?.iceServers) || !payload.iceServers.length) {
+        throw new Error('El servicio TURN devolvió una configuración incompleta.');
+      }
+      window.JEMMO_RTC_CONFIG = {
+        ...current,
+        iceServers: payload.iceServers,
+        iceCandidatePoolSize: Number(payload.iceCandidatePoolSize || current.iceCandidatePoolSize || 6)
+      };
+      return configuredRtcConfig();
+    })().catch(error => {
+      rtcCredentialsPromise = null;
+      console.warn('[JEMMO ROOM] No se pudieron obtener credenciales TURN temporales.', error);
+      return current;
+    });
+  }
+  return rtcCredentialsPromise;
+}
 
 function clean(value, max = 80) {
   return String(value || '').trim().slice(0, max);
@@ -316,6 +366,16 @@ function configureRoomControls({ roomRef, user }) {
 function makeSession({ role, roomId, roomRef, houseRoomRef, permanentHouseRoom = false, peer, remoteStream, unsubs, onStatus, sendChatMessage, setChatClosed, sendModerationAction, renegotiate, requestRenegotiation, expectVideo, outgoingEnabled = true }) {
   let closed = false;
   let outgoing = Boolean(outgoingEnabled);
+  const desiredByKind = new Map();
+  peer.getSenders().forEach(sender => { if (sender.track?.kind) desiredByKind.set(sender.track.kind, sender.track.enabled !== false); });
+  const shouldExpectVideo = () => typeof expectVideo === 'function' ? Boolean(expectVideo()) : Boolean(expectVideo);
+  const applyDesiredMediaState = () => {
+    peer.getSenders().forEach(sender => {
+      if (!sender.track?.kind) return;
+      const desired = desiredByKind.has(sender.track.kind) ? desiredByKind.get(sender.track.kind) : true;
+      sender.track.enabled = Boolean(outgoing && desired);
+    });
+  };
   const close = async ({ endRoom = role === 'host' } = {}) => {
     if (closed) return;
     closed = true;
@@ -342,16 +402,18 @@ function makeSession({ role, roomId, roomRef, houseRoomRef, permanentHouseRoom =
     inviteUrl: new URL(`salas.html?join=${encodeURIComponent(roomId)}`, location.href).href,
     peer,
     remoteStream,
-    hasExpectedRemoteMedia: () => expectedRemoteMedia(remoteStream, Boolean(expectVideo)),
+    hasExpectedRemoteMedia: () => expectedRemoteMedia(remoteStream, shouldExpectVideo()),
     sendChatMessage,
     setChatClosed,
     sendModerationAction,
     async replaceLocalStream(stream) {
       if (!(stream instanceof MediaStream)) return;
-      let addedTrack = false;
+      let topologyChanged = false;
       const byKind = new Map(stream.getTracks().map(track => [track.kind, track]));
       for (const track of stream.getTracks()) {
-        track.enabled = outgoing;
+        const requestedEnabled = track.enabled !== false;
+        desiredByKind.set(track.kind, requestedEnabled);
+        track.enabled = Boolean(outgoing && requestedEnabled);
         try { if (track.kind === 'audio') track.contentHint = 'speech'; } catch {}
         const transceiver = peer.getTransceivers().find(item => !item.stopped && (
           item.sender?.track?.kind === track.kind || item.receiver?.track?.kind === track.kind
@@ -365,7 +427,7 @@ function makeSession({ role, roomId, roomRef, houseRoomRef, permanentHouseRoom =
           }
         } else if (role === 'host') {
           peer.addTransceiver(track, { direction: 'sendrecv', streams: [stream] });
-          addedTrack = true;
+          topologyChanged = true;
         } else {
           console.warn(`JEMMO Room: no existe transceptor remoto para ${track.kind}.`);
         }
@@ -374,13 +436,37 @@ function makeSession({ role, roomId, roomRef, houseRoomRef, permanentHouseRoom =
         const kind = sender.track?.kind;
         if (kind && !byKind.has(kind)) await sender.replaceTrack(null);
       }
-      if (role === 'host') await renegotiate?.(addedTrack ? 'track-added' : 'media-restored');
-      else await requestRenegotiation?.('guest-media-restored');
+      if (topologyChanged) {
+        if (role === 'host') await renegotiate?.('track-added');
+        else await requestRenegotiation?.('guest-track-added');
+      }
     },
     setOutgoingEnabled(enabled) {
-      outgoing = Boolean(enabled);
-      peer.getSenders().forEach(sender => { if (sender.track) sender.track.enabled = outgoing; });
+      const next = Boolean(enabled);
+      if (outgoing && !next) {
+        peer.getSenders().forEach(sender => { if (sender.track?.kind) desiredByKind.set(sender.track.kind, sender.track.enabled !== false); });
+      }
+      outgoing = next;
+      applyDesiredMediaState();
       return outgoing;
+    },
+    setMediaEnabled(kind, enabled) {
+      const mediaKind = kind === 'video' ? 'video' : 'audio';
+      desiredByKind.set(mediaKind, Boolean(enabled));
+      applyDesiredMediaState();
+      return Boolean(enabled);
+    },
+    async setCameraEnabled(enabled) {
+      const active = Boolean(enabled);
+      desiredByKind.set('video', active);
+      applyDesiredMediaState();
+      const prefix = role === 'host' ? 'host' : 'guest';
+      await updateDoc(roomRef, {
+        [`${prefix}CameraEnabled`]: active,
+        [`${prefix}CameraUpdatedAtMs`]: Date.now(),
+        updatedAt: serverTimestamp()
+      });
+      return active;
     },
     async setSeatState(seated, seat = 0) {
       const prefix = role === 'host' ? 'host' : 'guest';
@@ -481,7 +567,8 @@ async function getRoomPreview(code) {
     hostSeat: Math.max(0, Number(data.hostSeat) || 0),
     houseId: clean(data.houseId, 80),
     houseName: clean(data.houseName, 60),
-    status: clean(data.status) || 'open'
+    status: clean(data.status) || 'open',
+    hostCameraEnabled: data.hostCameraEnabled !== false
   };
 }
 
@@ -510,7 +597,8 @@ async function createHostSession(options = {}) {
   const houseName = clean(options.houseName, 60);
   const houseRoomRef = houseId ? doc(db, 'casas', houseId, 'salaActual', 'estado') : null;
   const permanentHouseRoom = Boolean(options.permanentHouseRoom && houseId);
-  const peer = new RTCPeerConnection(RTC_CONFIG);
+  const rtcConfig = await resolveRtcConfig(user);
+  const peer = new RTCPeerConnection(rtcConfig);
   const remoteStream = new MediaStream();
   const unsubs = [];
   const localStream = options.localStream;
@@ -535,6 +623,7 @@ async function createHostSession(options = {}) {
   let repeatOfferSent = false;
   let pendingReason = '';
   let moderationActionSeen = '';
+  let guestCameraEnabled = options.mode === 'camera';
 
   async function publishOffer(reason = 'refresh') {
     if (peer.signalingState === 'closed') return;
@@ -615,6 +704,10 @@ async function createHostSession(options = {}) {
     hostSeatStatus: options.listenOnly ? 'listener' : 'seated',
     hostSeat: options.listenOnly ? 0 : Math.max(1, Number(options.seat) || 1),
     hostSeatUpdatedAtMs: Date.now(),
+    hostCameraEnabled: options.mode === 'camera' && localStream.getVideoTracks().some(track => track.readyState === 'live' && track.enabled !== false),
+    hostCameraUpdatedAtMs: Date.now(),
+    guestCameraEnabled: false,
+    guestCameraUpdatedAtMs: Date.now(),
     houseId,
     houseName,
     officialHouseRoom: Boolean(houseId),
@@ -649,7 +742,8 @@ async function createHostSession(options = {}) {
     const data = snapshot.data() || {};
     if (data.status === 'ended') options.onStatus?.({ state: 'closed', text: 'La sala finalizó' });
     const guestUid = clean(data.guestUid, 160);
-    if (guestUid && guestUid !== user.uid && data.guestName) options.onRemoteProfile?.({ uid: guestUid, name: clean(data.guestName) || 'Invitada', photo: safeProfilePhoto(data.guestPhoto), verified: Boolean(data.guestVerified), seatStatus: clean(data.guestSeatStatus, 20), seat: Math.max(0, Number(data.guestSeat) || 0) });
+    if (typeof data.guestCameraEnabled === 'boolean') guestCameraEnabled = data.guestCameraEnabled;
+    if (guestUid && guestUid !== user.uid && data.guestName) options.onRemoteProfile?.({ uid: guestUid, name: clean(data.guestName) || 'Invitada', photo: safeProfilePhoto(data.guestPhoto), verified: Boolean(data.guestVerified), seatStatus: clean(data.guestSeatStatus, 20), seat: Math.max(0, Number(data.guestSeat) || 0), cameraEnabled: guestCameraEnabled });
     if (typeof data.chatClosed === 'boolean') options.onChatState?.(Boolean(data.chatClosed));
     const moderation = data.moderationAction || null;
     if (moderation?.id && moderation.id !== moderationActionSeen) {
@@ -669,7 +763,7 @@ async function createHostSession(options = {}) {
             setTimeout(() => publishOffer('confirmar-recepcion-invitada'), 900);
           }
           setTimeout(() => {
-            if (expectedRemoteMedia(remoteStream, options.mode === 'camera')) {
+            if (expectedRemoteMedia(remoteStream, options.mode === 'camera' && guestCameraEnabled)) {
               guestMediaRetryCount = 0;
               return;
             }
@@ -706,7 +800,7 @@ async function createHostSession(options = {}) {
     onStatus: options.onStatus, sendChatMessage, setChatClosed, sendModerationAction,
     renegotiate: publishOffer,
     requestRenegotiation: null,
-    expectVideo: options.mode === 'camera'
+    expectVideo: () => options.mode === 'camera' && guestCameraEnabled
   });
   if (houseId) session.inviteUrl = new URL(`salas.html?join=${encodeURIComponent(id)}&houseRoom=1&house=${encodeURIComponent(houseId)}&houseName=${encodeURIComponent(houseName)}`, location.href).href;
   return session;
@@ -723,7 +817,8 @@ async function joinGuestSession(code, options = {}) {
   if (data.hostUid === user.uid) throw new Error('Abre la sala desde el dispositivo anfitrión.');
   const activeBanUntil = Number(data.testBans?.[user.uid]) || 0;
   if (activeBanUntil > Date.now()) throw new Error(`No puedes volver a entrar durante ${Math.max(1, Math.ceil((activeBanUntil - Date.now()) / 1000))} segundos.`);
-  const peer = new RTCPeerConnection(RTC_CONFIG);
+  const rtcConfig = await resolveRtcConfig(user);
+  const peer = new RTCPeerConnection(rtcConfig);
   const remoteStream = new MediaStream();
   const unsubs = [];
   const localStream = options.localStream;
@@ -744,6 +839,7 @@ async function joinGuestSession(code, options = {}) {
   let queuedOffer = null;
   let hostRequestSeen = 0;
   let moderationActionSeen = '';
+  let hostCameraEnabled = data.hostCameraEnabled !== false;
   async function applyOffer(offerData, revision) {
     if (!offerData || revision <= appliedOfferRevision) return;
     if (applyingOffer) {
@@ -770,6 +866,8 @@ async function joinGuestSession(code, options = {}) {
         guestVerified: profile.verified,
         guestSeatStatus: options.listenOnly ? 'listener' : 'seated',
         guestSeat: options.listenOnly ? 0 : Math.max(1, Number(options.seat) || 2),
+        guestCameraEnabled: options.mode === 'camera' && !options.listenOnly && localStream.getVideoTracks().some(track => track.readyState === 'live' && track.enabled !== false),
+        guestCameraUpdatedAtMs: Date.now(),
         status: 'connected',
         joinedAt: serverTimestamp(),
         updatedAt: serverTimestamp()
@@ -808,13 +906,15 @@ async function joinGuestSession(code, options = {}) {
     if (!roomSnapshot.exists()) return;
     const room = roomSnapshot.data() || {};
     if (room.status === 'ended') options.onStatus?.({ state: 'closed', text: 'El anfitrión finalizó la sala' });
+    if (typeof room.hostCameraEnabled === 'boolean') hostCameraEnabled = room.hostCameraEnabled;
     options.onRemoteProfile?.({
       uid: clean(room.hostUid, 160) || preview.hostUid,
       name: clean(room.hostName) || preview.hostName,
       photo: safeProfilePhoto(room.hostPhoto || preview.hostPhoto),
       verified: Boolean(room.hostVerified),
       seatStatus: clean(room.hostSeatStatus, 20) || 'listener',
-      seat: Math.max(0, Number(room.hostSeat) || 0)
+      seat: Math.max(0, Number(room.hostSeat) || 0),
+      cameraEnabled: hostCameraEnabled
     });
     if (typeof room.chatClosed === 'boolean') options.onChatState?.(Boolean(room.chatClosed));
     const moderation = room.moderationAction || null;
@@ -832,7 +932,7 @@ async function joinGuestSession(code, options = {}) {
   }, error => console.warn('JEMMO Room guest snapshot:', error)));
 
   const verifyTimer = setTimeout(() => {
-    if (!expectedRemoteMedia(remoteStream, options.mode === 'camera')) void requestRenegotiation('invitada-no-recibe-anfitrion');
+    if (!expectedRemoteMedia(remoteStream, options.mode === 'camera' && hostCameraEnabled)) void requestRenegotiation('invitada-no-recibe-anfitrion');
   }, 5500);
   unsubs.push(() => clearTimeout(verifyTimer));
 
@@ -841,14 +941,14 @@ async function joinGuestSession(code, options = {}) {
   });
   const { setChatClosed, sendModerationAction } = configureRoomControls({ roomRef, user });
   options.onLocalProfile?.(profile);
-  options.onRemoteProfile?.({ uid: preview.hostUid || clean(data.hostUid, 160), name: preview.hostName, photo: safeProfilePhoto(preview.hostPhoto), verified: Boolean(data.hostVerified), seatStatus: clean(data.hostSeatStatus, 20) || preview.hostSeatStatus || 'listener', seat: Math.max(0, Number(data.hostSeat) || Number(preview.hostSeat) || 0) });
+  options.onRemoteProfile?.({ uid: preview.hostUid || clean(data.hostUid, 160), name: preview.hostName, photo: safeProfilePhoto(preview.hostPhoto), verified: Boolean(data.hostVerified), seatStatus: clean(data.hostSeatStatus, 20) || preview.hostSeatStatus || 'listener', seat: Math.max(0, Number(data.hostSeat) || Number(preview.hostSeat) || 0), cameraEnabled: hostCameraEnabled });
   options.onStatus?.({ state: 'connecting', text: 'Entrando en la sala…' });
   return makeSession({
     role: 'guest', roomId: preview.roomId, roomRef, peer, remoteStream, unsubs,
     onStatus: options.onStatus, sendChatMessage, setChatClosed, sendModerationAction,
     renegotiate: null,
     requestRenegotiation,
-    expectVideo: options.mode === 'camera',
+    expectVideo: () => options.mode === 'camera' && hostCameraEnabled,
     outgoingEnabled: !options.listenOnly
   });
 }
@@ -859,7 +959,7 @@ async function getCurrentProfile() {
 }
 
 window.JemmoRoomRealtime = Object.freeze({
-  version: '1.9.0-test',
+  version: '1.10.0-prueba53',
   getCurrentProfile,
   getHouseRoomAccess,
   getRoomPreview,

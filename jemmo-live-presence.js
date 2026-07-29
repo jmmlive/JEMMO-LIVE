@@ -83,9 +83,9 @@ async function publishStart(detail={}){
     heartbeatAtMs:now,
     updatedAt:serverTimestamp(),
     signalReady:detail.signalReady===true,
-    protocol:clean(detail.protocol||'jemmo-live-webrtc-v3',80),
+    protocol:clean(detail.protocol||'jemmo-live-webrtc-v4',80),
     roomSessionId:clean(detail.roomSessionId||'',180),
-    version:52
+    version:53
   };
   try{
     await setDoc(doc(db,PRESENCE_COLLECTION,uid),payload,{merge:true});
@@ -104,7 +104,7 @@ async function heartbeat(){
   const now=Date.now();
   try{
     await setDoc(doc(db,PRESENCE_COLLECTION,currentUser.uid),{
-      active:true,status:'live',heartbeatAt:serverTimestamp(),heartbeatAtMs:now,updatedAt:serverTimestamp(),version:52
+      active:true,status:'live',heartbeatAt:serverTimestamp(),heartbeatAtMs:now,updatedAt:serverTimestamp(),version:53
     },{merge:true});
   }catch(error){console.warn('JEMMO LIVE: no se pudo actualizar el latido de presencia.',error)}
 }
@@ -118,7 +118,7 @@ async function publishEnd(reason='manual'){
   const now=Date.now();
   try{
     await setDoc(doc(db,PRESENCE_COLLECTION,currentUser.uid),{
-      active:false,status:'ended',endReason:clean(reason,40),endedAt:serverTimestamp(),endedAtMs:now,heartbeatAt:serverTimestamp(),heartbeatAtMs:now,updatedAt:serverTimestamp(),version:52
+      active:false,status:'ended',endReason:clean(reason,40),endedAt:serverTimestamp(),endedAtMs:now,heartbeatAt:serverTimestamp(),heartbeatAtMs:now,updatedAt:serverTimestamp(),version:53
     },{merge:true});
   }catch(error){console.warn('JEMMO LIVE: no se pudo cerrar la presencia.',error)}
 }
@@ -130,9 +130,9 @@ window.addEventListener('jemmo-live-webrtc-state',event=>{
   if(!broadcasting||!currentUser)return;
   const detail=event.detail||{};
   if(detail.status==='host-ready'){
-    void setDoc(doc(db,PRESENCE_COLLECTION,currentUser.uid),{signalReady:true,signalUpdatedAt:serverTimestamp(),signalUpdatedAtMs:Date.now(),protocol:'jemmo-live-webrtc-v3',roomSessionId:clean(detail.roomSessionId||'',180),version:52},{merge:true}).catch(()=>{});
+    void setDoc(doc(db,PRESENCE_COLLECTION,currentUser.uid),{signalReady:true,signalUpdatedAt:serverTimestamp(),signalUpdatedAtMs:Date.now(),protocol:'jemmo-live-webrtc-v4',roomSessionId:clean(detail.roomSessionId||'',180),version:53},{merge:true}).catch(()=>{});
   }else if(detail.status==='host-error'||detail.status==='host-listener-error'){
-    void setDoc(doc(db,PRESENCE_COLLECTION,currentUser.uid),{signalReady:false,signalError:clean(detail.code||detail.status,80),signalUpdatedAt:serverTimestamp(),signalUpdatedAtMs:Date.now(),version:52},{merge:true}).catch(()=>{});
+    void setDoc(doc(db,PRESENCE_COLLECTION,currentUser.uid),{signalReady:false,signalError:clean(detail.code||detail.status,80),signalUpdatedAt:serverTimestamp(),signalUpdatedAtMs:Date.now(),version:53},{merge:true}).catch(()=>{});
   }
 });
 

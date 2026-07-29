@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#09000f"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="favicon-64.png"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><style>html.jemmo-auth-pending body{visibility:hidden}</style><script>document.documentElement.classList.add("jemmo-auth-pending");setTimeout(()=>{if(!document.documentElement.classList.contains("jemmo-auth-pending"))return;let uid="";try{uid=localStorage.getItem("jemmo_active_uid")||""}catch{}if(!uid)try{uid=sessionStorage.getItem("jemmo_active_uid")||""}catch{}if(uid)document.documentElement.classList.remove("jemmo-auth-pending");else location.replace("acceso.html?sesion=timeout")},5500)</script><script>(()=>{try{const p=new URLSearchParams(location.search);if((p.get("mode")==="viewer"||p.has("watch"))&&(p.get("hostUid")||p.get("watch")))document.documentElement.classList.add("jemmo-viewer-route")}catch{}})();</script>
-  <title>JEMMO LIVE V1 · LIVE Y ESPECTADOR WEBRTC · PRUEBA 52</title>
+  <title>JEMMO LIVE V1 · LIVE Y ESPECTADOR WEBRTC · PRUEBA 53</title>
   <style>
     :root{
       color-scheme:dark;
@@ -1129,7 +1129,7 @@
     .jl-chatbar.chat-closed form{opacity:.68}.jl-chatbar.chat-closed input{cursor:not-allowed}
 
 
-    /* PRUEBA 52 · UID REAL, SESIÓN DE SALA Y ENCUADRE NATURAL SIN RECORTE */
+    /* PRUEBA 53 · UID REAL, SESIÓN DE SALA Y ENCUADRE NATURAL SIN RECORTE */
     html.jemmo-viewer-route #prepScreen{display:none!important}
     html.jemmo-viewer-route #broadcastScreen{display:block!important}
     body.viewer-mode{overflow:hidden;background:#000}
@@ -1438,7 +1438,7 @@
       <a href="chili-ia.html#soporte"><span>?</span><span><b>Ayuda y soporte</b><small>Soporte humano y asistencia</small></span><i>›</i></a>
       <a href="acceso.html" data-jemmo-logout><span>↪</span><span><b>Cerrar sesión</b></span><i>›</i></a>
     </nav>
-    <div class="jl-version">JEMMO LIVE V1 · UID REAL Y CÁMARA NATURAL PRUEBA 52</div>
+    <div class="jl-version">JEMMO LIVE V1 · UID REAL Y CÁMARA NATURAL PRUEBA 53</div>
   </aside>
 
   <div class="jl-toast" id="toast"></div>
@@ -1462,12 +1462,12 @@
   </nav>
 
   <script type="module" src="jemmo-session.js"></script>
-  <script src="pwa-register.js?v=52"></script>
+  <script src="pwa-register.js?v=53"></script>
   <script src="jemmo-wallet.js?v=46"></script>
   <script src="jemmo-house-finance.js"></script>
-  <script type="module" src="jemmo-live-presence.js?v=52"></script>
-  <script src="jemmo-live-rtc-config.js?v=52"></script>
-  <script type="module" src="jemmo-live-webrtc.js?v=52"></script>
+  <script type="module" src="jemmo-live-presence.js?v=53"></script>
+  <script src="jemmo-live-rtc-config.js?v=53"></script>
+  <script type="module" src="jemmo-live-webrtc.js?v=53"></script>
   <script src="jemmo-prep-storage.js"></script>
   <script type="module" src="jemmo-personalization-runtime.js"></script>
   <script>
@@ -1780,12 +1780,14 @@
       const sourceRatio=sourceWidth&&sourceHeight?sourceWidth/sourceHeight:0;
       const targetRatio=targetWidth/targetHeight;
       const relativeDifference=sourceRatio?Math.abs(sourceRatio-targetRatio)/targetRatio:1;
-      const naturalFit=relativeDifference<=0.06?"cover":"contain";
+      const naturalFit="contain";
       video.style.setProperty("--jemmo-camera-fit",naturalFit);
       const backdrop=backdropFor(video);
       if(backdrop)backdrop.classList.toggle("is-active",naturalFit==="contain"&&Boolean(video.srcObject));
       video.dataset.cameraFit=naturalFit;
       video.dataset.sourceRatio=sourceRatio?sourceRatio.toFixed(4):"";
+      video.dataset.targetRatio=targetRatio?targetRatio.toFixed(4):"";
+      video.dataset.ratioDifference=Number.isFinite(relativeDifference)?relativeDifference.toFixed(4):"";
     }
     function refreshAllCameraFraming(){
       [videos.main,videos.broadcast].forEach(applyNaturalCameraFraming);
@@ -2220,7 +2222,7 @@
       emitLiveTaskState();
       showEventTicker("Tu LIVE ha comenzado · cámara activa y controles compactos","🔴");
       const rtcState=window.JemmoLiveRTC?.getState?.()||{};
-      window.dispatchEvent(new CustomEvent("jemmo-live-presence-start",{detail:{title:$("liveTitle").value.trim(),description:$("liveDescription").value.trim(),visibility:$("liveVisibility").value,signalReady:true,protocol:"jemmo-live-webrtc-v3",roomSessionId:String(rtcState.roomSessionId||"")}}));
+      window.dispatchEvent(new CustomEvent("jemmo-live-presence-start",{detail:{title:$("liveTitle").value.trim(),description:$("liveDescription").value.trim(),visibility:$("liveVisibility").value,signalReady:true,protocol:"jemmo-live-webrtc-v4",roomSessionId:String(rtcState.roomSessionId||"")}}));
       showLiveEntrance();
       playFishSplash();
     });

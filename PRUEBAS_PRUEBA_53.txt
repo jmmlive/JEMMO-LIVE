@@ -1,0 +1,49 @@
+JEMMO LIVE · PLAN DE PRUEBAS PRUEBA 53
+
+PREPARACIÓN
+1. Publicar archivos y reglas PRUEBA 53.
+2. Cerrar completamente la PWA en ambos móviles.
+3. Abrir de nuevo y confirmar versión/caché PRUEBA 53.
+4. Ruth y Jesús deben iniciar sesión con sus cuentas Firebase reales.
+
+A. CÁMARA NATURAL DEL ANFITRIÓN
+1. Ruth inicia LIVE con cámara frontal.
+2. Confirmar rostro completo, sin recorte lateral, doble zoom ni acercamiento excesivo.
+3. Cambiar a cámara trasera y repetir.
+4. Girar el móvil una vez y volver a vertical.
+RESULTADO: cuadro completo; el fondo puede desenfocarse, pero la imagen principal no se recorta.
+
+B. ENTRADA DEL ESPECTADOR
+1. Jesús entra desde PERSONAS EN DIRECTO.
+2. Confirmar que recibe audio y vídeo.
+3. Si falla, observar los mensajes: no debe girar indefinidamente.
+4. Esperar la recuperación automática.
+RESULTADO: máximo 3 intentos en 90 segundos; después muestra error estable y botón manual cuando corresponda.
+
+C. CAMBIO DE RED
+1. Con LIVE conectado, desactivar y reactivar datos durante unos segundos.
+2. Confirmar reconexión única, sin varias capas de audio ni múltiples vídeos.
+3. Verificar que el contador solo se limpia cuando vuelve el tráfico real.
+
+D. SALA CON CÁMARA · ANFITRIÓN
+1. Abrir Sala con cámara y conectar al invitado.
+2. Anfitrión pausa cámara.
+RESULTADO REMOTO: avatar, nombre y “Cámara pausada”; nunca negro.
+3. Reactivar.
+RESULTADO: vuelve el vídeo sin duplicar audio ni expulsar al invitado.
+4. Repetir 5 veces.
+
+E. SALA CON CÁMARA · INVITADO
+Repetir D desde el móvil del invitado y comprobar el estado en el anfitrión.
+
+F. PERMISOS
+1. Denegar cámara o micrófono de forma deliberada.
+RESULTADO: error terminal claro; no debe intentar reconectar indefinidamente.
+
+G. TURN, SOLO DESPUÉS DEL DESPLIEGUE
+1. Confirmar candidatos ICE de tipo relay.
+2. Probar en dos redes móviles distintas.
+3. Mantener 10 minutos y hacer una pausa/reactivación de cámara.
+
+REGISTRO
+Anotar por prueba: móvil, red, hora, resultado, captura y cualquier mensaje exacto. Guardar el registro Word de PRUEBA 53 junto al ZIP.

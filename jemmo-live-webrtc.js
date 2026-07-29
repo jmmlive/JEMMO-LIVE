@@ -19,8 +19,8 @@ const app=getApps()[0]||initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 
-const VERSION=52;
-const PROTOCOL='jemmo-live-webrtc-v3';
+const VERSION=53;
+const PROTOCOL='jemmo-live-webrtc-v4';
 const SIGNAL_COLLECTION='liveSignals';
 const PRESENCE_COLLECTION='livePresences';
 const PRESENCE_STALE_MS=180000;
@@ -29,7 +29,8 @@ const ICE_GATHER_TIMEOUT_MS=8500;
 const ANSWER_TIMEOUT_MS=16000;
 const CONNECT_TIMEOUT_MS=28000;
 const MEDIA_TIMEOUT_MS=12000;
-const AUTO_RETRY_LIMIT=4;
+const AUTO_RETRY_LIMIT=3;
+const RECONNECT_HARD_WINDOW_MS=90000;
 const DEFAULT_MAX_P2P_VIEWERS=8;
 const FIRESTORE_READ_TIMEOUT_MS=10000;
 const FIRESTORE_WRITE_TIMEOUT_MS=12000;
@@ -102,6 +103,8 @@ let presenceUnsubscribe=null;
 let roomUnsubscribe=null;
 let reconnectTimer=0;
 let automaticAttempts=0;
+let reconnectWindowStartedAt=0;
+let reconnectReasonCode='';
 let networkListenersBound=false;
 let activePresenceSeen=false;
 let activeRoomSeen=false;
@@ -267,7 +270,7 @@ function isPermissionError(error){
 }
 
 function permissionMessage(action='usar la señalización'){
-  return `Firestore bloqueó ${action}. Debes añadir el bloque FIRESTORE_REGLAS_WEBRTC_PRUEBA_52 a las reglas actuales y publicarlas.`;
+  return `Firestore bloqueó ${action}. Debes añadir el bloque FIRESTORE_REGLAS_WEBRTC_PRUEBA_53 a las reglas actuales y publicarlas.`;
 }
 
 
@@ -682,11 +685,12 @@ async function stopHost(reason='manual',{markEnded=true}={}){
   dispatchState('host-stopped',{reason});
 }
 
-function closeViewerPeer(reason='closed',{mark=true,clearMedia=true}={}){
-  clearTimeout(reconnectTimer);reconnectTimer=0;
+function closeViewerPeer(reason='closed',{mark=true,clearMedia=true,preserveReconnect=false}={}){
+  if(!preserveReconnect){clearTimeout(reconnectTimer);reconnectTimer=0;reconnectReasonCode=''}
   const state=viewerState;
   viewerState=null;
   if(!state)return;
+  state.closed=true;
   clearSessionTimers(state);
   state.unsubDoc?.();
   state.unsubCandidates?.();
@@ -702,20 +706,28 @@ function closeViewerPeer(reason='closed',{mark=true,clearMedia=true}={}){
 
 async function tryPlayRemote({fromGesture=false}={}){
   const video=ui.video();
-  if(!video||!video.srcObject)return false;
+  const state=viewerState;
+  if(!video||!video.srcObject||!state)return false;
   video.autoplay=true;
   video.playsInline=true;
   video.volume=1;
   if(fromGesture)video.muted=false;
   try{
     await video.play();
-    if(!video.muted){setViewerStatus('connected','Conectado al LIVE',{hideBox:true,quick:true});return true}
+    if(state.receivedVideo&&!video.muted){
+      setViewerStatus('connected','Conectado al LIVE',{hideBox:true,quick:true});
+      return true;
+    }
   }catch(error){
     console.warn('JEMMO WebRTC: reproducción con sonido bloqueada.',error);
   }
   video.muted=true;
   try{await video.play()}catch{}
-  setViewerStatus('connected','Vídeo conectado',{detail:'Toca el botón para activar el sonido en Android.',play:true,reconnect:true,quick:true});
+  if(state.receivedVideo){
+    setViewerStatus('connected','Vídeo recibido',{detail:state.receivedAudio?'Toca el botón para activar el sonido en Android.':'Esperando la pista de audio del emisor.',play:state.receivedAudio,reconnect:true,quick:true});
+  }else{
+    setViewerStatus('connecting','Ruta conectada; esperando vídeo…',{detail:'La conexión WebRTC está abierta, pero la pista de cámara todavía no ha llegado.',reconnect:true,quick:true});
+  }
   return false;
 }
 
@@ -744,9 +756,9 @@ async function validatePresenceAndRoom(){
   renderHostIdentity(presence);
   let room=roomSnap.exists()?roomSnap.data()||{}:null;
   if(!freshRoom(room)||!room?.streamReady)room=await waitForRoomReady(roomRef);
-  if(!freshRoom(room))throw Object.assign(new Error('El emisor está visible como EN LIVE, pero su sala de señalización no está activa. Ambos móviles deben usar la PRUEBA 52.'),{code:'room-not-ready'});
+  if(!freshRoom(room))throw Object.assign(new Error('El emisor está visible como EN LIVE, pero su sala de señalización no está activa. Ambos móviles deben usar la PRUEBA 53.'),{code:'room-not-ready'});
   if(clean(room.hostUid,180)!==routeHostUid)throw Object.assign(new Error('La sala LIVE no coincide con el UID real del emisor.'),{code:'host-uid-mismatch'});
-  if(clean(room.protocol,80)!==PROTOCOL||!clean(room.roomSessionId,180))throw Object.assign(new Error('El emisor usa una versión antigua de la conexión LIVE. Debe actualizar a PRUEBA 52 y reiniciar el directo.'),{code:'protocol-mismatch'});
+  if(clean(room.protocol,80)!==PROTOCOL||!clean(room.roomSessionId,180))throw Object.assign(new Error('El emisor usa una versión antigua de la conexión LIVE. Debe actualizar a PRUEBA 53 y reiniciar el directo.'),{code:'protocol-mismatch'});
   if(!room.streamReady)throw Object.assign(new Error('El emisor inició el LIVE sin una pista de cámara disponible.'),{code:'host-media-missing'});
   return{presence,room,roomRef};
 }
@@ -769,7 +781,14 @@ function startViewerStats(state){
     try{
       const bytes=await inboundBytes(state.pc);
       state.lastInboundBytes=bytes;
-      if(bytes>previous){previous=bytes;lastProgressAt=Date.now();state.mediaFlowing=true}
+      if(bytes>previous){
+        previous=bytes;
+        lastProgressAt=Date.now();
+        state.mediaFlowing=true;
+        automaticAttempts=0;
+        reconnectWindowStartedAt=0;
+        reconnectReasonCode='';
+      }
       if(state.connected&&Date.now()-lastProgressAt>MEDIA_TIMEOUT_MS){
         scheduleReconnect('La conexión se abrió, pero no llegaron datos de audio ni vídeo.',{code:'no-inbound-media'});
       }
@@ -790,7 +809,11 @@ async function startViewerInternal({manual=false}={}){
   if(!window.RTCPeerConnection){setViewerStatus('error','Este móvil no admite WebRTC',{detail:'Actualiza Chrome o abre JEMMO LIVE en un navegador compatible.',code:'webrtc-unsupported'});return false}
   if(!navigator.onLine){setViewerStatus('offline','Sin conexión a Internet',{detail:'Cuando vuelva la red, JEMMO intentará entrar de nuevo.',reconnect:true,code:'offline'});return false}
   await ensureRtcCredentials();
-  if(manual)automaticAttempts=0;
+  if(manual){
+    automaticAttempts=0;
+    reconnectWindowStartedAt=0;
+    clearTimeout(reconnectTimer);reconnectTimer=0;reconnectReasonCode='';
+  }
   closeViewerPeer('reconnecting');
   setViewerStatus('checking','Comprobando el LIVE…',{detail:'Verificando presencia, señalización y cámara del emisor.',quick:true});
 
@@ -800,10 +823,15 @@ async function startViewerInternal({manual=false}={}){
   }catch(error){
     const denied=isPermissionError(error);
     const code=clean(error?.code||'validation',80);
-    const terminal=['presence-missing','presence-stale'].includes(code);
+    const terminal=['presence-missing','presence-stale','protocol-mismatch','host-uid-mismatch','host-media-missing'].includes(code)||denied;
     const title=denied?'Firestore bloqueó la conexión':isTimeoutError(error)?'Firestore no respondió':error.message;
-    const detail=denied?permissionMessage('leer la presencia o la sala LIVE'):isTimeoutError(error)?firestoreFailureDetail(error,'comprobar el LIVE'):'Pulsa RECONECTAR si el emisor sigue transmitiendo.';
-    setViewerStatus(terminal?'ended':'error',title,{detail,reconnect:true,code:denied?'firestore-permission':isTimeoutError(error)?'firestore-timeout':code});
+    const detail=denied?permissionMessage('leer la presencia o la sala LIVE'):isTimeoutError(error)?firestoreFailureDetail(error,'comprobar el LIVE'):(terminal?'La conexión automática se ha detenido porque este estado no se corrige reconectando.':'Pulsa RECONECTAR si el emisor sigue transmitiendo.');
+    const normalizedCode=denied?'firestore-permission':isTimeoutError(error)?'firestore-timeout':code;
+    if(!terminal){
+      scheduleReconnect(title,{code:normalizedCode});
+      return false;
+    }
+    setViewerStatus(['presence-missing','presence-stale'].includes(code)?'ended':'error',title,{detail,reconnect:false,quick:false,code:normalizedCode});
     return false;
   }
 
@@ -823,7 +851,7 @@ async function startViewerInternal({manual=false}={}){
   const state={
     id,roomRef,viewerRef,roomSessionId,pc,remoteStream,queued,unsubDoc:null,unsubCandidates:null,timers:[],statsTimer:0,
     receivedAudio:false,receivedVideo:false,connected:false,answerReceived:false,mediaFlowing:false,lastInboundBytes:0,
-    localCandidateSummary:null,remoteCandidateSummary:null,createdAtMs:Date.now(),offerRevision:1
+    localCandidateSummary:null,remoteCandidateSummary:null,createdAtMs:Date.now(),offerRevision:1,closed:false
   };
   viewerState=state;
 
@@ -858,7 +886,10 @@ async function startViewerInternal({manual=false}={}){
     const track=event.track;
     if(!remoteStream.getTracks().some(item=>item.id===track.id))remoteStream.addTrack(track);
     if(track.kind==='audio')state.receivedAudio=true;
-    if(track.kind==='video')state.receivedVideo=true;
+    if(track.kind==='video'){
+      state.receivedVideo=true;
+      setViewerStatus('connected','Vídeo recibido',{detail:state.receivedAudio?'Audio y vídeo disponibles.':'Esperando audio del emisor.',quick:true,play:state.receivedAudio});
+    }
     const video=ui.video();
     const backdrop=ui.backdrop();
     if(video&&video.srcObject!==remoteStream){
@@ -894,8 +925,8 @@ async function startViewerInternal({manual=false}={}){
     const connection=pc.connectionState;
     dispatchState('viewer-connection-state',diagnosticDetail(state));
     if(connection==='connected'){
-      state.connected=true;automaticAttempts=0;
-      setViewerStatus('connected','Conectado al LIVE',{detail:state.receivedVideo?'Recibiendo la transmisión.':'Conexión abierta; esperando la pista de vídeo.',hideBox:false,quick:true});
+      state.connected=true;
+      setViewerStatus(state.receivedVideo?'connected':'connecting',state.receivedVideo?'Conectado al LIVE':'Ruta conectada; esperando vídeo…',{detail:state.receivedVideo?'Recibiendo la transmisión.':'La red ya está conectada; falta recibir la pista de cámara.',hideBox:false,quick:true});
       startViewerStats(state);
       void tryPlayRemote();
     }
@@ -929,15 +960,15 @@ async function startViewerInternal({manual=false}={}){
     }
     if(data.status==='capacity'){
       closeViewerPeer('capacity',{mark:false});
-      setViewerStatus('error','El LIVE alcanzó el límite P2P de prueba',{detail:`Esta versión directa admite ${Number(data.capacity)||maxP2PViewers} espectadores simultáneos por móvil. Para miles de espectadores JEMMO necesita un servidor SFU de producción.`,reconnect:true,code:'capacity'});
+      setViewerStatus('error','El LIVE alcanzó el límite P2P de prueba',{detail:`Esta versión directa admite ${Number(data.capacity)||maxP2PViewers} espectadores simultáneos por móvil. Para miles de espectadores JEMMO necesita un servidor SFU de producción.`,reconnect:false,quick:false,code:'capacity'});
     }
     if(data.status==='host-media-missing'){
       closeViewerPeer('host-media-missing',{mark:false});
-      setViewerStatus('error','El emisor no está enviando cámara',{detail:'Debe volver a activar la cámara y reiniciar el LIVE.',reconnect:true,code:'host-media-missing'});
+      setViewerStatus('error','El emisor no está enviando cámara',{detail:'Debe volver a activar la cámara y reiniciar el LIVE.',reconnect:false,quick:false,code:'host-media-missing'});
     }
     if(data.status==='permission-error'){
       closeViewerPeer('permission-error',{mark:false});
-      setViewerStatus('error','Firestore bloqueó la respuesta del emisor',{detail:permissionMessage('publicar la respuesta del anfitrión'),reconnect:true,code:'firestore-permission'});
+      setViewerStatus('error','Firestore bloqueó la respuesta del emisor',{detail:permissionMessage('publicar la respuesta del anfitrión'),reconnect:false,quick:false,code:'firestore-permission'});
     }
     if(data.status==='answer-error'){
       closeViewerPeer('answer-error',{mark:false});
@@ -950,7 +981,12 @@ async function startViewerInternal({manual=false}={}){
   },error=>{
     console.warn('JEMMO WebRTC: no se pudo leer la respuesta.',error);
     const denied=isPermissionError(error);
-    scheduleReconnect(denied?permissionMessage('leer la respuesta del emisor'):'No se pudo leer la respuesta del emisor.',{code:denied?'firestore-permission':'answer-listener'});
+    if(denied){
+      closeViewerPeer('permission-error',{mark:false});
+      setViewerStatus('error','Firestore bloqueó la respuesta del emisor',{detail:permissionMessage('leer la respuesta del emisor'),reconnect:false,quick:false,code:'firestore-permission'});
+      return;
+    }
+    scheduleReconnect('No se pudo leer la respuesta del emisor.',{code:'answer-listener'});
   });
 
   state.unsubCandidates=onSnapshot(collection(viewerRef,'hostCandidates'),snapshot=>{
@@ -997,7 +1033,7 @@ async function startViewerInternal({manual=false}={}){
     let room=null;
     try{const snap=await withTimeout(getDoc(roomRef),4000,'firestore-room-read-timeout','Firestore no respondió al revisar la sala.');room=snap.exists()?snap.data()||{}:null}catch{}
     if(!freshRoom(room))scheduleReconnect('La sala de señalización del emisor dejó de responder.',{code:'room-stale'});
-    else scheduleReconnect('El emisor está en LIVE, pero no recibió o no pudo responder la solicitud. Revisa las reglas Firestore PRUEBA 52 y confirma que ambos móviles estén actualizados.',{code:'answer-timeout'});
+    else scheduleReconnect('El emisor está en LIVE, pero no recibió o no pudo responder la solicitud. Revisa las reglas Firestore PRUEBA 53 y confirma que ambos móviles estén actualizados.',{code:'answer-timeout'});
   },ANSWER_TIMEOUT_MS);
   state.timers.push(answerTimer);
 
@@ -1016,22 +1052,37 @@ function startViewer(options={}){
 
 function scheduleReconnect(reason,{code='retry'}={}){
   if(!viewerRoute)return;
-  clearTimeout(reconnectTimer);
+  const terminalCodes=new Set(['firestore-permission','presence-missing','presence-stale','protocol-mismatch','host-uid-mismatch','host-media-missing','capacity','ended']);
+  if(terminalCodes.has(code)){
+    closeViewerPeer(code,{mark:false});
+    setViewerStatus(code==='ended'?'ended':'error',code==='ended'?'El LIVE ha finalizado':'No se puede continuar la conexión',{detail:reason,reconnect:false,quick:false,code});
+    return;
+  }
+  if(reconnectTimer)return;
   if(!navigator.onLine){
     closeViewerPeer('offline');
     setViewerStatus('offline','Sin conexión a Internet',{detail:'JEMMO volverá a intentarlo cuando se recupere la red.',reconnect:true,code:'offline'});
     return;
   }
-  if(automaticAttempts>=AUTO_RETRY_LIMIT){
-    const detail=code.includes('permission')?reason:`${reason} Pulsa RECONECTAR AUDIO Y VÍDEO. ${turnConfigured?'TURN está configurado; comprueba la cobertura.':'Para redes móviles restrictivas debes configurar TURN propio.'}`;
+  const now=Date.now();
+  if(!reconnectWindowStartedAt)reconnectWindowStartedAt=now;
+  const hardExpired=now-reconnectWindowStartedAt>RECONNECT_HARD_WINDOW_MS;
+  if(automaticAttempts>=AUTO_RETRY_LIMIT||hardExpired){
+    const detail=`${reason} La recuperación automática se ha detenido para evitar un ciclo infinito. Pulsa RECONECTAR AUDIO Y VÍDEO. ${turnConfigured?'TURN está configurado; comprueba la cobertura.':'La señalización puede funcionar, pero esta red móvil necesita un servidor TURN real.'}`;
     closeViewerPeer('failed');
     setViewerStatus('error','No se pudo recuperar el LIVE',{detail,reconnect:true,code});
     return;
   }
   automaticAttempts++;
-  closeViewerPeer('retrying');
+  reconnectReasonCode=code;
+  closeViewerPeer('retrying',{preserveReconnect:true});
   setViewerStatus('connecting',`Reconectando audio y vídeo (${automaticAttempts}/${AUTO_RETRY_LIMIT})…`,{detail:reason,reconnect:true,code});
-  reconnectTimer=setTimeout(()=>void startViewer(),Math.min(6000,1200*automaticAttempts));
+  const delay=Math.min(6000,1200*automaticAttempts);
+  reconnectTimer=setTimeout(()=>{
+    reconnectTimer=0;
+    reconnectReasonCode='';
+    void startViewer();
+  },delay);
 }
 
 function watchPresence(){
@@ -1096,7 +1147,7 @@ function bindNetworkListeners(){
     if(viewerRoute){closeViewerPeer('offline');setViewerStatus('offline','Sin conexión a Internet',{detail:'Esperando que vuelva la red.',reconnect:true,code:'offline'})}
   });
   addEventListener('online',()=>{
-    if(viewerRoute)void startViewer({manual:true});
+    if(viewerRoute&&!reconnectTimer)void startViewer({manual:true});
     else if(hostState)void setDoc(hostState.roomRef,{heartbeatAt:serverTimestamp(),heartbeatAtMs:Date.now(),status:'live',active:true,version:VERSION},{merge:true}).catch(()=>{});
   });
   const connection=navigator.connection||navigator.mozConnection||navigator.webkitConnection;
