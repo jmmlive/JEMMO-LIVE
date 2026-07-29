@@ -1,29 +1,14 @@
-# JEMMO LIVE V1 · PRUEBA 49
+# JEMMO LIVE V1 · PRUEBA 50
 
-Versión actual: transmisión LIVE robusta, señalización WebRTC v2, reglas Firestore, reconexión y preparación TURN/SFU.
+## Encuadre natural de cámara sin zoom excesivo
 
-Documentación principal:
-- `VERSION.txt`
-- `CAMBIOS_PRUEBA_49.md`
-- `ARQUITECTURA_LIVE_PRUEBA_49.md`
-- `FIRESTORE_REGLAS_WEBRTC_PRUEBA_49.txt`
-- `PRUEBAS_PRUEBA_49.txt`
+PRUEBA 50 mantiene la arquitectura WebRTC robusta de PRUEBA 49 y corrige el recorte acumulado de la cámara en determinados Android.
 
-> Para audiencias numerosas, el P2P actual debe migrarse a SFU y TURN de producción.
+### Cambio principal
+La captura deja de forzar recorte 9:16 y el reproductor adapta `cover` o `contain` según la proporción real del vídeo. El objetivo es conservar el campo de visión y evitar primeros planos artificiales.
 
----
+### Instalación
+Extrae todos los archivos del ZIP y súbelos a la raíz del repositorio, sustituyendo los archivos con el mismo nombre. No subas el ZIP directamente.
 
-# JEMMO LIVE v0.6.2
-
-Base estable: v0.6 PROFESIONAL.
-
-Objetivo único: corregir el logo superior y activar el envío del chat sin modificar el resto del Inicio aprobado.
-
-## Cambios
-- El logo vuelve a ocupar el encabezado en formato ancho, sin quedar pequeño dentro de un cuadrado.
-- El chat de la batalla permite enviar con el botón o con la tecla Intro.
-- Los mensajes se muestran al instante, con hora, y se conservan localmente en el dispositivo.
-- No se han modificado el monedero, la barra inferior, el pez activo, las tarjetas ni la navegación.
-
-## Alcance técnico
-El chat de esta versión es funcional en el dispositivo. Todavía no es un chat multiusuario conectado a base de datos o tiempo real; esa conexión pertenece a una fase posterior.
+### Después del commit
+Cierra JEMMO LIVE por completo, vuelve a abrirla y actualiza una vez. Si Chrome conserva una versión anterior, borra la caché del sitio o reinstala la PWA.

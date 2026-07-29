@@ -1,0 +1,23 @@
+JEMMO LIVE · PROTOCOLO DE PRUEBAS PRUEBA 50
+Fecha: 29/07/2026
+
+ANTES
+[ ] Ambos móviles cargan la misma publicación PRUEBA 50.
+[ ] La PWA anterior está cerrada por completo.
+[ ] Cámara y micrófono tienen permiso.
+
+PRUEBA DEL EMISOR
+[ ] Abrir PREPARA TU LIVE con cámara frontal.
+[ ] Confirmar que se ven cabeza, hombros y entorno sin acercamiento artificial.
+[ ] Cambiar a cámara trasera y comprobar que conserva el campo de visión.
+[ ] Girar el móvil y volver a vertical; el encuadre debe recalcularse.
+[ ] Activar y desactivar ESPEJO; solo debe invertirse horizontalmente, sin aumentar.
+
+PRUEBA DEL ESPECTADOR
+[ ] Iniciar LIVE desde el móvil emisor.
+[ ] Entrar desde el segundo móvil.
+[ ] Confirmar que el vídeo remoto no recorta de nuevo el rostro.
+[ ] Verificar audio y vídeo durante al menos 3 minutos.
+
+CRITERIO DE APROBACIÓN
+No aparece un primer plano artificial. Si la cámara entrega formato 4:3 o 3:4, se permiten franjas negras discretas para mantener el encuadre completo.

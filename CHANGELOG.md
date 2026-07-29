@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## PRUEBA 50 · 29/07/2026
+### Encuadre natural de cámara sin zoom excesivo
+- Eliminado el recorte 9:16 forzado de la captura.
+- `resizeMode` cambiado de `crop-and-scale` a `none`.
+- Encuadre adaptativo según la proporción real del sensor y la pantalla.
+- Vídeo remoto conservado sin segundo recorte.
+- Espejo frontal sin aumento.
+- Caché PWA actualizada a PRUEBA 50.
+
 ## PRUEBA 49 · 29/07/2026
 ### Transmisión LIVE robusta, señalización segura y preparación TURN/SFU
 - Sesión del espectador creada antes de ICE.

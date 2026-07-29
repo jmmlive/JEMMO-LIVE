@@ -1,0 +1,23 @@
+JEMMO LIVE · INSTALACIÓN PRUEBA 50
+Fecha: 29/07/2026
+
+IMPORTANTE
+- No subas el archivo ZIP directamente a GitHub.
+- Descomprime el ZIP.
+- Sube los 30 archivos extraídos a la raíz del repositorio.
+- Acepta sustituir los archivos con el mismo nombre.
+- Conserva todos los demás archivos del repositorio.
+
+ORDEN
+1. Publica primero los archivos.
+2. Espera a que termine el commit y GitHub Pages actualice.
+3. Cierra JEMMO LIVE completamente en ambos móviles.
+4. Vuelve a abrir la aplicación y actualiza una vez.
+5. Si sigue apareciendo la versión anterior, elimina la caché del sitio o reinstala la PWA.
+
+NO ES NECESARIO
+- No es necesario volver a subir toda la aplicación.
+- No es necesario cambiar Firebase ni las reglas Firestore por esta corrección de cámara.
+
+COMPROBACIÓN
+En PREPARA TU LIVE, el rostro debe verse a una distancia natural. En el móvil espectador debe conservarse el mismo campo de visión.

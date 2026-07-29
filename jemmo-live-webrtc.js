@@ -707,7 +707,7 @@ async function validatePresenceAndRoom(){
   renderHostIdentity(presence);
   let room=roomSnap.exists()?roomSnap.data()||{}:null;
   if(!freshRoom(room)||!room?.streamReady)room=await waitForRoomReady(roomRef);
-  if(!freshRoom(room))throw Object.assign(new Error('El emisor está visible como EN LIVE, pero su sala de señalización no está activa. Debe instalar la misma PRUEBA 49 y reiniciar el directo.'),{code:'room-not-ready'});
+  if(!freshRoom(room))throw Object.assign(new Error('El emisor está visible como EN LIVE, pero su sala de señalización no está activa. Debe instalar la misma PRUEBA 50 y reiniciar el directo.'),{code:'room-not-ready'});
   if(!room.streamReady)throw Object.assign(new Error('El emisor inició el LIVE sin una pista de cámara disponible.'),{code:'host-media-missing'});
   return{presence,room,roomRef};
 }
@@ -939,7 +939,7 @@ async function startViewer({manual=false}={}){
     let room=null;
     try{const snap=await getDoc(roomRef);room=snap.exists()?snap.data()||{}:null}catch{}
     if(!freshRoom(room))scheduleReconnect('La sala de señalización del emisor dejó de responder.',{code:'room-stale'});
-    else scheduleReconnect('El emisor está en LIVE, pero no recibió o no pudo responder la solicitud. Revisa las reglas Firestore y que ambos móviles tengan PRUEBA 49.',{code:'answer-timeout'});
+    else scheduleReconnect('El emisor está en LIVE, pero no recibió o no pudo responder la solicitud. Revisa las reglas Firestore y que ambos móviles tengan PRUEBA 50.',{code:'answer-timeout'});
   },ANSWER_TIMEOUT_MS);
   state.timers.push(answerTimer);
 

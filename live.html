@@ -117,7 +117,7 @@
       inset:0;
       z-index:1;
       width:100%;height:100%;
-      object-fit:cover;
+      object-fit:var(--jemmo-camera-fit,contain);
       object-position:center;
       background:#000;
       transform:scaleX(var(--jemmo-camera-scale,-1))!important;
@@ -125,6 +125,7 @@
       filter:var(--camera-filter,none);
     }
     .jl-camera-card video.pip{
+      --jemmo-camera-fit:cover;
       inset:auto 13px 83px auto;
       z-index:4;
       width:31%;height:35%;
@@ -450,13 +451,15 @@
       position:absolute;
       inset:0;
       width:100%;height:100%;
-      object-fit:cover;
+      object-fit:var(--jemmo-camera-fit,contain);
+      object-position:center;
       background:#000;
       transform:scaleX(var(--jemmo-camera-scale,-1))!important;
       -webkit-transform:scaleX(var(--jemmo-camera-scale,-1))!important;
       filter:var(--camera-filter,none);
     }
     .jl-broadcast>video.pip{
+      --jemmo-camera-fit:cover;
       inset:auto 11px 145px auto;
       width:30%;height:28%;
       border:2px solid var(--gold);
@@ -1101,11 +1104,11 @@
     .jl-chatbar.chat-closed form{opacity:.68}.jl-chatbar.chat-closed input{cursor:not-allowed}
 
 
-    /* PRUEBA 49 · LIVE ROBUSTO, DIAGNÓSTICO ICE Y RECUPERACIÓN */
+    /* PRUEBA 50 · ENCUADRE NATURAL SIN ZOOM Y LIVE ROBUSTO */
     html.jemmo-viewer-route #prepScreen{display:none!important}
     html.jemmo-viewer-route #broadcastScreen{display:block!important}
     body.viewer-mode{overflow:hidden;background:#000}
-    body.viewer-mode #broadcastVideo{transform:none!important;-webkit-transform:none!important;filter:none!important}
+    body.viewer-mode #broadcastVideo{--jemmo-camera-fit:contain;transform:none!important;-webkit-transform:none!important;filter:none!important}
     body.viewer-mode #broadcastPip,
     body.viewer-mode #taskCard,
     body.viewer-mode .jl-seat-stack,
@@ -1407,7 +1410,7 @@
       <a href="chili-ia.html#soporte"><span>?</span><span><b>Ayuda y soporte</b><small>Soporte humano y asistencia</small></span><i>›</i></a>
       <a href="acceso.html" data-jemmo-logout><span>↪</span><span><b>Cerrar sesión</b></span><i>›</i></a>
     </nav>
-    <div class="jl-version">JEMMO LIVE V1 · ENTRADA ESPECTADOR Y WEBRTC PRUEBA 47</div>
+    <div class="jl-version">JEMMO LIVE V1 · ENCUADRE NATURAL SIN ZOOM PRUEBA 50</div>
   </aside>
 
   <div class="jl-toast" id="toast"></div>
@@ -1431,12 +1434,12 @@
   </nav>
 
   <script type="module" src="jemmo-session.js"></script>
-  <script src="pwa-register.js?v=49"></script>
+  <script src="pwa-register.js?v=50"></script>
   <script src="jemmo-wallet.js?v=46"></script>
   <script src="jemmo-house-finance.js"></script>
-  <script type="module" src="jemmo-live-presence.js?v=49"></script>
-  <script src="jemmo-live-rtc-config.js?v=49"></script>
-  <script type="module" src="jemmo-live-webrtc.js?v=49"></script>
+  <script type="module" src="jemmo-live-presence.js?v=50"></script>
+  <script src="jemmo-live-rtc-config.js?v=50"></script>
+  <script type="module" src="jemmo-live-webrtc.js?v=50"></script>
   <script src="jemmo-prep-storage.js"></script>
   <script type="module" src="jemmo-personalization-runtime.js"></script>
   <script>
@@ -1510,7 +1513,11 @@
       video.muted = true;
       video.playsInline = true;
       video.disablePictureInPicture = true;
+      video.addEventListener("loadedmetadata",()=>requestAnimationFrame(()=>applyNaturalCameraFraming(video)));
+      video.addEventListener("resize",()=>requestAnimationFrame(()=>applyNaturalCameraFraming(video)));
     });
+    window.addEventListener("resize",()=>requestAnimationFrame(refreshAllCameraFraming),{passive:true});
+    window.addEventListener("orientationchange",()=>setTimeout(refreshAllCameraFraming,180),{passive:true});
 
     function applyViewerShell(){
       if(!viewerMode)return;
@@ -1718,6 +1725,30 @@
       if(state.mode==="both") return "environment";
       return state.mode;
     }
+    function applyNaturalCameraFraming(video){
+      if(!video) return;
+      if(video.classList.contains("pip")){
+        video.style.setProperty("--jemmo-camera-fit","cover");
+        return;
+      }
+      const sourceWidth=Number(video.videoWidth||0);
+      const sourceHeight=Number(video.videoHeight||0);
+      const frameWidth=Number(video.clientWidth||0);
+      const frameHeight=Number(video.clientHeight||0);
+      if(!sourceWidth||!sourceHeight||!frameWidth||!frameHeight){
+        video.style.setProperty("--jemmo-camera-fit","contain");
+        return;
+      }
+      const sourceRatio=sourceWidth/sourceHeight;
+      const frameRatio=frameWidth/frameHeight;
+      const mismatch=Math.max(sourceRatio/frameRatio,frameRatio/sourceRatio);
+      // Solo se llena la pantalla cuando la cámara ya entrega un formato casi igual.
+      // Con sensores 4:3 o 3:4 se conserva el encuadre completo para impedir el zoom facial.
+      video.style.setProperty("--jemmo-camera-fit",mismatch<=1.16?"cover":"contain");
+    }
+    function refreshAllCameraFraming(){
+      [videos.main,videos.pip,videos.broadcast,videos.broadcastPip].forEach(applyNaturalCameraFraming);
+    }
     function applyCameraTransform(video,role=inferredCameraRole(video)){
       if(!video) return;
       const front=role==="user";
@@ -1752,17 +1783,17 @@
       applyCameraTransform(video,role);
       video.srcObject=stream;
       await video.play().catch(()=>{});
+      applyNaturalCameraFraming(video);
     }
     function cameraConstraints(facingMode){
       return {
         audio:false,
         video:{
           facingMode:{ideal:facingMode},
-          width:{ideal:720,max:1280},
+          width:{ideal:720,max:1920},
           height:{ideal:1280,max:1920},
-          aspectRatio:{ideal:9/16},
           frameRate:{ideal:24,max:30},
-          resizeMode:"crop-and-scale"
+          resizeMode:"none"
         }
       };
     }
