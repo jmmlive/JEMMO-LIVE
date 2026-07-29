@@ -1,0 +1,26 @@
+JEMMO LIVE · PROTOCOLO DE PRUEBAS PRUEBA 51
+
+A. PUBLICACIÓN
+[ ] GitHub Pages terminó de publicar.
+[ ] La pantalla indica PRUEBA 51.
+[ ] La PWA se cerró y abrió de nuevo.
+
+B. EMISOR
+[ ] Activar cámara frontal.
+[ ] La imagen ocupa toda la anchura y altura del LIVE.
+[ ] No aparecen franjas negras grandes arriba y abajo.
+[ ] La cara no aparece con el acercamiento extremo de PRUEBA 49.
+[ ] Espejo ON/OFF no modifica el tamaño de la cara.
+[ ] Cambiar a cámara trasera mantiene pantalla completa.
+
+C. ESPECTADOR
+[ ] Entrar desde el segundo móvil.
+[ ] Recibir audio y vídeo.
+[ ] La imagen remota ocupa la pantalla.
+[ ] No aparecen franjas negras grandes.
+[ ] La imagen no se amplía dos veces.
+
+D. REGRESIÓN
+[ ] Finalizar LIVE elimina la presencia.
+[ ] Reconexión de audio y vídeo sigue funcionando.
+[ ] Cámara y micrófono continúan publicándose por WebRTC.

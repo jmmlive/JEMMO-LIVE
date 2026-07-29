@@ -1,31 +1,27 @@
-JEMMO LIVE V1 · ENCUADRE NATURAL DE CÁMARA SIN ZOOM EXCESIVO PRUEBA 50
+JEMMO LIVE V1 · CÁMARA VERTICAL A PANTALLA COMPLETA SIN DOBLE ZOOM PRUEBA 51
 Fecha: 29/07/2026
-Base: PRUEBA 49 · TRANSMISIÓN LIVE ROBUSTA, SEÑALIZACIÓN SEGURA Y PREPARACIÓN TURN/SFU
+Base: PRUEBA 50 · ENCUADRE NATURAL DE CÁMARA SIN ZOOM EXCESIVO
 
-OBJETIVO
-Eliminar el acercamiento artificial que podía mostrar el rostro excesivamente ampliado en determinados móviles Android, tanto en la vista del emisor como en la recepción del espectador.
+INCIDENCIA CONFIRMADA
+La emisión dejó de mostrar el primer plano excesivo, pero la cámara apareció casi cuadrada y con dos franjas negras grandes. La captura de prueba confirmó que el vídeo no ocupaba la superficie LIVE.
 
-CAUSA CONFIRMADA
-1. La captura exigía relación 9:16 y permitía `resizeMode: crop-and-scale`.
-2. Después, el elemento de vídeo volvía a usar `object-fit: cover`.
-3. En cámaras que entregan 4:3 o 3:4, ambos recortes se acumulaban y reducían mucho el campo de visión.
+CAUSA
+PRUEBA 50 retiró la preferencia `aspectRatio: 9/16` y cambió el ajuste visual a `contain`. Algunos Android seleccionaron una resolución cercana a 1:1; `contain` conservó esa imagen completa, pero dejó gran parte de la pantalla vacía.
 
-CORRECCIONES PRUEBA 50
-- Se elimina la relación 9:16 forzada en `getUserMedia`.
-- `resizeMode` pasa de `crop-and-scale` a `none` para solicitar el encuadre nativo.
-- El vídeo calcula la diferencia entre la proporción real de la cámara y la pantalla.
-- Solo usa `cover` cuando ambas proporciones son prácticamente iguales.
-- Cuando existe riesgo de recorte importante usa `contain`, conservando el encuadre completo.
-- El espectador recibe el vídeo principal siempre sin recorte adicional.
-- La cámara frontal mantiene el espejo únicamente como transformación horizontal, sin aumento.
-- La cámara secundaria PIP conserva `cover` por ser una miniatura.
-- Caché PWA y versiones de recursos elevadas a PRUEBA 50.
+CORRECCIONES PRUEBA 51
+- Se recupera `aspectRatio: { ideal: 9/16 }` para orientar la selección hacia una pista vertical.
+- Se mantiene `resizeMode: "none"`; queda prohibido volver a `crop-and-scale`.
+- La preparación y la emisión usan `object-fit: cover` para ocupar toda la pantalla.
+- El espectador también recibe la imagen a pantalla completa.
+- La captura solicita 720 × 1280 como resolución ideal, sin exigir recorte artificial.
+- Si el móvil expone control de zoom, se normaliza al valor neutro 1x dentro de sus límites.
+- El modo espejo solo invierte horizontalmente y no amplía la imagen.
+- Caché PWA y versiones de recursos elevadas a PRUEBA 51.
 
-ALCANCE
-La corrección se aplica globalmente a cualquier cuenta emisora y a cualquier espectador que utilice esta publicación. No depende del nombre, UID ni móvil de Jesús o Ruth.
+RESULTADO ESPERADO
+Pantalla LIVE completa, sin franjas negras grandes y sin el doble zoom de PRUEBA 49.
 
-ESTADO DE VALIDACIÓN
-- Auditoría estática: aprobada.
+ESTADO
+- Revisión estática: aprobada.
 - Sintaxis JavaScript: aprobada.
-- Integridad ZIP: aprobada.
-- Prueba visual real en los móviles de Jesús y Ruth: necesaria después de publicar y refrescar la PWA.
+- Prueba real móvil: pendiente tras publicar.

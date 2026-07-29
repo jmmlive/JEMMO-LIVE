@@ -1,4 +1,4 @@
-const CACHE='jemmo-live-v1-encuadre-natural-50-20260729';
+const CACHE='jemmo-live-v1-camera-vertical-51-20260729';
 const CORE=[
   './','./inicio.html','./yo.html','./live.html','./perfil-publico.html','./directos.html','./salas.html','./configuracion.html','./chili-ia.html',
   './pwa-register.js','./jemmo-live-presence.js','./jemmo-live-rtc-config.js','./jemmo-live-webrtc.js','./jemmo-wallet.js','./jemmo-official-policies.js','./jemmo-settings.js','./jemmo-chili.js','./jemmo-chili-knowledge.js',

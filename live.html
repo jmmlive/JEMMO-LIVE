@@ -117,7 +117,7 @@
       inset:0;
       z-index:1;
       width:100%;height:100%;
-      object-fit:var(--jemmo-camera-fit,contain);
+      object-fit:var(--jemmo-camera-fit,cover);
       object-position:center;
       background:#000;
       transform:scaleX(var(--jemmo-camera-scale,-1))!important;
@@ -451,7 +451,7 @@
       position:absolute;
       inset:0;
       width:100%;height:100%;
-      object-fit:var(--jemmo-camera-fit,contain);
+      object-fit:var(--jemmo-camera-fit,cover);
       object-position:center;
       background:#000;
       transform:scaleX(var(--jemmo-camera-scale,-1))!important;
@@ -1104,11 +1104,11 @@
     .jl-chatbar.chat-closed form{opacity:.68}.jl-chatbar.chat-closed input{cursor:not-allowed}
 
 
-    /* PRUEBA 50 · ENCUADRE NATURAL SIN ZOOM Y LIVE ROBUSTO */
+    /* PRUEBA 51 · CÁMARA VERTICAL A PANTALLA COMPLETA SIN DOBLE ZOOM */
     html.jemmo-viewer-route #prepScreen{display:none!important}
     html.jemmo-viewer-route #broadcastScreen{display:block!important}
     body.viewer-mode{overflow:hidden;background:#000}
-    body.viewer-mode #broadcastVideo{--jemmo-camera-fit:contain;transform:none!important;-webkit-transform:none!important;filter:none!important}
+    body.viewer-mode #broadcastVideo{--jemmo-camera-fit:cover;transform:none!important;-webkit-transform:none!important;filter:none!important}
     body.viewer-mode #broadcastPip,
     body.viewer-mode #taskCard,
     body.viewer-mode .jl-seat-stack,
@@ -1410,7 +1410,7 @@
       <a href="chili-ia.html#soporte"><span>?</span><span><b>Ayuda y soporte</b><small>Soporte humano y asistencia</small></span><i>›</i></a>
       <a href="acceso.html" data-jemmo-logout><span>↪</span><span><b>Cerrar sesión</b></span><i>›</i></a>
     </nav>
-    <div class="jl-version">JEMMO LIVE V1 · ENCUADRE NATURAL SIN ZOOM PRUEBA 50</div>
+    <div class="jl-version">JEMMO LIVE V1 · CÁMARA VERTICAL SIN FRANJAS PRUEBA 51</div>
   </aside>
 
   <div class="jl-toast" id="toast"></div>
@@ -1434,12 +1434,12 @@
   </nav>
 
   <script type="module" src="jemmo-session.js"></script>
-  <script src="pwa-register.js?v=50"></script>
+  <script src="pwa-register.js?v=51"></script>
   <script src="jemmo-wallet.js?v=46"></script>
   <script src="jemmo-house-finance.js"></script>
-  <script type="module" src="jemmo-live-presence.js?v=50"></script>
-  <script src="jemmo-live-rtc-config.js?v=50"></script>
-  <script type="module" src="jemmo-live-webrtc.js?v=50"></script>
+  <script type="module" src="jemmo-live-presence.js?v=51"></script>
+  <script src="jemmo-live-rtc-config.js?v=51"></script>
+  <script type="module" src="jemmo-live-webrtc.js?v=51"></script>
   <script src="jemmo-prep-storage.js"></script>
   <script type="module" src="jemmo-personalization-runtime.js"></script>
   <script>
@@ -1727,24 +1727,9 @@
     }
     function applyNaturalCameraFraming(video){
       if(!video) return;
-      if(video.classList.contains("pip")){
-        video.style.setProperty("--jemmo-camera-fit","cover");
-        return;
-      }
-      const sourceWidth=Number(video.videoWidth||0);
-      const sourceHeight=Number(video.videoHeight||0);
-      const frameWidth=Number(video.clientWidth||0);
-      const frameHeight=Number(video.clientHeight||0);
-      if(!sourceWidth||!sourceHeight||!frameWidth||!frameHeight){
-        video.style.setProperty("--jemmo-camera-fit","contain");
-        return;
-      }
-      const sourceRatio=sourceWidth/sourceHeight;
-      const frameRatio=frameWidth/frameHeight;
-      const mismatch=Math.max(sourceRatio/frameRatio,frameRatio/sourceRatio);
-      // Solo se llena la pantalla cuando la cámara ya entrega un formato casi igual.
-      // Con sensores 4:3 o 3:4 se conserva el encuadre completo para impedir el zoom facial.
-      video.style.setProperty("--jemmo-camera-fit",mismatch<=1.16?"cover":"contain");
+      // PRUEBA 51: la superficie LIVE siempre ocupa toda la pantalla.
+      // El encuadre vertical se solicita en la captura; aquí no se añade un segundo recorte digital.
+      video.style.setProperty("--jemmo-camera-fit","cover");
     }
     function refreshAllCameraFraming(){
       [videos.main,videos.pip,videos.broadcast,videos.broadcastPip].forEach(applyNaturalCameraFraming);
@@ -1790,12 +1775,43 @@
         audio:false,
         video:{
           facingMode:{ideal:facingMode},
-          width:{ideal:720,max:1920},
+          width:{ideal:720,max:1280},
           height:{ideal:1280,max:1920},
+          aspectRatio:{ideal:9/16},
           frameRate:{ideal:24,max:30},
           resizeMode:"none"
         }
       };
+    }
+    async function normalizeCameraStream(stream){
+      const track=stream?.getVideoTracks?.()[0];
+      if(!track) return stream;
+      try{
+        const capabilities=track.getCapabilities?.()||{};
+        const advanced=[];
+        if(capabilities.zoom&&Number.isFinite(Number(capabilities.zoom.min))&&Number.isFinite(Number(capabilities.zoom.max))){
+          const min=Number(capabilities.zoom.min);
+          const max=Number(capabilities.zoom.max);
+          const neutralZoom=Math.min(max,Math.max(min,1));
+          advanced.push({zoom:neutralZoom});
+        }
+        const constraints={
+          width:{ideal:720,max:1280},
+          height:{ideal:1280,max:1920},
+          aspectRatio:{ideal:9/16},
+          frameRate:{ideal:24,max:30},
+          resizeMode:"none"
+        };
+        if(advanced.length) constraints.advanced=advanced;
+        await track.applyConstraints(constraints);
+      }catch(error){
+        console.warn("JEMMO cámara: el móvil mantuvo su formato nativo.",error?.name||error);
+      }
+      return stream;
+    }
+    async function openCameraStream(facingMode){
+      const stream=await navigator.mediaDevices.getUserMedia(cameraConstraints(facingMode));
+      return normalizeCameraStream(stream);
     }
     async function ensureAudio(){
       if(!state.mic) return;
@@ -1830,9 +1846,9 @@
       try{
         if(state.mic) await ensureAudio();
         if(mode==="both"){
-          state.mainStream=await navigator.mediaDevices.getUserMedia(cameraConstraints("environment"));
+          state.mainStream=await openCameraStream("environment");
           try{
-            state.pipStream=await navigator.mediaDevices.getUserMedia(cameraConstraints("user"));
+            state.pipStream=await openCameraStream("user");
           }catch(error){
             stopStream(state.mainStream);
             state.mainStream=null;
@@ -1842,7 +1858,7 @@
           await attach(videos.pip,state.pipStream,"user");
           videos.pip.hidden=false;
         }else{
-          state.mainStream=await navigator.mediaDevices.getUserMedia(cameraConstraints(mode));
+          state.mainStream=await openCameraStream(mode);
           await attach(videos.main,state.mainStream,mode);
         }
         state.mode=mode;

@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## PRUEBA 51 · 29/07/2026
+### Cámara vertical a pantalla completa sin doble zoom
+- Corregida la regresión visual introducida en PRUEBA 50.
+- Recuperada la preferencia vertical 9:16 sin `crop-and-scale`.
+- Superficie de vídeo configurada a pantalla completa con `cover`.
+- Zoom de cámara normalizado a 1x cuando el dispositivo lo permite.
+- Aplicación global a emisor y espectador.
+- Caché PWA actualizada a PRUEBA 51.
+
 ## PRUEBA 50 · 29/07/2026
 ### Encuadre natural de cámara sin zoom excesivo
 - Eliminado el recorte 9:16 forzado de la captura.

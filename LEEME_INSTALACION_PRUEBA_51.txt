@@ -1,0 +1,26 @@
+JEMMO LIVE · INSTALACIÓN PRUEBA 51
+
+BASE NECESARIA
+Tener publicada PRUEBA 50.
+
+CONTENIDO
+Parche incremental de 10 archivos.
+
+PASOS
+1. Descomprimir el ZIP.
+2. Subir los 10 archivos extraídos a la raíz del repositorio GitHub.
+3. Sustituir los archivos con el mismo nombre.
+4. No borrar los demás archivos del repositorio.
+5. No subir el ZIP directamente.
+6. Esperar a que GitHub Pages termine la publicación.
+7. Cerrar JEMMO LIVE completamente.
+8. Abrir de nuevo la PWA y actualizar una vez.
+
+NO ES NECESARIO
+- Desinstalar la PWA inicialmente.
+- Modificar Firebase.
+- Volver a publicar reglas Firestore.
+
+COMPROBACIÓN
+La parte inferior de live.html debe mostrar:
+JEMMO LIVE V1 · CÁMARA VERTICAL SIN FRANJAS PRUEBA 51
