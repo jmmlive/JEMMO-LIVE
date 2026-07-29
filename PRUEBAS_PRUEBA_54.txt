@@ -1,0 +1,54 @@
+JEMMO LIVE · PLAN DE PRUEBAS PRUEBA 54
+Fecha: 29/07/2026
+
+PREPARACIÓN
+1. Subir los archivos del parche PRUEBA 54 a la raíz del repositorio.
+2. Publicar FIRESTORE_REGLAS_WEBRTC_PRUEBA_54.txt.
+3. Cerrar completamente la PWA en ambos móviles.
+4. Abrir el sitio una vez en Chrome y después abrir la PWA.
+5. Confirmar en el menú LIVE: PRUEBA 54.
+
+PRUEBA A · CHAT RUTH → JESÚS
+1. Ruth inicia un LIVE.
+2. Jesús entra como espectador.
+3. Ruth escribe: PRUEBA CHAT RUTH 54.
+4. El texto debe aparecer en ambos móviles sin recargar.
+5. En Firestore debe aparecer liveSignals/{uidRuth}/chat/{messageId}.
+6. roomSessionId debe coincidir con el documento de la sala.
+
+PRUEBA B · CHAT JESÚS → RUTH
+1. Jesús escribe: PRUEBA CHAT JESÚS 54.
+2. El texto debe aparecer en ambos móviles.
+3. senderUid debe ser el UID Firebase real de Jesús.
+4. No debe aparecer un duplicado local.
+
+PRUEBA C · CERRAR Y ABRIR CHAT
+1. Ruth toca Comentarios y cierra el chat.
+2. El campo de Jesús debe quedar desactivado con el texto “Chat cerrado por el anfitrión”.
+3. Ruth vuelve a abrirlo.
+4. Jesús debe poder escribir otra vez.
+
+PRUEBA D · SILLAS
+1. En el móvil de Ruth deben verse las cuatro sillas numeradas.
+2. En el móvil de Jesús también deben verse las cuatro sillas.
+3. No deben aparecer Luna ni Alex como ocupantes ficticios.
+4. Jesús no debe acceder a controles de moderación del anfitrión.
+
+PRUEBA E · VÍDEO COMPLETO
+1. Ruth coloca el móvil vertical y encuadra rostro, hombros y laterales visibles.
+2. Jesús debe ver el mismo cuadro completo, sin corte lateral ni zoom digital añadido.
+3. Si la proporción no coincide con la pantalla, debe verse fondo desenfocado detrás.
+4. La pista principal nunca debe usar cover.
+
+PRUEBA F · RECONEXIÓN
+1. Interrumpir brevemente la red de Jesús.
+2. Deben mantenerse el máximo de 3 reintentos y la ventana de 90 segundos.
+3. El chat debe volver a escuchar la misma sesión cuando regrese la conexión.
+
+RESULTADO A REGISTRAR
+- Móvil y versión Android.
+- Red usada por cada persona.
+- Hora exacta.
+- Resultado de A-F.
+- Capturas de ambos móviles.
+- Mensaje de error exacto, si existe.

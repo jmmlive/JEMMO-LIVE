@@ -19,7 +19,7 @@ const app=getApps()[0]||initializeApp(firebaseConfig);
 const auth=getAuth(app);
 const db=getFirestore(app);
 
-const VERSION=53;
+const VERSION=54;
 const PROTOCOL='jemmo-live-webrtc-v4';
 const SIGNAL_COLLECTION='liveSignals';
 const PRESENCE_COLLECTION='livePresences';
@@ -606,6 +606,7 @@ async function startHostInternal(detail={}){
       streamReady:Boolean(media.video),
       audioReady:Boolean(media.audio),
       videoReady:Boolean(media.video),
+      commentsEnabled:detail.commentsEnabled!==false,
       startedAt:serverTimestamp(),
       startedAtMs,
       heartbeatAt:serverTimestamp(),
@@ -756,9 +757,9 @@ async function validatePresenceAndRoom(){
   renderHostIdentity(presence);
   let room=roomSnap.exists()?roomSnap.data()||{}:null;
   if(!freshRoom(room)||!room?.streamReady)room=await waitForRoomReady(roomRef);
-  if(!freshRoom(room))throw Object.assign(new Error('El emisor está visible como EN LIVE, pero su sala de señalización no está activa. Ambos móviles deben usar la PRUEBA 53.'),{code:'room-not-ready'});
+  if(!freshRoom(room))throw Object.assign(new Error('El emisor está visible como EN LIVE, pero su sala de señalización no está activa. Ambos móviles deben usar la PRUEBA 54.'),{code:'room-not-ready'});
   if(clean(room.hostUid,180)!==routeHostUid)throw Object.assign(new Error('La sala LIVE no coincide con el UID real del emisor.'),{code:'host-uid-mismatch'});
-  if(clean(room.protocol,80)!==PROTOCOL||!clean(room.roomSessionId,180))throw Object.assign(new Error('El emisor usa una versión antigua de la conexión LIVE. Debe actualizar a PRUEBA 53 y reiniciar el directo.'),{code:'protocol-mismatch'});
+  if(clean(room.protocol,80)!==PROTOCOL||!clean(room.roomSessionId,180))throw Object.assign(new Error('El emisor usa una versión antigua de la conexión LIVE. Debe actualizar a PRUEBA 54 y reiniciar el directo.'),{code:'protocol-mismatch'});
   if(!room.streamReady)throw Object.assign(new Error('El emisor inició el LIVE sin una pista de cámara disponible.'),{code:'host-media-missing'});
   return{presence,room,roomRef};
 }
@@ -892,11 +893,16 @@ async function startViewerInternal({manual=false}={}){
     }
     const video=ui.video();
     const backdrop=ui.backdrop();
-    if(video&&video.srcObject!==remoteStream){
-      video.srcObject=remoteStream;
+    if(video){
+      if(video.srcObject!==remoteStream)video.srcObject=remoteStream;
       video.autoplay=true;
       video.muted=true;
       video.playsInline=true;
+      video.style.setProperty('--jemmo-camera-fit','contain');
+      video.style.setProperty('object-fit','contain','important');
+      video.style.setProperty('object-position','50% 50%','important');
+      video.style.setProperty('transform','none','important');
+      video.style.setProperty('-webkit-transform','none','important');
     }
     if(backdrop&&backdrop.srcObject!==remoteStream){
       backdrop.srcObject=remoteStream;
@@ -1033,7 +1039,7 @@ async function startViewerInternal({manual=false}={}){
     let room=null;
     try{const snap=await withTimeout(getDoc(roomRef),4000,'firestore-room-read-timeout','Firestore no respondió al revisar la sala.');room=snap.exists()?snap.data()||{}:null}catch{}
     if(!freshRoom(room))scheduleReconnect('La sala de señalización del emisor dejó de responder.',{code:'room-stale'});
-    else scheduleReconnect('El emisor está en LIVE, pero no recibió o no pudo responder la solicitud. Revisa las reglas Firestore PRUEBA 53 y confirma que ambos móviles estén actualizados.',{code:'answer-timeout'});
+    else scheduleReconnect('El emisor está en LIVE, pero no recibió o no pudo responder la solicitud. Revisa las reglas Firestore PRUEBA 54 y confirma que ambos móviles estén actualizados.',{code:'answer-timeout'});
   },ANSWER_TIMEOUT_MS);
   state.timers.push(answerTimer);
 

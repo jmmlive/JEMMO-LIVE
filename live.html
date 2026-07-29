@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#09000f"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="favicon-64.png"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><style>html.jemmo-auth-pending body{visibility:hidden}</style><script>document.documentElement.classList.add("jemmo-auth-pending");setTimeout(()=>{if(!document.documentElement.classList.contains("jemmo-auth-pending"))return;let uid="";try{uid=localStorage.getItem("jemmo_active_uid")||""}catch{}if(!uid)try{uid=sessionStorage.getItem("jemmo_active_uid")||""}catch{}if(uid)document.documentElement.classList.remove("jemmo-auth-pending");else location.replace("acceso.html?sesion=timeout")},5500)</script><script>(()=>{try{const p=new URLSearchParams(location.search);if((p.get("mode")==="viewer"||p.has("watch"))&&(p.get("hostUid")||p.get("watch")))document.documentElement.classList.add("jemmo-viewer-route")}catch{}})();</script>
-  <title>JEMMO LIVE V1 · LIVE Y ESPECTADOR WEBRTC · PRUEBA 53</title>
+  <title>JEMMO LIVE V1 · CHAT SINCRONIZADO, SILLAS VISIBLES Y VÍDEO COMPLETO · PRUEBA 54</title>
   <style>
     :root{
       color-scheme:dark;
@@ -1129,15 +1129,27 @@
     .jl-chatbar.chat-closed form{opacity:.68}.jl-chatbar.chat-closed input{cursor:not-allowed}
 
 
-    /* PRUEBA 53 · UID REAL, SESIÓN DE SALA Y ENCUADRE NATURAL SIN RECORTE */
+    /* PRUEBA 54 · CHAT REAL, SILLAS VISIBLES Y ENCUADRE COMPLETO */
     html.jemmo-viewer-route #prepScreen{display:none!important}
     html.jemmo-viewer-route #broadcastScreen{display:block!important}
     body.viewer-mode{overflow:hidden;background:#000}
-    body.viewer-mode #broadcastVideo{transform:none!important;-webkit-transform:none!important;filter:none!important}
-    body.viewer-mode #broadcastBackdrop{transform:scale(1.13)!important;-webkit-transform:scale(1.13)!important}
+    body.viewer-mode #broadcastVideo{
+      transform:none!important;
+      -webkit-transform:none!important;
+      filter:none!important;
+      object-fit:contain!important;
+      object-position:50% 50%!important;
+      width:100%!important;
+      height:100%!important;
+      inset:0!important;
+    }
+    body.viewer-mode #broadcastBackdrop{
+      transform:scale(1.08)!important;
+      -webkit-transform:scale(1.08)!important;
+      object-fit:cover!important;
+    }
     body.viewer-mode #broadcastPip,
     body.viewer-mode #taskCard,
-    body.viewer-mode .jl-seat-stack,
     body.viewer-mode #settingsButton,
     body.viewer-mode #functionsButton,
     body.viewer-mode #liveMic,
@@ -1147,6 +1159,9 @@
     body.viewer-mode #liveComments,
     body.viewer-mode #roomControls{display:none!important}
     body.viewer-mode .jl-chatbar{grid-template-columns:minmax(0,1fr) repeat(3,45px)}
+    body.viewer-mode .jl-seat-stack{display:grid!important;visibility:visible!important;opacity:1!important}
+    body.viewer-mode .jl-seat{pointer-events:none!important}
+    .jl-broadcast>video:not(.jl-camera-backdrop):not(.pip){object-fit:contain!important;object-position:50% 50%!important}
     body.viewer-mode .jl-live-badge{background:#160712;border-color:#ffffff55;box-shadow:0 0 16px #0008}
 
     .jl-viewer-reconnect-quick{position:absolute;z-index:28;top:calc(72px + env(safe-area-inset-top));right:10px;max-width:170px;min-height:38px;padding:0 10px;border:1px solid #b936ff99;border-radius:12px;background:#100316e8;color:#fff;font-size:8px;font-weight:1000;box-shadow:0 8px 24px #000a;backdrop-filter:blur(9px)}
@@ -1299,16 +1314,15 @@
 
 
       <aside class="jl-seat-stack" aria-label="Sillas del LIVE">
-        <button class="jl-seat request" data-seat="1" type="button" aria-label="Silla 1"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/></svg><small>1</small></button>
+        <button class="jl-seat" data-seat="1" type="button" aria-label="Silla 1"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/></svg><small>1</small></button>
         <button class="jl-seat" data-seat="2" type="button" aria-label="Silla 2"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/></svg><small>2</small></button>
-        <button class="jl-seat occupied" data-seat="3" type="button" aria-label="Silla 3"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/></svg><small>3</small></button>
+        <button class="jl-seat" data-seat="3" type="button" aria-label="Silla 3"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/></svg><small>3</small></button>
         <button class="jl-seat" data-seat="4" type="button" aria-label="Silla 4"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg><small>4</small></button>
       </aside>
 
       <div class="jl-live-bottom">
         <div class="jl-chat-layer" id="chatLayer">
-          <div class="jl-chat-line">Sistema: Tu LIVE ha comenzado.</div>
-          <div class="jl-chat-line">Luna: ¡Muchísima suerte! 💜</div>
+          <div class="jl-chat-line">Sistema: conectando el chat del LIVE…</div>
         </div>
         <div class="jl-chatbar">
           <form id="chatForm"><input id="chatInput" placeholder="Escribe un mensaje…" autocomplete="off"><button type="submit">➤</button></form>
@@ -1438,7 +1452,7 @@
       <a href="chili-ia.html#soporte"><span>?</span><span><b>Ayuda y soporte</b><small>Soporte humano y asistencia</small></span><i>›</i></a>
       <a href="acceso.html" data-jemmo-logout><span>↪</span><span><b>Cerrar sesión</b></span><i>›</i></a>
     </nav>
-    <div class="jl-version">JEMMO LIVE V1 · UID REAL Y CÁMARA NATURAL PRUEBA 53</div>
+    <div class="jl-version">JEMMO LIVE V1 · CHAT REAL, SILLAS Y VÍDEO COMPLETO PRUEBA 54</div>
   </aside>
 
   <div class="jl-toast" id="toast"></div>
@@ -1462,12 +1476,13 @@
   </nav>
 
   <script type="module" src="jemmo-session.js"></script>
-  <script src="pwa-register.js?v=53"></script>
+  <script src="pwa-register.js?v=54"></script>
   <script src="jemmo-wallet.js?v=46"></script>
   <script src="jemmo-house-finance.js"></script>
-  <script type="module" src="jemmo-live-presence.js?v=53"></script>
-  <script src="jemmo-live-rtc-config.js?v=53"></script>
-  <script type="module" src="jemmo-live-webrtc.js?v=53"></script>
+  <script type="module" src="jemmo-live-presence.js?v=54"></script>
+  <script src="jemmo-live-rtc-config.js?v=54"></script>
+  <script type="module" src="jemmo-live-webrtc.js?v=54"></script>
+  <script type="module" src="jemmo-live-room-sync.js?v=54"></script>
   <script src="jemmo-prep-storage.js"></script>
   <script type="module" src="jemmo-personalization-runtime.js"></script>
   <script>
@@ -1841,8 +1856,6 @@
         audio:false,
         video:{
           facingMode:{ideal:facingMode},
-          width:{ideal:720,max:1280},
-          height:{ideal:1280,max:1920},
           frameRate:{ideal:24,max:30},
           resizeMode:{ideal:"none"}
         }
@@ -1864,8 +1877,6 @@
       }
       try{
         await track.applyConstraints({
-          width:{ideal:720,max:1280},
-          height:{ideal:1280,max:1920},
           frameRate:{ideal:24,max:30},
           resizeMode:{ideal:"none"}
         });
@@ -2187,7 +2198,7 @@
         return;
       }
       const hostStream=compose(state.mainStream);
-      const hostIntent={active:true,hostUid:activeUid(),stream:hostStream,title:$("liveTitle").value.trim()};
+      const hostIntent={active:true,hostUid:activeUid(),stream:hostStream,title:$("liveTitle").value.trim(),commentsEnabled:Boolean(state.comments)};
       window.__jemmoLiveHostStream=hostStream;
       window.__jemmoLiveHostIntent=hostIntent;
       const rtcApi=await waitForLiveRtcApi();
@@ -2290,16 +2301,28 @@
       line.className=`jl-chat-line${/^(Tú:|Yo:)/i.test(text)?" jemmo-own":""}`;
       line.textContent=text;
       $("chatLayer").append(line);
-      while($("chatLayer").children.length>6) $("chatLayer").firstElementChild?.remove();
+      while($("chatLayer").children.length>25) $("chatLayer").firstElementChild?.remove();
+    }
+    async function sendSynchronizedChat(text,type="chat"){
+      const sync=window.JemmoLiveRoomSync;
+      if(sync?.sendChat){
+        const result=await sync.sendChat(text,{type});
+        if(result?.ok)return true;
+        if(result?.reason==="chat-closed"){showToast("El chat está cerrado por el anfitrión.");return false}
+        showToast("No se pudo enviar el mensaje. Revisa la conexión y las reglas Firestore.",4200);
+        return false;
+      }
+      addChat(`Tú: ${text}`);
+      return true;
     }
     $("chatForm").addEventListener("submit",event=>{
       event.preventDefault();
       const input=$("chatInput");
-      if(!state.comments){showToast("El chat está cerrado por el anfitrión.");return}
+      if(!state.comments&&!viewerMode){showToast("El chat está cerrado por el anfitrión.");return}
       const text=input.value.trim();
       if(!text) return;
-      addChat(`Tú: ${text}`);
       input.value="";
+      void sendSynchronizedChat(text,"chat").then(ok=>{if(!ok&&!input.value)input.value=text});
       input.focus();
     });
 
@@ -2438,7 +2461,7 @@
       button.addEventListener("click",event=>{
         event.preventDefault();
         event.stopPropagation();
-        addChat(`Tú: ${button.textContent}`);
+        void sendSynchronizedChat(button.textContent,"sticker");
         showToast(`Sticker ${button.textContent} enviado.`);
         closeSheets();
       });
@@ -2582,7 +2605,7 @@
         $("giftBurstText").textContent=`${giftName} ×${totalGifts} · +${totalCost}`;
         $("giftBurst").hidden=false;$("giftBurst").style.animation="none";void $("giftBurst").offsetWidth;$("giftBurst").style.animation="";
         setTimeout(()=>$("giftBurst").hidden=true,1750);
-        addChat(`Tú enviaste ${giftName} ×${totalGifts} a ${target}.`);
+        void sendSynchronizedChat(`Envió ${giftName} ×${totalGifts} a ${target}.`,"gift");
         showEventTicker(`${giftName} ×${totalGifts} · +${totalCost} puntos`,"🎁");
         updateBattle();closeSheets();
       }
@@ -2605,6 +2628,10 @@
         if(until){delete button.dataset.bannedUntil}
         state.activeSeat=Number(button.dataset.seat);
         const person=liveSeatData(button);
+        if(viewerMode){
+          showToast(person.available?`Silla ${person.number} disponible.`:`Silla ${person.number} ocupada por ${person.name}.`);
+          return;
+        }
         $("seatTitle").textContent=person.available?`Silla ${person.number} disponible`:`Perfil · Silla ${person.number}`;
         $("seatPerson").textContent=person.available?"Silla disponible":`${person.name} · Nivel ${person.number===1?12:8}`;
         $("seatPersonMeta").textContent=person.available?"No hay ninguna persona sentada.":"Casa Tenerife · España · Perfil público JEMMO";
@@ -2728,6 +2755,13 @@
       if(state.live) endBroadcast({reason:"presence-error"});
       else if(window.JemmoLiveRTC?.stopHost) void window.JemmoLiveRTC.stopHost("presence-error");
     });
+    window.addEventListener("jemmo-live-chat-error",event=>{
+      if(window.__jemmoLiveChatErrorShown54)return;
+      window.__jemmoLiveChatErrorShown54=true;
+      const detail=event.detail||{};
+      showToast(detail.code?.includes?.("permission")?"Firestore bloqueó el chat LIVE. Publica las reglas PRUEBA 54.":"El chat LIVE perdió sincronización. Revisa la conexión.",5200);
+      setTimeout(()=>{window.__jemmoLiveChatErrorShown54=false},10000);
+    });
     window.addEventListener("jemmo-live-webrtc-state",event=>{
       if(viewerMode)return;
       const detail=event.detail||{};
@@ -2785,12 +2819,13 @@
     });
     $("liveComments").addEventListener("click",()=>{
       state.comments=!state.comments;
+      void window.JemmoLiveRoomSync?.setCommentsEnabled?.(state.comments);
       const input=$("chatInput"),send=$("chatForm").querySelector("button");
       input.disabled=!state.comments;send.disabled=!state.comments;
       input.placeholder=state.comments?"Escribe un mensaje…":"Chat cerrado por el anfitrión";
       $("chatForm").closest(".jl-chatbar")?.classList.toggle("chat-closed",!state.comments);
       $("liveComments").classList.toggle("is-off",!state.comments);
-      addChat(`Sistema: el chat ha sido ${state.comments?"abierto":"cerrado"} por el anfitrión.`);
+      void sendSynchronizedChat(`El chat ha sido ${state.comments?"abierto":"cerrado"} por el anfitrión.`,"system");
       showToast(state.comments?"Chat abierto de nuevo.":"Chat cerrado. Nadie puede escribir.");
     });
     $("roomControls").addEventListener("click",()=>openSheet("safetySheet"));

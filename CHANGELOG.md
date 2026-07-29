@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## PRUEBA 54 · 29/07/2026
+
+- Chat LIVE sincronizado mediante `liveSignals/{hostUid}/chat/{messageId}`.
+- Mensajes unidos al `roomSessionId` activo y al UID Firebase real.
+- Apertura y cierre de comentarios sincronizados en la sala.
+- Cuatro sillas restauradas en modo espectador.
+- Eliminados ocupantes ficticios de las sillas.
+- Vídeo principal forzado a `contain` en anfitrión y espectador.
+- Eliminadas las restricciones 720 × 1280 que podían recortar el sensor en Android.
+- Nuevo módulo `jemmo-live-room-sync.js`.
+- Reglas Firestore y caché actualizadas a PRUEBA 54.
+
 ## PRUEBA 53 · 29/07/2026
 ### LIVE estable, cámara pausada y TURN desplegable
 - Reconexión automática acotada a 3 intentos y una ventana de 90 segundos.

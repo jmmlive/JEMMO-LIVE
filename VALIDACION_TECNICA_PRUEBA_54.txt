@@ -1,0 +1,33 @@
+JEMMO LIVE · VALIDACIÓN TÉCNICA PRUEBA 54
+Fecha: 29/07/2026
+
+BASE
+- ZIP PRUEBA 53 recibido y descomprimido correctamente.
+- 174 entradas.
+- testzip: sin errores.
+- SHA-256 base: 89c96696d972d4aa0fb88834897cf1235a83bb310ab39a23b652f9ca472c4536.
+
+VALIDACIONES ESTÁTICAS
+- live.html: sin IDs duplicados.
+- 4 elementos .jl-seat presentes.
+- jemmo-live-room-sync.js cargado desde live.html.
+- Referencias locales de scripts y hojas: existentes.
+- JavaScript comprobado con node --check.
+- Script inline de live.html extraído y comprobado con node --check.
+- Reglas PRUEBA 54: llaves equilibradas y bloque /chat/{messageId} presente.
+- Restricciones 720 × 1280 eliminadas del flujo de cámara.
+- object-fit: contain forzado para vídeo principal remoto.
+- .jl-seat-stack visible en viewer-mode.
+
+SEGURIDAD DEL CHAT
+- Escritura ligada a Firebase Authentication UID.
+- Mensajes ligados al roomSessionId activo.
+- Longitud máxima: 300 caracteres.
+- Renderizado con textContent.
+- update bloqueado en reglas.
+- system reservado al anfitrión.
+
+ESTADO
+- Validación estructural: APROBADA.
+- Validación física entre dos móviles: PENDIENTE tras publicar archivos y reglas.
+- TURN: conserva el estado de PRUEBA 53; requiere infraestructura externa para estar operativo.

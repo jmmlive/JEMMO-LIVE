@@ -1,30 +1,30 @@
-JEMMO LIVE V1 · LIVE ESTABLE, CÁMARA PAUSADA Y TURN DESPLEGABLE PRUEBA 53
+JEMMO LIVE V1 · CHAT LIVE SINCRONIZADO, SILLAS VISIBLES Y VÍDEO COMPLETO PRUEBA 54
 Fecha: 29/07/2026
-Base: PRUEBA 52 · UID FIREBASE, SESIÓN ÚNICA Y CÁMARA NATURAL
+Base: JEMMO-LIVE-main-PRUEBA-53-COMPLETA.zip
+SHA-256 base: 89c96696d972d4aa0fb88834897cf1235a83bb310ab39a23b652f9ca472c4536
 
 CORRECCIONES PRINCIPALES
-1. El LIVE deja de reconectar indefinidamente: máximo 3 reintentos automáticos dentro de una ventana de 90 segundos.
-2. Los contadores de reconexión solo se reinician cuando entran bytes RTP reales de audio o vídeo.
-3. Errores terminales de permisos, versión, aforo o medios del anfitrión ya no muestran reintentos engañosos.
-4. El vídeo LIVE conserva siempre el encuadre completo con object-fit: contain y fondo desenfocado integrado.
-5. Sala con cámara sincroniza pausa/reactivación para anfitrión e invitado.
-6. Al pausar se muestra avatar, nombre y “Cámara pausada”; nunca pantalla negra.
-7. Al reactivar se reutiliza la conexión y se sustituye la pista con replaceTrack/replaceLocalStream.
-8. La recuperación automática distingue pausa voluntaria de pista averiada y evita reabrir la cámara indebidamente.
-9. LIVE y Sala pueden solicitar credenciales TURN temporales desde un backend Firebase autenticado.
-10. Se incluye Cloud Function desplegable y guía de configuración coturn.
+1. Chat LIVE sincronizado por Firestore y roomSessionId.
+2. Mensajes visibles en anfitrión y espectadores sin recargar.
+3. Apertura/cierre de comentarios sincronizado.
+4. Cuatro sillas visibles también para espectadores.
+5. Eliminación de ocupantes ficticios iniciales.
+6. Vídeo principal forzado a contain en ambos extremos.
+7. Captura sin resolución vertical obligatoria que pueda recortar el sensor.
+8. Fondo desenfocado conservado detrás de la imagen completa.
+9. Caché y recursos actualizados a PRUEBA 54.
 
-PROTOCOLO
-- jemmo-live-webrtc-v4
-- Recursos y caché: PRUEBA 53
+ARCHIVO NUEVO
+- jemmo-live-room-sync.js
 
 ACCIÓN OBLIGATORIA
-- Publicar FIRESTORE_REGLAS_WEBRTC_PRUEBA_53.txt conservando las reglas existentes.
-- Para TURN real: desplegar functions/jemmoTurnCredentials, configurar coturn y escribir la URL HTTPS en jemmo-live-rtc-config.js.
+- Publicar FIRESTORE_REGLAS_WEBRTC_PRUEBA_54.txt.
+- Actualizar ambos móviles antes de la prueba física.
 
-ESTADO VERIFICADO
-- ZIP base íntegro.
-- Sintaxis JavaScript y scripts HTML revisada.
-- Validaciones estructurales aprobadas.
-- Prueba física Jesús ↔ Ruth pendiente tras publicar archivos/reglas.
-- TURN preparado para despliegue; no está activo hasta completar la infraestructura externa.
+PROTOCOLO
+- WebRTC: jemmo-live-webrtc-v4
+- Cliente/caché: PRUEBA 54
+
+ESTADO
+- Sintaxis y estructura verificadas.
+- Prueba real Jesús ↔ Ruth pendiente después del despliegue.

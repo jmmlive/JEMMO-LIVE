@@ -1,14 +1,14 @@
 (()=>{
   'use strict';
-  if(window.__JEMMO_PWA_REGISTER_53__)return;
-  window.__JEMMO_PWA_REGISTER_53__=true;
-  const RELEASE='pwa-integral-live-camera-presence-53';
+  if(window.__JEMMO_PWA_REGISTER_54__)return;
+  window.__JEMMO_PWA_REGISTER_54__=true;
+  const RELEASE='pwa-live-chat-seats-framing-54';
   let installPrompt=null;
   const isStandalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone===true;
   const storage={get:k=>{try{return localStorage.getItem(k)}catch{return null}},set:(k,v)=>{try{localStorage.setItem(k,v);return true}catch{try{sessionStorage.setItem(k,v);return true}catch{return false}}}};
   function showInstallHelp(message){
-    const existing=document.getElementById('jemmoInstallHelp53');existing?.remove();
-    const el=document.createElement('div');el.id='jemmoInstallHelp53';el.style.cssText='position:fixed;z-index:50000;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(92vw,440px);padding:12px 14px;border:1px solid #b946e8;border-radius:15px;background:#17021eee;color:#fff;font:700 12px/1.4 system-ui;box-shadow:0 12px 36px #000c;text-align:center';el.textContent=message;document.body.appendChild(el);setTimeout(()=>el.remove(),4200)
+    const existing=document.getElementById('jemmoInstallHelp54');existing?.remove();
+    const el=document.createElement('div');el.id='jemmoInstallHelp54';el.style.cssText='position:fixed;z-index:50000;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(92vw,440px);padding:12px 14px;border:1px solid #b946e8;border-radius:15px;background:#17021eee;color:#fff;font:700 12px/1.4 system-ui;box-shadow:0 12px 36px #000c;text-align:center';el.textContent=message;document.body.appendChild(el);setTimeout(()=>el.remove(),4200)
   }
   function bindInstallButtons(){document.querySelectorAll('[data-install-jemmo]').forEach(button=>{button.hidden=false;button.disabled=false;if(isStandalone())button.textContent='✓ JEMMO LIVE YA ESTÁ INSTALADA';else if(installPrompt)button.textContent='⬇ INSTALAR JEMMO LIVE';else button.textContent='📲 CÓMO INSTALAR JEMMO LIVE'})}
   window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installPrompt=event;bindInstallButtons();window.dispatchEvent(new Event('jemmo-install-ready'))});
@@ -16,8 +16,8 @@
   window.addEventListener('appinstalled',()=>{installPrompt=null;bindInstallButtons()});
   function loadHousePet(){
     const path=location.pathname.toLowerCase();const search=location.search.toLowerCase();const relevant=path.endsWith('/salas.html')||path.endsWith('salas.html')||path.endsWith('/casa-demo.html')||path.endsWith('casa-demo.html')||search.includes('houseroom=1')||search.includes('house=');if(!relevant)return;
-    if(!document.querySelector('link[data-jemmo-house-pet]')){const link=document.createElement('link');link.rel='stylesheet';link.href='./jemmo-house-pet.css?v=53';link.dataset.jemmoHousePet='53';document.head.appendChild(link)}
-    if(!document.querySelector('script[data-jemmo-house-pet]')){const script=document.createElement('script');script.src='./jemmo-house-pet.js?v=53';script.defer=true;script.dataset.jemmoHousePet='53';script.onerror=()=>console.warn('JEMMO Mascota: no se pudo cargar el módulo.');document.head.appendChild(script)}
+    if(!document.querySelector('link[data-jemmo-house-pet]')){const link=document.createElement('link');link.rel='stylesheet';link.href='./jemmo-house-pet.css?v=54';link.dataset.jemmoHousePet='54';document.head.appendChild(link)}
+    if(!document.querySelector('script[data-jemmo-house-pet]')){const script=document.createElement('script');script.src='./jemmo-house-pet.js?v=54';script.defer=true;script.dataset.jemmoHousePet='54';script.onerror=()=>console.warn('JEMMO Mascota: no se pudo cargar el módulo.');document.head.appendChild(script)}
   }
   if('serviceWorker'in navigator&&location.protocol!=='file:'){
     window.addEventListener('load',async()=>{try{const registration=await navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'});registration.update().catch(()=>{});if(registration.waiting)registration.waiting.postMessage({type:'SKIP_WAITING'});registration.addEventListener('updatefound',()=>{const worker=registration.installing;if(!worker)return;worker.addEventListener('statechange',()=>{if(worker.state==='installed'&&navigator.serviceWorker.controller)worker.postMessage({type:'SKIP_WAITING'})})})}catch(error){console.error('JEMMO service worker:',error)}});

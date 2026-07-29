@@ -1,30 +1,30 @@
-# JEMMO LIVE V1 · PRUEBA 53
+# JEMMO LIVE V1 · PRUEBA 54
 
-## LIVE estable, cámara pausada y TURN desplegable
+## Chat LIVE sincronizado, sillas visibles y vídeo completo
 
-PRUEBA 53 se construye sobre PRUEBA 52 y corrige la estabilidad del LIVE y de las Salas con cámara.
+Esta entrega se construye directamente sobre `JEMMO-LIVE-main-PRUEBA-53-COMPLETA.zip`.
 
-### LIVE personal
-- Encuadre completo sin recorte lateral ni doble zoom.
-- Fondo desenfocado integrado cuando el sensor y la pantalla tienen proporciones distintas.
-- Reconexión automática limitada a 3 intentos y 90 segundos.
-- Solo el tráfico RTP real confirma una recuperación.
-- Permisos, versión incompatible, aforo y falta de medios son estados terminales visibles.
+### Qué corrige
 
-### Sala con cámara
-- Pausa sincronizada para anfitrión e invitado.
-- Tarjeta limpia con avatar, nombre y “Cámara pausada”.
-- Reactivación mediante sustitución de pista, sin reconstruir la sala cuando no es necesario.
-- La recuperación no confunde una pausa voluntaria con una avería.
+- Chat bidireccional en tiempo real mediante Firestore.
+- Mensajes separados por `roomSessionId`.
+- Estado de comentarios sincronizado.
+- Cuatro sillas visibles al espectador.
+- Eliminación de ocupantes ficticios.
+- Vídeo principal completo con `contain`.
+- Captura sin imponer 720 × 1280 al sensor.
 
-### TURN
-- `jemmo-live-rtc-config.js` admite credenciales temporales.
-- `functions/jemmoTurnCredentials` valida Firebase Authentication y emite credenciales TURN REST de una hora.
-- Consultar `TURN_DESPLIEGUE_PRUEBA_53.md`.
-- TURN no queda operativo solo por subir el ZIP: requiere coturn, secretos y despliegue.
+### Archivo nuevo
 
-### Instalación crítica
-1. Subir los archivos de PRUEBA 53 a GitHub.
-2. Publicar los cambios de `FIRESTORE_REGLAS_WEBRTC_PRUEBA_53.txt`.
-3. Cerrar completamente la PWA en ambos móviles, abrirla de nuevo y confirmar PRUEBA 53.
-4. Ejecutar `PRUEBAS_PRUEBA_53.txt` en el orden indicado.
+- `jemmo-live-room-sync.js`
+
+### Despliegue
+
+1. Subir el parche incremental a GitHub, respetando la estructura.
+2. Publicar `FIRESTORE_REGLAS_WEBRTC_PRUEBA_54.txt`.
+3. Cerrar y actualizar la PWA en ambos móviles.
+4. Ejecutar `PRUEBAS_PRUEBA_54.txt`.
+
+### Nota
+
+La visibilidad de las sillas queda corregida. El transporte audiovisual de invitados sentados no se declara implementado en esta entrega.

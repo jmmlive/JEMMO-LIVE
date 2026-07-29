@@ -1,0 +1,291 @@
+JEMMO LIVE · BLOQUE ADITIVO DE REGLAS FIRESTORE · PRUEBA 54
+Fecha: 29/07/2026
+
+OBJETIVO
+- Corregir la señalización entre anfitrión y espectador usando Firebase Authentication.
+- El identificador principal es siempre request.auth.uid / users/{uid}.
+- La colección emisoras NO interviene en la autorización ni en la ruta WebRTC.
+- Cada inicio de LIVE crea un roomSessionId nuevo. PRUEBA 54 añade reconexión acotada y estados terminales para impedir bucles infinitos.
+
+IMPORTANTE
+- Este bloque NO sustituye las reglas actuales.
+- Debe copiarse DENTRO de:
+  match /databases/{database}/documents {
+    ...PEGAR AQUÍ...
+  }
+- Sustituye los bloques anteriores de /livePresences y /liveSignals para evitar duplicados.
+- Mantener todas las demás reglas de users, monedero, Casas, tareas y mensajes.
+- Publicar las reglas antes de probar entre dos móviles.
+
+// ─────────────────────────────────────────────────────────────
+// JEMMO LIVE · Presencia pública autenticada · PRUEBA 54
+// ─────────────────────────────────────────────────────────────
+match /livePresences/{hostUid} {
+  function signedIn() {
+    return request.auth != null;
+  }
+
+  function isHost() {
+    return signedIn() && request.auth.uid == hostUid;
+  }
+
+  allow get, list: if signedIn();
+  allow create, update: if isHost()
+    && request.resource.data.uid == hostUid
+    && request.resource.data.hostUid == hostUid;
+  allow delete: if isHost();
+}
+
+// ─────────────────────────────────────────────────────────────
+// JEMMO LIVE · Señalización WebRTC autenticada · PRUEBA 54
+// ─────────────────────────────────────────────────────────────
+match /liveSignals/{hostUid} {
+  function signedIn() {
+    return request.auth != null;
+  }
+
+  function isHost() {
+    return signedIn() && request.auth.uid == hostUid;
+  }
+
+  // La sala se identifica exclusivamente por el UID autenticado del anfitrión.
+  allow get: if signedIn();
+  allow list: if false;
+  allow create, update: if isHost()
+    && request.resource.data.hostUid == hostUid
+    && request.resource.data.roomSessionId is string
+    && request.resource.data.roomSessionId.size() >= 12;
+  allow delete: if isHost();
+
+  // Chat LIVE sincronizado por sesión. Los mensajes son inmutables.
+  match /chat/{messageId} {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isHost() {
+      return signedIn() && request.auth.uid == hostUid;
+    }
+
+    function isSender() {
+      return signedIn() && resource.data.senderUid == request.auth.uid;
+    }
+
+    function activeRoomSession() {
+      return exists(/databases/$(database)/documents/liveSignals/$(hostUid))
+        && get(/databases/$(database)/documents/liveSignals/$(hostUid)).data.active == true
+        && get(/databases/$(database)/documents/liveSignals/$(hostUid)).data.status == 'live'
+        && get(/databases/$(database)/documents/liveSignals/$(hostUid)).data.roomSessionId == request.resource.data.roomSessionId;
+    }
+
+    allow get, list: if signedIn();
+
+    allow create: if signedIn()
+      && request.resource.data.hostUid == hostUid
+      && request.resource.data.senderUid == request.auth.uid
+      && request.resource.data.roomSessionId is string
+      && request.resource.data.roomSessionId.size() >= 12
+      && request.resource.data.senderName is string
+      && request.resource.data.senderName.size() >= 1
+      && request.resource.data.senderName.size() <= 80
+      && request.resource.data.text is string
+      && request.resource.data.text.size() >= 1
+      && request.resource.data.text.size() <= 300
+      && request.resource.data.type in ['chat', 'sticker', 'gift', 'system']
+      && request.resource.data.senderRole in ['host', 'viewer']
+      && (request.resource.data.senderRole != 'host' || request.auth.uid == hostUid)
+      && (request.resource.data.type != 'system' || request.auth.uid == hostUid)
+      && request.resource.data.keys().hasOnly([
+        'hostUid', 'roomSessionId', 'senderUid', 'senderName',
+        'senderRole', 'type', 'text', 'createdAt', 'createdAtMs', 'version'
+      ])
+      && activeRoomSession();
+
+    allow update: if false;
+    allow delete: if isHost() || isSender();
+  }
+
+  match /viewers/{sessionId} {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isHost() {
+      return signedIn() && request.auth.uid == hostUid;
+    }
+
+    function isViewerExisting() {
+      return signedIn() && resource.data.viewerUid == request.auth.uid;
+    }
+
+    function activeRoomSession() {
+      return exists(/databases/$(database)/documents/liveSignals/$(hostUid))
+        && get(/databases/$(database)/documents/liveSignals/$(hostUid)).data.active == true
+        && get(/databases/$(database)/documents/liveSignals/$(hostUid)).data.status == 'live'
+        && get(/databases/$(database)/documents/liveSignals/$(hostUid)).data.roomSessionId == request.resource.data.roomSessionId;
+    }
+
+    function stableOwnership() {
+      return request.resource.data.viewerUid == resource.data.viewerUid
+        && request.resource.data.hostUid == resource.data.hostUid
+        && request.resource.data.hostUid == hostUid
+        && request.resource.data.roomSessionId == resource.data.roomSessionId;
+    }
+
+    function viewerCreateFields() {
+      return request.resource.data.keys().hasOnly([
+        'viewerUid', 'hostUid', 'roomSessionId', 'status',
+        'offerRevision', 'answerRevision',
+        'createdAt', 'createdAtMs', 'updatedAt', 'updatedAtMs',
+        'userAgent', 'protocol', 'turnConfigured', 'version'
+      ]);
+    }
+
+    function viewerUpdateFields() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+        'offer', 'offerRevision', 'offerIceComplete', 'offerIceTimedOut',
+        'offerCandidates', 'status', 'requestedAt', 'requestedAtMs',
+        'updatedAt', 'updatedAtMs', 'protocol', 'version'
+      ]);
+    }
+
+    function hostUpdateFields() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+        'answer', 'answerRevision', 'answerIceComplete', 'answerIceTimedOut',
+        'answerCandidates', 'status', 'hostUid', 'media',
+        'answeredAt', 'answeredAtMs', 'connectedAt', 'connectedAtMs',
+        'endedAt', 'endedAtMs', 'endReason',
+        'capacity', 'errorCode', 'errorMessage',
+        'updatedAt', 'updatedAtMs', 'protocol', 'version'
+      ]);
+    }
+
+    // Solo el anfitrión puede listar las solicitudes de su propia sala.
+    allow list: if isHost();
+    allow get: if isHost() || isViewerExisting();
+
+    // El espectador crea una sesión para el UID del anfitrión y el roomSessionId activo.
+    allow create: if signedIn()
+      && request.resource.data.viewerUid == request.auth.uid
+      && request.resource.data.hostUid == hostUid
+      && request.resource.data.roomSessionId is string
+      && request.resource.data.roomSessionId.size() >= 12
+      && request.resource.data.status == 'initializing'
+      && request.resource.data.offerRevision == 0
+      && request.resource.data.answerRevision == 0
+      && activeRoomSession()
+      && viewerCreateFields();
+
+    // El espectador solo publica su oferta o cierra su propia sesión.
+    allow update: if isViewerExisting()
+      && stableOwnership()
+      && viewerUpdateFields();
+
+    // El anfitrión solo publica respuesta, estado y diagnóstico.
+    allow update: if isHost()
+      && stableOwnership()
+      && hostUpdateFields();
+
+    allow delete: if isHost() || isViewerExisting();
+
+    match /viewerCandidates/{candidateId} {
+      function signedIn() {
+        return request.auth != null;
+      }
+
+      function isHost() {
+        return signedIn() && request.auth.uid == hostUid;
+      }
+
+      function isSessionViewer() {
+        return signedIn()
+          && exists(/databases/$(database)/documents/liveSignals/$(hostUid)/viewers/$(sessionId))
+          && get(/databases/$(database)/documents/liveSignals/$(hostUid)/viewers/$(sessionId)).data.viewerUid == request.auth.uid;
+      }
+
+      allow get, list: if isHost() || isSessionViewer();
+      allow create: if isSessionViewer()
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.keys().hasOnly([
+          'candidate', 'sdpMid', 'sdpMLineIndex', 'usernameFragment',
+          'ownerUid', 'createdAt', 'createdAtMs', 'version'
+        ]);
+      allow update: if false;
+      allow delete: if isHost() || isSessionViewer();
+    }
+
+    match /hostCandidates/{candidateId} {
+      function signedIn() {
+        return request.auth != null;
+      }
+
+      function isHost() {
+        return signedIn() && request.auth.uid == hostUid;
+      }
+
+      function isSessionViewer() {
+        return signedIn()
+          && exists(/databases/$(database)/documents/liveSignals/$(hostUid)/viewers/$(sessionId))
+          && get(/databases/$(database)/documents/liveSignals/$(hostUid)/viewers/$(sessionId)).data.viewerUid == request.auth.uid;
+      }
+
+      allow get, list: if isHost() || isSessionViewer();
+      allow create: if isHost()
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.resource.data.keys().hasOnly([
+          'candidate', 'sdpMid', 'sdpMLineIndex', 'usernameFragment',
+          'ownerUid', 'createdAt', 'createdAtMs', 'version'
+        ]);
+      allow update: if false;
+      allow delete: if isHost() || isSessionViewer();
+    }
+  }
+}
+
+COMPROBACIÓN MÍNIMA DESPUÉS DE PUBLICAR
+1. Ruth inicia LIVE desde su cuenta Firebase real.
+2. Debe aparecer liveSignals/pVJq1ohc6mY8zuoED2S6Q7hsocS2 con:
+   - hostUid = pVJq1ohc6mY8zuoED2S6Q7hsocS2
+   - active = true
+   - status = live
+   - protocol = jemmo-live-webrtc-v4
+   - roomSessionId no vacío
+   - streamReady = true
+   - version = 54
+3. Jesús entra desde PERSONAS EN DIRECTO.
+4. Debe crearse liveSignals/{uidDeRuth}/viewers/{sessionId} con el mismo roomSessionId.
+5. El estado debe avanzar: initializing → requesting → answered → connected.
+6. Si aparece permission-error, el bloque no se publicó o existe otro bloque superior incompatible.
+7. Si llega a ICE failed sin permission-error, la señalización funciona y el siguiente requisito es TURN para esa red móvil.
+
+
+// ─────────────────────────────────────────────────────────────
+// CHAT LIVE · COMPROBACIÓN PRUEBA 54
+// ─────────────────────────────────────────────────────────────
+// 1. Al enviar un mensaje se crea:
+//    liveSignals/{hostUid}/chat/{messageId}
+// 2. El documento debe contener el mismo roomSessionId de la sala activa.
+// 3. senderUid debe coincidir con request.auth.uid.
+// 4. El mensaje debe aparecer en ambos móviles sin recargar.
+// 5. Si aparece permission-denied, sustituir el bloque anterior de
+//    /liveSignals por este bloque PRUEBA 54 completo.
+
+// ─────────────────────────────────────────────────────────────
+// SALA CON CÁMARA · CAMPOS NUEVOS PRUEBA 54
+// ─────────────────────────────────────────────────────────────
+// La Sala con cámara sincroniza ahora estos cuatro campos en
+// salasPruebaWebRTC/{roomId}:
+//   hostCameraEnabled, hostCameraUpdatedAtMs,
+//   guestCameraEnabled, guestCameraUpdatedAtMs.
+//
+// Si las reglas actuales de salasPruebaWebRTC usan una lista cerrada de campos
+// permitidos para update, AÑADIR esos cuatro nombres a la lista. No sustituir
+// las reglas completas de Casas, chat, moderación, sillas ni mensajes.
+// La pausa de cámara debe poder escribir false y la reactivación true.
+
+COMPROBACIÓN ADICIONAL DE SALA CON CÁMARA
+1. Al pausar la cámara del anfitrión, el documento muestra hostCameraEnabled = false.
+2. El invitado ve avatar, nombre y “Cámara pausada”; nunca un rectángulo negro.
+3. Al reactivar, hostCameraEnabled = true y se sustituye/reutiliza la pista.
+4. Repetir la misma comprobación con guestCameraEnabled para el invitado.
+5. Si Firestore devuelve permission-denied, ampliar exclusivamente la lista de campos permitidos de la regla de salasPruebaWebRTC.

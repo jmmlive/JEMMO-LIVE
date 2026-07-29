@@ -1,0 +1,27 @@
+JEMMO LIVE PRUEBA 54 · INSTALACIÓN
+
+ENTREGA INCREMENTAL RECOMENDADA
+1. Descomprimir JEMMO-LIVE-PRUEBA-54-PARCHE-GITHUB.zip.
+2. Subir sus archivos a la raíz del repositorio GitHub.
+3. Sustituir archivos con el mismo nombre.
+4. Conservar todos los demás archivos.
+5. No subir el ZIP directamente al repositorio.
+
+FIRESTORE OBLIGATORIO
+- Abrir las reglas actuales de Firestore.
+- Sustituir los bloques anteriores de /livePresences y /liveSignals por el contenido de FIRESTORE_REGLAS_WEBRTC_PRUEBA_54.txt.
+- Mantener las reglas de users, Casas, tareas, monedero, regalos y mensajes privados.
+- Publicar las reglas antes de probar el chat.
+
+CACHÉ PWA
+1. Cerrar JEMMO LIVE en ambos móviles.
+2. Abrir el sitio una vez en Chrome.
+3. Volver a abrir la PWA.
+4. Confirmar PRUEBA 54 en el menú LIVE.
+5. Si sigue PRUEBA 53, borrar los datos del sitio o reinstalar la PWA.
+
+PRUEBA
+- Ejecutar PRUEBAS_PRUEBA_54.txt en orden.
+- Probar mensajes en ambas direcciones.
+- Confirmar cuatro sillas visibles en ambos móviles.
+- Confirmar rostro y laterales completos sin recorte.
