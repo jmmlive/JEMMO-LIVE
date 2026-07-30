@@ -2,10 +2,10 @@
   "id": "./",
   "name": "JEMMO LIVE",
   "short_name": "JEMMO",
-  "description": "JEMMO LIVE: transmisiones, Salas, Casas y JEMMO Universo visible desde Inicio.",
+  "description": "JEMMO LIVE: transmisiones en directo, Salas, Casas, mensajes y comunidad.",
   "lang": "es-ES",
   "dir": "ltr",
-  "start_url": "./index.html?source=pwa-persistence-universe-19",
+  "start_url": "./index.html?release=55",
   "scope": "./",
   "display": "standalone",
   "display_override": [

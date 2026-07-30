@@ -1,30 +1,18 @@
-JEMMO LIVE V1 · CHAT LIVE SINCRONIZADO, SILLAS VISIBLES Y VÍDEO COMPLETO PRUEBA 54
-Fecha: 29/07/2026
-Base: JEMMO-LIVE-main-PRUEBA-53-COMPLETA.zip
-SHA-256 base: 89c96696d972d4aa0fb88834897cf1235a83bb310ab39a23b652f9ca472c4536
+JEMMO LIVE V1 · AUDITORÍA FUNCIONAL Y PREPARACIÓN DE PRODUCCIÓN · PRUEBA 55 FASE 1
+Fecha: 30/07/2026
+Base exacta: JEMMO-LIVE-main-PRUEBA-54-COMPLETA.zip
+SHA-256 base: 6a1b2467787cf6eeec59e3b80c80656d995c561905131ad4d33d84b3415e0906
 
-CORRECCIONES PRINCIPALES
-1. Chat LIVE sincronizado por Firestore y roomSessionId.
-2. Mensajes visibles en anfitrión y espectadores sin recargar.
-3. Apertura/cierre de comentarios sincronizado.
-4. Cuatro sillas visibles también para espectadores.
-5. Eliminación de ocupantes ficticios iniciales.
-6. Vídeo principal forzado a contain en ambos extremos.
-7. Captura sin resolución vertical obligatoria que pueda recortar el sensor.
-8. Fondo desenfocado conservado detrás de la imagen completa.
-9. Caché y recursos actualizados a PRUEBA 54.
-
-ARCHIVO NUEVO
-- jemmo-live-room-sync.js
-
-ACCIÓN OBLIGATORIA
-- Publicar FIRESTORE_REGLAS_WEBRTC_PRUEBA_54.txt.
-- Actualizar ambos móviles antes de la prueba física.
-
-PROTOCOLO
-- WebRTC: jemmo-live-webrtc-v4
-- Cliente/caché: PRUEBA 54
+CORRECCIONES DE ESTA FASE
+1. Los accesos Idioma y Seguridad y privacidad abren ahora Configuración real.
+2. Los cuatro botones del monedero de respaldo en Inicio abren pestañas reales del monedero global.
+3. Se eliminan saldos fijos visibles en el monedero de respaldo.
+4. Manifestos PWA unificados y salida de inicio actualizada.
+5. Caché PWA renovada y recursos esenciales ampliados.
+6. Títulos de LIVE y Salas profesionalizados, sin nombres de prueba visibles.
 
 ESTADO
-- Sintaxis y estructura verificadas.
-- Prueba real Jesús ↔ Ruth pendiente después del despliegue.
+- Esta entrega no convierte todavía la economía simulada en dinero real.
+- Esta entrega no sustituye P2P por un servidor SFU.
+- Esta entrega no publica reglas completas de Firestore ni integra Google Play Billing.
+- Es el primer parche seguro de la auditoría general.

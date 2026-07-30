@@ -1,8 +1,123 @@
 {
+  "id": "./",
   "name": "JEMMO LIVE",
   "short_name": "JEMMO",
-  "start_url": "live.html",
+  "description": "JEMMO LIVE: transmisiones en directo, Salas, Casas, mensajes y comunidad.",
+  "lang": "es-ES",
+  "dir": "ltr",
+  "start_url": "./index.html?release=55",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#07000b",
-  "theme_color": "#07000b"
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "portrait-primary",
+  "background_color": "#050007",
+  "theme_color": "#09000f",
+  "prefer_related_applications": false,
+  "categories": [
+    "social",
+    "entertainment"
+  ],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "jemmo-install-preview.webp",
+      "sizes": "674x1278",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "Inicio de JEMMO LIVE"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Inicio",
+      "short_name": "Inicio",
+      "url": "./inicio.html?source=shortcut",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Casas",
+      "short_name": "Casas",
+      "url": "./casa-demo.html?source=shortcut",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "JEMMO Universo",
+      "short_name": "Universo",
+      "url": "./jemmo-universo.html?source=shortcut",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Sala de Casa",
+      "short_name": "Sala Casa",
+      "url": "./casa-demo.html?miCasa=1&tab=room",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Chili IA",
+      "short_name": "Chili IA",
+      "url": "./chili-ia.html?source=shortcut",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Mensajes",
+      "short_name": "Mensajes",
+      "url": "./mensajes.html?source=shortcut",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
 }
