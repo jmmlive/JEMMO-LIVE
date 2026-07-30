@@ -2,8 +2,8 @@
    Selector exclusivo de la cuenta propietaria para probar la aplicación como propietario,
    agente de Casa, emisor/a o miembro sin perder la autoridad real de propietario. */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
-import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
-import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+import { getAuth, onAuthStateChanged, getIdTokenResult } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
+import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 
 const firebaseConfig={apiKey:'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',authDomain:'jemmo-live.firebaseapp.com',projectId:'jemmo-live',storageBucket:'jemmo-live.firebasestorage.app',messagingSenderId:'355540892255',appId:'1:355540892255:web:d15a8dd03b2915e31939ea'};
 const app=getApps()[0]||initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app);
@@ -19,8 +19,7 @@ const normalize=v=>clean(v,30).toLowerCase().normalize('NFD').replace(/[\u0300-\
 const activeUid=()=>clean(window.__jemmoAuthenticatedUid||localStorage.getItem('jemmo_active_uid')||sessionStorage.getItem('jemmo_active_uid'),160);
 const key=uid=>`jemmo_role_lab_v1_${uid||activeUid()||'guest'}`;
 function readLocal(uid=activeUid()){try{const x=JSON.parse(localStorage.getItem(key(uid))||'null');return ROLES[x?.mode]?x:{mode:'owner',enabled:true}}catch{return{mode:'owner',enabled:true}}}
-function ownerSecurityUid(){try{return clean(JSON.parse(localStorage.getItem('jemmo_owner_security_v1')||'null')?.ownerUid,160)}catch{return''}}
-function isOwner(profile,user){const role=normalize(profile?.role||profile?.rol||profile?.accountRole);return ['owner','propietario','superadmin'].includes(role)||ownerSecurityUid()===user?.uid}
+function isOwner(tokenResult,user){const role=normalize(tokenResult?.claims?.role);return Boolean(user?.uid)&&(tokenResult?.claims?.owner===true||['owner','propietario','superadmin'].includes(role))}
 function waitUser(timeout=12000){if(auth.currentUser)return Promise.resolve(auth.currentUser);return new Promise((resolve,reject)=>{let stop=()=>{};const timer=setTimeout(()=>{stop();reject(new Error('Sesión no disponible.'))},timeout);stop=onAuthStateChanged(auth,u=>{if(!u)return;clearTimeout(timer);stop();resolve(u)},e=>{clearTimeout(timer);stop();reject(e)})})}
 function membership(){try{return JSON.parse(localStorage.getItem(`jemmo_house_membership_v2_${state.user?.uid||activeUid()}`)||'null')}catch{return null}}
 function publicState(){const def=ROLES[state.mode]||ROLES.owner;return{available:state.available,mode:state.mode,...def,actualOwner:state.available}}
@@ -38,12 +37,9 @@ async function setMode(mode){
   state.mode=mode;
   try{localStorage.setItem(key(state.user.uid),JSON.stringify({mode,enabled:true,updatedAt:Date.now()}))}catch{}
   render();
-  try{
-    await setDoc(doc(db,'users',state.user.uid),{testRoleMode:mode,testRoleEnabled:true,testRoleUpdatedAt:serverTimestamp()},{merge:true});
-  }catch(e){console.warn('JEMMO roles: guardado remoto',e?.code||e)}
   window.dispatchEvent(new CustomEvent('jemmo-test-role-change',{detail:publicState()}));
 }
 function bind(){document.addEventListener('click',e=>{const b=e.target.closest('[data-jemmo-test-role]');if(b){b.disabled=true;void setMode(b.dataset.jemmoTestRole).finally(()=>b.disabled=false);return}const h=e.target.closest('[data-jemmo-house-profile]');if(h){e.preventDefault();location.href=actionForMode().url}})}
-async function boot(){injectStyles();try{state.user=await waitUser();const snap=await getDoc(doc(db,'users',state.user.uid));state.profile=snap.exists()?(snap.data()||{}):{};state.available=isOwner(state.profile,state.user);const local=readLocal(state.user.uid);state.mode=ROLES[local.mode]?local.mode:'owner';if(!state.available)return;injectProfile();injectHouse();bind();render();window.dispatchEvent(new CustomEvent('jemmo-role-lab-ready',{detail:publicState()}))}catch(e){console.warn('JEMMO roles:',e?.message||e)}}
+async function boot(){injectStyles();try{state.user=await waitUser();const snap=await getDoc(doc(db,'users',state.user.uid));state.profile=snap.exists()?(snap.data()||{}):{};const tokenResult=await getIdTokenResult(state.user,true).catch(()=>null);state.available=isOwner(tokenResult,state.user);const local=readLocal(state.user.uid);state.mode=ROLES[local.mode]?local.mode:'owner';if(!state.available)return;injectProfile();injectHouse();bind();render();window.dispatchEvent(new CustomEvent('jemmo-role-lab-ready',{detail:publicState()}))}catch(e){console.warn('JEMMO roles:',e?.message||e)}}
 window.JemmoRoleLab=Object.freeze({roles:ROLES,get:()=>publicState(),set:setMode,readLocal:()=>readLocal(),isAvailable:()=>state.available});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else void boot();

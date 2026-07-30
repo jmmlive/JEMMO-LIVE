@@ -875,8 +875,6 @@
         city: profile.city,
         avatarData: profile.avatarData,
         coverData: profile.coverData,
-        verified: profile.verified,
-        level: profile.level,
         publicProfileEnabled: true,
         messagesEnabled: true,
         messagesVersion: 4,

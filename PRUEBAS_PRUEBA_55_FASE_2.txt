@@ -1,0 +1,20 @@
+JEMMO LIVE V1 · VALIDACIÓN PRUEBA 55 FASE 2
+Fecha: 30/07/2026
+
+VALIDACIÓN ESTÁTICA EJECUTADA
+- 50 archivos JavaScript: sintaxis correcta.
+- 16 pantallas HTML mantenidas.
+- 21 scripts internos: sintaxis correcta.
+- 271 referencias locales revisadas.
+- 0 referencias locales faltantes.
+- 0 IDs HTML duplicados.
+- manifest.json y manifest.webmanifest idénticos y válidos.
+- firebase.json, firestore.indexes.json y functions/package.json válidos.
+- Delimitadores de firestore.rules y storage.rules equilibrados.
+- 15 páginas cargan el arranque de App Check; offline.html queda independiente para funcionar sin red.
+- 14 páginas registran la PWA con release 55-f2.
+- No se detecta el antiguo PIN local de propietario.
+
+LIMITACIÓN DE ESTA VALIDACIÓN
+- Firebase CLI no está disponible en el entorno de preparación, por lo que las reglas no pudieron compilarse contra el emulador ni desplegarse.
+- La prueba final requiere Firebase Rules Playground/Emulator, despliegue controlado y dos móviles reales.

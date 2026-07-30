@@ -52,20 +52,11 @@
     const taskAssigned=isEmitterRole(taskData.housePosition||taskData.position)||Boolean(clean(taskData.assignedAgentUid,160));
     return taskAssigned&&!['cancelled','removed','deleted'].includes(normalize(taskData.taskState));
   }
-  async function migrateLegacyEmitter(){
-    if(!services||!user||!houseId||(isEmitterRole(member.housePosition)&&assignedAgentUid()))return;
-    try{
-      const agentUid=assignedAgentUid();
-      const memberPatch={housePosition:'emitter',migratedEmitterPositionAtClient:Date.now(),migratedEmitterPositionAt:services.serverTimestamp(),updatedAt:services.serverTimestamp()};
-      const profilePatch={houseId,housePosition:'emitter',houseStatus:'active',houseUpdatedAt:services.serverTimestamp()};
-      if(agentUid){memberPatch.assignedAgentUid=agentUid;profilePatch.assignedAgentUid=agentUid}
-      await Promise.all([
-        services.setDoc(services.doc(services.db,'casas',houseId,'miembros',user.uid),memberPatch,{merge:true}),
-        services.setDoc(services.doc(services.db,'users',user.uid),profilePatch,{merge:true}),
-        services.setDoc(services.doc(services.db,'casas',houseId,'tareas',user.uid),{uid:user.uid,housePosition:'emitter',assignedAgentUid:agentUid,assignmentVerifiedAtClient:Date.now(),assignmentVerifiedAt:services.serverTimestamp(),updatedAt:services.serverTimestamp()},{merge:true})
-      ]);
-      member.housePosition='emitter';if(agentUid)member.assignedAgentUid=agentUid;
-    }catch(e){console.warn('JEMMO actividad Casa: migración Emisora',e?.code||e)}
+  async function migrateLegacyEmitter() {
+    // La asignación de Emisor/a y agente es una operación administrativa.
+    // La migración automática desde el móvil queda deshabilitada para impedir
+    // que un perfil se promocione a sí mismo mediante datos locales antiguos.
+    return false;
   }
 
   async function getServices(){if(services)return services;const[a,b,f]=await Promise.all([import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js'),import('https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js'),import('https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js')]);const app=a.getApps()[0]||a.initializeApp(firebaseConfig);services={...f,auth:b.getAuth(app),db:f.getFirestore(app),onAuthStateChanged:b.onAuthStateChanged};return services}

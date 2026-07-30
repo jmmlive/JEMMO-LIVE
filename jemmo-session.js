@@ -158,8 +158,6 @@ async function syncCloudIdentity(user) {
     country: identity.country,
     city: identity.city,
     bio: identity.bio,
-    verified: identity.verified,
-    level: identity.level,
     publicProfileEnabled: true,
     messagesEnabled: true,
     messagesVersion: 3,
@@ -168,8 +166,11 @@ async function syncCloudIdentity(user) {
     ultimaActividad: serverTimestamp(),
     updatedAt: serverTimestamp()
   };
+  const { verified: _verified, level: _level, email: privateEmail, emailLower: privateEmailLower, ...editableIdentity } = identity;
   const userIdentity = {
-    ...identity,
+    ...editableIdentity,
+    email: deleteField(),
+    emailLower: deleteField(),
     messagesVersion: 3,
     profileVersion: 3,
     lastLoginAt: serverTimestamp(),
@@ -177,6 +178,7 @@ async function syncCloudIdentity(user) {
   };
   await Promise.all([
     setDoc(doc(db, 'users', user.uid), userIdentity, { merge: true }),
+    setDoc(doc(db, 'userPrivate', user.uid), { uid: user.uid, email: privateEmail, emailLower: privateEmailLower, updatedAt: serverTimestamp() }, { merge: true }),
     setDoc(doc(db, 'directorioMensajes', user.uid), publicIdentity, { merge: true })
   ]);
   window.dispatchEvent(new CustomEvent('jemmo-cloud-identity-synced', { detail: identity }));

@@ -868,9 +868,9 @@
   <!-- Acceso protegido del propietario -->
   <div class="jf-backdrop" id="jfOwnerBackdrop" hidden></div>
   <section class="jf-sheet jf-lock-sheet" id="jfOwnerAccess" hidden role="dialog" aria-modal="true" aria-labelledby="jfOwnerTitle">
-    <div class="jf-head"><div class="jf-head-copy"><small>ACCESO PRIVADO</small><strong id="jfOwnerTitle">JEMMO Finanzas</strong><span>Protección local de la versión de pruebas</span></div><button class="jf-close" id="jfOwnerClose" type="button" aria-label="Cerrar">×</button></div>
+    <div class="jf-head"><div class="jf-head-copy"><small>ACCESO PRIVADO</small><strong id="jfOwnerTitle">JEMMO Finanzas</strong><span>Autorización firmada por Firebase</span></div><button class="jf-close" id="jfOwnerClose" type="button" aria-label="Cerrar">×</button></div>
     <div class="jf-lock-icon">🔐</div><div class="jf-lock-copy"><h2 id="jfOwnerModeTitle">Acceso del propietario</h2><p id="jfOwnerModeCopy">Introduce tu PIN para consultar los datos financieros de JEMMO LIVE.</p></div>
-    <div class="jf-form"><label class="jf-field"><span>PIN de propietario</span><input class="jf-pin" id="jfOwnerPin" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="••••••"></label><label class="jf-field" id="jfOwnerConfirmField" hidden><span>Repite el PIN</span><input class="jf-pin" id="jfOwnerPinConfirm" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="••••••"></label><button class="jf-primary" id="jfOwnerSubmit" type="button">DESBLOQUEAR</button></div><p class="jf-lock-status" id="jfOwnerStatus"></p>
+    <div class="jf-form"><label class="jf-field" id="jfOwnerPinField"><span>PIN de propietario</span><input class="jf-pin" id="jfOwnerPin" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="••••••"></label><label class="jf-field" id="jfOwnerConfirmField" hidden><span>Repite el PIN</span><input class="jf-pin" id="jfOwnerPinConfirm" type="password" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="••••••"></label><button class="jf-primary" id="jfOwnerSubmit" type="button">DESBLOQUEAR</button></div><p class="jf-lock-status" id="jfOwnerStatus"></p>
   </section>
 
   <!-- Panel financiero privado -->
@@ -918,9 +918,10 @@
     <a data-tab="yo" href="yo.html"><span class="nav-icon">♙</span><b>Yo</b></a>
   </nav>
 
-  <script type="module" src="jemmo-session.js"></script>
+    <script type="module" src="jemmo-app-check.js?v=55-f2"></script>
+<script type="module" src="jemmo-session.js"></script>
   <script type="module" src="jemmo-social.js"></script>
-  <script src="pwa-register.js?v=55"></script>
+  <script src="pwa-register.js?v=55-f2"></script>
   <script src="jemmo-profile-storage.js"></script>
   <script src="jemmo-wallet.js?v=45"></script>
   <script src="jemmo-house-finance.js"></script>
@@ -931,8 +932,6 @@
     const uid=(()=>{try{return String(window.__jemmoAuthenticatedUid||localStorage.getItem('jemmo_active_uid')||sessionStorage.getItem('jemmo_active_uid')||'local-user')}catch{try{return String(sessionStorage.getItem('jemmo_active_uid')||'local-user')}catch{return'local-user'}}})();
     const walletKey=id=>`jemmo_wallet_v1_${id}`;
     const FINANCE_KEY='jemmo_finance_v1';
-    const OWNER_KEY='jemmo_owner_security_v1';
-    const OWNER_SESSION='jemmo_owner_unlocked_until';
     const $=id=>document.getElementById(id);
     const money=value=>Number(value||0).toLocaleString('es-ES',{minimumFractionDigits:2,maximumFractionDigits:2});
     const number=value=>Math.floor(Number(value)||0).toLocaleString('es-ES');
@@ -1189,28 +1188,43 @@
     const openFinanceSheet=()=>{if($('jfWalletBackdrop'))$('jfWalletBackdrop').hidden=true;if($('jfWalletSheet'))$('jfWalletSheet').hidden=true;$('jfFinanceBackdrop').hidden=false;$('jfFinanceSheet').hidden=false;document.body.style.overflow='hidden';showFinanceTab('overview')};
     const closeFinance=()=>{$('jfFinanceBackdrop').hidden=true;$('jfFinanceSheet').hidden=true;document.body.style.overflow=''};
     const closeOwnerAccess=()=>{$('jfOwnerBackdrop').hidden=true;$('jfOwnerAccess').hidden=true;document.body.style.overflow='';$('jfOwnerStatus').textContent='';$('jfOwnerPin').value='';$('jfOwnerPinConfirm').value=''};
-    const ownerData=()=>readJSON(OWNER_KEY,null);
-    const ownerUnlocked=()=>Number(sessionStorage.getItem(OWNER_SESSION)||0)>Date.now();
-    const ensureOwner=()=>{if(ownerUnlocked())return true;closeFinance();requestFinanceAccess();toast('La sesión financiera ha caducado. Vuelve a desbloquearla.');return false};
-    const hashPin=async(pin,salt)=>{const value=`${salt}:${pin}`;if(globalThis.crypto?.subtle){const bytes=new TextEncoder().encode(value),hash=await crypto.subtle.digest('SHA-256',bytes);return Array.from(new Uint8Array(hash)).map(byte=>byte.toString(16).padStart(2,'0')).join('')}let hash=2166136261;for(let index=0;index<value.length;index++){hash^=value.charCodeAt(index);hash=Math.imul(hash,16777619)}return `local-${(hash>>>0).toString(16)}`};
+    let ownerClaimVerifiedUntil=0;
+    const ownerUnlocked=()=>ownerClaimVerifiedUntil>Date.now();
+    const verifyOwnerClaim=async()=>{
+      const auth=window.JemmoSession?.auth;
+      const user=auth?.currentUser;
+      if(!user) return {ok:false,reason:'Debes iniciar sesión de nuevo para verificar la cuenta propietaria.'};
+      try{
+        const token=await user.getIdTokenResult(true),claims=token?.claims||{},role=String(claims.role||'').toLowerCase();
+        const allowed=claims.owner===true||['owner','propietario','superadmin','admin'].includes(role);
+        if(!allowed) return {ok:false,reason:'Esta cuenta no tiene una Custom Claim de propietario o administrador.'};
+        ownerClaimVerifiedUntil=Date.now()+10*60*1000;
+        return {ok:true};
+      }catch(error){
+        console.error('JEMMO owner claim:',error);
+        return {ok:false,reason:navigator.onLine?'No se pudo verificar el token de Firebase. Vuelve a intentarlo.':'La verificación administrativa requiere conexión a Internet.'};
+      }
+    };
+    const ensureOwner=()=>{if(ownerUnlocked())return true;closeFinance();requestFinanceAccess();toast('La autorización administrativa ha caducado. Verifica de nuevo la cuenta.');return false};
     const requestFinanceAccess=()=>{
       $('sideMenu')?.classList.remove('open');$('sideMenu')?.setAttribute('aria-hidden','true');if($('menuBackdrop'))$('menuBackdrop').hidden=true;
       if(ownerUnlocked()){openFinanceSheet();return}
-      const security=ownerData(),setup=!security;$('jfOwnerModeTitle').textContent=setup?'Crear protección del propietario':'Acceso del propietario';$('jfOwnerModeCopy').textContent=setup?'Crea un PIN de 6 cifras para proteger JEMMO Finanzas en este dispositivo. En producción se sustituirá por autenticación de servidor y segundo factor.':'Introduce el PIN del propietario. La sesión se bloqueará automáticamente tras 10 minutos.';$('jfOwnerConfirmField').hidden=!setup;$('jfOwnerSubmit').textContent=setup?'CREAR Y ENTRAR':'DESBLOQUEAR';$('jfOwnerBackdrop').hidden=false;$('jfOwnerAccess').hidden=false;document.body.style.overflow='hidden';setTimeout(()=>$('jfOwnerPin').focus(),80);
+      $('jfOwnerModeTitle').textContent='Verificación del propietario';
+      $('jfOwnerModeCopy').textContent='JEMMO LIVE comprobará la Custom Claim firmada del token de Firebase. Un PIN local o un campo del perfil no conceden permisos administrativos.';
+      $('jfOwnerPinField').hidden=true;$('jfOwnerConfirmField').hidden=true;$('jfOwnerSubmit').textContent='VERIFICAR CUENTA';$('jfOwnerStatus').textContent='';
+      $('jfOwnerBackdrop').hidden=false;$('jfOwnerAccess').hidden=false;document.body.style.overflow='hidden';
     };
     const submitOwner=async()=>{
-      const pin=$('jfOwnerPin').value.trim(),confirmPin=$('jfOwnerPinConfirm').value.trim(),security=ownerData(),now=Date.now();
-      if(!/^\d{6}$/.test(pin)){$('jfOwnerStatus').textContent='El PIN debe tener exactamente 6 cifras.';return}
-      if(!security){if(pin!==confirmPin){$('jfOwnerStatus').textContent='Los dos PIN no coinciden.';return}const salt=globalThis.crypto?.getRandomValues?crypto.getRandomValues(new Uint32Array(4)).join('-'):`${Date.now()}-${Math.random()}`,hash=await hashPin(pin,salt);saveJSON(OWNER_KEY,{ownerUid:uid,salt,hash,attempts:0,lockedUntil:0,createdAt:now});sessionStorage.setItem(OWNER_SESSION,String(now+10*60*1000));closeOwnerAccess();openFinanceSheet();toast('JEMMO Finanzas protegido y desbloqueado.');return}
-      if(security.ownerUid!==uid){$('jfOwnerStatus').textContent='Esta cuenta no es la propietaria de este panel.';return}
-      if(Number(security.lockedUntil)>now){$('jfOwnerStatus').textContent=`Acceso bloqueado temporalmente. Espera ${Math.ceil((security.lockedUntil-now)/1000)} segundos.`;return}
-      const hash=await hashPin(pin,security.salt);if(hash!==security.hash){security.attempts=(Number(security.attempts)||0)+1;if(security.attempts>=5){security.attempts=0;security.lockedUntil=now+60000;$('jfOwnerStatus').textContent='Cinco intentos fallidos. Acceso bloqueado durante 60 segundos.'}else $('jfOwnerStatus').textContent=`PIN incorrecto. Intento ${security.attempts} de 5.`;saveJSON(OWNER_KEY,security);return}
-      security.attempts=0;security.lockedUntil=0;saveJSON(OWNER_KEY,security);sessionStorage.setItem(OWNER_SESSION,String(now+10*60*1000));closeOwnerAccess();openFinanceSheet();
+      const button=$('jfOwnerSubmit');button.disabled=true;button.setAttribute('aria-busy','true');$('jfOwnerStatus').textContent='Verificando token de Firebase…';
+      const result=await verifyOwnerClaim();
+      button.disabled=false;button.removeAttribute('aria-busy');
+      if(!result.ok){$('jfOwnerStatus').textContent=result.reason;return}
+      closeOwnerAccess();openFinanceSheet();toast('Propietario verificado mediante Firebase.');
     };
 
     const renderFinance=()=>{
       ensureDailyClose();updatePeriodDisplay();if(!$('jfFinanceSheet'))return;const metrics=financeMetrics(),{state,wallet,allWalletTotals,agencyTotals,expenses,bank,userLiability,agencyLiability,reserve,profit}=metrics,settings=state.settings;
-      const negative=profit<0;$('jfOwnerProfit').textContent=`${money(profit)} USD`;$('jfProfitCard').classList.toggle('negative',negative);$('jfProfitLabel').textContent=negative?'DÉFICIT CONTABLE DE PRUEBAS':'BENEFICIO DISPONIBLE SIMULADO';$('jfProfitCopy').textContent=negative?'Hay obligaciones generadas por saldos anteriores que todavía no tienen una recarga conciliada.':'Dinero recibido menos pagos, obligaciones, gastos y reservas visibles.';$('jfOwnerSessionText').textContent=`Bloqueo automático: ${Math.max(0,Math.ceil((Number(sessionStorage.getItem(OWNER_SESSION)||0)-Date.now())/60000))} min`;
+      const negative=profit<0;$('jfOwnerProfit').textContent=`${money(profit)} USD`;$('jfProfitCard').classList.toggle('negative',negative);$('jfProfitLabel').textContent=negative?'DÉFICIT CONTABLE DE PRUEBAS':'BENEFICIO DISPONIBLE SIMULADO';$('jfProfitCopy').textContent=negative?'Hay obligaciones generadas por saldos anteriores que todavía no tienen una recarga conciliada.':'Dinero recibido menos pagos, obligaciones, gastos y reservas visibles.';$('jfOwnerSessionText').textContent=`Token verificado · ${Math.max(0,Math.ceil((ownerClaimVerifiedUntil-Date.now())/60000))} min`;
       $('jfFinanceKpis').innerHTML=`<div class="jf-kpi good"><small>DINERO RECIBIDO</small><b>${money(state.cash.received)} USD</b><em>Ya liquidado</em></div><div class="jf-kpi warn"><small>PENDIENTE DE INGRESAR</small><b>${money(state.cash.pending)} USD</b><em>Google, tarjeta y Epay</em></div><div class="jf-kpi"><small>CAJA DESPUÉS DE PAGOS</small><b>${money(bank)} USD</b><em>Menos retiradas y gastos</em></div><div class="jf-kpi gold"><small>RESERVA FISCAL</small><b>${money(reserve)} USD</b><em>${money(settings.reservePct)} % configurado</em></div><div class="jf-kpi"><small>DEUDA EMISORAS</small><b>${money(userLiability)} USD</b><em>Todos los monederos vinculados</em></div><div class="jf-kpi"><small>DEUDA CASAS</small><b>${money(agencyLiability)} USD</b><em>Comisiones acumuladas</em></div><div class="jf-kpi gold"><small>PARTE JEMMO LIVE</small><b>${number(state.app.confirmed+state.app.pending)}</b><em>JEMS contables de regalos</em></div><div class="jf-kpi"><small>GASTOS OPERATIVOS</small><b>${money(expenses)} USD</b><em>Registrados manualmente</em></div>`;
       const daily=periodSummary(state,Number(state.period.startedAt)||Date.now(),Date.now());if($('jfDailyPeriodCopy'))$('jfDailyPeriodCopy').textContent=`Ciclo ${state.period.cycle} · inicio ${shortDay(state.period.startedAt)} a las ${timeOnly(state.period.startedAt)}.`;if($('jfDailyKpis'))$('jfDailyKpis').innerHTML=`<div class="jf-daily-kpi good"><small>RECARGAS</small><b>${daily.recharges}</b></div><div class="jf-daily-kpi gold"><small>DINERO BRUTO</small><b>${money(daily.rechargeUsd)} USD</b></div><div class="jf-daily-kpi"><small>JEMMOS RECARGADOS</small><b>${number(daily.jemmos)}</b></div><div class="jf-daily-kpi"><small>REGALOS</small><b>${daily.gifts}</b></div><div class="jf-daily-kpi gold"><small>JEMMOS EN REGALOS</small><b>${number(daily.giftJemmos)}</b></div><div class="jf-daily-kpi warn"><small>COSTE DE TAREAS</small><b>${money(daily.taskCostUsd)} USD</b></div><div class="jf-daily-kpi"><small>RETIROS</small><b>${daily.withdrawals}</b></div><div class="jf-daily-kpi warn"><small>GASTOS</small><b>${money(daily.expenses)} USD</b></div>`;if($('jfCycleHistory'))$('jfCycleHistory').innerHTML=state.closures.length?state.closures.slice(0,30).map(item=>`<article class="jf-cycle"><div class="jf-cycle-head"><b>Ciclo ${item.cycle} · ${shortDay(item.startAt)}</b><span>${item.reason==='midnight'?'AUTOMÁTICO':'MANUAL'}</span></div><small>${fullDate(item.startAt)} → ${fullDate(item.endAt)}</small><div class="jf-cycle-data"><div><b>${item.summary.recharges}</b><small>RECARGAS</small></div><div><b>${money(item.summary.rechargeUsd)} USD</b><small>INGRESOS</small></div><div><b>${item.summary.gifts}</b><small>REGALOS</small></div><div><b>${number(item.summary.giftJemmos)}</b><small>JEMMOS</small></div><div><b>${money(item.summary.taskCostUsd)} USD</b><small>TAREAS</small></div><div><b>${money(item.summary.expenses)} USD</b><small>GASTOS</small></div></div></article>`).join(''):empty('Todavía no se ha cerrado ningún ciclo de pruebas.');
       const pendingRecharge=state.recharges.filter(item=>item.settlement==='pending');$('jfSettlementSummary').innerHTML=pendingRecharge.length?pendingRecharge.slice(0,20).map(item=>row('⏳',item.methodName,`${date(item.createdAt)} · ${number(item.jemmos)} JEMMOS`,`${money(item.net)} USD`,'pending',{className:'pending',text:'PENDIENTE'})).join(''):empty('No existen liquidaciones pendientes.');
@@ -1257,9 +1271,9 @@
     $('jfCryptoAmount')?.addEventListener('input',updateCryptoPreview);$('jfCryptoNetwork')?.addEventListener('change',updateCryptoPreview);$('jfCryptoSubmit')?.addEventListener('click',()=>{const amount=Math.max(1,Number($('jfCryptoAmount').value)||0);simulateRecharge({method:rechargeMethod,usd:amount,jemmos:Math.floor(amount*9900),network:$('jfCryptoNetwork').value})});
     $('jfRefreshPending')?.addEventListener('click',()=>{const released=releasePending(false);renderWallet();toast(released?`${number(released)} JEMS confirmados.`:'Todavía no hay JEMS vencidos para confirmar.')});
     ['jfWithdrawJems','jfWithdrawMethod'].forEach(control=>$(control)?.addEventListener('input',renderWallet));$('jfWithdrawMethod')?.addEventListener('change',renderWallet);$('jfWithdrawSubmit')?.addEventListener('click',withdraw);
-    $('jfOwnerClose')?.addEventListener('click',closeOwnerAccess);$('jfOwnerBackdrop')?.addEventListener('click',closeOwnerAccess);$('jfOwnerSubmit')?.addEventListener('click',submitOwner);$('jfOwnerPin')?.addEventListener('keydown',event=>{if(event.key==='Enter')submitOwner()});
+    $('jfOwnerClose')?.addEventListener('click',closeOwnerAccess);$('jfOwnerBackdrop')?.addEventListener('click',closeOwnerAccess);$('jfOwnerSubmit')?.addEventListener('click',submitOwner);
     $('jfFinanceClose')?.addEventListener('click',closeFinance);$('jfFinanceBackdrop')?.addEventListener('click',closeFinance);document.querySelectorAll('[data-jf-finance-tab]').forEach(button=>button.addEventListener('click',()=>showFinanceTab(button.dataset.jfFinanceTab)));
-    $('jfFinanceLock')?.addEventListener('click',()=>{sessionStorage.removeItem(OWNER_SESSION);closeFinance();toast('JEMMO Finanzas bloqueado.')});$('jfSettlePending')?.addEventListener('click',settlePending);$('jfToggleHouse')?.addEventListener('click',toggleHouse);$('jfConfirmAllPending')?.addEventListener('click',()=>{if(!ensureOwner())return;const released=releasePending(true);renderFinance();renderWallet();toast(released?`${number(released)} JEMS confirmados manualmente.`:'No había JEMS pendientes.')});$('jfAddExpense')?.addEventListener('click',addExpense);$('jfSaveSettings')?.addEventListener('click',saveSettings);$('jfCloseCycleNow')?.addEventListener('click',closeCycleNow);$('jfResetSimulation')?.addEventListener('click',resetSimulation);
+    $('jfFinanceLock')?.addEventListener('click',()=>{ownerClaimVerifiedUntil=0;closeFinance();toast('JEMMO Finanzas bloqueado.')});$('jfSettlePending')?.addEventListener('click',settlePending);$('jfToggleHouse')?.addEventListener('click',toggleHouse);$('jfConfirmAllPending')?.addEventListener('click',()=>{if(!ensureOwner())return;const released=releasePending(true);renderFinance();renderWallet();toast(released?`${number(released)} JEMS confirmados manualmente.`:'No había JEMS pendientes.')});$('jfAddExpense')?.addEventListener('click',addExpense);$('jfSaveSettings')?.addEventListener('click',saveSettings);$('jfCloseCycleNow')?.addEventListener('click',closeCycleNow);$('jfResetSimulation')?.addEventListener('click',resetSimulation);
     document.querySelectorAll('[data-open-finance]').forEach(button=>button.addEventListener('click',event=>{event.preventDefault();requestFinanceAccess()}));
 
     const suppressLegacyWallet=()=>{document.querySelectorAll('.wallet-backdrop,.wallet-sheet').forEach(element=>{if(!String(element.id||'').startsWith('jf')&&!String(element.id||'').startsWith('jw')){element.hidden=true;element.remove()}})};

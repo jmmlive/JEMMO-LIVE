@@ -20,6 +20,7 @@ async function firebaseServices() {
     return {
       ...firestore,
       auth: authModule.getAuth(app),
+      getIdTokenResult: authModule.getIdTokenResult,
       db: firestore.getFirestore(app)
     };
   }).catch(error => {
@@ -121,10 +122,6 @@ function writeLocalMembership(data, uid = activeUid()) {
 function localProfile(uid = activeUid()) {
   if (!uid) return {};
   return readJson(localStorage, `jemmo_profile_v1_${uid}`, {}) || {};
-}
-
-function ownerSecurityUid() {
-  return cleanText(readJson(localStorage, 'jemmo_owner_security_v1', {})?.ownerUid, 160);
 }
 
 function normalizeRole(value) {
@@ -482,7 +479,7 @@ async function loadIdentity() {
     role: normalizeRole(local.role || local.rol)
   };
   if (!state.services || !state.uid) {
-    state.platformAdmin = ownerSecurityUid() === state.uid || state.identity.role === 'owner';
+    state.platformAdmin = false;
     return;
   }
   try {
@@ -500,7 +497,17 @@ async function loadIdentity() {
   } catch (error) {
     console.warn('JEMMO Casas: identidad local activa', error?.code || error);
   }
-  state.platformAdmin = ownerSecurityUid() === state.uid || state.identity.role === 'owner';
+  state.platformAdmin = false;
+  try {
+    const currentUser = state.services.auth.currentUser;
+    if (currentUser?.uid === state.uid) {
+      const tokenResult = await state.services.getIdTokenResult(currentUser, true);
+      const claimRole = normalizeRole(tokenResult?.claims?.role);
+      state.platformAdmin = tokenResult?.claims?.owner === true || ['owner', 'admin'].includes(claimRole);
+    }
+  } catch (error) {
+    console.warn('JEMMO Casas: no se pudieron verificar los permisos del token.', error?.code || error);
+  }
 }
 
 async function ensureFatherHouseForOwner() {
@@ -883,13 +890,9 @@ function calculatePermissions(house = state.workspaceHouse) {
   state.actualHouseOwner = role === 'owner' || house?.ownerUid === state.uid;
   state.actualHouseAdmin = state.workspaceAsPlatformAdmin || state.actualHouseOwner || role === 'admin' || house?.adminUids?.includes(state.uid);
   state.simulatedRole = currentTestRole();
-  if (state.simulatedRole) {
-    state.houseOwner = state.simulatedRole === 'owner';
-    state.houseAdmin = ['owner', 'agent'].includes(state.simulatedRole);
-  } else {
-    state.houseOwner = state.actualHouseOwner;
-    state.houseAdmin = state.actualHouseAdmin;
-  }
+  // El modo de prueba solo cambia textos y vistas; no concede permisos.
+  state.houseOwner = state.actualHouseOwner;
+  state.houseAdmin = state.actualHouseAdmin;
 }
 
 function openWorkspace(house = houseById(state.membership?.houseId), asPlatformAdmin = false) {

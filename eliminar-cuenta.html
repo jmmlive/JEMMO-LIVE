@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#09000f">
+  <meta name="robots" content="index,follow">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon-192.png">
+  <title>Eliminar cuenta · JEMMO LIVE</title>
+  <style>
+    :root{color-scheme:dark;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:#050007;color:#fff}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at 80% 0,#6f168533,transparent 32%),linear-gradient(180deg,#120317,#050007 40%)}main{width:min(720px,calc(100% - 28px));margin:0 auto;padding:28px 0 60px}.brand{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:24px}.brand img{width:160px;max-width:52vw}.brand a{color:#ffe16c;text-decoration:none;font-weight:900}.card{padding:22px;border:1px solid #7d347f;border-radius:24px;background:#13051ae8;box-shadow:0 20px 60px #0009}.eyebrow{margin:0;color:#ffe26d;font-size:12px;font-weight:1000;letter-spacing:1.5px}.card h1{margin:8px 0 10px;font-size:clamp(28px,7vw,44px)}.lead{color:#dbcfe0;line-height:1.55}.warning{margin:18px 0;padding:14px;border:1px solid #d94d74;border-radius:16px;background:#4b1023;color:#ffdce5;line-height:1.45}.identity{padding:12px;border-radius:14px;background:#09000f;color:#ccbcd3;font-size:13px}.confirm{display:flex;gap:10px;align-items:flex-start;margin:18px 0;color:#f5eaf8;line-height:1.4}.confirm input{width:20px;height:20px;flex:0 0 auto}.phrase{display:grid;gap:7px}.phrase span{font-size:12px;font-weight:900;color:#f1d9f8}.phrase input{width:100%;padding:14px;border:1px solid #844092;border-radius:14px;background:#09000f;color:#fff;font-size:16px}.delete{width:100%;min-height:52px;margin-top:14px;border:0;border-radius:15px;background:linear-gradient(90deg,#ff396b,#ff8a35);color:#250009;font-weight:1000}.delete:disabled{opacity:.45}.login{display:flex;justify-content:center;align-items:center;min-height:50px;margin-top:14px;border-radius:15px;background:linear-gradient(90deg,#ffe05e,#da42ff);color:#1c031f;text-decoration:none;font-weight:1000}.status{min-height:24px;margin:14px 0 0;color:#d9c8df}.status[data-mode="error"]{color:#ff8aa8}.status[data-mode="success"]{color:#65f2ae}.details{margin-top:20px;color:#bbaac2;font-size:13px;line-height:1.55}.details a{color:#ffe16c}code{font-family:inherit;color:#fff0b3;font-weight:900}@media(max-width:520px){.card{padding:18px}.brand{align-items:flex-start}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="brand"><a href="index.html"><img src="jemmo-logo-header.webp" alt="JEMMO LIVE"></a><a href="index.html">VOLVER</a></div>
+  <section class="card" aria-labelledby="deleteTitle">
+    <p class="eyebrow">CONTROL DE CUENTA</p>
+    <h1 id="deleteTitle">Eliminar mi cuenta</h1>
+    <p class="lead">Esta página permite solicitar la eliminación desde la web. Debes iniciar sesión con la misma cuenta de JEMMO LIVE que quieres borrar.</p>
+    <div class="warning"><b>Acción irreversible.</b> Se eliminarán la cuenta de acceso, el perfil, preferencias, presencia LIVE y datos personales asociados. Ciertos registros que deban conservarse por obligaciones legales, fraude o seguridad deberán quedar anonimizados y sujetos a la política de retención.</div>
+    <p class="identity" id="accountDeletionIdentity">Comprobando sesión…</p>
+    <a class="login" id="accountDeletionLogin" href="acceso.html?return=eliminar-cuenta.html">INICIAR SESIÓN PARA CONTINUAR</a>
+    <label class="confirm"><input id="accountDeletionAccept" type="checkbox"><span>Entiendo que no podré recuperar la cuenta ni sus datos después de completar la eliminación.</span></label>
+    <label class="phrase"><span>Escribe <code>ELIMINAR MI CUENTA</code></span><input id="accountDeletionPhrase" type="text" autocomplete="off" maxlength="40" placeholder="ELIMINAR MI CUENTA"></label>
+    <button class="delete" id="deleteAccountButton" type="button" disabled>ELIMINAR DEFINITIVAMENTE MI CUENTA</button>
+    <p class="status" id="accountDeletionStatus" role="status" aria-live="polite"></p>
+    <div class="details"><b>Alternativa dentro de la aplicación:</b> Perfil → Configuración → Cuenta → Eliminar cuenta. Para protegerte, el sistema puede exigir que vuelvas a iniciar sesión antes de ejecutar la eliminación.</div>
+  </section>
+</main>
+<script type="module" src="jemmo-app-check.js?v=55-f2"></script>
+<script type="module" src="jemmo-account-deletion.js?v=55-f2"></script>
+<script src="pwa-register.js?v=55-f2"></script>
+</body>
+</html>

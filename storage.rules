@@ -1,0 +1,48 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() {
+      return request.auth != null;
+    }
+    function own(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+    function validImage() {
+      return request.resource != null
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+    function validVideo() {
+      return request.resource != null
+        && request.resource.size < 80 * 1024 * 1024
+        && request.resource.contentType.matches('video/.*');
+    }
+
+    match /users/{uid}/{allPaths=**} {
+      allow read: if own(uid);
+      allow write: if own(uid) && (validImage() || validVideo());
+    }
+
+    match /profiles/{uid}/{allPaths=**} {
+      allow read: if signedIn();
+      allow write: if own(uid) && validImage();
+    }
+
+    match /uploads/{uid}/{allPaths=**} {
+      allow read: if signedIn();
+      allow write: if own(uid) && (validImage() || validVideo());
+    }
+
+    match /support/{uid}/{allPaths=**} {
+      allow read: if own(uid);
+      allow write: if own(uid)
+        && request.resource != null
+        && request.resource.size < 15 * 1024 * 1024
+        && (request.resource.contentType.matches('image/.*') || request.resource.contentType == 'application/pdf');
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -384,48 +384,10 @@
   }
 
   async function migrateLegacyEmitter() {
-    if (migrationRunning || !emitter || !user || !houseId || (isEmitterRole(member.housePosition) && assignedAgentUid())) return;
-    migrationRunning = true;
-    try {
-      const s = await services();
-      const agentUid = assignedAgentUid();
-      const memberPatch = {
-        housePosition: 'emitter',
-        status: clean(member.status || 'active', 20) || 'active',
-        migratedEmitterPositionAtClient: Date.now(),
-        migratedEmitterPositionAt: s.serverTimestamp(),
-        updatedAt: s.serverTimestamp()
-      };
-      const profilePatch = {
-        houseId,
-        housePosition: 'emitter',
-        houseStatus: 'active',
-        houseUpdatedAt: s.serverTimestamp()
-      };
-      if (agentUid) {
-        memberPatch.assignedAgentUid = agentUid;
-        profilePatch.assignedAgentUid = agentUid;
-      }
-      await Promise.all([
-        s.setDoc(s.doc(s.db, 'casas', houseId, 'miembros', user.uid), memberPatch, { merge: true }),
-        s.setDoc(s.doc(s.db, 'users', user.uid), profilePatch, { merge: true }),
-        s.setDoc(s.doc(s.db, 'casas', houseId, 'tareas', user.uid), {
-          uid: user.uid,
-          housePosition: 'emitter',
-          assignedAgentUid: agentUid || clean(task.assignedAgentUid, 160),
-          taskState: clean(task.taskState, 20) === 'active' ? 'active' : 'waiting',
-          assignmentVerifiedAtClient: Date.now(),
-          assignmentVerifiedAt: s.serverTimestamp(),
-          updatedAt: s.serverTimestamp()
-        }, { merge: true })
-      ]);
-      member.housePosition = 'emitter';
-      if (agentUid) member.assignedAgentUid = agentUid;
-    } catch (error) {
-      console.warn('JEMMO tareas: migración de Emisora', error?.code || error?.message || error);
-    } finally {
-      migrationRunning = false;
-    }
+    // La asignación de Emisor/a y agente es una operación administrativa.
+    // La migración automática desde el móvil queda deshabilitada para impedir
+    // que un perfil se promocione a sí mismo mediante datos locales antiguos.
+    return false;
   }
 
   async function pauseInvalidTask() {

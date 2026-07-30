@@ -10,7 +10,7 @@
   <link rel="icon" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   <title>Configuración · JEMMO LIVE</title>
-  <link rel="stylesheet" href="configuracion.css?v=45">
+  <link rel="stylesheet" href="configuracion.css?v=55-f2">
   <style>html.jemmo-auth-pending body{visibility:hidden}</style>
   <script>
     document.documentElement.classList.add('jemmo-auth-pending');
@@ -31,7 +31,7 @@
     </section>
 
     <nav class="settings-jump" aria-label="Secciones de configuración">
-      <a href="#cuenta">Cuenta</a><a href="#seguridad">Seguridad</a><a href="#privacidad">Privacidad</a><a href="#notificaciones">Avisos</a><a href="#pais">País</a><a href="#pagos">Pagos</a><a href="#normas">Normas</a>
+      <a href="#cuenta">Cuenta</a><a href="#seguridad">Seguridad</a><a href="#privacidad">Privacidad</a><a href="#notificaciones">Avisos</a><a href="#pais">País</a><a href="#pagos">Pagos</a><a href="#normas">Normas</a><a href="#eliminar-cuenta">Eliminar cuenta</a>
     </nav>
 
     <section class="settings-card" id="cuenta">
@@ -86,14 +86,30 @@
       <a class="open-chili-center" href="chili-ia.html#saber">ABRIR CENTRO OFICIAL CHILI</a>
     </section>
 
+
+    <section class="settings-card danger-account-card" id="eliminar-cuenta">
+      <div class="card-heading"><span>⚠️</span><div><small>ELIMINACIÓN DEFINITIVA</small><h2>Eliminar cuenta y datos</h2><p>Esta acción elimina la cuenta de acceso y los datos personales asociados. No se puede deshacer.</p></div></div>
+      <div class="delete-account-identity">
+        <b id="accountDeletionIdentity">Comprobando cuenta autenticada…</b>
+        <small>Por seguridad, una sesión antigua puede requerir volver a iniciar sesión antes de completar el borrado.</small>
+      </div>
+      <label class="delete-confirm-check"><input id="accountDeletionAccept" type="checkbox"><span>Entiendo que perderé el acceso, el perfil, mensajes, publicaciones, relaciones y datos vinculados a esta cuenta.</span></label>
+      <label class="delete-confirm-phrase"><span>Escribe exactamente <b>ELIMINAR MI CUENTA</b></span><input id="accountDeletionPhrase" type="text" autocomplete="off" spellcheck="false" placeholder="ELIMINAR MI CUENTA"></label>
+      <button class="delete-account-button" id="deleteAccountButton" type="button" disabled>ELIMINAR MI CUENTA DEFINITIVAMENTE</button>
+      <p class="delete-account-status" id="accountDeletionStatus" role="status" aria-live="polite">La eliminación solo se ejecuta después de confirmar los dos controles anteriores.</p>
+      <a class="external-delete-link" href="eliminar-cuenta.html">Abrir la página web independiente de eliminación <i>›</i></a>
+    </section>
+
     <button class="save-settings" id="saveSettings" type="button">GUARDAR CONFIGURACIÓN</button>
     <p class="save-state" id="saveState">Los ajustes personales se guardan en este dispositivo para la cuenta activa.</p>
   </main>
 
   <div class="settings-toast" id="settingsToast" role="status" aria-live="polite"></div>
-  <script type="module" src="jemmo-session.js"></script>
-  <script src="pwa-register.js?v=55"></script>
+    <script type="module" src="jemmo-app-check.js?v=55-f2"></script>
+<script type="module" src="jemmo-session.js"></script>
+  <script type="module" src="jemmo-account-deletion.js?v=55-f2"></script>
+  <script src="pwa-register.js?v=55-f2"></script>
   <script src="jemmo-wallet.js?v=45"></script>
-  <script type="module" src="jemmo-settings.js?v=45"></script>
+  <script type="module" src="jemmo-settings.js?v=55-f2"></script>
 </body>
 </html>

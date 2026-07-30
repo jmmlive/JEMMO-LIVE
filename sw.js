@@ -1,7 +1,7 @@
-const CACHE='jemmo-live-v1-production-audit-phase-1-55-20260730';
+const CACHE='jemmo-live-v1-security-phase-2-55-20260730';
 const CORE=[
-  './','./index.html','./acceso.html','./offline.html','./inicio.html','./yo.html','./live.html','./perfil-publico.html','./directos.html','./salas.html','./configuracion.html','./chili-ia.html',
-  './pwa-register.js','./jemmo-live-presence.js','./jemmo-live-rtc-config.js','./jemmo-live-webrtc.js','./jemmo-live-room-sync.js','./jemmo-wallet.js','./jemmo-official-policies.js','./jemmo-settings.js','./jemmo-chili.js','./jemmo-chili-knowledge.js',
+  './','./index.html','./acceso.html','./offline.html','./inicio.html','./yo.html','./live.html','./perfil-publico.html','./directos.html','./salas.html','./configuracion.html','./chili-ia.html','./eliminar-cuenta.html',
+  './pwa-register.js','./jemmo-app-check-config.js','./jemmo-app-check.js','./jemmo-account-deletion.js','./jemmo-live-presence.js','./jemmo-live-rtc-config.js','./jemmo-live-webrtc.js','./jemmo-live-room-sync.js','./jemmo-wallet.js','./jemmo-official-policies.js','./jemmo-settings.js','./jemmo-chili.js','./jemmo-chili-knowledge.js',
   './app.css','./inicio.css','./configuracion.css','./chili-ia.css','./jemmo-house-finance.js','./jemmo-house-activity.js','./jemmo-host-task-rewards.js',
   './jemmo-messages-realtime.js','./jemmo-house-operations.js','./jemmo-room-realtime.js','./jemmo-house-room-ui.js',
   './jemmo-house-pet.js','./jemmo-house-pet.css','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'

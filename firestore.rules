@@ -1,0 +1,618 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function tokenRole() {
+      return signedIn() && ('role' in request.auth.token)
+        ? request.auth.token.role
+        : 'user';
+    }
+
+    function isPlatformAdmin() {
+      return signedIn() && (
+        (('owner' in request.auth.token) && request.auth.token.owner == true)
+        || tokenRole() in ['owner', 'propietario', 'superadmin', 'admin']
+      );
+    }
+
+    function isSimulation(data) {
+      return ('simulation' in data) && data.simulation == true;
+    }
+
+    function houseExists(houseId) {
+      return exists(/databases/$(database)/documents/casas/$(houseId));
+    }
+
+    function houseMemberExists(houseId, uid) {
+      return exists(/databases/$(database)/documents/casas/$(houseId)/miembros/$(uid));
+    }
+
+    function houseMemberRole(houseId, uid) {
+      return houseMemberExists(houseId, uid)
+        ? get(/databases/$(database)/documents/casas/$(houseId)/miembros/$(uid)).data.role
+        : 'none';
+    }
+
+    function isHouseManager(houseId) {
+      return signedIn() && (
+        isPlatformAdmin()
+        || (houseExists(houseId) && get(/databases/$(database)/documents/casas/$(houseId)).data.ownerUid == request.auth.uid)
+        || houseMemberRole(houseId, request.auth.uid) in ['owner', 'admin']
+        || (houseMemberExists(houseId, request.auth.uid)
+          && get(/databases/$(database)/documents/casas/$(houseId)/miembros/$(request.auth.uid)).data.housePosition == 'agent')
+      );
+    }
+
+    function safePublicUserWrite() {
+      return !request.resource.data.keys().hasAny([
+        'email', 'emailLower', 'birthDate', 'gender', 'phone', 'phoneNumber',
+        'role', 'rol', 'accountRole', 'verified', 'level', 'achievements',
+        'jemmos', 'jems', 'crystals', 'balance', 'balances', 'wallet',
+        'houseId', 'houseName', 'houseRole', 'housePosition', 'houseStatus',
+        'assignedAgentUid', 'assignedAgentName', 'emitterStatus',
+        'sanctionLevel', 'withdrawalHold', 'financialStatus'
+      ]);
+    }
+
+    function safePublicUserUpdate() {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+        'role', 'rol', 'accountRole', 'verified', 'level', 'achievements',
+        'jemmos', 'jems', 'crystals', 'balance', 'balances', 'wallet',
+        'houseId', 'houseName', 'houseRole', 'housePosition', 'houseStatus',
+        'assignedAgentUid', 'assignedAgentName', 'emitterStatus',
+        'sanctionLevel', 'withdrawalHold', 'financialStatus'
+      ])
+      && !('email' in request.resource.data)
+      && !('emailLower' in request.resource.data)
+      && !('birthDate' in request.resource.data)
+      && !('gender' in request.resource.data)
+      && !('phone' in request.resource.data)
+      && !('phoneNumber' in request.resource.data);
+    }
+
+    function selfLeavingHouse() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+        'houseId', 'houseName', 'houseRole', 'housePosition', 'houseStatus',
+        'assignedAgentUid', 'assignedAgentName', 'emitterStatus',
+        'houseLeftAt', 'houseUpdatedAt', 'updatedAt'
+      ])
+      && !('houseId' in request.resource.data)
+      && request.resource.data.houseStatus in ['left', 'removed', 'inactive'];
+    }
+
+    function managerChangingHouseAssignment() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+        'houseId', 'houseName', 'houseRole', 'housePosition', 'houseStatus',
+        'assignedAgentUid', 'assignedAgentName', 'emitterStatus',
+        'houseLeftAt', 'houseUpdatedAt', 'updatedAt'
+      ])
+      && (
+        (('houseId' in request.resource.data) && isHouseManager(request.resource.data.houseId))
+        || (('houseId' in resource.data) && isHouseManager(resource.data.houseId))
+        || isPlatformAdmin()
+      );
+    }
+
+    match /users/{uid} {
+      allow get: if signedIn();
+      allow list: if isPlatformAdmin();
+      allow create: if isSelf(uid)
+        && (!('uid' in request.resource.data) || request.resource.data.uid == uid)
+        && safePublicUserWrite();
+      allow update: if (isSelf(uid) && (safePublicUserUpdate() || selfLeavingHouse()))
+        || managerChangingHouseAssignment()
+        || isPlatformAdmin();
+      allow delete: if false;
+
+      match /personalizacion/{documentId} {
+        allow read, create, update, delete: if isSelf(uid);
+      }
+
+      match /securityEvents/{eventId} {
+        allow read: if isSelf(uid) || isPlatformAdmin();
+        allow create: if signedIn()
+          && request.resource.data.actorUid == request.auth.uid
+          && uid == request.auth.uid;
+        allow update, delete: if false;
+      }
+
+      match /recompensasTareas/{rewardId} {
+        allow read: if isSelf(uid) || isPlatformAdmin();
+        allow create: if isSelf(uid)
+          && isSimulation(request.resource.data)
+          && request.resource.data.uid == uid;
+        allow update, delete: if false;
+      }
+
+      match /gananciasRegalos/{operationId} {
+        allow read: if isSelf(uid) || isPlatformAdmin();
+        allow create: if signedIn()
+          && isSimulation(request.resource.data)
+          && request.resource.data.senderUid == request.auth.uid
+          && request.resource.data.recipientUid == uid;
+        allow update, delete: if false;
+      }
+
+      match /gananciasAgente/{operationId} {
+        allow read: if isSelf(uid) || isPlatformAdmin();
+        allow create: if signedIn()
+          && isSimulation(request.resource.data)
+          && request.resource.data.senderUid == request.auth.uid
+          && request.resource.data.beneficiaryUid == uid;
+        allow update, delete: if false;
+      }
+
+      match /economia/{documentId} {
+        allow read: if isSelf(uid) || isPlatformAdmin();
+        allow create, update: if (isSelf(uid) || isPlatformAdmin()) && isSimulation(request.resource.data);
+        allow delete: if false;
+      }
+
+      match /economiaAgente/{documentId} {
+        allow read: if isSelf(uid) || isPlatformAdmin();
+        allow create, update: if (isSelf(uid) || isPlatformAdmin()) && isSimulation(request.resource.data);
+        allow delete: if false;
+      }
+    }
+
+    match /userPrivate/{uid} {
+      allow read, create, update: if isSelf(uid)
+        && request.resource.data.uid == uid;
+      allow delete: if false;
+    }
+
+    match /directorioMensajes/{uid} {
+      allow read: if signedIn();
+      allow create: if isSelf(uid)
+        && request.resource.data.uid == uid
+        && !request.resource.data.keys().hasAny(['email', 'emailLower', 'verified', 'level', 'achievements']);
+      allow update: if isSelf(uid)
+        && request.resource.data.uid == uid
+        && !request.resource.data.keys().hasAny(['email', 'emailLower'])
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['verified', 'level', 'achievements']);
+      allow delete: if false;
+    }
+
+    match /perfilesPublicos/{uid} {
+      allow read: if signedIn();
+      allow create: if isSelf(uid)
+        && request.resource.data.uid == uid
+        && !request.resource.data.keys().hasAny(['email', 'emailLower', 'verified', 'level', 'achievements', 'role']);
+      allow update: if isSelf(uid)
+        && request.resource.data.uid == uid
+        && !request.resource.data.keys().hasAny(['email', 'emailLower'])
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['verified', 'level', 'achievements', 'role']);
+      allow delete: if false;
+    }
+
+    match /idsPublicas/{publicId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.publicId == publicId;
+      allow update: if signedIn()
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.publicId == resource.data.publicId;
+      allow delete: if false;
+    }
+
+    match /referidos/{uid} {
+      allow read: if isSelf(uid) || isPlatformAdmin();
+      allow create, update: if isSelf(uid) && request.resource.data.uid == uid;
+      allow delete: if false;
+    }
+
+    match /seguimientos/{followId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.followerUid == request.auth.uid;
+      allow delete: if signedIn() && resource.data.followerUid == request.auth.uid;
+      allow update: if false;
+    }
+
+    match /bloqueos/{blockId} {
+      allow read: if signedIn() && resource.data.blockerUid == request.auth.uid;
+      allow create: if signedIn() && request.resource.data.blockerUid == request.auth.uid;
+      allow delete: if signedIn() && resource.data.blockerUid == request.auth.uid;
+      allow update: if false;
+    }
+
+    match /denuncias/{reportId} {
+      allow create: if signedIn() && request.resource.data.reporterUid == request.auth.uid;
+      allow read, update: if isPlatformAdmin();
+      allow delete: if false;
+    }
+
+    match /supportTickets/{ticketId} {
+      allow create: if signedIn()
+        && (request.resource.data.uid == request.auth.uid || request.resource.data.createdByUid == request.auth.uid);
+      allow read: if signedIn()
+        && (resource.data.uid == request.auth.uid || resource.data.createdByUid == request.auth.uid || isPlatformAdmin());
+      allow update: if isPlatformAdmin()
+        || (signedIn()
+          && (resource.data.uid == request.auth.uid || resource.data.createdByUid == request.auth.uid)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['message', 'attachments', 'updatedAt', 'updatedAtClient']));
+      allow delete: if false;
+    }
+
+    match /securityEvents/{eventId} {
+      allow create: if signedIn() && request.resource.data.actorUid == request.auth.uid;
+      allow read: if isPlatformAdmin()
+        || (signedIn() && resource.data.actorUid == request.auth.uid);
+      allow update, delete: if false;
+    }
+
+    match /conversaciones/{conversationId} {
+      function participant(data) {
+        return signedIn() && (
+          (('participants' in data) && data.participants is list && request.auth.uid in data.participants)
+          || (('participantUids' in data) && data.participantUids is list && request.auth.uid in data.participantUids)
+        );
+      }
+      function stableParticipants() {
+        return (!('participants' in resource.data)
+            || request.resource.data.participants == resource.data.participants)
+          && (!('participantUids' in resource.data)
+            || request.resource.data.participantUids == resource.data.participantUids);
+      }
+      allow create: if participant(request.resource.data);
+      allow read: if participant(resource.data);
+      allow update: if participant(resource.data) && stableParticipants();
+      allow delete: if false;
+
+      match /mensajes/{messageId} {
+        function parentConversation() {
+          return get(/databases/$(database)/documents/conversaciones/$(conversationId)).data;
+        }
+        allow read: if participant(parentConversation());
+        allow create: if participant(parentConversation())
+          && request.resource.data.senderUid == request.auth.uid
+          && request.resource.data.text is string
+          && request.resource.data.text.size() <= 2000;
+        allow update: if false;
+        allow delete: if signedIn() && resource.data.senderUid == request.auth.uid;
+      }
+    }
+
+    match /messages/{messageId} {
+      allow read: if signedIn()
+        && (resource.data.senderUid == request.auth.uid || resource.data.recipientUid == request.auth.uid);
+      allow create: if signedIn() && request.resource.data.senderUid == request.auth.uid;
+      allow update: if signedIn() && resource.data.recipientUid == request.auth.uid;
+      allow delete: if signedIn() && resource.data.senderUid == request.auth.uid;
+    }
+
+    match /chat/{messageId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.senderUid == request.auth.uid;
+      allow update: if false;
+      allow delete: if signedIn() && resource.data.senderUid == request.auth.uid;
+    }
+
+    match /casas/{houseId} {
+      allow read: if signedIn();
+      allow create: if isPlatformAdmin()
+        && request.resource.data.ownerUid == request.auth.uid;
+      allow update: if isPlatformAdmin() || isHouseManager(houseId);
+      allow delete: if isPlatformAdmin();
+
+      match /miembros/{uid} {
+        allow read: if signedIn();
+        allow create, update: if isPlatformAdmin() || isHouseManager(houseId);
+        allow delete: if isPlatformAdmin() || isHouseManager(houseId) || isSelf(uid);
+      }
+
+      match /solicitudes/{uid} {
+        allow read: if isSelf(uid) || isHouseManager(houseId);
+        allow create: if isSelf(uid) && request.resource.data.uid == uid;
+        allow update, delete: if isHouseManager(houseId) || isSelf(uid);
+      }
+
+      match /avisos/{noticeId} {
+        allow read: if houseMemberExists(houseId, request.auth.uid) || isPlatformAdmin();
+        allow create, update, delete: if isHouseManager(houseId);
+      }
+
+      match /mensajes/{messageId} {
+        allow read: if houseMemberExists(houseId, request.auth.uid) || isPlatformAdmin();
+        allow create: if houseMemberExists(houseId, request.auth.uid)
+          && request.resource.data.senderUid == request.auth.uid;
+        allow update: if false;
+        allow delete: if isHouseManager(houseId)
+          || (signedIn() && resource.data.senderUid == request.auth.uid);
+      }
+
+      match /configuracion/{documentId} {
+        allow read: if signedIn();
+        allow create, update, delete: if isHouseManager(houseId);
+      }
+
+      match /salaActual/{documentId} {
+        allow read: if signedIn();
+        allow create, update: if isHouseManager(houseId);
+        allow delete: if isHouseManager(houseId) || isPlatformAdmin();
+      }
+
+      match /mascota/{documentId} {
+        allow read: if signedIn();
+        allow create, update: if houseMemberExists(houseId, request.auth.uid)
+          && isSimulation(request.resource.data);
+        allow delete: if isHouseManager(houseId);
+      }
+
+      match /mascotaAcciones/{actionId} {
+        allow read: if signedIn();
+        allow create: if houseMemberExists(houseId, request.auth.uid)
+          && request.resource.data.actorUid == request.auth.uid
+          && isSimulation(request.resource.data);
+        allow update: if false;
+        allow delete: if isHouseManager(houseId);
+      }
+
+      match /tareas/{uid} {
+        allow read: if isSelf(uid) || isHouseManager(houseId) || isPlatformAdmin();
+        allow create, update: if isHouseManager(houseId)
+          || (isSelf(uid) && isSimulation(request.resource.data));
+        allow delete: if isHouseManager(houseId) || isPlatformAdmin();
+      }
+
+      match /historialTareas/{documentId} {
+        allow read: if isHouseManager(houseId)
+          || (signedIn() && resource.data.uid == request.auth.uid);
+        allow create: if isHouseManager(houseId)
+          || (signedIn() && request.resource.data.uid == request.auth.uid && isSimulation(request.resource.data));
+        allow update, delete: if false;
+      }
+
+      match /recompensasTareas/{rewardId} {
+        allow read: if isHouseManager(houseId)
+          || (signedIn() && resource.data.uid == request.auth.uid);
+        allow create: if signedIn()
+          && request.resource.data.uid == request.auth.uid
+          && isSimulation(request.resource.data);
+        allow update, delete: if false;
+      }
+
+      match /auditoria/{auditId} {
+        allow read: if isHouseManager(houseId) || isPlatformAdmin();
+        allow create: if signedIn()
+          && request.resource.data.actorUid == request.auth.uid
+          && isSimulation(request.resource.data);
+        allow update, delete: if false;
+      }
+
+      match /movimientos/{operationId} {
+        allow read: if isHouseManager(houseId) || isPlatformAdmin();
+        allow create: if signedIn()
+          && request.resource.data.senderUid == request.auth.uid
+          && isSimulation(request.resource.data);
+        allow update, delete: if false;
+      }
+
+      match /resumenEmisoras/{uid} {
+        allow read: if isSelf(uid) || isHouseManager(houseId) || isPlatformAdmin();
+        allow create, update: if signedIn() && isSimulation(request.resource.data);
+        allow delete: if false;
+      }
+
+      match /resumenAgentes/{uid} {
+        allow read: if isSelf(uid) || isHouseManager(houseId) || isPlatformAdmin();
+        allow create, update: if signedIn() && isSimulation(request.resource.data);
+        allow delete: if false;
+      }
+
+      match /resumenDiario/{dayId} {
+        allow read: if isHouseManager(houseId) || isPlatformAdmin();
+        allow create, update: if signedIn() && isSimulation(request.resource.data);
+        allow delete: if false;
+      }
+
+      match /{document=**} {
+        allow read: if signedIn();
+        allow write: if isHouseManager(houseId) || isPlatformAdmin();
+      }
+    }
+
+    match /solicitudesCasa/{uid} {
+      allow read: if isSelf(uid) || isPlatformAdmin();
+      allow create, update, delete: if isSelf(uid) || isPlatformAdmin();
+    }
+
+    match /solicitudesCasaCreacion/{uid} {
+      allow create: if isSelf(uid) && request.resource.data.uid == uid;
+      allow read: if isSelf(uid) || isPlatformAdmin();
+      allow update, delete: if isPlatformAdmin();
+    }
+
+    match /emisoras/{uid} {
+      allow read: if signedIn();
+      allow create: if isPlatformAdmin()
+        || (('houseId' in request.resource.data) && isHouseManager(request.resource.data.houseId));
+      allow update: if isPlatformAdmin()
+        || (('houseId' in request.resource.data) && isHouseManager(request.resource.data.houseId))
+        || (('houseId' in resource.data) && isHouseManager(resource.data.houseId));
+      allow delete: if isPlatformAdmin()
+        || (('houseId' in resource.data) && isHouseManager(resource.data.houseId));
+    }
+
+    match /giftOperations/{operationId} {
+      allow read: if signedIn()
+        && (resource.data.senderUid == request.auth.uid
+          || resource.data.recipientUid == request.auth.uid
+          || isPlatformAdmin());
+      allow create: if signedIn()
+        && request.resource.data.senderUid == request.auth.uid
+        && request.resource.data.recipientUid != request.auth.uid
+        && isSimulation(request.resource.data);
+      allow update, delete: if false;
+    }
+
+    match /batallas/{battleId}/{document=**} {
+      allow read: if signedIn();
+      allow create, update: if signedIn() && isSimulation(request.resource.data);
+      allow delete: if isPlatformAdmin();
+    }
+
+    match /livePresences/{hostUid} {
+      allow get, list: if signedIn();
+      allow create: if isSelf(hostUid)
+        && request.resource.data.uid == hostUid
+        && request.resource.data.hostUid == hostUid
+        && !request.resource.data.keys().hasAny(['verified', 'level', 'role', 'accountRole']);
+      allow update: if isSelf(hostUid)
+        && request.resource.data.uid == hostUid
+        && request.resource.data.hostUid == hostUid
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['verified', 'level', 'role', 'accountRole']);
+      allow delete: if isSelf(hostUid);
+    }
+
+    match /liveSignals/{hostUid} {
+      function isHost() {
+        return isSelf(hostUid);
+      }
+      allow get: if signedIn();
+      allow list: if false;
+      allow create, update: if isHost()
+        && request.resource.data.hostUid == hostUid
+        && request.resource.data.roomSessionId is string
+        && request.resource.data.roomSessionId.size() >= 12;
+      allow delete: if isHost();
+
+      match /chat/{messageId} {
+        function activeRoomSession() {
+          return exists(/databases/$(database)/documents/liveSignals/$(hostUid))
+            && get(/databases/$(database)/documents/liveSignals/$(hostUid)).data.active == true
+            && get(/databases/$(database)/documents/liveSignals/$(hostUid)).data.status == 'live'
+            && get(/databases/$(database)/documents/liveSignals/$(hostUid)).data.roomSessionId == request.resource.data.roomSessionId;
+        }
+        allow get, list: if signedIn();
+        allow create: if signedIn()
+          && request.resource.data.hostUid == hostUid
+          && request.resource.data.senderUid == request.auth.uid
+          && request.resource.data.roomSessionId is string
+          && request.resource.data.roomSessionId.size() >= 12
+          && request.resource.data.senderName is string
+          && request.resource.data.senderName.size() >= 1
+          && request.resource.data.senderName.size() <= 80
+          && request.resource.data.text is string
+          && request.resource.data.text.size() >= 1
+          && request.resource.data.text.size() <= 300
+          && request.resource.data.type in ['chat', 'sticker', 'gift', 'system']
+          && request.resource.data.senderRole in ['host', 'viewer']
+          && (request.resource.data.senderRole != 'host' || request.auth.uid == hostUid)
+          && (request.resource.data.type != 'system' || request.auth.uid == hostUid)
+          && activeRoomSession();
+        allow update: if false;
+        allow delete: if isHost() || (signedIn() && resource.data.senderUid == request.auth.uid);
+      }
+
+      match /viewers/{sessionId} {
+        function isViewerExisting() {
+          return signedIn() && resource.data.viewerUid == request.auth.uid;
+        }
+        function activeRoomSession() {
+          return exists(/databases/$(database)/documents/liveSignals/$(hostUid))
+            && get(/databases/$(database)/documents/liveSignals/$(hostUid)).data.active == true
+            && get(/databases/$(database)/documents/liveSignals/$(hostUid)).data.status == 'live'
+            && get(/databases/$(database)/documents/liveSignals/$(hostUid)).data.roomSessionId == request.resource.data.roomSessionId;
+        }
+        function stableOwnership() {
+          return request.resource.data.viewerUid == resource.data.viewerUid
+            && request.resource.data.hostUid == resource.data.hostUid
+            && request.resource.data.hostUid == hostUid
+            && request.resource.data.roomSessionId == resource.data.roomSessionId;
+        }
+        allow list: if isHost();
+        allow get: if isHost() || isViewerExisting();
+        allow create: if signedIn()
+          && request.resource.data.viewerUid == request.auth.uid
+          && request.resource.data.hostUid == hostUid
+          && request.resource.data.roomSessionId is string
+          && request.resource.data.roomSessionId.size() >= 12
+          && request.resource.data.status == 'initializing'
+          && request.resource.data.offerRevision == 0
+          && request.resource.data.answerRevision == 0
+          && activeRoomSession();
+        allow update: if (isViewerExisting() || isHost()) && stableOwnership();
+        allow delete: if isHost() || isViewerExisting();
+
+        match /viewerCandidates/{candidateId} {
+          function isSessionViewer() {
+            return signedIn()
+              && exists(/databases/$(database)/documents/liveSignals/$(hostUid)/viewers/$(sessionId))
+              && get(/databases/$(database)/documents/liveSignals/$(hostUid)/viewers/$(sessionId)).data.viewerUid == request.auth.uid;
+          }
+          allow get, list: if isHost() || isSessionViewer();
+          allow create: if isSessionViewer() && request.resource.data.ownerUid == request.auth.uid;
+          allow update: if false;
+          allow delete: if isHost() || isSessionViewer();
+        }
+
+        match /hostCandidates/{candidateId} {
+          function isSessionViewer() {
+            return signedIn()
+              && exists(/databases/$(database)/documents/liveSignals/$(hostUid)/viewers/$(sessionId))
+              && get(/databases/$(database)/documents/liveSignals/$(hostUid)/viewers/$(sessionId)).data.viewerUid == request.auth.uid;
+          }
+          allow get, list: if isHost() || isSessionViewer();
+          allow create: if isHost() && request.resource.data.ownerUid == request.auth.uid;
+          allow update: if false;
+          allow delete: if isHost() || isSessionViewer();
+        }
+      }
+    }
+
+    match /salasPruebaWebRTC/{roomId} {
+      function roomHost() {
+        return signedIn() && resource.data.hostUid == request.auth.uid;
+      }
+      function incomingRoomHost() {
+        return signedIn() && request.resource.data.hostUid == request.auth.uid;
+      }
+      function roomGuest() {
+        return signedIn() && resource.data.guestUid == request.auth.uid;
+      }
+      allow read: if signedIn();
+      allow create: if incomingRoomHost();
+      allow update: if roomHost() || roomGuest()
+        || (signedIn() && !('guestUid' in resource.data) && request.resource.data.guestUid == request.auth.uid);
+      allow delete: if roomHost();
+
+      match /messages/{messageId} {
+        allow read: if signedIn();
+        allow create: if signedIn() && request.resource.data.senderUid == request.auth.uid;
+        allow update: if false;
+        allow delete: if signedIn() && resource.data.senderUid == request.auth.uid;
+      }
+
+      match /hostCandidates/{candidateId} {
+        allow read: if signedIn();
+        allow create: if signedIn();
+        allow update: if false;
+        allow delete: if false;
+      }
+
+      match /guestCandidates/{candidateId} {
+        allow read: if signedIn();
+        allow create: if signedIn();
+        allow update: if false;
+        allow delete: if false;
+      }
+    }
+
+    match /accountDeletionReceipts/{receiptId} {
+      allow read, write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

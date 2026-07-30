@@ -127,3 +127,13 @@ La detección automática real de personas, menores, armas o situaciones peligro
 - Retiradas retenidas cuando existe una alerta financiera activa.
 - PWA actualizada y pruebas técnicas documentadas.
 
+
+## 30/07/2026 · PRUEBA 55 · FASE 2 · Seguridad y propiedad de datos
+- Reglas completas de Firestore y Storage con denegación por defecto.
+- Propietario y administradores validados mediante Firebase Authentication Custom Claims.
+- Campos privados movidos a `userPrivate/{uid}` y script de migración histórica incluido.
+- Campos de autoridad, verificación, nivel, economía y Casa protegidos frente a escrituras del cliente.
+- App Check con reCAPTCHA Enterprise preparado para activación gradual.
+- Eliminación de cuenta dentro de Configuración, página web independiente y Cloud Function segura.
+- Compatibilidad corregida para conversaciones con `participants` y `participantUids`.
+- Economía real y escalado SFU permanecen bloqueados y pendientes.

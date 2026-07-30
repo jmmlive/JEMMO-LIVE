@@ -18,7 +18,7 @@ async function firebaseServices() {
     import('https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js')
   ]).then(([appModule, authModule, firestore]) => {
     const app = appModule.getApps()[0] || appModule.initializeApp(firebaseConfig);
-    return { ...firestore, auth: authModule.getAuth(app), onAuthStateChanged: authModule.onAuthStateChanged, db: firestore.getFirestore(app) };
+    return { ...firestore, auth: authModule.getAuth(app), onAuthStateChanged: authModule.onAuthStateChanged, getIdTokenResult: authModule.getIdTokenResult, db: firestore.getFirestore(app) };
   });
   return firebasePromise;
 }
@@ -136,9 +136,11 @@ function refreshAuthority() {
   state.testRole = readTestRole();
   state.actualAdmin = state.platformOwner || ['owner', 'admin'].includes(state.memberRole);
   state.actualAgent = state.selfHousePosition === 'agent' || normalizedAccountRole(state.profile.role || state.profile.rol || state.profile.accountRole) === 'agent';
-  state.isAdmin = state.testRole ? ['owner', 'agent'].includes(state.testRole) : state.actualAdmin;
-  state.canViewAgentPanel = Boolean(state.isAdmin || state.actualAgent);
-  state.canManageRoom = Boolean(state.isAdmin || state.actualAgent);
+  // El selector de roles es exclusivamente visual. La autoridad real procede
+  // de Firebase y de la membresía de la Casa, nunca de localStorage.
+  state.isAdmin = state.actualAdmin;
+  state.canViewAgentPanel = Boolean(state.actualAdmin || state.actualAgent);
+  state.canManageRoom = Boolean(state.actualAdmin || state.actualAgent);
 }
 
 function positionLabel(member) {
@@ -911,11 +913,9 @@ async function boot() {
     state.user = await waitForUser(state.services);
     const profileSnap = await state.services.getDoc(state.services.doc(state.services.db, 'users', state.user.uid));
     state.profile = profileSnap.exists() ? (profileSnap.data() || {}) : {};
-    state.platformOwner = ['owner', 'propietario', 'superadmin'].includes(clean(state.profile.role || state.profile.rol, 30).toLocaleLowerCase('es'));
-    try {
-      const security = JSON.parse(localStorage.getItem('jemmo_owner_security_v1') || 'null');
-      if (security?.ownerUid === state.user.uid) state.platformOwner = true;
-    } catch {}
+    const tokenResult = await state.services.getIdTokenResult(state.user, true).catch(() => null);
+    const claimRole = normalizedAccountRole(tokenResult?.claims?.role);
+    state.platformOwner = tokenResult?.claims?.owner === true || claimRole === 'owner';
     refreshAuthority();
     bind();
     window.addEventListener('jemmo-test-role-change', () => { refreshAuthority(); renderAll(); });

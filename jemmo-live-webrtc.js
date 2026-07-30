@@ -281,9 +281,14 @@ async function ensureRtcCredentials(){
   rtcCredentialsPromise=(async()=>{
     try{
       const token=await currentUser?.getIdToken?.();
+      await window.__jemmoAppCheckReady?.catch?.(()=>{});
+      const appCheckToken=await window.JemmoAppCheck?.getToken?.();
+      const headers={};
+      if(token)headers.Authorization=`Bearer ${token}`;
+      if(appCheckToken)headers['X-Firebase-AppCheck']=appCheckToken;
       const response=await fetch(endpoint,{
         method:'GET',
-        headers:token?{Authorization:`Bearer ${token}`}:{},
+        headers,
         cache:'no-store',
         credentials:'same-origin'
       });

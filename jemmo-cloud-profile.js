@@ -280,9 +280,12 @@ async function syncLocalProfile() {
     if (local.id !== assigned.publicId || local.publicId !== assigned.publicId) {
       writeLocalProfile(user.uid, { ...local, id: assigned.publicId, publicId: assigned.publicId });
     }
+    const { verified: _verified, level: _level, achievements: _achievements, email: privateEmail, emailLower: privateEmailLower, ...editablePayload } = payload;
     await Promise.all([
       setDoc(doc(db, 'users', user.uid), {
-        ...payload,
+        ...editablePayload,
+        email: deleteField(),
+        emailLower: deleteField(),
         invitationsEnabled: deleteField(),
         invitationPrice: deleteField(),
         acceptsInvitations: deleteField(),
@@ -314,9 +317,6 @@ async function syncLocalProfile() {
         invitationsEnabled: deleteField(),
         invitationPrice: deleteField(),
         acceptsInvitations: deleteField(),
-        verified: payload.verified,
-        level: payload.level,
-        achievements: payload.achievements,
         avatarData: payload.avatarData,
         coverData: payload.coverData,
         coverPosition: payload.coverPosition,
@@ -327,7 +327,8 @@ async function syncLocalProfile() {
         profileUpdatedAtClient: payload.profileUpdatedAtClient,
         ultimaActividad: serverTimestamp(),
         updatedAt: serverTimestamp()
-      }, { merge: true })
+      }, { merge: true }),
+      setDoc(doc(db, 'userPrivate', user.uid), { uid: user.uid, email: privateEmail, emailLower: privateEmailLower, updatedAt: serverTimestamp() }, { merge: true })
     ]);
     if (payload.displayName && payload.displayName !== user.displayName) {
       await updateProfile(user, { displayName: payload.displayName }).catch(() => {});
