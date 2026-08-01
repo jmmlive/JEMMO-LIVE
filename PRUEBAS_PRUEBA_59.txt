@@ -1,0 +1,11 @@
+JEMMO LIVE V1 · PRUEBA 59 · PLAN DE PRUEBA
+
+1. Abrir Inicio y tocar el regalo del chat.
+2. Elegir regalo y cantidad sin Casa: el botón debe indicar SELECCIONAR CASA y explicar lo que falta.
+3. Elegir Casa Tenerife, Rosa JEMMO y ×1. Confirmar.
+4. Verificar: se descuentan 10 JEMMOS, aumenta el marcador y aparece el mensaje en chat.
+5. Repetir con Casa Unicornio, Estrella y ×10. Debe descontar 500 JEMMOS una sola vez.
+6. Abrir el panel y pulsar Atrás del móvil: debe cerrarse el panel y permanecer en Inicio.
+7. Pulsar Atrás estando en Inicio: no debe cerrarse JEMMO LIVE; debe aparecer Ya estás en Inicio.
+8. Abrir el monedero y pulsar Atrás: debe cerrar el monedero.
+9. Probar saldo insuficiente: debe ofrecer RECARGAR JEMMOS sin alterar el marcador.

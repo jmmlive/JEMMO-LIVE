@@ -1,3 +1,11 @@
+# PRUEBA 59 · 01/08/2026
+
+- Corregido el envío de regalos en Batalla Oficial.
+- Selección táctil directa de Casa, regalo y cantidad.
+- Mensajes de pasos pendientes y coste únicamente con selección completa.
+- Botón Atrás cierra el panel y no saca al usuario de Inicio.
+- Nueva caché PWA y versión 59.
+
 # PRUEBA 58 · 01/08/2026
 
 - Inicio: Batalla Oficial dinámica con reloj real, actividad, efectos y reacción del marcador.

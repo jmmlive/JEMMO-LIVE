@@ -48,6 +48,7 @@ let rechargeRequired = false;
 let previousBodyOverflow = '';
 let localPoints = readLocalPoints();
 let cloudPoints = {};
+let closingFromHistory = false;
 
 function activeUid() {
   if (window.__jemmoAuthenticatedUid) return String(window.__jemmoAuthenticatedUid);
@@ -67,6 +68,7 @@ function houseById(id) { return HOUSES.find(item => item.id === id); }
 function giftById(id) { return GIFTS.find(item => item.id === id); }
 function effectiveGiftPoints(id) { return Math.max(Number(localPoints[id]) || 0, Number(cloudPoints[id]) || 0); }
 function totalScore(house) { return house.base + effectiveGiftPoints(house.id); }
+function sheetIsOpen() { return Boolean($('#battleGiftSheet')?.classList.contains('open')); }
 
 function buildSheet() {
   if ($('#battleGiftSheet')) return;
@@ -83,13 +85,13 @@ function buildSheet() {
   sheet.setAttribute('aria-labelledby', 'battleGiftTitle');
   sheet.innerHTML = `
     <button class="battle-gift-close" id="battleGiftClose" type="button" aria-label="Cerrar">×</button>
-    <div class="battle-gift-head"><small>BATALLA OFICIAL</small><h2 id="battleGiftTitle">Apoya con regalos</h2><p>Selecciona la Casa, el regalo y la cantidad antes de confirmar el coste.</p></div>
-    <div class="battle-gift-step"><strong>1. CASA DESTINATARIA</strong><div class="battle-house-options">${HOUSES.map(house => `<button class="battle-choice" type="button" data-battle-house-choice="${house.id}"><span>${house.emblem}</span><b>${house.name}</b><small>${formatNumber(totalScore(house))} puntos</small></button>`).join('')}</div></div>
-    <div class="battle-gift-step"><strong>2. REGALO</strong><div class="battle-gift-options">${GIFTS.map(gift => `<button class="battle-choice" type="button" data-battle-gift-choice="${gift.id}"><span>${gift.icon}</span><b>${gift.name}</b><small>${formatNumber(gift.price)} JEMMOS</small></button>`).join('')}</div></div>
-    <div class="battle-gift-step"><strong>3. CANTIDAD</strong><div class="battle-qty-options">${QUANTITIES.map(quantity => `<button class="battle-choice ${quantity === 1 ? 'active' : ''}" type="button" data-battle-qty="${quantity}">×${quantity}</button>`).join('')}</div></div>
-    <div class="battle-gift-summary"><div><small>DESTINO Y REGALO</small><b id="battleGiftDestination">Selecciona una Casa y un regalo</b></div><div class="battle-gift-cost"><small>COSTE TOTAL</small><b id="battleGiftCost">0 JEMMOS</b></div></div>
-    <button class="battle-gift-confirm" id="battleGiftConfirm" type="button" disabled>CONFIRMAR ENVÍO</button>
-    <p class="battle-gift-status" id="battleGiftStatus" role="status"></p>`;
+    <div class="battle-gift-head"><small>BATALLA OFICIAL</small><h2 id="battleGiftTitle">Apoya con regalos</h2><p>Selecciona la Casa, el regalo y la cantidad. El envío se cobrará una sola vez.</p></div>
+    <div class="battle-gift-step" id="battleHouseStep"><strong>1. CASA DESTINATARIA</strong><div class="battle-house-options">${HOUSES.map(house => `<button class="battle-choice" type="button" data-battle-house-choice="${house.id}" aria-pressed="false"><span>${house.emblem}</span><b>${house.name}</b><small>${formatNumber(totalScore(house))} puntos</small></button>`).join('')}</div></div>
+    <div class="battle-gift-step" id="battleGiftStep"><strong>2. REGALO</strong><div class="battle-gift-options">${GIFTS.map(gift => `<button class="battle-choice" type="button" data-battle-gift-choice="${gift.id}" aria-pressed="false"><span>${gift.icon}</span><b>${gift.name}</b><small>${formatNumber(gift.price)} JEMMOS</small></button>`).join('')}</div></div>
+    <div class="battle-gift-step" id="battleQtyStep"><strong>3. CANTIDAD</strong><div class="battle-qty-options">${QUANTITIES.map(quantity => `<button class="battle-choice ${quantity === 1 ? 'active' : ''}" type="button" data-battle-qty="${quantity}" aria-pressed="${quantity === 1}">×${quantity}</button>`).join('')}</div></div>
+    <div class="battle-gift-summary"><div><small>DESTINO Y REGALO</small><b id="battleGiftDestination">Falta seleccionar una Casa y un regalo</b></div><div class="battle-gift-cost"><small>COSTE TOTAL</small><b id="battleGiftCost">—</b></div></div>
+    <button class="battle-gift-confirm is-incomplete" id="battleGiftConfirm" type="button" aria-disabled="true">SELECCIONAR CASA</button>
+    <p class="battle-gift-status hint" id="battleGiftStatus" role="status" aria-live="polite">Primero elige la Casa que recibirá los puntos.</p>`;
   document.body.append(backdrop, sheet);
 }
 
@@ -106,18 +108,43 @@ function updateScoreUi() {
   if (fill) fill.style.width = `${Math.max(6, Math.min(94, first * 100))}%`;
 }
 
-function updateSummary() {
+function updateSummary({ announce = false } = {}) {
   const house = houseById(selectedHouse);
   const gift = giftById(selectedGift);
-  const total = gift ? gift.price * selectedQuantity : 0;
+  const complete = Boolean(house && gift);
+  const total = complete ? gift.price * selectedQuantity : 0;
   const destination = $('#battleGiftDestination');
   const cost = $('#battleGiftCost');
   const confirm = $('#battleGiftConfirm');
-  if (destination) destination.textContent = house && gift ? `${gift.icon} ${gift.name} ×${selectedQuantity} → ${house.name}` : 'Selecciona una Casa y un regalo';
-  if (cost) cost.textContent = `${formatNumber(total)} JEMMOS`;
+  const houseStep = $('#battleHouseStep');
+  const giftStep = $('#battleGiftStep');
+
+  houseStep?.classList.toggle('needs-attention', !house);
+  giftStep?.classList.toggle('needs-attention', Boolean(house && !gift));
+
+  if (destination) {
+    if (complete) destination.textContent = `${gift.icon} ${gift.name} ×${selectedQuantity} → ${house.name}`;
+    else if (!house && gift) destination.textContent = `${gift.icon} ${gift.name} ×${selectedQuantity} · falta seleccionar una Casa`;
+    else if (house && !gift) destination.textContent = `${house.name} · falta seleccionar un regalo`;
+    else destination.textContent = 'Falta seleccionar una Casa y un regalo';
+  }
+  if (cost) cost.textContent = complete ? `${formatNumber(total)} JEMMOS` : '—';
   if (confirm) {
-    confirm.disabled = busy || !house || !gift;
-    confirm.textContent = rechargeRequired ? 'RECARGAR JEMMOS' : busy ? 'ENVIANDO…' : 'CONFIRMAR ENVÍO';
+    confirm.disabled = busy;
+    confirm.classList.toggle('is-incomplete', !complete && !rechargeRequired);
+    confirm.setAttribute('aria-disabled', String(busy || (!complete && !rechargeRequired)));
+    confirm.textContent = rechargeRequired
+      ? 'RECARGAR JEMMOS'
+      : busy
+        ? 'ENVIANDO…'
+        : !house
+          ? 'SELECCIONAR CASA'
+          : !gift
+            ? 'SELECCIONAR REGALO'
+            : 'CONFIRMAR ENVÍO';
+  }
+  if (announce && !complete) {
+    setStatus(!house ? 'Falta seleccionar la Casa destinataria.' : 'Falta seleccionar el regalo.', 'error');
   }
 }
 
@@ -128,8 +155,12 @@ function setStatus(message = '', tone = '') {
   status.className = `battle-gift-status${tone ? ` ${tone}` : ''}`;
 }
 
-function openSheet() {
-  buildSheet();
+function pushSheetHistory() {
+  if (history.state?.jemmoOverlay === 'battle-gift') return;
+  history.pushState({ ...(history.state || {}), jemmoOverlay: 'battle-gift' }, '', location.href);
+}
+
+function showSheet() {
   const sheet = $('#battleGiftSheet');
   const backdrop = $('#battleGiftBackdrop');
   previousBodyOverflow = document.body.style.overflow;
@@ -137,12 +168,9 @@ function openSheet() {
   if (backdrop) backdrop.hidden = false;
   sheet?.classList.add('open');
   sheet?.setAttribute('aria-hidden', 'false');
-  setStatus('');
-  updateSummary();
-  setTimeout(() => $('[data-battle-house-choice]')?.focus(), 60);
 }
 
-function closeSheet() {
+function hideSheet() {
   const sheet = $('#battleGiftSheet');
   const backdrop = $('#battleGiftBackdrop');
   sheet?.classList.remove('open');
@@ -151,50 +179,109 @@ function closeSheet() {
   document.body.style.overflow = previousBodyOverflow;
 }
 
+function openSheet(preselectedHouse = '') {
+  buildSheet();
+  if (preselectedHouse && houseById(preselectedHouse)) {
+    const button = $(`[data-battle-house-choice="${preselectedHouse}"]`);
+    selectHouse(preselectedHouse, button, { silent: true });
+  }
+  showSheet();
+  pushSheetHistory();
+  rechargeRequired = false;
+  setStatus(selectedHouse ? 'Ahora selecciona el regalo.' : 'Primero elige la Casa que recibirá los puntos.', 'hint');
+  updateSummary();
+  setTimeout(() => {
+    const target = selectedHouse ? $('[data-battle-gift-choice]') : $('[data-battle-house-choice]');
+    target?.focus({ preventScroll: true });
+  }, 80);
+}
+
+function closeSheet({ fromHistory = false } = {}) {
+  if (!sheetIsOpen()) return;
+  if (!fromHistory && !closingFromHistory && history.state?.jemmoOverlay === 'battle-gift') {
+    history.back();
+    return;
+  }
+  hideSheet();
+}
+
 function resetSelection() {
   selectedHouse = '';
   selectedGift = '';
   selectedQuantity = 1;
   rechargeRequired = false;
-  $$('[data-battle-house-choice],[data-battle-gift-choice]').forEach(button => button.classList.remove('active'));
-  $$('[data-battle-qty]').forEach(button => button.classList.toggle('active', Number(button.dataset.battleQty) === 1));
+  $$('[data-battle-house-choice],[data-battle-gift-choice]').forEach(button => {
+    button.classList.remove('active');
+    button.setAttribute('aria-pressed', 'false');
+  });
+  $$('[data-battle-qty]').forEach(button => {
+    const active = Number(button.dataset.battleQty) === 1;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  });
   updateSummary();
 }
 
-function selectHouse(id, button) {
+function selectHouse(id, button, { silent = false } = {}) {
+  if (!houseById(id)) return;
   selectedHouse = id;
   rechargeRequired = false;
-  $$('[data-battle-house-choice]').forEach(item => item.classList.toggle('active', item === button));
-  setStatus('');
+  $$('[data-battle-house-choice]').forEach(item => {
+    const active = item === button || item.dataset.battleHouseChoice === id;
+    item.classList.toggle('active', active);
+    item.setAttribute('aria-pressed', String(active));
+  });
+  if (!silent) setStatus(selectedGift ? 'Selección completa. Revisa el coste y confirma.' : 'Casa seleccionada. Ahora elige el regalo.', 'hint');
   updateSummary();
 }
 function selectGift(id, button) {
+  if (!giftById(id)) return;
   selectedGift = id;
   rechargeRequired = false;
-  $$('[data-battle-gift-choice]').forEach(item => item.classList.toggle('active', item === button));
-  setStatus('');
+  $$('[data-battle-gift-choice]').forEach(item => {
+    const active = item === button || item.dataset.battleGiftChoice === id;
+    item.classList.toggle('active', active);
+    item.setAttribute('aria-pressed', String(active));
+  });
+  setStatus(selectedHouse ? 'Selección completa. Revisa el coste y confirma.' : 'Regalo seleccionado. Falta elegir la Casa destinataria.', selectedHouse ? 'hint' : 'error');
   updateSummary();
 }
 function selectQuantity(quantity, button) {
-  selectedQuantity = quantity;
+  selectedQuantity = QUANTITIES.includes(quantity) ? quantity : 1;
   rechargeRequired = false;
-  $$('[data-battle-qty]').forEach(item => item.classList.toggle('active', item === button));
-  setStatus('');
+  $$('[data-battle-qty]').forEach(item => {
+    const active = item === button || Number(item.dataset.battleQty) === selectedQuantity;
+    item.classList.toggle('active', active);
+    item.setAttribute('aria-pressed', String(active));
+  });
+  setStatus(selectedHouse && selectedGift ? 'Cantidad actualizada. Revisa el coste y confirma.' : 'Cantidad actualizada. Completa los pasos pendientes.', 'hint');
   updateSummary();
+}
+
+function focusMissingSelection() {
+  const house = houseById(selectedHouse);
+  const gift = giftById(selectedGift);
+  const target = !house ? $('[data-battle-house-choice]') : !gift ? $('[data-battle-gift-choice]') : null;
+  target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  setTimeout(() => target?.focus({ preventScroll: true }), 280);
+  updateSummary({ announce: true });
 }
 
 function appendChatMessage(house, gift, quantity, total) {
   const messages = $('#battleChatMessages');
   if (!messages) return;
   const row = document.createElement('p');
-  row.className = 'chat-own';
+  row.className = 'battle-message gift chat-own message-enter';
   const name = document.createElement('b');
-  name.textContent = '🎁 Tú ';
-  const message = document.createTextNode(`enviaste ${gift.name} ×${quantity} a ${house.name} · ${formatNumber(total)} JEMMOS `);
+  name.textContent = '🎁 Tú: ';
+  const content = document.createElement('span');
+  content.className = 'battle-message-text';
+  content.textContent = `enviaste ${gift.name} ×${quantity} a ${house.name} · ${formatNumber(total)} JEMMOS`;
   const time = document.createElement('time');
   time.textContent = new Intl.DateTimeFormat('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date());
-  row.append(name, message, time);
+  row.append(name, content, time);
   messages.append(row);
+  while (messages.children.length > 12) messages.firstElementChild?.remove();
   messages.scrollTop = messages.scrollHeight;
 }
 
@@ -222,43 +309,69 @@ async function syncGiftToCloud({ operationId, house, gift, quantity, total }) {
   }
 }
 
+async function waitForWalletReady(timeout = 2400) {
+  const started = Date.now();
+  while (Date.now() - started < timeout) {
+    if (window.JemmoWallet?.spendCoins && window.JemmoWallet?.get) return window.JemmoWallet;
+    await new Promise(resolve => setTimeout(resolve, 80));
+  }
+  return null;
+}
+
 async function confirmGift() {
   if (rechargeRequired) {
     closeSheet();
-    window.JemmoWallet?.openRecharge?.();
+    setTimeout(() => window.JemmoWallet?.openRecharge?.(), 120);
     return;
   }
   if (busy) return;
   const house = houseById(selectedHouse);
   const gift = giftById(selectedGift);
-  if (!house || !gift) return;
-  const total = gift.price * selectedQuantity;
-  const wallet = window.JemmoWallet;
-  if (!wallet?.spendCoins) {
-    setStatus('El monedero todavía no está listo. Vuelve a intentarlo.', 'error');
+  if (!house || !gift) {
+    focusMissingSelection();
     return;
   }
+  const total = gift.price * selectedQuantity;
   busy = true;
   updateSummary();
-  setStatus('Comprobando saldo y registrando el regalo…');
+  setStatus('Comprobando saldo y registrando el regalo…', 'hint');
+  const wallet = await waitForWalletReady();
+  if (!wallet) {
+    busy = false;
+    updateSummary();
+    setStatus('El monedero no terminó de cargar. Cierra este panel y vuelve a abrirlo.', 'error');
+    return;
+  }
   const requestId = globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-  const result = wallet.spendCoins(total, {
-    title: 'Regalo enviado en Batalla de Casas',
-    giftName: gift.name,
-    detail: `${gift.icon} ${gift.name} ×${selectedQuantity} → ${house.name}`,
-    context: 'BATALLA DE CASAS',
-    source: 'battle-house-gift',
-    reference: house.name,
-    recipientUid: `jemmo-battle-house-${house.id}`,
-    economicType: 'house-battle',
-    houseId: house.id,
-    houseName: house.name,
-    idempotencyKey: `battle:${activeUid()}:${requestId}`
-  });
+  let result;
+  try {
+    result = wallet.spendCoins(total, {
+      title: 'Regalo enviado en Batalla de Casas',
+      giftName: gift.name,
+      detail: `${gift.icon} ${gift.name} ×${selectedQuantity} → ${house.name}`,
+      context: 'BATALLA DE CASAS',
+      source: 'battle-house-gift',
+      reference: house.name,
+      recipientUid: `jemmo-battle-house-${house.id}`,
+      recipientName: house.name,
+      economicType: 'house-battle',
+      houseId: house.id,
+      houseName: house.name,
+      idempotencyKey: `battle:${activeUid() || 'local'}:${requestId}`
+    });
+  } catch (error) {
+    console.error('JEMMO Batalla: fallo al cobrar regalo', error);
+    busy = false;
+    updateSummary();
+    setStatus('No se pudo completar el cobro. Tu saldo no se ha modificado.', 'error');
+    return;
+  }
   if (!result?.ok) {
     busy = false;
     if (result?.duplicate) {
       setStatus('Ese envío ya fue procesado. No se realizó un segundo cobro.', 'error');
+    } else if (result?.blocked || result?.reason === 'self-gift') {
+      setStatus('Este regalo no se puede enviar por seguridad.', 'error');
     } else {
       rechargeRequired = true;
       setStatus(`Saldo insuficiente. Faltan ${formatNumber(result?.missing || total)} JEMMOS.`, 'error');
@@ -271,14 +384,15 @@ async function confirmGift() {
   saveLocalPoints();
   updateScoreUi();
   appendChatMessage(house, gift, selectedQuantity, total);
+  window.dispatchEvent(new CustomEvent('jemmo-battle-gift-sent', { detail: { houseId: house.id, houseName: house.name, giftName: gift.name, quantity: selectedQuantity, total } }));
   const synced = await syncGiftToCloud({ operationId: result.operationId, house, gift, quantity: selectedQuantity, total });
   busy = false;
-  setStatus(synced ? 'Regalo enviado, cobro único registrado y puntos sincronizados.' : 'Regalo enviado y guardado. La sincronización continuará al recuperar conexión.', 'success');
+  setStatus(synced ? 'Regalo enviado. El marcador y el monedero ya están actualizados.' : 'Regalo enviado y guardado. Se sincronizará al recuperar conexión.', 'success');
   updateSummary();
   setTimeout(() => {
     closeSheet();
     resetSelection();
-  }, 1150);
+  }, 1250);
 }
 
 async function subscribeScores() {
@@ -297,19 +411,39 @@ async function subscribeScores() {
 }
 
 function bind() {
-  $('#battleGiftOpen')?.addEventListener('click', openSheet);
-  document.addEventListener('click', event => {
-    const house = event.target.closest('[data-battle-house-choice]');
-    if (house) { selectHouse(house.dataset.battleHouseChoice, house); return; }
-    const gift = event.target.closest('[data-battle-gift-choice]');
-    if (gift) { selectGift(gift.dataset.battleGiftChoice, gift); return; }
-    const quantity = event.target.closest('[data-battle-qty]');
-    if (quantity) selectQuantity(Number(quantity.dataset.battleQty) || 1, quantity);
-  });
-  $('#battleGiftClose')?.addEventListener('click', closeSheet);
-  $('#battleGiftBackdrop')?.addEventListener('click', closeSheet);
+  $('#battleGiftOpen')?.addEventListener('click', () => openSheet());
+  $$('[data-battle-house-choice]').forEach(button => button.addEventListener('click', () => selectHouse(button.dataset.battleHouseChoice, button)));
+  $$('[data-battle-gift-choice]').forEach(button => button.addEventListener('click', () => selectGift(button.dataset.battleGiftChoice, button)));
+  $$('[data-battle-qty]').forEach(button => button.addEventListener('click', () => selectQuantity(Number(button.dataset.battleQty) || 1, button)));
+  $('#battleGiftClose')?.addEventListener('click', () => closeSheet());
+  $('#battleGiftBackdrop')?.addEventListener('click', () => closeSheet());
   $('#battleGiftConfirm')?.addEventListener('click', confirmGift);
-  window.addEventListener('keydown', event => { if (event.key === 'Escape') closeSheet(); });
+
+  $$('[data-battle-house]').forEach(card => {
+    card.setAttribute('role', 'button');
+    card.setAttribute('tabindex', '0');
+    card.setAttribute('aria-label', `Enviar regalo a ${houseById(card.dataset.battleHouse)?.name || 'esta Casa'}`);
+    const openFromCard = () => openSheet(card.dataset.battleHouse);
+    card.addEventListener('click', openFromCard);
+    card.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openFromCard();
+      }
+    });
+  });
+
+  window.addEventListener('keydown', event => { if (event.key === 'Escape' && sheetIsOpen()) closeSheet(); });
+  window.addEventListener('popstate', event => {
+    if (!sheetIsOpen()) return;
+    closingFromHistory = true;
+    hideSheet();
+    closingFromHistory = false;
+    event.stopImmediatePropagation();
+  }, true);
+  window.addEventListener('pagehide', () => {
+    if (sheetIsOpen()) hideSheet();
+  });
 }
 
 function boot() {
@@ -317,6 +451,7 @@ function boot() {
   buildSheet();
   bind();
   updateScoreUi();
+  updateSummary();
   subscribeScores();
 }
 

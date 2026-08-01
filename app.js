@@ -41,8 +41,27 @@
 
  renderDefault();
 
- // PRUEBA 58 · El chat temporal de Batalla Oficial se gestiona en jemmo-battle-live.js.
+ // PRUEBA 59 · El chat temporal de Batalla Oficial se gestiona en jemmo-battle-live.js.
  // No se guarda en localStorage: al salir de Inicio, la conversación local se reinicia.
+
+ // PRUEBA 59 · En Inicio, el botón Atrás cierra primero las capas abiertas y no expulsa al usuario de la PWA.
+ const installHomeBackGuard=()=>{
+  const file=(location.pathname.split('/').pop()||'inicio.html').toLowerCase();
+  if(file!=='inicio.html'||window.__jemmoHomeBackGuard)return;
+  window.__jemmoHomeBackGuard=true;
+  const base={...(history.state||{}),jemmoHomeBase:true};
+  history.replaceState(base,'',location.href);
+  history.pushState({...base,jemmoHomeGuard:true},'',location.href);
+  addEventListener('popstate',()=>{
+   const giftOpen=qs('#battleGiftSheet')?.classList.contains('open');
+   const walletOpen=qs('#jw-sheet')&&!qs('#jw-sheet').hidden;
+   if(giftOpen||walletOpen)return;
+   if(menu?.classList.contains('open'))closeMenu();
+   history.pushState({...base,jemmoHomeGuard:true},'',location.href);
+   toast('Ya estás en Inicio');
+  });
+ };
+ installHomeBackGuard();
 
  const nav=qs('.bottom-nav');
  const currentTab=()=>{const file=(location.pathname.split('/').pop()||'inicio.html').toLowerCase();return ({'inicio.html':'inicio','live.html':'live','salas.html':'salas','mensajes.html':'mensajes','yo.html':'yo','casa-demo.html':'inicio','jemmo-universo.html':'yo'})[file]||nav?.dataset.current||'inicio'};

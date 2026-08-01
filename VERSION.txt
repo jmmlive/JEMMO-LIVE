@@ -1,40 +1,15 @@
-JEMMO LIVE V1 · INICIO VIVO: BATALLA DINÁMICA, CHAT TEMPORAL Y CHICHARRO CORREGIDO · PRUEBA 58
+JEMMO LIVE V1 · REGALOS DE BATALLA FUNCIONALES Y BOTÓN ATRÁS SEGURO · PRUEBA 59
+
 Fecha: 01/08/2026
-Base exacta: JEMMO-LIVE-main-PRUEBA-57-COMPLETA.zip
-SHA-256 base: f8f37911f938cc42186eec8ceedacd58e5984a996e4ac87975597c6ebba59f3e
+Base: JEMMO-LIVE-main-PRUEBA-58-COMPLETA.zip
+SHA-256 base: 39c7fae6969ff51be888786fcf46a8f5a86752f4037b123efe43e22cd5312392
 
-INCIDENCIAS CONFIRMADAS
-- El panel BATALLA OFICIAL parecía una imagen fija: el reloj no avanzaba y apenas había señales visuales de actividad.
-- El chat guardaba los mensajes escritos en localStorage mediante la clave jemmo_battle_chat_v062; al volver a Inicio reaparecían conversaciones antiguas.
-- El chicharro del encabezado del chat estaba recortado con transformaciones CSS y en el móvil se veía principalmente una aleta, no la mascota completa.
-
-RESULTADO PRUEBA 58
-- Cuenta atrás funcional y visible, actualizada cada segundo.
-- Marcador y barra de progreso reaccionan visualmente cuando cambian los puntos por regalos.
-- Indicador EN VIVO, brillo del VS, aros, fondo dinámico, destellos, actividad reciente y partículas ligeras.
-- Contador de espectadores con variación visual local mientras la batalla está abierta.
-- Conversación pública ambiental que recibe mensajes de muestra durante la visita.
-- Mensajes del usuario únicamente en memoria: no se guardan en localStorage.
-- Al salir de Inicio se limpia la conversación local; al volver se reconstruye una conversación pública inicial y se puede escribir de nuevo.
-- Se elimina automáticamente la antigua clave local jemmo_battle_chat_v062.
-- Nuevo recurso jemmo-fish-chat.webp, 512 x 512 px, que muestra correctamente el chicharro completo y su rostro.
-- El avatar del chicharro incorpora aro luminoso, movimiento suave y barrido de brillo.
-- Se mantiene el sistema de regalos existente y su actualización de puntuaciones.
-- Se respeta prefers-reduced-motion.
-
-CACHÉ PWA
-- Caché: jemmo-live-v1-home-battle-58-20260801
-- Registro: pwa-home-battle-58
-- Las referencias de pwa-register pasan a ?v=58.
-
-ESTADO
-- Implementación validada estáticamente y mediante render móvil de 390 px.
-- Pendiente la prueba final en el móvil después de publicar el parche en GitHub Pages.
-
-AUDITORÍA FINAL
-- 216 archivos.
-- 52 JavaScript con sintaxis válida.
-- 19 HTML revisados.
-- 283 referencias locales comprobadas.
-- 0 referencias rotas.
-- 0 IDs duplicados.
+RESULTADO PRUEBA 59
+- Regalos de Batalla Oficial seleccionables y enviables.
+- Mensajes claros cuando falta Casa o regalo.
+- Coste visible solo con selección completa.
+- Cobro único, saldo, chat y marcador actualizados.
+- Atrás cierra el modal de regalos.
+- Atrás en Inicio no expulsa de la PWA.
+- Caché: jemmo-live-v1-battle-gifts-back-59-20260801
+- Registro: pwa-battle-gifts-back-59

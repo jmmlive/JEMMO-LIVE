@@ -2,7 +2,7 @@
   'use strict';
   if(window.__JEMMO_PWA_REGISTER_58__)return;
   window.__JEMMO_PWA_REGISTER_58__=true;
-  const RELEASE='pwa-home-battle-58';
+  const RELEASE='pwa-battle-gifts-back-59';
   let installPrompt=null;
   const isStandalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone===true;
   const storage={get:k=>{try{return localStorage.getItem(k)}catch{return null}},set:(k,v)=>{try{localStorage.setItem(k,v);return true}catch{try{sessionStorage.setItem(k,v);return true}catch{return false}}}};

@@ -1,0 +1,13 @@
+JEMMO LIVE · INSTALACIÓN PRUEBA 59
+
+Base obligatoria: PRUEBA 58.
+
+1. Descomprime el parche PRUEBA 59.
+2. Sube todos los archivos extraídos a la raíz del repositorio GitHub.
+3. Sustituye los archivos con el mismo nombre y conserva el resto.
+4. No subas el ZIP directamente.
+5. Espera a que GitHub Pages termine el despliegue.
+6. Cierra JEMMO LIVE completamente y vuelve a abrirla.
+7. Si se mantiene una caché antigua, abre una vez desde el navegador y recarga.
+
+Prueba obligatoria: envío de regalo y botón Atrás en el modal y en Inicio.
