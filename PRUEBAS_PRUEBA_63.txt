@@ -1,0 +1,32 @@
+JEMMO LIVE V1 · VALIDACIÓN PRUEBA 63
+Fecha: 01/08/2026
+
+BASE
+- JEMMO-LIVE-main-PRUEBA-61-COMPLETA.zip
+- SHA-256: f0c733fc00c2ad0d8e7ef1133f1e9e752d8537c27fad7def20b351a201a2bb1b
+
+VALIDACIÓN DE CÓDIGO
+- Sintaxis JavaScript comprobada con Node.js.
+- CSS analizado estructuralmente.
+- No se utiliza jemmo-fish-nav.webp ni ninguna foto dentro de la pecera.
+- No quedan textos "Modo de pruebas" ni "Economía todavía en modo de pruebas" en el módulo.
+
+VALIDACIÓN VISUAL
+- 320×700: sin desbordamiento horizontal; mascota completa y etiquetas legibles.
+- 390×844: sin desbordamiento horizontal; escena, HUD y controles ajustados.
+- 430×932: sin desbordamiento horizontal; escala correcta y pez dentro de la zona segura.
+
+VALIDACIÓN FUNCIONAL
+- Apertura y cierre del panel.
+- Movimiento automático y seguimiento táctil.
+- Alimentar gratis: +4 XP y bloqueo temporal de 6 horas.
+- Limpiar: +6 XP y bloqueo temporal de 12 horas.
+- Jugar: +5 XP y bloqueo temporal de 2 horas.
+- Bocado neón: confirmación, descuento mediante JemmoWallet y +20 XP.
+- Bloqueo de doble toque conservado.
+- Sin errores JavaScript durante las interacciones probadas.
+
+ACCESIBILIDAD Y RENDIMIENTO
+- Etiquetas ARIA en panel, botones y mascota.
+- Movimiento reducido respetado mediante prefers-reduced-motion.
+- Movimiento principal realizado con transform y opacity.

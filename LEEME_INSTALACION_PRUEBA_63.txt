@@ -1,0 +1,17 @@
+JEMMO LIVE · INSTALACIÓN PRUEBA 63
+
+IMPORTANTE
+- PRUEBA 62 está anulada y no debe utilizarse.
+- Esta entrega se construyó directamente sobre PRUEBA 61.
+
+ACTUALIZACIÓN DESDE EL MÓVIL
+1. Descomprime el ZIP del parche.
+2. Sube sus archivos extraídos a la raíz del repositorio JEMMO-LIVE.
+3. Sustituye los archivos que tengan el mismo nombre.
+4. No borres los demás archivos del repositorio.
+5. Confirma el commit.
+6. Cierra completamente la PWA y vuelve a abrirla.
+7. Si Chrome conserva la versión anterior, elimina los datos del sitio o reinstala la PWA una sola vez.
+
+NO SUBAS EL ZIP DIRECTAMENTE A GITHUB.
+Debes subir los archivos que contiene.

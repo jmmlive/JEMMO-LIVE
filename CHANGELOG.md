@@ -1,3 +1,16 @@
+# PRUEBA 63 · 01/08/2026
+
+- Mascota de Casa reconstruida completamente con SVG, CSS y JavaScript; no utiliza fotografías ni imágenes generadas.
+- Chicharro violeta completo, reconocible y expresivo, con ojo azul, detalles dorados y letra J siempre legible.
+- Pecera inmersiva panorámica con portal JEMMO, profundidad, arrecife, partículas, burbujas y plataforma integrada.
+- Movimiento limitado a una zona segura para que el pez nunca aparezca cortado.
+- Animaciones basadas principalmente en `transform` y `opacity`, con modo de movimiento reducido.
+- Estados visuales de hambre, limpieza y ánimo; reacciones diferentes al tocar, alimentar, limpiar, jugar o regalar.
+- Eliminados textos de modo de pruebas y reorganizada la interfaz para evitar truncamientos.
+- Reinicio controlado de los datos heredados de prueba y de sus bloqueos de 23 horas.
+- Nuevos tiempos de cuidado: alimentar cada 6 h, limpiar cada 12 h y jugar cada 2 h.
+- Caché PWA actualizada a PRUEBA 63.
+
 # PRUEBA 59 · 01/08/2026
 
 - Corregido el envío de regalos en Batalla Oficial.
@@ -166,13 +179,3 @@ La detección automática real de personas, menores, armas o situaciones peligro
 - Multiplicadores dinámicos y máximo de 5.000.000 por destinatario.
 - Integración en Batalla, LIVE, Salas/Audio Room, Mensajes y catálogo Universo.
 
-
-## PRUEBA 62 · Mascota oficial 3D y pecera espectacular · 01/08/2026
-- Sustituida la mascota vectorial plana por el chicharro oficial 3D de JEMMO LIVE.
-- Integrados los recursos oficiales `jemmo-fish-nav.webp` y `jemmo-fish-chat.webp` sin generar una imagen nueva.
-- Añadidos portal circular, halo neón, plataforma holográfica, flotación y partículas reactivas.
-- Reacciones diferenciadas para tocar, alimentar, limpiar, jugar y enviar alimentos con JEMMOS.
-- Movimiento limitado a una zona segura para evitar recortes en móviles verticales.
-- Estados visuales para hambre, suciedad y ánimo bajo.
-- Evolución visual reforzada por niveles sin alterar XP, precios, Firestore, IndexedDB ni economía.
-- Caché PWA actualizada a PRUEBA 62 y `jemmo-fish-nav.webp` añadido a la precarga offline.
