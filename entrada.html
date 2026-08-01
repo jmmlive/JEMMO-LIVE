@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#050007">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="color-scheme" content="dark">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <link rel="preload" as="image" href="jemmo-entrada-oficial.webp" type="image/webp">
+  <link rel="prefetch" href="inicio.html">
+  <link rel="stylesheet" href="entrada.css?v=56">
+  <title>JEMMO LIVE · Entrando</title>
+</head>
+<body>
+  <main class="entry-app" id="entryApp" aria-label="Entrada animada de JEMMO LIVE">
+    <img class="entry-backdrop" src="jemmo-entrada-oficial.webp" alt="" aria-hidden="true">
+    <div class="entry-aurora" aria-hidden="true"></div>
+    <div class="entry-particles" id="entryParticles" aria-hidden="true"></div>
+
+    <figure class="entry-poster-wrap">
+      <span class="entry-ring" aria-hidden="true"></span>
+      <img class="entry-poster" id="entryPoster" src="jemmo-entrada-oficial.webp" alt="Chili, el androide oficial, junto a la mascota violeta de JEMMO LIVE">
+    </figure>
+
+    <header class="entry-brand" aria-hidden="true">
+      <strong>JEMMO</strong><b>LIVE</b>
+      <small>CREATE · SHARE · BELONG</small>
+    </header>
+
+    <section class="entry-loader" aria-live="polite" aria-atomic="true">
+      <p id="entryStatus">Preparando tu Inicio</p>
+      <div class="entry-progress" role="progressbar" aria-label="Cargando JEMMO LIVE" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <i id="entryProgressFill"></i>
+      </div>
+      <strong>CARGANDO<span class="entry-dots" aria-hidden="true">…</span></strong>
+    </section>
+
+    <noscript><p class="entry-noscript">Activa JavaScript para abrir JEMMO LIVE.</p></noscript>
+  </main>
+  <script src="entrada.js?v=56" defer></script>
+</body>
+</html>

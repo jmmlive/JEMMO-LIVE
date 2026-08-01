@@ -1,12 +1,16 @@
-JEMMO LIVE V1 · SEGURIDAD, AUTORIDAD DE DATOS Y ELIMINACIÓN DE CUENTA · PRUEBA 55 FASE 2
-Fecha: 30/07/2026
-Base exacta: JEMMO-LIVE-main-PRUEBA-55-FASE-1-COMPLETA.zip
-SHA-256 base: 642e4eba02f3f2732099e82f980120724ba6e81e414abc76059a8d8cb8fb9f73
+JEMMO LIVE V1 · PORTADA VERTICAL ANIMADA POSTERIOR AL ACCESO · PRUEBA 56
+Fecha: 01/08/2026
+Base exacta: JEMMO-LIVE-main-PRUEBA-55-FASE-2-COMPLETA.zip
+SHA-256 base: 7b59925138b46186e1810cc4817a17acbe746c41d7598a40eed656e0bc9e36ad
+
+RESULTADO
+- Tras una autenticación nueva por correo, registro o Google, se abre entrada.html antes de Inicio.
+- La portada permanece aproximadamente 4,6 segundos y usa movimiento suave, brillo neón, partículas, pulso y barra de carga.
+- La imagen principal se muestra completa con object-fit: contain sobre un fondo desenfocado, evitando recortar elementos importantes.
+- Una sesión ya abierta entra directamente en Inicio; la animación no se repite en cada apertura de la PWA.
+- Los retornos protegidos a Configuración o eliminación de cuenta conservan su destino directo.
+- La portada no depende de vídeo, audio, Firebase ni conexión una vez almacenada por la PWA.
 
 ESTADO
-- Reglas completas de Firestore y Storage preparadas, no desplegadas desde este entorno.
-- Custom Claims preparadas como autoridad de propietario/administrador.
-- Datos privados separados y migración administrativa incluida.
-- Eliminación de cuenta dentro de la app, página web externa y Cloud Function incluidas.
-- App Check preparado, desactivado hasta configurar reCAPTCHA Enterprise y observar métricas.
-- Economía real y SFU continúan pendientes.
+- Implementación validada estáticamente y preparada para prueba móvil real.
+- Seguridad y economía mantienen el estado de PRUEBA 55 · FASE 2.

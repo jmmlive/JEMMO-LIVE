@@ -1,0 +1,19 @@
+JEMMO LIVE · PRUEBA 56 · COMPROBACIÓN MÓVIL
+
+1. Publicar el parche incremental y esperar a que GitHub Pages termine.
+2. Cerrar completamente JEMMO LIVE y retirarla de aplicaciones recientes.
+3. Si la sesión está abierta, cerrar sesión una sola vez para probar el acceso nuevo.
+4. Iniciar sesión con correo y contraseña.
+5. Confirmar que aparece la portada vertical animada antes de Inicio.
+6. Confirmar que dura aproximadamente 4–5 segundos, sin pantalla negra ni cambio horizontal.
+7. Revisar que el androide, la mascota y el contenido principal se vean completos.
+8. Comprobar el zoom suave, el brillo, las partículas, el aro y la barra CARGANDO.
+9. Cerrar la aplicación sin cerrar sesión y volver a abrirla.
+10. Confirmar que ahora entra directamente a Inicio y no repite la portada.
+11. Repetir con Google cuando se quiera validar ese proveedor.
+12. Probar sin conexión después de haber abierto la versión una vez: la portada debe estar almacenada por la PWA.
+
+RESULTADO ESPERADO
+- Portada solo después de una autenticación nueva.
+- Inicio directo en aperturas posteriores con sesión conservada.
+- Ningún cambio en LIVE, Salas, Casas, Perfil, Mensajes, Chili, seguridad o economía.

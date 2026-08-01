@@ -2,10 +2,10 @@
   "id": "./",
   "name": "JEMMO LIVE",
   "short_name": "JEMMO",
-  "description": "JEMMO LIVE: transmisiones en directo, Salas, Casas, mensajes y comunidad con protección de cuenta.",
+  "description": "JEMMO LIVE: transmisiones en directo, Salas, Casas, mensajes y comunidad con entrada animada protegida.",
   "lang": "es-ES",
   "dir": "ltr",
-  "start_url": "./index.html?release=55-f2",
+  "start_url": "./index.html?release=56",
   "scope": "./",
   "display": "standalone",
   "display_override": [

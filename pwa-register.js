@@ -1,8 +1,8 @@
 (()=>{
   'use strict';
-  if(window.__JEMMO_PWA_REGISTER_55__)return;
-  window.__JEMMO_PWA_REGISTER_55__=true;
-  const RELEASE='pwa-production-audit-phase-1-55';
+  if(window.__JEMMO_PWA_REGISTER_56__)return;
+  window.__JEMMO_PWA_REGISTER_56__=true;
+  const RELEASE='pwa-entry-animation-56';
   let installPrompt=null;
   const isStandalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone===true;
   const storage={get:k=>{try{return localStorage.getItem(k)}catch{return null}},set:(k,v)=>{try{localStorage.setItem(k,v);return true}catch{try{sessionStorage.setItem(k,v);return true}catch{return false}}}};
