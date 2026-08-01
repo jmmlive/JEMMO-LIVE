@@ -1,0 +1,21 @@
+JEMMO LIVE · INSTALACIÓN PRUEBA 57
+
+ENTREGA RECOMENDADA
+Usar el ZIP incremental para GitHub móvil. Contiene menos de 100 archivos.
+
+PASOS
+1. Descomprimir el ZIP incremental en el móvil.
+2. Abrir la carpeta extraída.
+3. Seleccionar todos los archivos que contiene.
+4. Subirlos a la raíz del repositorio JEMMO-LIVE.
+5. Sustituir los archivos con el mismo nombre y conservar todos los demás.
+6. Hacer commit y esperar a que GitHub Pages publique.
+7. Cerrar completamente la PWA y abrirla de nuevo.
+8. Para probar la portada, cerrar sesión una sola vez y volver a iniciar sesión.
+
+IMPORTANTE
+- No subir el ZIP directamente al repositorio.
+- No borrar archivos antiguos que no estén dentro del parche.
+- El ZIP completo se conserva como respaldo.
+- La portada solo se muestra después de una autenticación nueva.
+- Si el móvil conserva la imagen anterior, borrar la caché del sitio o reinstalar la PWA una sola vez.

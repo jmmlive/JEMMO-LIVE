@@ -1,0 +1,20 @@
+JEMMO LIVE · PRUEBA 57 · COMPROBACIÓN MÓVIL
+
+1. Publicar el parche incremental y esperar a que GitHub Pages finalice.
+2. Cerrar completamente JEMMO LIVE y retirarla de aplicaciones recientes.
+3. Abrir de nuevo para que la PWA reciba la caché PRUEBA 57.
+4. Cerrar sesión una sola vez para probar una autenticación nueva.
+5. Iniciar sesión con correo/contraseña o Google.
+6. Confirmar que aparece la portada exacta de Chili, el chicharro y las monedas J.
+7. Confirmar que no aparece ningún robot diferente ni un segundo logotipo superpuesto.
+8. Revisar que la imagen esté completa y vertical, sin recortar JEMMO, Chili, el chicharro ni CARGANDO.
+9. Confirmar el movimiento suave, los destellos, el barrido de la barra y las J flotantes.
+10. Esperar aproximadamente 4,6 segundos y confirmar la entrada automática a Inicio.
+11. Cerrar la aplicación sin cerrar sesión y abrirla de nuevo.
+12. Confirmar que entra directamente a Inicio y no repite la portada.
+13. Si todavía aparece PRUEBA 56, cerrar la PWA, borrar la caché del sitio o reinstalarla una vez.
+
+RESULTADO ESPERADO
+- Acceso nuevo → portada Chili animada → Inicio.
+- Sesión conservada → Inicio directo.
+- Sin cambios funcionales en el resto de JEMMO LIVE.

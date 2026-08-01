@@ -1,16 +1,25 @@
-JEMMO LIVE V1 · PORTADA VERTICAL ANIMADA POSTERIOR AL ACCESO · PRUEBA 56
+JEMMO LIVE V1 · PORTADA CHILI ANIMADA ENTRE ACCESO E INICIO · PRUEBA 57
 Fecha: 01/08/2026
-Base exacta: JEMMO-LIVE-main-PRUEBA-55-FASE-2-COMPLETA.zip
-SHA-256 base: 7b59925138b46186e1810cc4817a17acbe746c41d7598a40eed656e0bc9e36ad
+Base exacta: JEMMO-LIVE-main-PRUEBA-56-COMPLETA.zip
+SHA-256 base: c18c22a78ac0d3d0a2c6bfc1b02c544a09daa17112436540454d75ded6f3a384
 
 RESULTADO
-- Tras una autenticación nueva por correo, registro o Google, se abre entrada.html antes de Inicio.
-- La portada permanece aproximadamente 4,6 segundos y usa movimiento suave, brillo neón, partículas, pulso y barra de carga.
-- La imagen principal se muestra completa con object-fit: contain sobre un fondo desenfocado, evitando recortar elementos importantes.
-- Una sesión ya abierta entra directamente en Inicio; la animación no se repite en cada apertura de la PWA.
-- Los retornos protegidos a Configuración o eliminación de cuenta conservan su destino directo.
-- La portada no depende de vídeo, audio, Firebase ni conexión una vez almacenada por la PWA.
+- Se sustituye la portada anterior por la imagen exacta elegida por Jesús: Chili, chicharro violeta y monedas J.
+- La portada aparece únicamente después de una autenticación nueva y antes de Inicio.
+- Duración aproximada: 4,6 segundos.
+- Movimiento: acercamiento muy suave, brillo, barrido de luz, destellos y monedas J flotantes.
+- La imagen se conserva completa en formato vertical 9:16, sin duplicar encima el logotipo ni la barra CARGANDO.
+- Una sesión ya conservada entra directamente a Inicio y no repite la portada.
+- La imagen y los archivos de entrada quedan almacenados por la PWA.
+
+IMAGEN OFICIAL
+- Archivo recibido: 1000226239.png
+- Dimensiones: 864 x 1536 px (9:16)
+- SHA-256 del archivo recibido: eaa9d9265b084f748c67d8d8a733d716325540d07e596f1d1b16d6cbbd372b88
+- Archivo integrado: jemmo-entrada-oficial.webp
+- Codificación: WebP sin pérdida
+- SHA-256 integrado: 29bc345b5952ef33b54bf4afd5e62e510e7e6042933cec629b2ce1a47ef99b97
 
 ESTADO
 - Implementación validada estáticamente y preparada para prueba móvil real.
-- Seguridad y economía mantienen el estado de PRUEBA 55 · FASE 2.
+- LIVE, Salas, Casas, Perfil, Mensajes, seguridad y economía mantienen el estado de PRUEBA 56.

@@ -2,10 +2,9 @@
   'use strict';
   const DURATION_MS=4600;
   const EXIT_MS=430;
-  const app=document.getElementById('entryApp');
   const poster=document.getElementById('entryPoster');
   const particles=document.getElementById('entryParticles');
-  const progress=document.querySelector('.entry-progress');
+  const progress=document.getElementById('entryProgress');
   const status=document.getElementById('entryStatus');
   let finished=false;
   let startAt=performance.now();
@@ -14,9 +13,7 @@
     try{const value=localStorage.getItem('jemmo_active_uid');if(value)return value}catch{}
     try{return sessionStorage.getItem('jemmo_active_uid')||''}catch{return''}
   };
-  const clearTransition=()=>{
-    try{sessionStorage.removeItem('jemmo_auth_transition')}catch{}
-  };
+  const clearTransition=()=>{try{sessionStorage.removeItem('jemmo_auth_transition')}catch{}};
   const routeToAccess=()=>location.replace('acceso.html?sesion=requerida');
   const routeToHome=()=>location.replace('inicio.html?entrada=1');
 
@@ -25,22 +22,23 @@
     routeToAccess();
     return;
   }
-
   clearTransition();
 
   function createParticles(){
     if(!particles||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
     const fragment=document.createDocumentFragment();
-    for(let index=0;index<24;index+=1){
-      const dot=document.createElement('i');
-      dot.className='entry-particle';
-      dot.style.setProperty('--x',`${4+Math.random()*92}%`);
-      dot.style.setProperty('--y',`${18+Math.random()*72}%`);
-      dot.style.setProperty('--s',`${2+Math.random()*5}px`);
-      dot.style.setProperty('--d',`${2.2+Math.random()*2.7}s`);
-      dot.style.setProperty('--delay',`${Math.random()*2.4}s`);
-      dot.style.setProperty('--dx',`${-34+Math.random()*68}px`);
-      fragment.appendChild(dot);
+    for(let index=0;index<20;index+=1){
+      const isJ=index%3===0;
+      const item=document.createElement(isJ?'b':'i');
+      item.className=isJ?'entry-j':'entry-particle';
+      if(isJ)item.textContent='J';
+      item.style.setProperty('--x',`${3+Math.random()*94}%`);
+      item.style.setProperty('--y',`${isJ?32+Math.random()*58:15+Math.random()*74}%`);
+      item.style.setProperty('--s',`${isJ?18+Math.random()*14:2+Math.random()*5}px`);
+      item.style.setProperty('--d',`${isJ?2.9+Math.random()*2.2:2.2+Math.random()*2.7}s`);
+      item.style.setProperty('--delay',`${Math.random()*2.2}s`);
+      item.style.setProperty('--dx',`${-42+Math.random()*84}px`);
+      fragment.appendChild(item);
     }
     particles.appendChild(fragment);
   }
@@ -74,10 +72,10 @@
     : new Promise(resolve=>{
         poster?.addEventListener('load',resolve,{once:true});
         poster?.addEventListener('error',resolve,{once:true});
-        window.setTimeout(resolve,900);
+        window.setTimeout(resolve,1000);
       });
 
   imageReady.then(()=>requestAnimationFrame(begin));
-  window.setTimeout(()=>{if(!finished&&performance.now()-startAt>DURATION_MS+1400)finish()},DURATION_MS+1600);
+  window.setTimeout(()=>{if(!finished&&performance.now()-startAt>DURATION_MS+1400)finish()},DURATION_MS+1700);
   window.addEventListener('pageshow',event=>{if(event.persisted)routeToHome()});
 })();

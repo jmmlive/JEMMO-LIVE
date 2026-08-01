@@ -5,7 +5,7 @@
   "description": "JEMMO LIVE: transmisiones en directo, Salas, Casas, mensajes y comunidad con entrada animada protegida.",
   "lang": "es-ES",
   "dir": "ltr",
-  "start_url": "./index.html?release=56",
+  "start_url": "./index.html?release=57",
   "scope": "./",
   "display": "standalone",
   "display_override": [
