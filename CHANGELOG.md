@@ -166,3 +166,13 @@ La detección automática real de personas, menores, armas o situaciones peligro
 - Multiplicadores dinámicos y máximo de 5.000.000 por destinatario.
 - Integración en Batalla, LIVE, Salas/Audio Room, Mensajes y catálogo Universo.
 
+
+## PRUEBA 62 · Mascota oficial 3D y pecera espectacular · 01/08/2026
+- Sustituida la mascota vectorial plana por el chicharro oficial 3D de JEMMO LIVE.
+- Integrados los recursos oficiales `jemmo-fish-nav.webp` y `jemmo-fish-chat.webp` sin generar una imagen nueva.
+- Añadidos portal circular, halo neón, plataforma holográfica, flotación y partículas reactivas.
+- Reacciones diferenciadas para tocar, alimentar, limpiar, jugar y enviar alimentos con JEMMOS.
+- Movimiento limitado a una zona segura para evitar recortes en móviles verticales.
+- Estados visuales para hambre, suciedad y ánimo bajo.
+- Evolución visual reforzada por niveles sin alterar XP, precios, Firestore, IndexedDB ni economía.
+- Caché PWA actualizada a PRUEBA 62 y `jemmo-fish-nav.webp` añadido a la precarga offline.

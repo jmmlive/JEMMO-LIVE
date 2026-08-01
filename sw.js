@@ -1,8 +1,8 @@
-const CACHE='jemmo-live-v1-universal-gifts-61-20260801';
+const CACHE='jemmo-live-v1-mascota-oficial-62-20260801';
 const CORE=[
   './','./index.html','./acceso.html','./entrada.html','./offline.html','./inicio.html','./yo.html','./live.html','./perfil-publico.html','./directos.html','./salas.html','./configuracion.html','./chili-ia.html','./eliminar-cuenta.html',
   './pwa-register.js','./jemmo-app-check-config.js','./jemmo-app-check.js','./jemmo-account-deletion.js','./jemmo-live-presence.js','./jemmo-live-rtc-config.js','./jemmo-live-webrtc.js','./jemmo-live-room-sync.js','./jemmo-wallet.js','./jemmo-official-policies.js','./jemmo-settings.js','./jemmo-chili.js','./jemmo-chili-knowledge.js',
-  './app.css','./app.js','./inicio.css','./jemmo-battle-live.js','./jemmo-gift-catalog.js','./jemmo-battle-gifts.js','./jemmo-fish-chat.webp','./entrada.css','./entrada.js','./jemmo-entrada-oficial.webp','./configuracion.css','./chili-ia.css','./jemmo-house-finance.js','./jemmo-house-activity.js','./jemmo-host-task-rewards.js',
+  './app.css','./app.js','./inicio.css','./jemmo-battle-live.js','./jemmo-gift-catalog.js','./jemmo-battle-gifts.js','./jemmo-fish-chat.webp','./jemmo-fish-nav.webp','./entrada.css','./entrada.js','./jemmo-entrada-oficial.webp','./configuracion.css','./chili-ia.css','./jemmo-house-finance.js','./jemmo-house-activity.js','./jemmo-host-task-rewards.js',
   './jemmo-messages-realtime.js','./jemmo-house-operations.js','./jemmo-room-realtime.js','./jemmo-house-room-ui.js',
   './jemmo-house-pet.js','./jemmo-house-pet.css','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-maskable-512.png'
 ];

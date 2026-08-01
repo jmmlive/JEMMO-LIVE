@@ -1,10 +1,10 @@
-/* JEMMO LIVE V1 · PECERA FUTURISTA CON ACCESO COMPACTO SUPERIOR · PRUEBA 42 */
+/* JEMMO LIVE V1 · MASCOTA OFICIAL 3D, HALO NEÓN Y REACCIONES · PRUEBA 62 */
 (()=>{
   'use strict';
-  if(window.__JEMMO_HOUSE_PET_42__)return;
-  window.__JEMMO_HOUSE_PET_42__=true;
+  if(window.__JEMMO_HOUSE_PET_62__)return;
+  window.__JEMMO_HOUSE_PET_62__=true;
 
-  const VERSION='42.0.0-test';
+  const VERSION='62.0.0-test';
   const DB_NAME='jemmo-house-pet-v1';
   const DB_STORE='states';
   const DAY=24*60*60*1000;
@@ -243,42 +243,15 @@
   }
 
   function fishSvg(compact=false){
-    const label=compact?'':'aria-label="Chicharro oficial JEMMO LIVE" role="img"';
-    return `<svg ${label} class="jhp-fish" viewBox="0 0 620 330" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="jhpBody" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e66cff"/><stop offset=".36" stop-color="#a328ff"/><stop offset=".72" stop-color="#6a1fe8"/><stop offset="1" stop-color="#4311a4"/></linearGradient>
-        <radialGradient id="jhpBodyHi" cx="35%" cy="25%" r="70%"><stop offset="0" stop-color="#fff" stop-opacity=".42"/><stop offset=".32" stop-color="#ff9cff" stop-opacity=".18"/><stop offset="1" stop-color="#32106d" stop-opacity="0"/></radialGradient>
-        <linearGradient id="jhpGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3a2"/><stop offset=".3" stop-color="#ffd65a"/><stop offset=".7" stop-color="#ef9f26"/><stop offset="1" stop-color="#9b4a12"/></linearGradient>
-        <radialGradient id="jhpEye" cx="38%" cy="32%" r="65%"><stop offset="0" stop-color="#fff"/><stop offset=".23" stop-color="#a9fbff"/><stop offset=".5" stop-color="#1fe5ff"/><stop offset=".78" stop-color="#1575e8"/><stop offset="1" stop-color="#062361"/></radialGradient>
-        <filter id="jhpGlow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        <filter id="jhpShadow" x="-30%" y="-40%" width="170%" height="190%"><feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#080010" flood-opacity=".65"/></filter>
-      </defs>
-      <g filter="url(#jhpShadow)">
-        <g class="jhp-tail">
-          <path d="M473 155 C535 91 590 92 603 76 C592 126 574 157 548 176 C574 197 594 229 604 277 C578 256 527 253 472 198 Z" fill="url(#jhpBody)" stroke="url(#jhpGold)" stroke-width="9" stroke-linejoin="round"/>
-          <path d="M489 159 C531 129 556 120 581 109" fill="none" stroke="#ff69d2" stroke-width="8" stroke-linecap="round" opacity=".72"/>
-          <path d="M491 196 C532 218 558 228 581 244" fill="none" stroke="#ff69d2" stroke-width="8" stroke-linecap="round" opacity=".58"/>
-        </g>
-        <path d="M147 83 C239 30 411 53 492 153 C510 175 510 194 490 211 C396 291 235 286 139 233 C88 205 68 159 88 124 C101 102 120 91 147 83 Z" fill="url(#jhpBody)" stroke="#6d0fc4" stroke-width="7"/>
-        <path d="M143 88 C237 44 397 65 473 154 C381 122 254 116 135 147 C113 153 97 146 91 133 C100 108 117 96 143 88 Z" fill="url(#jhpBodyHi)"/>
-        <path d="M154 88 C175 48 202 27 230 18 L255 79" fill="url(#jhpGold)" stroke="#ffdc70" stroke-width="5" stroke-linejoin="round"/>
-        <path class="jhp-fin" d="M305 228 C350 258 371 294 349 315 C316 292 287 267 270 234 Z" fill="url(#jhpGold)" stroke="#ffd864" stroke-width="5"/>
-        <path d="M429 220 C458 241 466 265 452 284 C427 265 411 244 402 222 Z" fill="url(#jhpGold)" stroke="#ffd864" stroke-width="5"/>
-        <path d="M115 189 C88 197 63 190 40 166 C69 165 83 149 95 126" fill="#db5bdf" stroke="#f4a1ff" stroke-width="5" stroke-linecap="round"/>
-        <path d="M119 220 C94 238 68 235 44 219 C78 211 90 196 102 174" fill="#ff61c5" opacity=".9"/>
-        <path d="M256 111 C275 130 283 164 277 208" fill="none" stroke="url(#jhpGold)" stroke-width="13" stroke-linecap="round"/>
-        <path d="M277 110 C292 130 300 157 296 184" fill="none" stroke="#ffed9c" stroke-width="4" stroke-linecap="round" opacity=".8"/>
-        <ellipse cx="151" cy="131" rx="39" ry="42" fill="#19063e" stroke="#ffdc69" stroke-width="6"/>
-        <circle class="jhp-eye-glow" cx="151" cy="130" r="30" fill="url(#jhpEye)" filter="url(#jhpGlow)"/>
-        <circle cx="141" cy="119" r="8" fill="#fff" opacity=".92"/>
-        <path d="M87 167 C107 178 125 177 139 165" fill="none" stroke="#330846" stroke-width="8" stroke-linecap="round"/>
-        <path d="M91 174 C108 181 122 180 134 173" fill="none" stroke="#ff77cc" stroke-width="4" stroke-linecap="round"/>
-        <path d="M357 103 C403 83 441 86 467 92" fill="none" stroke="url(#jhpGold)" stroke-width="12" stroke-linecap="round"/>
-        <path d="M358 111 C398 99 430 99 456 102" fill="none" stroke="#ff66c9" stroke-width="5" stroke-linecap="round"/>
-        <text x="327" y="208" font-family="Arial Black,Arial,sans-serif" font-size="106" font-weight="900" fill="url(#jhpGold)" stroke="#7c3f0f" stroke-width="4" paint-order="stroke">J</text>
-        <path d="M185 242 C249 268 360 268 430 235" fill="none" stroke="#ff75cf" stroke-width="5" stroke-linecap="round" opacity=".34"/>
-      </g>
-    </svg>`;
+    const label=compact?'aria-hidden="true"':'aria-label="Chicharro oficial 3D de JEMMO LIVE" role="img"';
+    const source=compact?'jemmo-fish-chat.webp':'jemmo-fish-nav.webp';
+    const particles=compact?'':`<span class="jhp-mascot-particles" aria-hidden="true">${Array.from({length:12},(_,index)=>`<i style="--particle-angle:${index*30}deg;--particle-delay:${(index%4)*.035}s"></i>`).join('')}</span>`;
+    return `<span ${label} class="jhp-mascot-art${compact?' is-compact':''}">
+      ${compact?'':'<span class="jhp-mascot-halo" aria-hidden="true"><i></i><i></i><i></i></span>'}
+      <img class="jhp-mascot-image" src="${source}" alt="" draggable="false" loading="eager" decoding="async">
+      ${compact?'':'<span class="jhp-mascot-shine" aria-hidden="true"></span>'}
+      ${particles}
+    </span>`;
   }
 
   function createUi(){
@@ -297,7 +270,7 @@
     overlay.innerHTML=`<div class="jhp-shell" id="jhp-shell">
       <header class="jhp-header">
         <div class="jhp-brand-icon">${fishSvg(true)}</div>
-        <div class="jhp-heading"><span class="jhp-eyebrow">MASCOTA OFICIAL JEMMO LIVE</span><h2 class="jhp-title">PECERA · <span id="jhp-house-name">${safeText(state.houseName)}</span></h2><p class="jhp-subtitle">Chicharro violeta neón · Modo de pruebas</p></div>
+        <div class="jhp-heading"><span class="jhp-eyebrow">MASCOTA OFICIAL JEMMO LIVE</span><h2 class="jhp-title">PECERA · <span id="jhp-house-name">${safeText(state.houseName)}</span></h2><p class="jhp-subtitle">Chicharro violeta neón · Evolución interactiva</p></div>
         <button class="jhp-close" id="jhp-close" type="button" aria-label="Cerrar pecera">×</button>
       </header>
       <div class="jhp-summary">
@@ -310,7 +283,8 @@
         <div class="jhp-plant left"></div><div class="jhp-plant right"></div>
         <div class="jhp-coral"><i></i><i></i><i></i><i></i></div>
         <div class="jhp-castle"><span></span><span></span><span></span></div><div class="jhp-shrine"></div>
-        <div class="jhp-fish-wrap" id="jhp-fish-wrap">${fishSvg(false)}</div>
+        <div class="jhp-mascot-platform" aria-hidden="true"><i></i><b>J</b></div>
+        <div class="jhp-fish-wrap" id="jhp-fish-wrap" data-reaction="idle">${fishSvg(false)}</div>
         <div class="jhp-caption" id="jhp-caption">Tu chicharro está explorando la pecera.</div>
       </div>
       <section class="jhp-progress-panel">
@@ -357,7 +331,7 @@
     aquarium?.addEventListener('pointermove',event=>{if(dragging)moveFishToEvent(event,true)});
     aquarium?.addEventListener('pointerup',event=>{dragging=false;aquarium.releasePointerCapture?.(event.pointerId);scheduleAutoMove(2200)});
     aquarium?.addEventListener('pointercancel',()=>{dragging=false;scheduleAutoMove(2200)});
-    fish?.addEventListener('pointerdown',event=>{event.stopPropagation();reactFish();state.mood=clamp(state.mood+.4);renderNeeds();showToast('El chicharro te ha reconocido.');scheduleAutoMove(1600)});
+    fish?.addEventListener('pointerdown',event=>{event.stopPropagation();reactFish('hello');state.mood=clamp(state.mood+.4);renderNeeds();showToast('El chicharro te ha reconocido.');scheduleAutoMove(1600)});
     window.addEventListener('keydown',event=>{if(event.key==='Escape'&&!overlay?.hidden){if(!el('jhp-confirm-backdrop')?.hidden)closeConfirm();else close()}});
     window.addEventListener('jemmo-wallet-change',renderWallet);
   }
@@ -380,16 +354,23 @@
   function showToast(message){
     const node=el('jhp-toast');if(!node)return;node.textContent=message;node.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>node.classList.remove('show'),2600);
   }
-  function reactFish(){const fish=el('jhp-fish-wrap');if(!fish)return;fish.classList.remove('jhp-react');void fish.offsetWidth;fish.classList.add('jhp-react');setTimeout(()=>fish.classList.remove('jhp-react'),700)}
+  function reactFish(kind='hello'){
+    const fish=el('jhp-fish-wrap');if(!fish)return;
+    const safeKind=['hello','feed','clean','play','gift'].includes(kind)?kind:'hello';
+    fish.dataset.reaction=safeKind;
+    fish.classList.remove('jhp-react');void fish.offsetWidth;fish.classList.add('jhp-react');
+    setTimeout(()=>{fish.classList.remove('jhp-react');fish.dataset.reaction='idle'},920);
+  }
   function setCaption(text){const caption=el('jhp-caption');if(caption)caption.textContent=text}
 
   function moveFish(percentX,percentY,fast=false){
     const aquarium=el('jhp-aquarium'),fish=el('jhp-fish-wrap');if(!aquarium||!fish)return;
-    const x=clamp(percentX,15,84),y=clamp(percentY,21,76);
+    const x=clamp(percentX,36,64),y=clamp(percentY,39,61);
     const direction=x>=lastPointer.x?1:-1;
     const tilt=clamp((y-lastPointer.y)*.18,-7,7);
     lastPointer={x,y};
-    aquarium.style.setProperty('--fish-x',`${x}%`);aquarium.style.setProperty('--fish-y',`${y}%`);aquarium.style.setProperty('--fish-dir',direction);aquarium.style.setProperty('--fish-tilt',`${tilt}deg`);
+    aquarium.style.setProperty('--fish-x',`${x}%`);aquarium.style.setProperty('--fish-y',`${y}%`);aquarium.style.setProperty('--fish-dir',1);aquarium.style.setProperty('--fish-tilt',`${tilt}deg`);
+    fish.dataset.travel=direction<0?'left':'right';
     fish.classList.toggle('jhp-fast',fast);
     if(fast)setTimeout(()=>fish.classList.remove('jhp-fast'),900);
   }
@@ -400,7 +381,7 @@
     clearTimeout(autoTimer);
     if(overlay?.hidden||dragging||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
     autoTimer=setTimeout(()=>{
-      const x=17+Math.random()*65,y=24+Math.random()*46;moveFish(x,y,false);setCaption(['Tu chicharro está explorando la pecera.','Nada tranquilo y vigila su Casa.','Busca destellos entre las plantas.','La mascota evoluciona con cada cuidado.'][Math.floor(Math.random()*4)]);scheduleAutoMove(3900+Math.random()*2600);
+      const x=38+Math.random()*24,y=42+Math.random()*16;moveFish(x,y,false);setCaption(['Tu chicharro está explorando la pecera.','Nada tranquilo y vigila su Casa.','Busca destellos entre las plantas.','La mascota evoluciona con cada cuidado.'][Math.floor(Math.random()*4)]);scheduleAutoMove(3900+Math.random()*2600);
     },delay);
   }
 
@@ -424,7 +405,7 @@
     const bucket=Math.floor(now()/rule.cooldown),actionId=`${action}_${uid()}_${bucket}`;
     state.lastActions[action]=now();state.xp+=rule.xp;state.food=clamp(state.food+rule.food);state.clean=clamp(state.clean+rule.clean);state.mood=clamp(state.mood+rule.mood);state.lastDecayAt=now();
     setCaption(action==='feed'?'El chicharro ha recibido su comida gratuita.':action==='clean'?'El agua vuelve a estar limpia y brillante.':'Tu chicharro está jugando contigo.');
-    reactFish();render();queueSave({id:actionId,type:action,xp:rule.xp,free:true,houseId:house.id,userId:uid(),createdAt:now(),version:VERSION});showToast(`${rule.label}: +${rule.xp} XP. Progreso lento y gratuito.`);
+    reactFish(action);render();queueSave({id:actionId,type:action,xp:rule.xp,free:true,houseId:house.id,userId:uid(),createdAt:now(),version:VERSION});showToast(`${rule.label}: +${rule.xp} XP. Progreso lento y gratuito.`);
   }
 
   function walletState(){
@@ -449,7 +430,7 @@
     }
     state.xp+=gift.xp;state.food=clamp(state.food+gift.food);state.mood=clamp(state.mood+gift.mood);state.clean=clamp(state.clean+2);state.paidFeedCount+=1;state.paidFeedJemmos+=gift.price;state.lastDecayAt=now();
     const actionRecord={id:operationId.replace(/[^a-zA-Z0-9_-]/g,'_'),type:'paid_feed',giftKey:gift.key,giftName:gift.name,jemmos:gift.price,xp:gift.xp,houseId:house.id,userId:uid(),createdAt:now(),version:VERSION};
-    closeConfirm();reactFish();setCaption(`${gift.name}: la mascota ha ganado ${gift.xp} XP.`);render();await saveState(actionRecord);showToast(`${gift.name} enviado. +${gift.xp} XP y ${number(gift.price)} JEMMOS descontados.`);
+    closeConfirm();reactFish('gift');setCaption(`${gift.name}: la mascota ha ganado ${gift.xp} XP.`);render();await saveState(actionRecord);showToast(`${gift.name} enviado. +${gift.xp} XP y ${number(gift.price)} JEMMOS descontados.`);
   }
 
   async function addProgress(amount,options={}){
@@ -472,7 +453,12 @@
     const info=levelInfo();
     const set=(id,value)=>{const node=el(id);if(node)node.textContent=value};
     set('jhp-house-name',state.houseName);set('jhp-house-card-name',state.houseName);set('jhp-house-level',number(state.houseLevel));set('jhp-pet-level',`NIVEL ${info.level}`);set('jhp-level-name',info.name);set('jhp-xp-label',info.next?`${number(state.xp)} XP · ${number(info.remaining)} PARA SUBIR`:`${number(state.xp)} XP · NIVEL MÁXIMO`);
-    const fill=el('jhp-xp-fill');if(fill)fill.style.width=`${info.progress}%`;const aquarium=el('jhp-aquarium');if(aquarium)aquarium.dataset.level=String(info.level);
+    const fill=el('jhp-xp-fill');if(fill)fill.style.width=`${info.progress}%`;
+    const aquarium=el('jhp-aquarium');
+    if(aquarium){
+      aquarium.dataset.level=String(info.level);
+      aquarium.dataset.condition=state.food<20?'hungry':state.clean<20?'dirty':state.mood<20?'sad':'happy';
+    }
     renderNeeds();renderCountdowns();renderWallet();renderSync();
   }
 

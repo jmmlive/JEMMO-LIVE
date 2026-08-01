@@ -1,0 +1,28 @@
+JEMMO LIVE V1 · PRUEBA 62 · MASCOTA OFICIAL 3D
+
+BASE OBLIGATORIA
+JEMMO-LIVE-main-PRUEBA-61-COMPLETA.zip
+SHA-256: f0c733fc00c2ad0d8e7ef1133f1e9e752d8537c27fad7def20b351a201a2bb1b
+
+INSTALACIÓN EN GITHUB MÓVIL
+1. Descarga el parche PRUEBA 62.
+2. Descomprime el ZIP en el móvil.
+3. Sube los archivos extraídos a la raíz del repositorio JEMMO-LIVE.
+4. Sustituye los archivos que tengan el mismo nombre.
+5. Conserva todos los demás archivos del repositorio.
+6. No subas el ZIP directamente.
+7. Haz el commit.
+8. Abre JEMMO LIVE, ciérrala por completo y vuelve a abrirla para que la PWA active la caché PRUEBA 62.
+
+ARCHIVOS PRINCIPALES DE LA MEJORA
+- jemmo-house-pet.js
+- jemmo-house-pet.css
+- pwa-register.js
+- sw.js
+- CHANGELOG.md
+- CAMBIOS_PRUEBA_62.md
+- LEEME_INSTALACION_PRUEBA_62.txt
+- INTEGRIDAD_SHA256.txt
+
+RESULTADO
+La mascota de la pecera utiliza el chicharro oficial 3D violeta y dorado de JEMMO LIVE, con halo, plataforma, movimiento, reacciones y adaptación móvil. No se borran los datos anteriores de la mascota.

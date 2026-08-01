@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · PECERA FUTURISTA CON ACCESO COMPACTO SUPERIOR · PRUEBA 42 */
+/* JEMMO LIVE V1 · MASCOTA OFICIAL 3D, HALO NEÓN Y REACCIONES · PRUEBA 62 */
 :root{
   --jhp-bg:#07000b;
   --jhp-panel:#130019;
@@ -48,7 +48,7 @@
   border-radius:50%;background:radial-gradient(circle at 35% 28%,#dc75ff 0,#771de8 42%,#280035 76%);
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.18),0 0 13px rgba(203,62,255,.58);
 }
-#jhp-launch svg{width:29px;height:21px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))}
+#jhp-launch .jhp-mascot-art{width:30px;height:30px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.45))}
 
 body.jemmo-house-room #jhp-launch.jhp-launch-top{
   position:static;right:auto;bottom:auto;z-index:5;align-self:center;justify-self:end;
@@ -56,7 +56,7 @@ body.jemmo-house-room #jhp-launch.jhp-launch-top{
   border-radius:13px;font-size:6px;letter-spacing:.04em;box-shadow:0 3px 12px rgba(0,0,0,.34),0 0 10px rgba(169,44,255,.2)
 }
 body.jemmo-house-room #jhp-launch.jhp-launch-top .jhp-launch-fish{width:25px;height:25px}
-body.jemmo-house-room #jhp-launch.jhp-launch-top svg{width:22px;height:16px}
+body.jemmo-house-room #jhp-launch.jhp-launch-top .jhp-mascot-art{width:23px;height:23px}
 
 #jhp-overlay{
   position:fixed;
@@ -111,7 +111,7 @@ body.jemmo-house-room #jhp-launch.jhp-launch-top svg{width:22px;height:16px}
   border:1px solid rgba(255,213,100,.9);
   box-shadow:0 0 18px rgba(164,35,255,.45),inset 0 0 18px rgba(255,255,255,.1);
 }
-.jhp-brand-icon svg{width:51px;height:37px}
+.jhp-brand-icon .jhp-mascot-art{width:52px;height:52px}
 .jhp-heading{min-width:0}
 .jhp-eyebrow{
   display:block;color:#ffe298;font-weight:900;font-size:clamp(10px,2.7vw,13px);
@@ -198,7 +198,7 @@ body.jemmo-house-room #jhp-launch.jhp-launch-top svg{width:22px;height:16px}
 .jhp-coral i{position:absolute;bottom:0;width:11%;height:65%;border-radius:999px;background:linear-gradient(90deg,#a2338c,#ff67c4);transform-origin:bottom}
 .jhp-coral i:nth-child(1){left:12%;transform:rotate(-18deg)}.jhp-coral i:nth-child(2){left:37%;height:92%}.jhp-coral i:nth-child(3){left:65%;height:73%;transform:rotate(22deg)}.jhp-coral i:nth-child(4){left:84%;height:45%;transform:rotate(35deg)}
 
-.jhp-castle{position:absolute;right:15%;bottom:10%;z-index:-.5;width:27%;height:26%;opacity:.18;filter:saturate(.5);transition:.7s ease}
+.jhp-castle{position:absolute;right:15%;bottom:10%;z-index:0;width:27%;height:26%;opacity:.18;filter:saturate(.5);transition:.7s ease}
 .jhp-castle span{position:absolute;bottom:0;background:linear-gradient(90deg,#4d345a,#8a5ca4,#3e2849);border-radius:4px 4px 0 0;box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
 .jhp-castle span:nth-child(1){left:0;width:28%;height:75%}.jhp-castle span:nth-child(2){left:26%;width:49%;height:54%}.jhp-castle span:nth-child(3){right:0;width:29%;height:88%}
 .jhp-castle span::before{content:"";position:absolute;left:15%;right:15%;top:-13%;height:16%;background:inherit;clip-path:polygon(0 100%,0 0,22% 0,22% 65%,43% 65%,43% 0,65% 0,65% 65%,84% 65%,84% 0,100% 0,100% 100%)}
@@ -207,30 +207,83 @@ body.jemmo-house-room #jhp-launch.jhp-launch-top svg{width:22px;height:16px}
 .jhp-shrine::before{content:"";position:absolute;left:38%;bottom:0;width:24%;height:70%;background:linear-gradient(90deg,#8a5420,#ffd96b,#7f4717)}
 .jhp-shrine::after{content:"";position:absolute;left:4%;right:4%;top:18%;height:18%;background:linear-gradient(180deg,#fff0a8,#e6a52e);clip-path:polygon(50% 0,100% 70%,85% 100%,15% 100%,0 70%)}
 
+.jhp-mascot-platform{
+  position:absolute;z-index:1;left:50%;bottom:10.5%;width:min(58%,390px);height:19%;transform:translateX(-50%);
+  border:2px solid rgba(217,74,255,.64);border-radius:50%;
+  background:radial-gradient(ellipse at 50% 48%,rgba(202,72,255,.34),rgba(69,10,101,.18) 46%,rgba(7,0,13,.15) 67%,transparent 72%);
+  box-shadow:0 0 24px rgba(181,47,255,.38),inset 0 0 22px rgba(255,202,72,.18);
+  opacity:.78;pointer-events:none;animation:jhp-platform-pulse 3.8s ease-in-out infinite alternate;
+}
+.jhp-mascot-platform::before,.jhp-mascot-platform::after{content:"";position:absolute;inset:10%;border:1px solid rgba(255,211,86,.68);border-radius:50%;box-shadow:0 0 14px rgba(255,202,67,.32)}
+.jhp-mascot-platform::after{inset:25%;border-color:rgba(190,75,255,.82);box-shadow:0 0 18px rgba(185,49,255,.52)}
+.jhp-mascot-platform i{position:absolute;left:50%;bottom:32%;width:68%;height:85%;transform:translateX(-50%);background:radial-gradient(ellipse at 50% 100%,rgba(202,66,255,.55),transparent 68%);filter:blur(8px);opacity:.55}
+.jhp-mascot-platform b{position:absolute;z-index:2;left:50%;bottom:-11%;width:42px;height:42px;transform:translateX(-50%);display:grid;place-items:center;border:2px solid #ffd45f;border-radius:50%;background:linear-gradient(145deg,#5c1087,#18001f);color:#ffd45f;font:900 24px/1 Georgia,serif;box-shadow:0 0 16px rgba(255,202,67,.38),0 0 18px rgba(173,47,255,.52)}
+@keyframes jhp-platform-pulse{to{transform:translateX(-50%) scale(1.035);filter:brightness(1.18)}}
+
 .jhp-fish-wrap{
   position:absolute;
   z-index:3;
   left:var(--fish-x);
   top:var(--fish-y);
-  width:clamp(158px,45vw,255px);
+  width:clamp(245px,72vw,360px);
+  aspect-ratio:1;
   transform:translate(-50%,-50%) scaleX(var(--fish-dir)) rotate(var(--fish-tilt));
   transform-origin:50% 50%;
   transition:left 3.4s cubic-bezier(.32,.04,.25,1),top 3.4s cubic-bezier(.32,.04,.25,1),filter .7s ease;
-  filter:saturate(.72) brightness(.78) drop-shadow(0 12px 8px rgba(0,0,0,.36));
+  filter:saturate(.88) brightness(.88) drop-shadow(0 15px 10px rgba(0,0,0,.38)) drop-shadow(0 0 9px rgba(172,48,255,.32));
   cursor:grab;
   will-change:left,top,transform;
+  isolation:isolate;
+  background:radial-gradient(circle at 52% 48%,rgba(34,0,48,.62),rgba(5,0,11,.12) 68%,transparent 76%);
 }
 .jhp-fish-wrap:active{cursor:grabbing}
 .jhp-fish-wrap.jhp-fast{transition:left .75s cubic-bezier(.2,.8,.2,1),top .75s cubic-bezier(.2,.8,.2,1),filter .2s ease}
-.jhp-fish-wrap.jhp-react .jhp-fish{animation:jhp-react .62s ease}
-@keyframes jhp-react{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg) scale(1.05)}50%{transform:rotate(7deg) scale(.98)}75%{transform:rotate(-3deg) scale(1.02)}}
-.jhp-fish{display:block;width:100%;height:auto;overflow:visible}
-.jhp-fish .jhp-tail{transform-origin:83% 52%;animation:jhp-tail 1.15s ease-in-out infinite alternate}
-.jhp-fish .jhp-fin{transform-origin:52% 58%;animation:jhp-fin 1.9s ease-in-out infinite alternate}
-.jhp-fish .jhp-eye-glow{animation:jhp-eye 2.6s ease-in-out infinite alternate}
-@keyframes jhp-tail{to{transform:skewY(8deg) scaleX(.9)}}
-@keyframes jhp-fin{to{transform:rotate(9deg)}}
-@keyframes jhp-eye{to{opacity:.7;filter:brightness(1.3)}}
+.jhp-fish-wrap.jhp-react .jhp-mascot-art{animation:jhp-mascot-react .82s cubic-bezier(.2,.78,.25,1)}
+.jhp-fish-wrap[data-reaction="play"].jhp-react .jhp-mascot-art{animation-name:jhp-mascot-play}
+.jhp-fish-wrap[data-reaction="clean"].jhp-react{--jhp-reaction:#52efff}
+.jhp-fish-wrap[data-reaction="feed"].jhp-react{--jhp-reaction:#8bff93}
+.jhp-fish-wrap[data-reaction="gift"].jhp-react{--jhp-reaction:#ffd45f}
+.jhp-fish-wrap[data-reaction="play"].jhp-react{--jhp-reaction:#ff68d1}
+.jhp-fish-wrap[data-reaction="hello"].jhp-react{--jhp-reaction:#c866ff}
+@keyframes jhp-mascot-react{0%,100%{transform:scale(1) rotate(0)}24%{transform:scale(1.08) rotate(-4deg)}52%{transform:scale(.97) rotate(4deg)}76%{transform:scale(1.04) rotate(-2deg)}}
+@keyframes jhp-mascot-play{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-18px) rotate(-7deg) scale(1.05)}52%{transform:translateY(5px) rotate(6deg) scale(.98)}76%{transform:translateY(-8px) rotate(-3deg) scale(1.02)}}
+
+.jhp-mascot-art{
+  position:relative;display:block;width:100%;height:100%;border-radius:50%;overflow:visible;
+  transform-origin:50% 54%;animation:jhp-mascot-float 3.8s ease-in-out infinite alternate;
+}
+.jhp-mascot-art.is-compact{overflow:hidden;border-radius:50%;animation:jhp-compact-pulse 2.8s ease-in-out infinite alternate;background:#15001f}
+.jhp-mascot-image{
+  position:relative;z-index:3;display:block;width:100%;height:100%;object-fit:cover;object-position:center 48%;
+  user-select:none;-webkit-user-drag:none;pointer-events:none;
+  transition:transform .35s ease,filter .65s ease;
+}
+.jhp-fish-wrap .jhp-mascot-image{
+  border-radius:50%;
+  clip-path:circle(49% at 50% 50%);
+  filter:contrast(1.08) saturate(1.16) brightness(1.03);
+}
+.jhp-mascot-art.is-compact .jhp-mascot-image{object-position:center 44%;filter:saturate(1.1) contrast(1.06) brightness(1.06)}
+.jhp-mascot-halo{position:absolute;z-index:1;inset:12%;border-radius:50%;pointer-events:none;filter:drop-shadow(0 0 10px rgba(199,72,255,.55))}
+.jhp-mascot-halo::before,.jhp-mascot-halo::after,.jhp-mascot-halo i{content:"";position:absolute;inset:0;border:2px solid rgba(210,83,255,.72);border-radius:50%;box-shadow:0 0 18px rgba(183,48,255,.52),inset 0 0 18px rgba(183,48,255,.24);animation:jhp-halo-spin 9s linear infinite}
+.jhp-mascot-halo::after{inset:7%;border-color:rgba(255,207,82,.58);border-width:1px;animation-direction:reverse;animation-duration:6.5s}
+.jhp-mascot-halo i:nth-child(1){inset:-5%;border-style:dashed;opacity:.35;animation-duration:13s}
+.jhp-mascot-halo i:nth-child(2){inset:18%;border-color:rgba(96,238,255,.34);opacity:.55;animation-duration:5.2s}
+.jhp-mascot-halo i:nth-child(3){inset:31%;border-color:rgba(255,255,255,.28);opacity:.35;animation-duration:4.2s;animation-direction:reverse}
+.jhp-mascot-shine{position:absolute;z-index:4;inset:7% 15% 28% 25%;border-radius:50%;pointer-events:none;background:linear-gradient(118deg,transparent 32%,rgba(255,255,255,.42) 48%,transparent 63%);filter:blur(7px);opacity:.42;mix-blend-mode:screen;animation:jhp-shine 4.6s ease-in-out infinite}
+.jhp-mascot-particles{position:absolute;z-index:5;left:50%;top:50%;width:8px;height:8px;pointer-events:none}
+.jhp-mascot-particles i{position:absolute;left:0;top:0;width:7px;height:7px;border-radius:50%;background:var(--jhp-reaction,#c866ff);box-shadow:0 0 12px var(--jhp-reaction,#c866ff);opacity:0;transform:rotate(var(--particle-angle)) translateX(0) scale(.2)}
+.jhp-fish-wrap.jhp-react .jhp-mascot-particles i{animation:jhp-particle-burst .84s ease-out var(--particle-delay) both}
+.jhp-fish-wrap.jhp-react .jhp-mascot-halo{filter:drop-shadow(0 0 18px var(--jhp-reaction,#c866ff));transform:scale(1.08)}
+@keyframes jhp-mascot-float{to{transform:translateY(-8px) rotate(1.2deg)}}
+@keyframes jhp-compact-pulse{to{transform:scale(1.055);filter:brightness(1.12)}}
+@keyframes jhp-halo-spin{to{transform:rotate(360deg)}}
+@keyframes jhp-shine{0%,100%{transform:translateX(-24%) rotate(-8deg);opacity:.12}48%{opacity:.46}65%{transform:translateX(48%) rotate(-8deg);opacity:.18}}
+@keyframes jhp-particle-burst{0%{opacity:0;transform:rotate(var(--particle-angle)) translateX(10px) scale(.25)}18%{opacity:1}100%{opacity:0;transform:rotate(var(--particle-angle)) translateX(125px) scale(1.15)}}
+
+.jhp-aquarium[data-condition="hungry"] .jhp-mascot-image{filter:contrast(1.04) saturate(.92) brightness(.82)}
+.jhp-aquarium[data-condition="dirty"] .jhp-mascot-image{filter:contrast(.96) saturate(.78) brightness(.84)}
+.jhp-aquarium[data-condition="sad"] .jhp-mascot-image{filter:contrast(.98) saturate(.82) brightness(.86)}
 
 .jhp-caption{
   position:absolute;left:50%;bottom:3.7%;z-index:6;transform:translateX(-50%);
@@ -240,20 +293,23 @@ body.jemmo-house-room #jhp-launch.jhp-launch-top svg{width:22px;height:16px}
 }
 
 .jhp-aquarium[data-level="2"]{background:radial-gradient(circle at 62% 18%,rgba(171,82,255,.18),transparent 28%),radial-gradient(ellipse at 50% 108%,rgba(255,174,72,.48),transparent 32%),linear-gradient(180deg,#1586a5,#07597c 37%,#092a4a 72%,#0b1228)}
-.jhp-aquarium[data-level="2"] .jhp-fish-wrap{filter:saturate(.9) brightness(.92) drop-shadow(0 12px 9px rgba(0,0,0,.35)) drop-shadow(0 0 7px rgba(135,53,255,.25))}
+.jhp-aquarium[data-level="2"] .jhp-fish-wrap{filter:saturate(1) brightness(.96) drop-shadow(0 13px 9px rgba(0,0,0,.35)) drop-shadow(0 0 10px rgba(135,53,255,.35))}
 .jhp-aquarium[data-level="2"] .jhp-coral{opacity:.66;filter:saturate(.85) drop-shadow(0 8px 5px rgba(0,0,0,.3))}
 .jhp-aquarium[data-level="3"]{background:radial-gradient(circle at 36% 20%,rgba(187,71,255,.23),transparent 30%),radial-gradient(circle at 76% 30%,rgba(50,237,255,.18),transparent 24%),linear-gradient(180deg,#198ca7,#075d83 35%,#102d56 72%,#120e2e)}
-.jhp-aquarium[data-level="3"] .jhp-fish-wrap{filter:saturate(1.05) brightness(1.02) drop-shadow(0 12px 9px rgba(0,0,0,.32)) drop-shadow(0 0 10px rgba(165,63,255,.42))}
+.jhp-aquarium[data-level="3"] .jhp-fish-wrap{filter:saturate(1.12) brightness(1.04) drop-shadow(0 14px 9px rgba(0,0,0,.32)) drop-shadow(0 0 14px rgba(165,63,255,.5))}
 .jhp-aquarium[data-level="3"] .jhp-coral{opacity:1;filter:saturate(1.15) drop-shadow(0 0 9px rgba(255,76,200,.28))}
 .jhp-aquarium[data-level="3"] .jhp-castle{opacity:.58;filter:saturate(.9) drop-shadow(0 0 8px rgba(175,89,255,.2))}
 .jhp-aquarium[data-level="4"]{background:radial-gradient(circle at 50% 0,rgba(255,211,84,.17),transparent 36%),radial-gradient(circle at 25% 30%,rgba(180,63,255,.28),transparent 28%),linear-gradient(180deg,#168caf,#075a83 35%,#172b59 73%,#17102d)}
-.jhp-aquarium[data-level="4"] .jhp-fish-wrap{filter:saturate(1.18) brightness(1.1) drop-shadow(0 13px 9px rgba(0,0,0,.3)) drop-shadow(0 0 13px rgba(255,195,66,.42))}
+.jhp-aquarium[data-level="4"] .jhp-fish-wrap{filter:saturate(1.24) brightness(1.12) drop-shadow(0 15px 10px rgba(0,0,0,.3)) drop-shadow(0 0 18px rgba(255,195,66,.52))}
 .jhp-aquarium[data-level="4"] .jhp-coral{opacity:1;filter:saturate(1.25) drop-shadow(0 0 12px rgba(255,76,200,.35))}
 .jhp-aquarium[data-level="4"] .jhp-castle{opacity:.78;filter:saturate(1.1) drop-shadow(0 0 10px rgba(186,101,255,.28))}
 .jhp-aquarium[data-level="4"] .jhp-shrine{opacity:.8}
 .jhp-aquarium[data-level="5"]{background:radial-gradient(circle at 50% 8%,rgba(255,221,89,.2),transparent 32%),radial-gradient(circle at 27% 26%,rgba(181,66,255,.35),transparent 27%),radial-gradient(circle at 75% 37%,rgba(47,239,255,.24),transparent 27%),linear-gradient(180deg,#1596bb,#075d91 34%,#182f67 72%,#1e113d)}
-.jhp-aquarium[data-level="5"] .jhp-aurora{opacity:.72}
-.jhp-aquarium[data-level="5"] .jhp-fish-wrap{filter:saturate(1.35) brightness(1.2) drop-shadow(0 14px 10px rgba(0,0,0,.28)) drop-shadow(0 0 18px rgba(255,203,58,.58)) drop-shadow(0 0 11px rgba(171,66,255,.55))}
+.jhp-aquarium[data-level="5"] .jhp-aurora{opacity:.82}
+.jhp-aquarium[data-level="3"] .jhp-mascot-halo{opacity:.88}
+.jhp-aquarium[data-level="4"] .jhp-mascot-halo{filter:drop-shadow(0 0 14px rgba(255,205,76,.58))}
+.jhp-aquarium[data-level="5"] .jhp-mascot-halo{transform:scale(1.05);filter:drop-shadow(0 0 21px rgba(255,211,79,.75))}
+.jhp-aquarium[data-level="5"] .jhp-fish-wrap{filter:saturate(1.42) brightness(1.22) drop-shadow(0 16px 11px rgba(0,0,0,.28)) drop-shadow(0 0 24px rgba(255,203,58,.68)) drop-shadow(0 0 17px rgba(171,66,255,.66))}
 .jhp-aquarium[data-level="5"] .jhp-coral{opacity:1;filter:saturate(1.45) drop-shadow(0 0 13px rgba(255,76,200,.5))}
 .jhp-aquarium[data-level="5"] .jhp-castle{opacity:1;filter:saturate(1.3) drop-shadow(0 0 13px rgba(189,104,255,.42))}
 .jhp-aquarium[data-level="5"] .jhp-shrine{opacity:1}
@@ -319,7 +375,7 @@ body.jemmo-house-room #jhp-launch.jhp-launch-top svg{width:22px;height:16px}
 @media (max-width:430px){
   .jhp-shell{padding-left:8px;padding-right:8px}
   .jhp-header{grid-template-columns:52px minmax(0,1fr) 40px;padding:12px 10px;gap:9px}
-  .jhp-brand-icon{width:52px;height:52px;border-radius:16px}.jhp-brand-icon svg{width:46px}
+  .jhp-brand-icon{width:52px;height:52px;border-radius:16px}.jhp-brand-icon .jhp-mascot-art{width:46px;height:46px}
   .jhp-summary{gap:7px}.jhp-card{padding:12px 10px;border-radius:18px}
   .jhp-aquarium{min-height:0;aspect-ratio:1.14/1;border-radius:25px}
   .jhp-progress-panel,.jhp-paid{padding:12px}
