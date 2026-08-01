@@ -1,0 +1,43 @@
+JEMMO LIVE V1 · VALIDACIÓN TÉCNICA · PRUEBA 61
+
+Base verificada:
+- JEMMO-LIVE-main-PRUEBA-60-COMPLETA.zip
+- SHA-256: 933f4ab4b27091819ddb083d29e3e242817e25185ed79159f1af6341f449d650
+
+Resultado del proyecto antes de empaquetar:
+- 229 archivos finales.
+- 53 archivos JavaScript externos con sintaxis válida.
+- 22 scripts internos HTML con sintaxis válida.
+- 19 documentos HTML revisados.
+- 285 referencias locales HTML comprobadas.
+- 0 referencias locales rotas.
+- 0 IDs HTML duplicados.
+- manifest.json y manifest.webmanifest válidos, release 61.
+- jemmo-gift-catalog.js incluido en la caché PWA.
+
+Catálogo universal:
+- 14 regalos.
+- Precio mínimo: 10 JEMMOS.
+- Precio máximo: 5.000.000 JEMMOS.
+- Integrado en Batalla, LIVE, Audio Room/Salas y Mensajes.
+- Catálogo de Universo alineado con los mismos nombres y precios.
+
+Multiplicadores aprobados:
+- Hasta 50.000: ×1, ×10, ×20, ×100.
+- 50.001 a 250.000: ×1, ×5, ×10, ×20.
+- 250.001 a 500.000: ×1, ×2, ×5, ×10.
+- 500.001 a 1.000.000: ×1, ×2, ×3, ×5.
+- 1.000.001 a 2.500.000: ×1, ×2.
+- 2.500.001 a 5.000.000: solo ×1.
+
+Pruebas matemáticas:
+- 50.000 ×100 = 5.000.000.
+- 250.000 ×20 = 5.000.000.
+- 500.000 ×10 = 5.000.000.
+- 1.000.000 ×5 = 5.000.000.
+- 2.500.000 ×2 = 5.000.000.
+- 5.000.000 ×1 = 5.000.000.
+
+Estado:
+- Validación estática superada.
+- La prueba física final queda pendiente en Redmi 14C después del despliegue en GitHub Pages.

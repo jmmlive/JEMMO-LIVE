@@ -1,7 +1,7 @@
 (()=>{
   'use strict';
-  if(window.__JEMMO_BATTLE_GIFTS_60__)return;
-  window.__JEMMO_BATTLE_GIFTS_60__=true;
+  if(window.__JEMMO_BATTLE_GIFTS_61__)return;
+  window.__JEMMO_BATTLE_GIFTS_61__=true;
 
   const firebaseConfig={
     apiKey:'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
@@ -19,13 +19,15 @@
     {id:'tenerife',name:'Casa Tenerife',emblem:'JT',base:329500,scoreId:'battleScoreTenerife',momentumId:'battleMomentumTenerife'},
     {id:'unicornio',name:'Casa Unicornio',emblem:'🦄',base:97300,scoreId:'battleScoreUnicornio',momentumId:'battleMomentumUnicornio'}
   ];
-  const GIFTS=[
-    {id:'rosa',name:'Rosa JEMMO',icon:'🌹',price:10},
-    {id:'estrella',name:'Estrella',icon:'⭐',price:50},
-    {id:'corona',name:'Corona Real',icon:'👑',price:200},
-    {id:'leon',name:'León de Oro',icon:'🦁',price:1000}
-  ];
-  const QUANTITIES=[1,10,20,100];
+  const GIFT_SYSTEM=window.JemmoGiftCatalog;
+  const GIFTS=(GIFT_SYSTEM?.catalog||[
+    {id:'rosa-jemmo',name:'Rosa JEMMO',icon:'🌹',cost:10},
+    {id:'estrella-jemmo',name:'Estrella JEMMO',icon:'⭐',cost:50},
+    {id:'corona-real',name:'Corona Real',icon:'👑',cost:200},
+    {id:'leon-de-oro',name:'León de Oro',icon:'🦁',cost:1000}
+  ]).map(item=>({id:item.id,name:item.name,icon:item.icon,price:Number(item.cost)||0,tier:item.tier||''}));
+  const giftQuantities=gift=>GIFT_SYSTEM?.quantitiesFor?.(gift?.price||10)||[1,10,20,100];
+  const validateGift=(gift,quantity)=>GIFT_SYSTEM?.validate?.(gift?.price||0,quantity)||{ok:gift?.price>0&&giftQuantities(gift).includes(quantity),total:(gift?.price||0)*quantity,max:5000000};
   const $=(selector,root=document)=>root.querySelector(selector);
   const $$=(selector,root=document)=>[...root.querySelectorAll(selector)];
   const formatNumber=value=>Math.max(0,Math.round(Number(value)||0)).toLocaleString('es-ES');
@@ -102,14 +104,24 @@
     sheet.setAttribute('aria-labelledby','battleGiftTitle');
     sheet.innerHTML=`
       <button class="battle-gift-close" id="battleGiftClose" type="button" aria-label="Cerrar">×</button>
-      <div class="battle-gift-head"><small>BATALLA OFICIAL</small><h2 id="battleGiftTitle">Apoya con regalos</h2><p>Selecciona la Casa, el regalo y la cantidad. El envío se cobrará una sola vez.</p></div>
+      <div class="battle-gift-head"><small>BATALLA OFICIAL</small><h2 id="battleGiftTitle">Apoya con regalos</h2><p>Catálogo oficial. Máximo 5.000.000 JEMMOS por destinatario.</p></div>
       <div class="battle-gift-step" id="battleHouseStep"><strong>1. CASA DESTINATARIA</strong><div class="battle-house-options">${HOUSES.map(house=>`<button class="battle-choice" type="button" data-battle-house-choice="${house.id}" aria-pressed="false"><span>${house.emblem}</span><b>${house.name}</b><small>${formatNumber(totalScore(house))} puntos</small></button>`).join('')}</div></div>
       <div class="battle-gift-step" id="battleGiftStep"><strong>2. REGALO</strong><div class="battle-gift-options">${GIFTS.map(gift=>`<button class="battle-choice" type="button" data-battle-gift-choice="${gift.id}" aria-pressed="false"><span>${gift.icon}</span><b>${gift.name}</b><small>${formatNumber(gift.price)} JEMMOS</small></button>`).join('')}</div></div>
-      <div class="battle-gift-step" id="battleQtyStep"><strong>3. CANTIDAD</strong><div class="battle-qty-options">${QUANTITIES.map(quantity=>`<button class="battle-choice ${quantity===1?'active':''}" type="button" data-battle-qty="${quantity}" aria-pressed="${quantity===1}">×${quantity}</button>`).join('')}</div></div>
+      <div class="battle-gift-step" id="battleQtyStep"><strong>3. CANTIDAD</strong><div class="battle-qty-options" id="battleQtyOptions"></div></div>
       <div class="battle-gift-summary"><div><small>DESTINO Y REGALO</small><b id="battleGiftDestination">Falta seleccionar una Casa y un regalo</b></div><div class="battle-gift-cost"><small>COSTE TOTAL</small><b id="battleGiftCost">—</b></div></div>
       <button class="battle-gift-confirm is-incomplete" id="battleGiftConfirm" type="button" aria-disabled="true">SELECCIONAR CASA</button>
       <p class="battle-gift-status hint" id="battleGiftStatus" role="status" aria-live="polite">Primero elige la Casa que recibirá los puntos.</p>`;
     document.body.append(backdrop,sheet);
+    renderQuantityOptions();
+  }
+
+
+  function renderQuantityOptions(gift=giftById(selectedGift)){
+    const container=$('#battleQtyOptions');
+    if(!container)return;
+    const options=giftQuantities(gift);
+    selectedQuantity=options.includes(selectedQuantity)?selectedQuantity:1;
+    container.innerHTML=options.map(quantity=>`<button class="battle-choice ${quantity===selectedQuantity?'active':''}" type="button" data-battle-qty="${quantity}" aria-pressed="${quantity===selectedQuantity}">×${quantity}</button>`).join('');
   }
 
   function setMomentum(house,state,text,difference){
@@ -169,7 +181,9 @@
     const house=houseById(selectedHouse);
     const gift=giftById(selectedGift);
     const complete=Boolean(house&&gift);
-    const total=complete?gift.price*selectedQuantity:0;
+    if(gift)selectedQuantity=GIFT_SYSTEM?.normalizeQuantity?.(gift.price,selectedQuantity)||selectedQuantity;
+    const validation=complete?validateGift(gift,selectedQuantity):{ok:false,total:0};
+    const total=validation.total||0;
     const destination=$('#battleGiftDestination');
     const cost=$('#battleGiftCost');
     const confirm=$('#battleGiftConfirm');
@@ -267,11 +281,7 @@
       button.classList.remove('active');
       button.setAttribute('aria-pressed','false');
     });
-    $$('[data-battle-qty]').forEach(button=>{
-      const active=Number(button.dataset.battleQty)===1;
-      button.classList.toggle('active',active);
-      button.setAttribute('aria-pressed',String(active));
-    });
+    renderQuantityOptions();
     updateSummary();
   }
 
@@ -297,12 +307,14 @@
       item.classList.toggle('active',active);
       item.setAttribute('aria-pressed',String(active));
     });
+    renderQuantityOptions(giftById(id));
     setStatus(selectedHouse?'Selección completa. Revisa el coste y confirma.':'Regalo seleccionado. Falta elegir la Casa destinataria.',selectedHouse?'hint':'error');
     updateSummary();
   }
 
   function selectQuantity(quantity,button){
-    selectedQuantity=QUANTITIES.includes(quantity)?quantity:1;
+    const gift=giftById(selectedGift);
+    selectedQuantity=giftQuantities(gift).includes(quantity)?quantity:1;
     rechargeRequired=false;
     $$('[data-battle-qty]').forEach(item=>{
       const active=item===button||Number(item.dataset.battleQty)===selectedQuantity;
@@ -404,7 +416,13 @@
       focusMissingSelection();
       return;
     }
-    const total=gift.price*selectedQuantity;
+    const validation=validateGift(gift,selectedQuantity);
+    if(!validation.ok){
+      renderQuantityOptions(gift);
+      setStatus(`La cantidad supera el máximo de ${formatNumber(validation.max||5000000)} JEMMOS. Elige una cantidad permitida.`,'error');
+      return;
+    }
+    const total=validation.total;
     busy=true;
     updateSummary();
     setStatus('Comprobando saldo y registrando el regalo…','hint');
@@ -504,7 +522,7 @@
     $('#battleGiftOpen')?.addEventListener('click',()=>openSheet());
     $$('[data-battle-house-choice]').forEach(button=>button.addEventListener('click',()=>selectHouse(button.dataset.battleHouseChoice,button)));
     $$('[data-battle-gift-choice]').forEach(button=>button.addEventListener('click',()=>selectGift(button.dataset.battleGiftChoice,button)));
-    $$('[data-battle-qty]').forEach(button=>button.addEventListener('click',()=>selectQuantity(Number(button.dataset.battleQty)||1,button)));
+    $('#battleQtyOptions')?.addEventListener('click',event=>{const button=event.target.closest('[data-battle-qty]');if(button)selectQuantity(Number(button.dataset.battleQty)||1,button)});
     $('#battleGiftClose')?.addEventListener('click',()=>closeSheet());
     $('#battleGiftBackdrop')?.addEventListener('click',()=>closeSheet());
     $('#battleGiftConfirm')?.addEventListener('click',confirmGift);

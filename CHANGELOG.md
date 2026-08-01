@@ -161,3 +161,8 @@ La detección automática real de personas, menores, armas o situaciones peligro
 - Los puntos solo cambian mediante regalos confirmados.
 - Registro de regalos en Firestore mediante transacción idempotente.
 - Actividad y chat sin anuncios ficticios de regalos.
+## PRUEBA 61 · Catálogo universal y límite seguro de regalos · 01/08/2026
+- Catálogo único de 14 regalos entre 10 y 5.000.000 JEMMOS.
+- Multiplicadores dinámicos y máximo de 5.000.000 por destinatario.
+- Integración en Batalla, LIVE, Salas/Audio Room, Mensajes y catálogo Universo.
+

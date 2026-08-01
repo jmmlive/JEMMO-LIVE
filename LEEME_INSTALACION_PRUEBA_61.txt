@@ -1,0 +1,20 @@
+JEMMO LIVE · INSTALACIÓN PRUEBA 61
+
+BASE OBLIGATORIA
+JEMMO-LIVE-main-PRUEBA-60-COMPLETA.zip
+SHA-256: 933f4ab4b27091819ddb083d29e3e242817e25185ed79159f1af6341f449d650
+
+PARCHE GITHUB MÓVIL
+1. Descomprime JEMMO-LIVE-PRUEBA-61-PARCHE-GITHUB.
+2. Sube todos los archivos extraídos a la raíz del repositorio.
+3. Sustituye los archivos que tengan el mismo nombre.
+4. No borres los demás archivos del repositorio.
+5. No subas el ZIP directamente.
+6. Espera a que GitHub Pages termine el despliegue.
+7. Cierra completamente JEMMO LIVE y vuelve a abrirla.
+
+PRUEBA PRINCIPAL
+Comprueba Batalla, LIVE, Audio Room/Salas y Mensajes. Los cuatro deben mostrar el mismo catálogo de 14 regalos. El regalo de 5.000.000 solo admite ×1.
+
+IMPORTANTE
+La animación premium de los regalos grandes se desarrollará en la siguiente fase. PRUEBA 61 prepara el catálogo, precios, límites y multiplicadores seguros.

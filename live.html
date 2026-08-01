@@ -1113,7 +1113,7 @@
     .jl-gift-label{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 1px 6px;color:#cdbbd2;font-size:9px}.jl-gift-label b{color:#fff}.jl-gift-label span{max-width:68%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .jl-gift-recipients{display:flex;gap:6px;overflow-x:auto;padding:1px 1px 7px;scrollbar-width:none}.jl-gift-recipients::-webkit-scrollbar{display:none}
     .jl-gift-recipient{flex:0 0 58px;min-height:64px;padding:5px 3px;border:1px solid #653074;border-radius:13px;background:#16031d;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}.jl-gift-recipient img,.jl-gift-recipient span{width:32px;height:32px;border-radius:50%;object-fit:cover;display:grid;place-items:center;background:#31043d}.jl-gift-recipient span{font-size:10px;font-weight:1000}.jl-gift-recipient b{max-width:52px;font-size:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.jl-gift-recipient.active{border-color:#ffd24c;background:#332009;box-shadow:0 0 11px #ffd24c44}
-    .jl-gift-quantities{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.jl-gift-quantity{min-height:34px;border:1px solid #67307a;border-radius:11px;background:#180320;color:#fff;font-size:11px;font-weight:1000}.jl-gift-quantity.active{border-color:#fff2a6;background:linear-gradient(135deg,#ffd34e,#ff953d);color:#271006}
+    .jl-gift-quantities{display:grid;grid-template-columns:repeat(auto-fit,minmax(64px,1fr));gap:6px}.jl-gift-quantity{min-height:34px;border:1px solid #67307a;border-radius:11px;background:#180320;color:#fff;font-size:11px;font-weight:1000}.jl-gift-quantity.active{border-color:#fff2a6;background:linear-gradient(135deg,#ffd34e,#ff953d);color:#271006}
     .jl-gift-summary{margin:7px 0;padding:7px 8px;border:1px solid #5e2674;border-radius:11px;background:#0e0114;color:#e7d9eb;font-size:9px;text-align:center}
     .jl-gift-catalog{max-height:190px;overflow:auto;grid-template-columns:repeat(4,1fr)!important;padding-right:2px}.jl-gift-catalog button{min-height:63px!important}.jl-gift-catalog button span{font-size:22px!important}.jl-gift-catalog button b{font-size:7px!important;line-height:1.1}.jl-gift-catalog button small{font-size:6.5px!important}
     .jl-seat-gift-total{position:absolute;z-index:4;right:-3px;top:-3px;min-width:28px;height:21px;padding:0 5px;border-radius:99px;background:linear-gradient(135deg,#ffd34e,#ff8c38);border:1px solid #fff1a0;color:#2a0b05;display:grid;place-items:center;font-size:8px;font-weight:1000}
@@ -1372,17 +1372,12 @@
       </section>
 
       <section class="jl-sheet jl-gifts-sheet" id="giftsSheet" hidden>
-        <div class="jl-sheet-head"><div><h3>Regalos</h3><p>Elige destinatario, cantidad y regalo</p></div><button class="jl-sheet-close" data-close-sheet>×</button></div>
+        <div class="jl-sheet-head"><div><h3>Regalos</h3><p>Catálogo oficial · máximo 5.000.000 JEMMOS por destinatario</p></div><button class="jl-sheet-close" data-close-sheet>×</button></div>
         <div class="jl-gift-wallet"><span id="giftBalance">Saldo: 0 JEMMOS</span><button class="jl-recharge-mini" id="rechargeFromGifts" type="button">+ RECARGAR</button></div>
         <div class="jl-gift-label"><b>Enviar a</b><span id="liveRecipientSummary">Emisor</span></div>
         <div class="jl-gift-recipients" id="liveGiftRecipients"></div>
         <div class="jl-gift-label"><b>Cantidad por persona</b><span id="liveQuantitySummary">×1</span></div>
-        <div class="jl-gift-quantities">
-          <button class="jl-gift-quantity active" data-live-quantity="1" type="button">×1</button>
-          <button class="jl-gift-quantity" data-live-quantity="10" type="button">×10</button>
-          <button class="jl-gift-quantity" data-live-quantity="20" type="button">×20</button>
-          <button class="jl-gift-quantity" data-live-quantity="100" type="button">×100</button>
-        </div>
+        <div class="jl-gift-quantities" id="liveGiftQuantities"></div>
         <div class="jl-gift-summary" id="liveGiftSummary">1 persona · 1 regalo.</div>
         <div class="jl-gifts jl-gift-catalog" id="liveGiftCatalog" aria-label="Catálogo de regalos"></div>
       </section>
@@ -1477,8 +1472,9 @@
 
     <script type="module" src="jemmo-app-check.js?v=57"></script>
 <script type="module" src="jemmo-session.js"></script>
-  <script src="pwa-register.js?v=60"></script>
+  <script src="pwa-register.js?v=61"></script>
   <script src="jemmo-wallet.js?v=46"></script>
+  <script src="jemmo-gift-catalog.js?v=61"></script>
   <script src="jemmo-house-finance.js"></script>
   <script type="module" src="jemmo-live-presence.js?v=54"></script>
   <script src="jemmo-live-rtc-config.js?v=54"></script>
@@ -1524,6 +1520,7 @@
       pendingGift:null,
       mirrorPreview:false,
       giftQuantity:1,
+      selectedGiftCost:10,
       giftRecipients:new Set(["host"]),
       giftTotals:new Map(),
       cameraEnabled:false,
@@ -1537,9 +1534,11 @@
       pendingExitUrl:null,
       viewer:viewerMode
     };
-    const LIVE_GIFT_CATALOG=[
-      {icon:'☕',name:'JEMMO Café',cost:500},{icon:'💋',name:'JEMMO Besito',cost:1000},{icon:'🌹',name:'JEMMO Rosa Neón',cost:2000},{icon:'⭐',name:'JEMMO Estrella',cost:5000},{icon:'🐟',name:'JEMMO Chicharro',cost:10000},{icon:'💖',name:'JEMMO Beso Especial',cost:18000},{icon:'💥',name:'JEMMO Boom',cost:25000},{icon:'👑',name:'JEMMO Corona',cost:50000},{icon:'💎',name:'JEMMO Élite',cost:100000},{icon:'🌌',name:'JEMMO Universo',cost:200000}
-    ];
+    const LIVE_GIFT_SYSTEM=window.JemmoGiftCatalog;
+    const LIVE_GIFT_CATALOG=(LIVE_GIFT_SYSTEM?.catalog||[
+      {id:'rosa-jemmo',icon:'🌹',name:'Rosa JEMMO',cost:10},
+      {id:'leon-de-oro',icon:'🦁',name:'León de Oro',cost:1000}
+    ]);
     const MIC_GRACE_MS = 3*60*1000;
     const INACTIVITY_SOFT_MS = 2*60*1000;
     const INACTIVITY_PAUSE_MS = 5*60*1000;
@@ -2532,10 +2531,22 @@
       });
       updateLiveGiftPanel();
     }
+    function liveGiftQuantityOptions(cost=state.selectedGiftCost){
+      return LIVE_GIFT_SYSTEM?.quantitiesFor?.(cost)||[1,10,20,100];
+    }
+    function renderLiveGiftQuantities(cost=state.selectedGiftCost){
+      state.selectedGiftCost=Math.max(1,Number(cost)||10);
+      const options=liveGiftQuantityOptions(state.selectedGiftCost);
+      state.giftQuantity=options.includes(state.giftQuantity)?state.giftQuantity:1;
+      const container=$("liveGiftQuantities");
+      if(!container)return;
+      container.innerHTML=options.map(quantity=>`<button class="jl-gift-quantity ${quantity===state.giftQuantity?"active":""}" data-live-quantity="${quantity}" type="button">×${quantity}</button>`).join("");
+    }
     function renderLiveGiftCatalog(){
       const container=$("liveGiftCatalog");
       if(!container)return;
-      container.innerHTML=LIVE_GIFT_CATALOG.map(gift=>`<button data-live-gift="${gift.icon}" data-live-name="${gift.name}" data-live-cost="${gift.cost}" type="button"><span>${gift.icon}</span><b>${gift.name}</b><small>${gift.cost.toLocaleString("es-ES")} J</small></button>`).join("");
+      container.innerHTML=LIVE_GIFT_CATALOG.map(gift=>`<button data-live-gift="${gift.icon}" data-live-id="${gift.id||gift.name}" data-live-name="${gift.name}" data-live-cost="${gift.cost}" type="button"><span>${gift.icon}</span><b>${gift.name}</b><small>${gift.cost.toLocaleString("es-ES")} J</small></button>`).join("");
+      renderLiveGiftQuantities();
     }
     function updateLiveGiftPanel(){
       updateBalanceUI();
@@ -2543,7 +2554,7 @@
       const units=recipients.length*state.giftQuantity;
       $("liveRecipientSummary").textContent=liveRecipientLabel();
       $("liveQuantitySummary").textContent=`×${state.giftQuantity}`;
-      $("liveGiftSummary").textContent=recipients.length?`${recipients.length} persona${recipients.length===1?"":"s"} × ${state.giftQuantity} = ${units} regalo${units===1?"":"s"}.`:"Selecciona al menos una persona.";
+      $("liveGiftSummary").textContent=recipients.length?`${recipients.length} persona${recipients.length===1?"":"s"} × ${state.giftQuantity} = ${units} regalo${units===1?"":"s"}. Máximo 5.000.000 por persona.`:"Selecciona al menos una persona.";
       document.querySelectorAll("[data-live-quantity]").forEach(button=>button.classList.toggle("active",Number(button.dataset.liveQuantity)===state.giftQuantity));
     }
     function updateLiveGiftBadges(){
@@ -2567,6 +2578,9 @@
       if(liveRecipientList().some(item=>item.self&&state.giftRecipients.has(item.key))){showToast("No puedes enviarte regalos a ti mismo.");state.giftRecipients.delete("host");renderLiveGiftRecipients();return}
       if(!recipients.length){showToast(eligibleLiveRecipients().length?"Selecciona a quién enviar el regalo.":"No puedes enviarte regalos a ti mismo.");return}
       const unitCost=Number(button.dataset.liveCost||0);
+      const allowed=liveGiftQuantityOptions(unitCost);
+      if(!allowed.includes(state.giftQuantity)){state.giftQuantity=1;renderLiveGiftQuantities(unitCost);updateLiveGiftPanel();showToast("Cantidad ajustada a ×1 para proteger el límite de 5.000.000 JEMMOS.");}
+      else renderLiveGiftQuantities(unitCost);
       const giftIcon=button.dataset.liveGift||"🎁";
       const giftName=button.dataset.liveName||"Regalo";
       const totalGifts=recipients.length*state.giftQuantity;
@@ -2615,7 +2629,7 @@
     renderLiveGiftCatalog();
     renderLiveGiftRecipients();
     $("liveGiftCatalog").addEventListener("click",event=>{const button=event.target.closest("[data-live-gift]");if(button)sendLiveGift(button)});
-    document.querySelectorAll("[data-live-quantity]").forEach(button=>button.addEventListener("click",()=>{state.giftQuantity=Number(button.dataset.liveQuantity);updateLiveGiftPanel()}));
+    $("liveGiftQuantities").addEventListener("click",event=>{const button=event.target.closest("[data-live-quantity]");if(!button)return;const quantity=Number(button.dataset.liveQuantity)||1;if(!liveGiftQuantityOptions().includes(quantity))return;state.giftQuantity=quantity;updateLiveGiftPanel()});
 
     function liveSeatData(seat){
       const number=Number(seat?.dataset.seat||0),request=seat?.classList.contains("request"),occupied=seat?.classList.contains("occupied");

@@ -1,0 +1,12 @@
+PRUEBAS PRUEBA 61
+
+1. Abrir regalos en Batalla, LIVE, Sala y Mensajes.
+2. Confirmar que los cuatro muestran los mismos 14 regalos y precios.
+3. Seleccionar regalo de 50.000: deben aparecer ×1, ×10, ×20 y ×100.
+4. Seleccionar regalo de 100.000: deben aparecer ×1, ×5, ×10 y ×20.
+5. Seleccionar regalo de 500.000: deben aparecer ×1, ×2, ×5 y ×10.
+6. Seleccionar regalo de 1.000.000: deben aparecer ×1, ×2, ×3 y ×5.
+7. Seleccionar regalo de 2.500.000: deben aparecer ×1 y ×2.
+8. Seleccionar regalo de 5.000.000: solo debe aparecer ×1.
+9. Confirmar que ninguna combinación por destinatario supera 5.000.000 JEMMOS.
+10. Confirmar que saldo insuficiente abre Monedero sin descontar dinero.

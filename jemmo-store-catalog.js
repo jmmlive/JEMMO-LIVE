@@ -114,16 +114,20 @@ export const PERSONALIZATION_CATALOG = Object.freeze([
 ]);
 
 export const GIFT_CATALOG = Object.freeze([
-  { id:'gift-jemmo-cafe', category:'gifts', name:'JEMMO Café', icon:'☕', price:500, tier:'NORMAL', featured:true, animation:'2 s', sound:false, description:'Detalle pequeño para saludar o agradecer.' },
-  { id:'gift-jemmo-besito', category:'gifts', name:'JEMMO Besito', icon:'💋', price:1000, tier:'NORMAL', featured:true, animation:'2 s', sound:false, description:'Beso corto con destello malva.' },
-  { id:'gift-jemmo-rosa', category:'gifts', name:'JEMMO Rosa Neón', icon:'🌹', price:2000, tier:'NORMAL', featured:false, animation:'3 s', sound:false, description:'Rosa violeta luminosa.' },
-  { id:'gift-jemmo-estrella', category:'gifts', name:'JEMMO Estrella', icon:'⭐', price:5000, tier:'NORMAL', featured:false, animation:'3 s', sound:false, description:'Estrella brillante para destacar un momento.' },
-  { id:'gift-jemmo-chicharro', category:'gifts', name:'JEMMO Chicharro', icon:'🐟', price:10000, tier:'DESTACADO', featured:true, animation:'4 s', sound:true, description:'El chicharro oficial cruza la pantalla con sonido acuático.' },
-  { id:'gift-jemmo-beso-especial', category:'gifts', name:'JEMMO Beso Especial', icon:'💖', price:18000, tier:'DESTACADO', featured:true, animation:'5 s', sound:true, description:'Beso protagonista con sonido y explosión de corazones.' },
-  { id:'gift-jemmo-boom', category:'gifts', name:'JEMMO Boom', icon:'💥', price:25000, tier:'DESTACADO', featured:true, animation:'5 s', sound:true, description:'Impacto violeta y dorado para celebrar.' },
-  { id:'gift-jemmo-corona', category:'gifts', name:'JEMMO Corona', icon:'👑', price:50000, tier:'PREMIUM', featured:false, animation:'6 s', sound:true, description:'Corona real con caída de destellos.' },
-  { id:'gift-jemmo-elite', category:'gifts', name:'JEMMO Élite', icon:'💎', price:100000, tier:'PREMIUM', featured:true, animation:'7 s', sound:true, description:'Animación premium para grandes apoyos.' },
-  { id:'gift-jemmo-universo', category:'gifts', name:'JEMMO Universo', icon:'🌌', price:200000, tier:'GRANDE', featured:true, animation:'9 s', sound:true, description:'El universo JEMMO cubre la sala con órbitas y estrellas.' }
+  { id:'rosa-jemmo', category:'gifts', name:'Rosa JEMMO', icon:'🌹', price:10, tier:'BÁSICO', featured:true, animation:'pendiente', sound:false, description:'Regalo ligero para saludar y participar.' },
+  { id:'estrella-jemmo', category:'gifts', name:'Estrella JEMMO', icon:'⭐', price:50, tier:'BÁSICO', featured:true, animation:'pendiente', sound:false, description:'Destello breve para destacar un momento.' },
+  { id:'corona-real', category:'gifts', name:'Corona Real', icon:'👑', price:200, tier:'BÁSICO', featured:false, animation:'pendiente', sound:false, description:'Corona compacta con brillo dorado.' },
+  { id:'leon-de-oro', category:'gifts', name:'León de Oro', icon:'🦁', price:1000, tier:'DESTACADO', featured:true, animation:'pendiente', sound:false, description:'Regalo destacado de entrada al catálogo premium.' },
+  { id:'chicharro-neon', category:'gifts', name:'Chicharro Neón', icon:'🐟', price:5000, tier:'DESTACADO', featured:true, animation:'pendiente', sound:true, description:'El chicharro oficial de JEMMO LIVE.' },
+  { id:'fuegos-jemmo', category:'gifts', name:'Fuegos JEMMO', icon:'🎆', price:10000, tier:'DESTACADO', featured:false, animation:'pendiente', sound:true, description:'Celebración violeta y dorada.' },
+  { id:'dragon-violeta', category:'gifts', name:'Dragón Violeta', icon:'🐉', price:25000, tier:'PREMIUM', featured:true, animation:'pendiente', sound:true, description:'Regalo premium con presencia de pantalla.' },
+  { id:'corona-imperial', category:'gifts', name:'Corona Imperial', icon:'🏆', price:50000, tier:'PREMIUM', featured:true, animation:'pendiente', sound:true, description:'Premio imperial con acabado dorado.' },
+  { id:'diamante-jemmo', category:'gifts', name:'Diamante JEMMO', icon:'💎', price:100000, tier:'PREMIUM', featured:true, animation:'pendiente', sound:true, description:'Regalo premium de alto impacto.' },
+  { id:'universo-jemmo', category:'gifts', name:'Universo JEMMO', icon:'🌌', price:200000, tier:'GRANDE', featured:true, animation:'pendiente', sound:true, description:'Regalo grande preparado para animación envolvente.' },
+  { id:'yate-dorado', category:'gifts', name:'Yate Dorado', icon:'🛥️', price:500000, tier:'GRANDE', featured:true, animation:'pendiente', sound:true, description:'Regalo grande de categoría exclusiva.' },
+  { id:'palacio-jemmo', category:'gifts', name:'Palacio JEMMO', icon:'🏰', price:1000000, tier:'ÉPICO', featured:true, animation:'pendiente', sound:true, description:'Regalo épico de un millón de JEMMOS.' },
+  { id:'planeta-jemmo', category:'gifts', name:'Planeta JEMMO', icon:'🪐', price:2500000, tier:'ÉPICO', featured:true, animation:'pendiente', sound:true, description:'Regalo épico de dos millones y medio.' },
+  { id:'imperio-jemmo', category:'gifts', name:'Imperio JEMMO', icon:'✨', price:5000000, tier:'LEGENDARIO', featured:true, animation:'pendiente', sound:true, description:'Regalo legendario máximo del catálogo oficial.' }
 ]);
 
 export const ALL_CATALOG_ITEMS = Object.freeze([...PERSONALIZATION_CATALOG]);
