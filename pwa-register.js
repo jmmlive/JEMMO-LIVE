@@ -1,14 +1,14 @@
 (()=>{
   'use strict';
-  if(window.__JEMMO_PWA_REGISTER_57__)return;
-  window.__JEMMO_PWA_REGISTER_57__=true;
-  const RELEASE='pwa-entry-chili-57';
+  if(window.__JEMMO_PWA_REGISTER_58__)return;
+  window.__JEMMO_PWA_REGISTER_58__=true;
+  const RELEASE='pwa-home-battle-58';
   let installPrompt=null;
   const isStandalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone===true;
   const storage={get:k=>{try{return localStorage.getItem(k)}catch{return null}},set:(k,v)=>{try{localStorage.setItem(k,v);return true}catch{try{sessionStorage.setItem(k,v);return true}catch{return false}}}};
   function showInstallHelp(message){
-    const existing=document.getElementById('jemmoInstallHelp57');existing?.remove();
-    const el=document.createElement('div');el.id='jemmoInstallHelp57';el.style.cssText='position:fixed;z-index:50000;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(92vw,440px);padding:12px 14px;border:1px solid #b946e8;border-radius:15px;background:#17021eee;color:#fff;font:700 12px/1.4 system-ui;box-shadow:0 12px 36px #000c;text-align:center';el.textContent=message;document.body.appendChild(el);setTimeout(()=>el.remove(),4200)
+    const existing=document.getElementById('jemmoInstallHelp58');existing?.remove();
+    const el=document.createElement('div');el.id='jemmoInstallHelp58';el.style.cssText='position:fixed;z-index:50000;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(92vw,440px);padding:12px 14px;border:1px solid #b946e8;border-radius:15px;background:#17021eee;color:#fff;font:700 12px/1.4 system-ui;box-shadow:0 12px 36px #000c;text-align:center';el.textContent=message;document.body.appendChild(el);setTimeout(()=>el.remove(),4200)
   }
   function bindInstallButtons(){document.querySelectorAll('[data-install-jemmo]').forEach(button=>{button.hidden=false;button.disabled=false;if(isStandalone())button.textContent='✓ JEMMO LIVE YA ESTÁ INSTALADA';else if(installPrompt)button.textContent='⬇ INSTALAR JEMMO LIVE';else button.textContent='📲 CÓMO INSTALAR JEMMO LIVE'})}
   window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installPrompt=event;bindInstallButtons();window.dispatchEvent(new Event('jemmo-install-ready'))});

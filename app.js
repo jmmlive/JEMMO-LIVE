@@ -41,37 +41,8 @@
 
  renderDefault();
 
- // v0.6.2 · Chat local funcional de la batalla.
- // Esta fase permite escribir, enviar y conservar los mensajes en este dispositivo.
- const chatForm=qs('#battleChatForm'),chatInput=qs('#battleChatInput'),chatMessages=qs('#battleChatMessages');
- const chatKey='jemmo_battle_chat_v062';
- const formatTime=()=>new Intl.DateTimeFormat('es-ES',{hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
- const createChatMessage=(text,time=formatTime())=>{
-  if(!chatMessages)return;
-  const row=document.createElement('p');
-  row.className='chat-own';
-  const name=document.createElement('b');
-  name.textContent='Tú: ';
-  const message=document.createTextNode(text);
-  const stamp=document.createElement('time');
-  stamp.textContent=time;
-  row.append(name,message,stamp);
-  chatMessages.append(row);
-  chatMessages.scrollTop=chatMessages.scrollHeight;
- };
- const loadChat=()=>{try{JSON.parse(localStorage.getItem(chatKey)||'[]').slice(-20).forEach(item=>createChatMessage(item.text,item.time))}catch{localStorage.removeItem(chatKey)}};
- const saveChat=(text,time)=>{try{const saved=JSON.parse(localStorage.getItem(chatKey)||'[]');saved.push({text,time});localStorage.setItem(chatKey,JSON.stringify(saved.slice(-20)))}catch{}};
- chatForm?.addEventListener('submit',event=>{
-  event.preventDefault();
-  const text=chatInput?.value.trim();
-  if(!text){chatInput?.focus();return}
-  const time=formatTime();
-  createChatMessage(text,time);
-  saveChat(text,time);
-  chatInput.value='';
-  chatInput.focus();
- });
- loadChat();
+ // PRUEBA 58 · El chat temporal de Batalla Oficial se gestiona en jemmo-battle-live.js.
+ // No se guarda en localStorage: al salir de Inicio, la conversación local se reinicia.
 
  const nav=qs('.bottom-nav');
  const currentTab=()=>{const file=(location.pathname.split('/').pop()||'inicio.html').toLowerCase();return ({'inicio.html':'inicio','live.html':'live','salas.html':'salas','mensajes.html':'mensajes','yo.html':'yo','casa-demo.html':'inicio','jemmo-universo.html':'yo'})[file]||nav?.dataset.current||'inicio'};

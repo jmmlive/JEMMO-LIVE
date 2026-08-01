@@ -1,0 +1,53 @@
+JEMMO LIVE V1 · PRUEBA 58
+PLAN DE PRUEBA MÓVIL · BATALLA OFICIAL
+Fecha: 01/08/2026
+
+1. PUBLICACIÓN
+- Aplicar el parche sobre PRUEBA 57.
+- Esperar el despliegue de GitHub Pages.
+- Cerrar completamente la PWA y volver a abrirla.
+
+2. ASPECTO DEL PANEL
+- Abrir Inicio.
+- Confirmar que BATALLA OFICIAL muestra el distintivo EN VIVO.
+- Confirmar movimiento suave del brillo, VS, escudos, barra y actividad.
+- Confirmar que el panel no provoca saltos de tamaño ni mueve el resto de Inicio.
+
+3. RELOJ
+- Observar el tiempo durante al menos cinco segundos.
+- Debe descontar un segundo de forma continua.
+
+4. CHICHARRO
+- Confirmar que junto a CHAT PÚBLICO DE LA BATALLA aparece la cara y el cuerpo del chicharro.
+- No debe verse una aleta aislada ni un recorte desplazado.
+- El avatar debe conservar un movimiento y brillo suaves.
+
+5. CHAT TEMPORAL
+- Escribir un mensaje y pulsar ENVIAR.
+- El mensaje debe aparecer con “Tú” y la hora actual.
+- Salir a otra pantalla de JEMMO LIVE.
+- Volver a Inicio.
+- El mensaje anterior no debe reaparecer.
+- Deben mostrarse nuevamente los mensajes públicos iniciales.
+- Debe ser posible escribir otro mensaje nuevo.
+
+6. MENSAJES AMBIENTALES
+- Permanecer en Inicio entre 7 y 12 segundos.
+- Debe aparecer una nueva conversación pública de muestra.
+- El chat no debe superar 12 mensajes acumulados.
+
+7. REGALOS Y MARCADOR
+- Abrir el botón del regalo.
+- Confirmar que la hoja de selección sigue abriendo.
+- Si se envía un regalo de prueba con saldo, el marcador debe actualizarse y reaccionar visualmente.
+
+8. NAVEGACIÓN Y RENDIMIENTO
+- Probar desplazamiento vertical y la barra inferior.
+- Confirmar que no hay bloqueos, parpadeos excesivos ni mensajes antiguos guardados.
+- Probar con ahorro de batería y orientación vertical.
+
+RESULTADO ESPERADO
+- Panel vivo y reconocible como módulo funcional.
+- Chat limpio en cada entrada a Inicio.
+- Chicharro claramente visible.
+- Resto de la aplicación sin cambios funcionales.

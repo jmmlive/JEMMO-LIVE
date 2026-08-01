@@ -1,3 +1,10 @@
+# PRUEBA 58 · 01/08/2026
+
+- Inicio: Batalla Oficial dinámica con reloj real, actividad, efectos y reacción del marcador.
+- Chat temporal por visita; elimina la persistencia antigua en localStorage.
+- Chicharro del chat corregido con un recurso específico y animación ligera.
+- Caché PWA actualizada para publicación móvil.
+
 # CHANGELOG
 
 ## PRUEBA 54 · 29/07/2026

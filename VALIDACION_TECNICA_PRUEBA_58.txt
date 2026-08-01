@@ -1,0 +1,29 @@
+JEMMO LIVE V1 · VALIDACIÓN TÉCNICA PRUEBA 58
+Fecha: 01/08/2026
+
+Base verificada:
+JEMMO-LIVE-main-PRUEBA-57-COMPLETA.zip
+SHA-256: f8f37911f938cc42186eec8ceedacd58e5984a996e4ac87975597c6ebba59f3e
+
+Comprobaciones específicas:
+- app.js ya no contiene la clave de persistencia del chat salvo la eliminación de compatibilidad en el nuevo módulo.
+- jemmo-battle-live.js tiene sintaxis JavaScript válida.
+- El formulario añade mensajes solo al DOM actual.
+- pagehide vacía el chat y pageshow con bfcache lo reconstruye con tres mensajes iniciales.
+- El reloj decrece cada segundo.
+- El recurso jemmo-fish-chat.webp carga a 512 x 512 px.
+- Render móvil inspeccionado a 390 px de ancho.
+- No hay IDs duplicados en inicio.html.
+- sw.js incluye los recursos nuevos y usa una caché PRUEBA 58.
+
+Pendiente:
+- Validación final en el Redmi 14C después del despliegue real mediante GitHub Pages.
+
+RESULTADO DE AUDITORÍA FINAL
+- 216 archivos de proyecto.
+- 52 archivos JavaScript comprobados con node --check.
+- 19 pantallas HTML revisadas.
+- 283 referencias locales HTML/CSS comprobadas.
+- 0 referencias locales rotas.
+- 0 IDs HTML duplicados.
+- 0 archivos eliminados respecto a PRUEBA 57.
