@@ -1,0 +1,39 @@
+JEMMO LIVE V1 · INSTALACIÓN PRUEBA 64
+
+IMPORTANTE
+- No instalar PRUEBA 62.
+- No instalar PRUEBA 63.
+- PRUEBA 64 está construida directamente sobre PRUEBA 61.
+
+ACTUALIZACIÓN CON GITHUB MÓVIL
+1. Descarga el ZIP del parche PRUEBA 64.
+2. Descomprime el ZIP en el móvil.
+3. Abre el repositorio JEMMO-LIVE en GitHub.
+4. Sube a la raíz los archivos y carpetas extraídos.
+5. Acepta sustituir los archivos con el mismo nombre.
+6. Conserva todos los demás archivos del repositorio.
+7. Realiza el commit.
+8. Espera la publicación de GitHub Pages.
+9. Abre la PWA, ciérrala y vuelve a abrirla para recibir la nueva caché.
+
+NO SUBIR EL ZIP DIRECTAMENTE AL REPOSITORIO.
+
+PRIMERA COMPROBACIÓN
+- Entra en una Sala de Casa.
+- Pulsa MASCOTA.
+- Debe abrirse CHICHARRO JEMMO con 0 / 120 XP.
+- Alimentar, limpiar y jugar deben indicar DISPONIBLE AHORA.
+- Toca el agua y mueve el dedo: el pez debe seguirlo sin recortarse.
+- La pantalla no debe mostrar el saldo completo del monedero.
+
+ARCHIVOS DEL PARCHE
+- CAMBIOS_PRUEBA_64.md
+- CHANGELOG.md
+- INTEGRIDAD_SHA256.txt
+- LEEME_INSTALACION_PRUEBA_64.txt
+- PRUEBAS_PRUEBA_64.txt
+- jemmo-house-pet-renderer.js
+- jemmo-house-pet.css
+- jemmo-house-pet.js
+- pwa-register.js
+- sw.js

@@ -1,15 +1,12 @@
-# PRUEBA 63 · 01/08/2026
+# PRUEBA 64 · 01/08/2026
 
-- Mascota de Casa reconstruida completamente con SVG, CSS y JavaScript; no utiliza fotografías ni imágenes generadas.
-- Chicharro violeta completo, reconocible y expresivo, con ojo azul, detalles dorados y letra J siempre legible.
-- Pecera inmersiva panorámica con portal JEMMO, profundidad, arrecife, partículas, burbujas y plataforma integrada.
-- Movimiento limitado a una zona segura para que el pez nunca aparezca cortado.
-- Animaciones basadas principalmente en `transform` y `opacity`, con modo de movimiento reducido.
-- Estados visuales de hambre, limpieza y ánimo; reacciones diferentes al tocar, alimentar, limpiar, jugar o regalar.
-- Eliminados textos de modo de pruebas y reorganizada la interfaz para evitar truncamientos.
-- Reinicio controlado de los datos heredados de prueba y de sus bloqueos de 23 horas.
-- Nuevos tiempos de cuidado: alimentar cada 6 h, limpiar cada 12 h y jugar cada 2 h.
-- Caché PWA actualizada a PRUEBA 63.
+- Mascota rehecha sin fotografías ni imágenes generadas.
+- Nuevo motor Canvas 2.5D con movimiento, parpadeo, respiración, cola, aletas y seguimiento táctil.
+- Santuario acuático por capas con portal, arrecife, plantas, corales, burbujas, partículas y cristal.
+- Migración de estados falsos de PRUEBA 62/63: XP y bloqueos antiguos reiniciados una sola vez.
+- Acciones disponibles en la primera apertura; tiempos 6 h / 12 h / 2 h.
+- Saldo total oculto de la pantalla principal de la mascota.
+- Caché PWA actualizada e inclusión de `jemmo-house-pet-renderer.js`.
 
 # PRUEBA 59 · 01/08/2026
 

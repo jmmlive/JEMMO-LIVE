@@ -1,8 +1,8 @@
 (()=>{
   'use strict';
-  if(window.__JEMMO_PWA_REGISTER_63__)return;
-  window.__JEMMO_PWA_REGISTER_63__=true;
-  const RELEASE='pwa-mascota-viva-63';
+  if(window.__JEMMO_PWA_REGISTER_64__)return;
+  window.__JEMMO_PWA_REGISTER_64__=true;
+  const RELEASE='pwa-mascot-64';
   let installPrompt=null;
   const isStandalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone===true;
   const storage={get:k=>{try{return localStorage.getItem(k)}catch{return null}},set:(k,v)=>{try{localStorage.setItem(k,v);return true}catch{try{sessionStorage.setItem(k,v);return true}catch{return false}}}};
@@ -16,8 +16,9 @@
   window.addEventListener('appinstalled',()=>{installPrompt=null;bindInstallButtons()});
   function loadHousePet(){
     const path=location.pathname.toLowerCase();const search=location.search.toLowerCase();const relevant=path.endsWith('/salas.html')||path.endsWith('salas.html')||path.endsWith('/casa-demo.html')||path.endsWith('casa-demo.html')||search.includes('houseroom=1')||search.includes('house=');if(!relevant)return;
-    if(!document.querySelector('link[data-jemmo-house-pet]')){const link=document.createElement('link');link.rel='stylesheet';link.href='./jemmo-house-pet.css?v=63';link.dataset.jemmoHousePet='63';document.head.appendChild(link)}
-    if(!document.querySelector('script[data-jemmo-house-pet]')){const script=document.createElement('script');script.src='./jemmo-house-pet.js?v=63';script.defer=true;script.dataset.jemmoHousePet='63';script.onerror=()=>console.warn('JEMMO Mascota: no se pudo cargar el módulo.');document.head.appendChild(script)}
+    if(!document.querySelector('link[data-jemmo-house-pet]')){const link=document.createElement('link');link.rel='stylesheet';link.href='./jemmo-house-pet.css?v=64';link.dataset.jemmoHousePet='64';document.head.appendChild(link)}
+    const loadMain=()=>{if(document.querySelector('script[data-jemmo-house-pet]'))return;const script=document.createElement('script');script.src='./jemmo-house-pet.js?v=64';script.defer=true;script.dataset.jemmoHousePet='64';script.onerror=()=>console.warn('JEMMO Mascota: no se pudo cargar el módulo.');document.head.appendChild(script)};
+    if(window.JemmoMascotRenderer)loadMain();else if(!document.querySelector('script[data-jemmo-pet-renderer]')){const renderer=document.createElement('script');renderer.src='./jemmo-house-pet-renderer.js?v=64';renderer.defer=true;renderer.dataset.jemmoPetRenderer='64';renderer.onload=loadMain;renderer.onerror=()=>console.warn('JEMMO Mascota: no se pudo cargar el motor visual.');document.head.appendChild(renderer)}
   }
   if('serviceWorker'in navigator&&location.protocol!=='file:'){
     window.addEventListener('load',async()=>{try{const registration=await navigator.serviceWorker.register('./sw.js',{scope:'./',updateViaCache:'none'});registration.update().catch(()=>{});if(registration.waiting)registration.waiting.postMessage({type:'SKIP_WAITING'});registration.addEventListener('updatefound',()=>{const worker=registration.installing;if(!worker)return;worker.addEventListener('statechange',()=>{if(worker.state==='installed'&&navigator.serviceWorker.controller)worker.postMessage({type:'SKIP_WAITING'})})})}catch(error){console.error('JEMMO service worker:',error)}});

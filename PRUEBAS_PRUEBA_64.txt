@@ -1,0 +1,44 @@
+JEMMO LIVE V1 · VALIDACIÓN PRUEBA 64
+Fecha: 01/08/2026
+
+BASE
+- JEMMO-LIVE-main-PRUEBA-61-COMPLETA.zip
+- SHA-256: f0c733fc00c2ad0d8e7ef1133f1e9e752d8537c27fad7def20b351a201a2bb1b
+
+VALIDACIÓN ESTÁTICA
+- JavaScript revisado con Node.js --check.
+- 54 archivos JavaScript.
+- 0 errores de sintaxis.
+- 14 archivos CSS analizados con tinycss2.
+- 0 errores de parseo.
+
+VALIDACIÓN VISUAL AUTOMATIZADA
+- Chromium móvil 320 x 700: sin errores JavaScript y sin desbordamiento horizontal.
+- Chromium móvil 390 x 844: sin errores JavaScript y sin desbordamiento horizontal.
+- Chromium móvil 430 x 932: sin errores JavaScript y sin desbordamiento horizontal.
+- Canvas renderizado correctamente en los tres tamaños.
+- Pez completo visible y letra J legible al cambiar de dirección.
+- Cabecera, progreso, necesidades y acciones adaptables.
+
+INTERACCIONES COMPROBADAS
+- Apertura y cierre del santuario.
+- Seguimiento táctil dentro del agua.
+- Alimentar, limpiar y jugar ejecutados consecutivamente desde el estado inicial.
+- Resultado comprobado: 17 XP acumulados, tiempos de espera activados y 0 errores JavaScript.
+- Bocado neón confirmado con monedero simulado: +20 XP, 1 compra y 500 JEMMOS registrados.
+- Partículas de alimento, limpieza, juego y celebración comprobadas.
+- Estado inicial: 0 XP, Nivel 1, 100% alimento, limpieza y ánimo.
+- La pantalla principal no muestra el saldo total del monedero.
+
+PERSISTENCIA Y SEGURIDAD
+- IndexedDB conservado.
+- Sincronización Firebase conservada con respaldo local.
+- Confirmación previa para alimentos de pago.
+- Clave de idempotencia para impedir cobros duplicados.
+- API JemmoHousePet.addProgress conservada.
+- Migración de estados anteriores a versión 64 incorporada.
+
+PWA
+- Caché actualizada a PRUEBA 64.
+- Nuevo motor visual incluido en precaché.
+- Carga secuencial: renderer -> módulo de mascota.
