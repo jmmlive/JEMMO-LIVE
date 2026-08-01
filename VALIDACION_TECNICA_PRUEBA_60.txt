@@ -1,0 +1,25 @@
+JEMMO LIVE V1 · VALIDACIÓN TÉCNICA PRUEBA 60
+
+- Base: PRUEBA 59 completa.
+- SHA-256 base: 986da3fa6e478051d40e5c78620f2fd27739d625eb84018179f4a3ea4a6bdc90.
+- 224 archivos finales.
+- 52 archivos JavaScript comprobados con `node --check`.
+- 19 HTML revisados.
+- 281 referencias locales HTML comprobadas.
+- 0 referencias locales rotas.
+- 0 IDs HTML duplicados.
+- Nuevo ciclo de Batalla Oficial: `oficial-destacada-ciclo-01`.
+- La ruta antigua `batallas/oficial-prueba` ya no participa en el marcador.
+- La clave antigua `jemmo_battle_house_points_v1` se elimina al iniciar.
+- Base del marcador: Tenerife 329.500; Unicornio 97.300.
+- Caso verificado por cálculo: León de Oro ×100 a Unicornio produce Tenerife 329.500 y Unicornio 197.300; diferencia 132.200 a favor de Tenerife.
+- Caso de cambio de liderato verificado por cálculo: +300.000 a Unicornio produce Unicornio 397.300 y Tenerife 329.500; Unicornio pasa a LIDERANDO por 67.800.
+- Barra, números, etiquetas y accesibilidad se actualizan desde el mismo estado.
+- Escritura Firestore mediante transacción e identificador de operación.
+- Los documentos escritos incluyen `simulation: true`, conforme a las reglas actuales.
+- 223 hashes internos; el índice excluye únicamente su propio archivo.
+- Parche incremental: 30 archivos.
+- El parche aplicado sobre la base PRUEBA 59 produce una copia idéntica a PRUEBA 60 completa.
+- Caché PWA: `jemmo-live-v1-battle-score-integrity-60-20260801`.
+- Registro PWA: `pwa-battle-score-integrity-60`.
+- Prueba física final pendiente en Redmi 14C después del despliegue de GitHub Pages.

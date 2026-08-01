@@ -126,6 +126,7 @@ body[data-jemmo-test-role="agent"] .house-workspace-header{box-shadow:inset 0 -1
 
 
 /* PRUEBA 59 · regalos de batalla y navegación Atrás segura */
+/* PRUEBA 60 · integridad del marcador, liderato dinámico y ciclo limpio de Batalla Oficial */
 .battle-choice{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .battle-gift-step.needs-attention>strong{color:#ffd85a}
 .battle-gift-step.needs-attention .battle-house-options,.battle-gift-step.needs-attention .battle-gift-options{border-radius:16px;box-shadow:0 0 0 1px rgba(255,216,90,.18),0 0 24px rgba(255,182,45,.08)}

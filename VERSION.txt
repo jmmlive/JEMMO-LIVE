@@ -1,15 +1,16 @@
-JEMMO LIVE V1 · REGALOS DE BATALLA FUNCIONALES Y BOTÓN ATRÁS SEGURO · PRUEBA 59
+JEMMO LIVE V1 · INTEGRIDAD DEL MARCADOR DE BATALLA Y LIDERATO DINÁMICO · PRUEBA 60
 
 Fecha: 01/08/2026
-Base: JEMMO-LIVE-main-PRUEBA-58-COMPLETA.zip
-SHA-256 base: 39c7fae6969ff51be888786fcf46a8f5a86752f4037b123efe43e22cd5312392
+Base: JEMMO-LIVE-main-PRUEBA-59-COMPLETA.zip
+SHA-256 base: 986da3fa6e478051d40e5c78620f2fd27739d625eb84018179f4a3ea4a6bdc90
 
-RESULTADO PRUEBA 59
-- Regalos de Batalla Oficial seleccionables y enviables.
-- Mensajes claros cuando falta Casa o regalo.
-- Coste visible solo con selección completa.
-- Cobro único, saldo, chat y marcador actualizados.
-- Atrás cierra el modal de regalos.
-- Atrás en Inicio no expulsa de la PWA.
-- Caché: jemmo-live-v1-battle-gifts-back-59-20260801
-- Registro: pwa-battle-gifts-back-59
+RESULTADO PRUEBA 60
+- Eliminadas puntuaciones antiguas mezcladas con el marcador actual.
+- Nuevo ciclo Firestore: oficial-destacada-ciclo-01.
+- Tenerife inicia con 329.500 y Unicornio con 97.300.
+- LIDERANDO, distancia y EMPATE se calculan automáticamente.
+- Barra, números y etiquetas utilizan la misma fuente de datos.
+- Transacción idempotente para no duplicar puntos en la nube.
+- Mensajes ambientales sin regalos ficticios.
+- Caché: jemmo-live-v1-battle-score-integrity-60-20260801
+- Registro: pwa-battle-score-integrity-60

@@ -41,7 +41,7 @@
 
  renderDefault();
 
- // PRUEBA 59 · El chat temporal de Batalla Oficial se gestiona en jemmo-battle-live.js.
+ // PRUEBA 60 · El chat temporal y la actividad coherente de Batalla Oficial se gestionan en jemmo-battle-live.js.
  // No se guarda en localStorage: al salir de Inicio, la conversación local se reinicia.
 
  // PRUEBA 59 · En Inicio, el botón Atrás cierra primero las capas abiertas y no expulsa al usuario de la PWA.

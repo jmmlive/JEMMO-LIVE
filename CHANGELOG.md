@@ -152,3 +152,12 @@ La detección automática real de personas, menores, armas o situaciones peligro
 - Eliminación de cuenta dentro de Configuración, página web independiente y Cloud Function segura.
 - Compatibilidad corregida para conversaciones con `participants` y `participantUids`.
 - Economía real y escalado SFU permanecen bloqueados y pendientes.
+
+## PRUEBA 60 · 01/08/2026
+
+- Corregido el fallo grave que podía mostrar `LIDERANDO` en la Casa con menos puntos.
+- Estados de liderato, distancia y empate recalculados automáticamente.
+- Nuevo ciclo limpio de puntuación para excluir datos antiguos locales y de Firestore.
+- Los puntos solo cambian mediante regalos confirmados.
+- Registro de regalos en Firestore mediante transacción idempotente.
+- Actividad y chat sin anuncios ficticios de regalos.

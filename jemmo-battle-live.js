@@ -1,7 +1,7 @@
 (()=>{
   'use strict';
-  if(window.__JEMMO_BATTLE_LIVE_58__)return;
-  window.__JEMMO_BATTLE_LIVE_58__=true;
+  if(window.__JEMMO_BATTLE_LIVE_60__)return;
+  window.__JEMMO_BATTLE_LIVE_60__=true;
 
   const panel=document.querySelector('.home-battle-lead');
   if(!panel)return;
@@ -21,29 +21,29 @@
   const timeFormat=new Intl.DateTimeFormat('es-ES',{hour:'2-digit',minute:'2-digit',hour12:false});
 
   const SEED_MESSAGES=[
-    {type:'gift',name:'💎 Rosa',text:'envió León de Oro a Casa Tenerife'},
-    {type:'cheer',name:'🔥 TenerifeCrew',text:'¡Vamos Casa Tenerife! 💙💛'},
-    {type:'cheer',name:'👑 UnicornioPower',text:'¡Vamos con todooo! 🦄'}
+    {type:'cheer',name:'LunaJEMMO',text:'¡Qué buena está la batalla! ✨'},
+    {type:'cheer',name:'TenerifeCrew',text:'Todavía queda mucho tiempo 💛'},
+    {type:'cheer',name:'Mía',text:'Vamos a apoyar a nuestra Casa 💜'}
   ];
   const LIVE_MESSAGES=[
-    {type:'cheer',name:'LunaJEMMO',text:'Esta batalla está muy igualada ✨'},
-    {type:'gift',name:'Nayra',text:'envió Rosa JEMMO a Casa Unicornio 🌹'},
-    {type:'cheer',name:'CanariasLive',text:'¡Tenerife sigue arriba! 👑'},
-    {type:'gift',name:'LeoStar',text:'envió Corona Real a Casa Tenerife 👑'},
-    {type:'cheer',name:'Mía',text:'Qué emoción, queda mucha batalla 💜'},
-    {type:'gift',name:'UnicornioPower',text:'envió Estrella a Casa Unicornio ⭐'}
+    {type:'cheer',name:'Nayra',text:'La diferencia puede cambiar en cualquier momento'},
+    {type:'cheer',name:'CanariasLive',text:'¡Esto está cada vez más emocionante! 👑'},
+    {type:'cheer',name:'UnicornioPower',text:'Seguimos apoyando hasta el final 🦄'},
+    {type:'cheer',name:'LeoStar',text:'Que gane la Casa con más apoyo 🔥'},
+    {type:'cheer',name:'Rosa',text:'Me encanta esta batalla 💜'}
   ];
   const ACTIVITY=[
-    'Rosa envió León de Oro a Casa Tenerife',
-    'Casa Unicornio acaba de recibir una Estrella',
-    'La ventaja cambia con cada regalo',
-    'Apoya a tu Casa desde el botón de regalos'
+    'Marcador oficial actualizado con regalos reales',
+    'Toca una Casa o el regalo para apoyar',
+    'Cada JEMMO enviado suma un punto a la Casa',
+    'Los estados cambian automáticamente con el marcador'
   ];
 
   let countdownEnd=0;
   let viewerValue=1284;
   let incomingIndex=0;
   let activityIndex=0;
+  let activityLockedUntil=0;
   let countdownTimer=0;
   let viewerTimer=0;
   let activityTimer=0;
@@ -60,7 +60,7 @@
     return `${hours}:${minutes}:${secs}`;
   };
   const parseScore=element=>Math.max(0,Number(String(element?.textContent||'0').replace(/[^\d]/g,''))||0);
-  const nowTime=()=>timeFormat.format(new Date());
+  const nowTime=date=>timeFormat.format(date||new Date());
 
   function buildMessage({type='cheer',name='',text='',own=false,time=nowTime()}){
     const row=document.createElement('p');
@@ -88,12 +88,14 @@
     messages.append(row);
     trimMessages();
     messages.scrollTo?.({top:messages.scrollHeight,behavior:reducedMotion?'auto':'smooth'});
-    if(announce)pulseActivity(`${message.name}: ${message.text}`);
+    if(announce)pulseActivity('El chat público sigue activo');
   }
 
   function resetChat(){
     if(!messages)return;
-    messages.replaceChildren(...SEED_MESSAGES.map((message,index)=>buildMessage({...message,time:index===0?'18:04':index===1?'18:05':'18:06'})));
+    const now=Date.now();
+    const rows=SEED_MESSAGES.map((message,index)=>buildMessage({...message,time:nowTime(new Date(now-(SEED_MESSAGES.length-index)*60000))}));
+    messages.replaceChildren(...rows);
     messages.scrollTop=messages.scrollHeight;
     if(chatInput){chatInput.value='';chatInput.disabled=false}
   }
@@ -102,8 +104,9 @@
     try{localStorage.removeItem('jemmo_battle_chat_v062')}catch{}
   }
 
-  function pulseActivity(text){
+  function pulseActivity(text,{lockMs=0}={}){
     if(!activityText)return;
+    if(lockMs>0)activityLockedUntil=Math.max(activityLockedUntil,Date.now()+lockMs);
     activityText.textContent=text;
     activityText.classList.remove('activity-pop');
     void activityText.offsetWidth;
@@ -131,7 +134,6 @@
         if(score){void score.offsetWidth;score.classList.add('score-pop')}
       });
       updateProgress();
-      pulseActivity('El marcador acaba de actualizarse');
     });
     [scoreTenerife,scoreUnicornio].forEach(element=>element&&scoreObserver.observe(element,{childList:true,characterData:true,subtree:true}));
     updateProgress();
@@ -174,12 +176,13 @@
     if(document.hidden)return;
     incomingTimer=window.setTimeout(()=>{
       const message=LIVE_MESSAGES[incomingIndex++%LIVE_MESSAGES.length];
-      appendMessage(message);
+      appendMessage(message,{announce:false});
       scheduleIncoming();
     },6500+Math.round(Math.random()*3500));
   }
 
   function rotateActivity(){
+    if(Date.now()<activityLockedUntil)return;
     pulseActivity(ACTIVITY[activityIndex++%ACTIVITY.length]);
   }
 
@@ -213,7 +216,8 @@
     event.preventDefault();
     const text=chatInput?.value.trim();
     if(!text){chatInput?.focus();return}
-    appendMessage({type:'own',name:'Tú',text,own:true});
+    appendMessage({type:'own',name:'Tú',text,own:true},{announce:false});
+    pulseActivity('Tu mensaje se publicó en el chat',{lockMs:3500});
     chatInput.value='';
     chatInput.focus();
   }
@@ -226,7 +230,6 @@
         if(!(node instanceof HTMLElement)||node.tagName!=='P')return;
         node.classList.add('battle-message','message-enter');
         setTimeout(()=>node.classList.remove('message-enter'),500);
-        if(node.textContent?.includes('enviaste'))pulseActivity(node.textContent.replace(/\s+/g,' ').trim());
       });
       trimMessages();
       messages.scrollTop=messages.scrollHeight;
@@ -241,9 +244,14 @@
     startCountdown();
     startAmbient();
     updateProgress();
+    pulseActivity('Marcador oficial listo para recibir regalos');
   }
 
   chatForm?.addEventListener('submit',handleSubmit);
+  window.addEventListener('jemmo-battle-gift-sent',event=>{
+    const detail=event.detail||{};
+    pulseActivity(`Tú enviaste ${detail.giftName||'un regalo'} ×${detail.quantity||1} a ${detail.houseName||'la Casa'}`,{lockMs:10000});
+  });
   document.addEventListener('visibilitychange',()=>{
     if(document.hidden){stopAmbient();return}
     startAmbient();

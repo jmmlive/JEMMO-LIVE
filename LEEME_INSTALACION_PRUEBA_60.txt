@@ -1,0 +1,24 @@
+JEMMO LIVE V1 · INSTALACIÓN PRUEBA 60
+
+BASE OBLIGATORIA
+- PRUEBA 59 completa.
+- SHA-256: 986da3fa6e478051d40e5c78620f2fd27739d625eb84018179f4a3ea4a6bdc90
+
+GITHUB MÓVIL
+1. Descarga el parche PRUEBA 60.
+2. Descomprime el ZIP en el móvil.
+3. Sube todos los archivos extraídos a la raíz del repositorio JEMMO-LIVE.
+4. Sustituye los archivos con el mismo nombre.
+5. No borres los demás archivos del repositorio.
+6. No subas el ZIP directamente.
+7. Realiza el commit y espera a que GitHub Pages termine el despliegue.
+
+PRUEBA EN EL MÓVIL
+1. Cierra JEMMO LIVE completamente.
+2. Vuelve a abrirla.
+3. Comprueba el marcador inicial y las etiquetas.
+4. Envía un regalo a cada Casa y verifica que solo aumenta la Casa seleccionada.
+5. Comprueba que LIDERANDO cambia automáticamente según los puntos.
+
+NOTA
+PRUEBA 60 inicia un ciclo limpio de Batalla Oficial para descartar puntuaciones antiguas de pruebas. No utiliza la ruta Firestore anterior `oficial-prueba`.

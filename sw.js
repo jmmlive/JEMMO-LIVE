@@ -1,4 +1,4 @@
-const CACHE='jemmo-live-v1-battle-gifts-back-59-20260801';
+const CACHE='jemmo-live-v1-battle-score-integrity-60-20260801';
 const CORE=[
   './','./index.html','./acceso.html','./entrada.html','./offline.html','./inicio.html','./yo.html','./live.html','./perfil-publico.html','./directos.html','./salas.html','./configuracion.html','./chili-ia.html','./eliminar-cuenta.html',
   './pwa-register.js','./jemmo-app-check-config.js','./jemmo-app-check.js','./jemmo-account-deletion.js','./jemmo-live-presence.js','./jemmo-live-rtc-config.js','./jemmo-live-webrtc.js','./jemmo-live-room-sync.js','./jemmo-wallet.js','./jemmo-official-policies.js','./jemmo-settings.js','./jemmo-chili.js','./jemmo-chili-knowledge.js',

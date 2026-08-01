@@ -1,0 +1,33 @@
+JEMMO LIVE V1 · PRUEBAS FUNCIONALES PRUEBA 60
+
+1. Abrir Inicio y comprobar:
+   - Casa Tenerife: 329.500.
+   - Casa Unicornio: 97.300.
+   - Tenerife muestra LIDERANDO.
+   - Unicornio muestra la distancia hasta el liderato.
+
+2. Enviar León de Oro ×100 a Casa Unicornio:
+   - Se descuentan exactamente 100.000 JEMMOS.
+   - Unicornio pasa a 197.300.
+   - Tenerife permanece en 329.500.
+   - No aparecen 400.000 o 500.000 puntos antiguos.
+   - Tenerife sigue como LIDERANDO.
+   - Unicornio muestra que está a 132.200 puntos.
+
+3. Enviar regalos suficientes para que Unicornio supere a Tenerife:
+   - Unicornio cambia automáticamente a LIDERANDO.
+   - Tenerife deja de mostrar LIDERANDO y muestra la distancia correcta.
+   - La barra cambia al mismo tiempo que los números.
+
+4. Verificar chat y actividad:
+   - El regalo propio aparece una sola vez.
+   - El texto de actividad muestra el regalo real durante varios segundos.
+   - Los mensajes ambientales no suman puntos ni afirman regalos inexistentes.
+
+5. Salir de Inicio y volver:
+   - El chat temporal comienza limpio.
+   - El marcador del ciclo conserva únicamente los regalos válidos.
+
+6. Abrir y cerrar el panel de regalos con Atrás:
+   - Atrás cierra el panel.
+   - Atrás en Inicio no expulsa de JEMMO LIVE.
