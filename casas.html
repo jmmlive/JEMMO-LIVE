@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" href="favicon-64.png">
   <link rel="icon" href="icon-192.png">
   <title>JEMMO LIVE · Casas</title>
-  <link rel="stylesheet" href="app.css?v=66">
+  <link rel="stylesheet" href="app.css?v=67">
   <style>html.jemmo-auth-pending body{visibility:hidden}</style>
   <script>document.documentElement.classList.add('jemmo-auth-pending');setTimeout(()=>{if(!document.documentElement.classList.contains('jemmo-auth-pending'))return;let uid='';try{uid=localStorage.getItem('jemmo_active_uid')||''}catch{}if(!uid)try{uid=sessionStorage.getItem('jemmo_active_uid')||''}catch{}if(uid)document.documentElement.classList.remove('jemmo-auth-pending');else location.replace('acceso.html?sesion=timeout')},5500)</script>
 </head>
@@ -69,18 +69,13 @@
       <div id="houseRanking" class="house-ranking"></div>
     </section>
 
-    <section class="panel house-workspace" id="houseWorkspace" hidden aria-labelledby="workspaceName">
+    <section class="panel house-workspace house-premium-shell" id="houseWorkspace" hidden aria-labelledby="workspaceName">
       <header class="house-workspace-header">
         <button type="button" class="house-workspace-back" data-close-workspace aria-label="Volver al explorador">‹</button>
         <span class="house-workspace-emblem" id="workspaceEmblem">♛</span>
         <div><small id="workspaceRole">MIEMBRO</small><h1 id="workspaceName">Mi Casa</h1><p id="workspaceLocation">JEMMO LIVE</p></div>
         <button type="button" class="house-leave-button" data-leave-house>SALIR</button>
       </header>
-      <div class="house-workspace-kpis">
-        <div><b id="workspaceMemberCount">0</b><small>MIEMBROS</small></div>
-        <div><b id="workspaceScore">0</b><small>PUNTOS</small></div>
-        <div><b>ACTIVA</b><small>ESTADO</small></div>
-      </div>
       <nav class="house-workspace-tabs" aria-label="Secciones de Mi Casa">
         <button class="house-workspace-tab active" type="button" data-workspace-tab="home">INICIO</button>
         <button class="house-workspace-tab" type="button" data-workspace-tab="room">SALA</button>
@@ -92,8 +87,8 @@
       </nav>
 
       <div class="house-workspace-view" data-workspace-view="home">
-        <section class="house-premium-stage premium-v66" id="housePremiumStage" aria-label="Pecera social y escenario premium de la Casa">
-          <div class="house-stage-ambient" aria-hidden="true"></div>
+        <section class="house-premium-stage premium-v67" id="housePremiumStage" aria-label="Escenario social premium de la Casa">
+          <div class="house-stage-sky" aria-hidden="true"><i></i><i></i><i></i></div>
           <div class="house-stage-command">
             <span class="house-stage-live"><i></i> CASA ACTIVA</span>
             <span class="house-stage-rank">RANKING <b id="houseStageRank">#—</b></span>
@@ -101,30 +96,29 @@
           </div>
 
           <div class="house-stage-arena">
-            <span class="house-stage-orbit orbit-a" aria-hidden="true"></span>
-            <span class="house-stage-orbit orbit-b" aria-hidden="true"></span>
-            <span class="house-stage-orbit orbit-c" aria-hidden="true"></span>
+            <span class="house-stage-ring ring-one" aria-hidden="true"></span>
+            <span class="house-stage-ring ring-two" aria-hidden="true"></span>
+            <span class="house-stage-beam beam-left" aria-hidden="true"></span>
+            <span class="house-stage-beam beam-right" aria-hidden="true"></span>
             <div class="house-stage-members" id="houseStageMembers" aria-label="Miembros destacados de la Casa"></div>
 
             <div class="house-stage-center">
               <span class="house-stage-crown" aria-hidden="true">♛</span>
-              <div class="house-stage-host" id="houseStageHost"><span id="houseStageHostAvatar">JM</span></div>
+              <div class="house-stage-host" id="houseStageHost"><span id="houseStageHostAvatar">JM</span><i class="house-host-online" aria-hidden="true"></i></div>
               <small>ANFITRIÓN / LÍDER</small>
               <strong id="houseStageHostName">Casa JEMMO</strong>
               <em id="houseStageHostRole">PROPIETARIO</em>
             </div>
 
-            <button class="house-social-aquarium" id="houseSocialAquarium" type="button" aria-label="Abrir Pecera Social de la Casa">
-              <span class="house-aquarium-water" aria-hidden="true"></span>
-              <span class="house-aquarium-bubbles" aria-hidden="true"></span>
-              <span class="house-aquarium-glow" aria-hidden="true"></span>
-              <img src="jemmo-fish-nav.webp" alt="Chicharro JEMMO">
-              <span class="house-aquarium-copy"><small>PECERA SOCIAL · MASCOTA VIVA</small><b>CHICHARRO JEMMO</b><em>TOCA PARA CUIDARLO, JUGAR Y HACERLO EVOLUCIONAR</em></span>
+            <button class="house-social-aquarium" id="houseSocialAquarium" type="button" data-stage-action="support" aria-label="Abrir Pecera Social de la Casa">
+              <canvas id="houseStagePetCanvas" aria-hidden="true"></canvas>
+              <span class="house-aquarium-shine" aria-hidden="true"></span>
+              <span class="house-aquarium-copy"><small>PECERA SOCIAL · MASCOTA VIVA</small><b>CHICHARRO JEMMO</b><em>CUIDAR · JUGAR · EVOLUCIONAR</em></span>
               <span class="house-aquarium-enter">ENTRAR ›</span>
             </button>
           </div>
 
-          <section class="house-energy-console" aria-label="Métricas de energía de la Casa">
+          <section class="house-energy-console" aria-label="Métricas de la Casa">
             <div class="house-energy-head"><span>ENERGÍA DE LA CASA</span><b id="houseStageEnergy">—</b></div>
             <div class="house-energy-track"><i id="houseStageEnergyFill"></i><span></span></div>
             <div class="house-stage-metrics premium-metrics">
@@ -137,39 +131,18 @@
             </div>
           </section>
 
-          <div class="house-stage-actions house-stage-actions-primary">
-            <button class="house-action-room" type="button" data-stage-action="room"><span>🎙</span><b>ENTRAR A LA SALA</b><small>Audio Room 24/7</small></button>
-            <button class="house-action-gift" type="button" data-stage-action="gift"><span>🎁</span><b>ENVIAR REGALO</b><small>Apoya a tu gente</small></button>
-            <button class="house-action-support" type="button" data-stage-action="support"><span>🐟</span><b>APOYAR CASA</b><small>Impulsa la Pecera</small></button>
-          </div>
-          <div class="house-stage-actions house-stage-actions-secondary">
-            <button type="button" data-stage-action="battle">⚔️ <b>IR A BATALLA</b></button>
-            <button type="button" data-stage-action="invite">➕ <b>INVITAR</b></button>
-            <button type="button" data-stage-action="members">👥 <b>VER MIEMBROS</b></button>
+          <div class="house-premium-actions" aria-label="Acciones rápidas de la Casa">
+            <button class="primary" type="button" data-stage-action="room"><span>🎙</span><b>SALA</b><small>24/7</small></button>
+            <button class="gift" type="button" data-stage-action="gift"><span>🎁</span><b>REGALO</b><small>Apoyar</small></button>
+            <button type="button" data-workspace-tab="chat"><span>💬</span><b>CHAT</b><small>Casa</small></button>
+            <button type="button" data-stage-action="battle"><span>⚔</span><b>BATALLA</b><small>En vivo</small></button>
+            <button type="button" data-stage-action="members"><span>👥</span><b>GENTE</b><small>Miembros</small></button>
           </div>
 
           <section class="house-stage-livefeed" aria-label="Actividad reciente de la Casa">
-            <header><div><small>EN VIVO</small><b>LATIDO DE LA CASA</b></div><button type="button" data-workspace-tab="chat">ABRIR CHAT</button></header>
-            <div id="houseStageLiveFeed"><div class="house-stage-feed-empty">La actividad real aparecerá aquí.</div></div>
+            <header><div><small>● EN VIVO</small><b>LATIDO DE LA CASA</b></div><button type="button" data-workspace-tab="chat">ABRIR CHAT</button></header>
+            <div id="houseStageLiveFeed"><div class="house-stage-feed-empty">La actividad real de la Casa aparecerá aquí.</div></div>
           </section>
-        </section>
-        <section class="house-workspace-card house-activity-card">
-          <div class="house-workspace-title"><h2>RESUMEN DE LA CASA</h2><span>Actualizado en tiempo real</span></div>
-          <div class="house-activity-summary" id="houseActivitySummary"></div>
-        </section>
-        <section class="house-workspace-card house-quick-access">
-          <div class="house-workspace-title"><h2>ACCESOS DE LA CASA</h2><span>Sala, tareas y equipo</span></div>
-          <div class="house-quick-grid"><button type="button" data-workspace-tab="room"><span>🎙</span><b>SALA DE LA CASA</b><small>Audio Room 24/7</small></button><button type="button" data-workspace-tab="tasks"><span>🎯</span><b>MIS TAREAS</b><small>LIVE y Sala</small></button><button type="button" data-workspace-tab="emitters"><span>👥</span><b>PANEL AGENTE</b><small>Tareas y comisiones</small></button></div>
-        </section>
-        <form class="house-workspace-card house-notice-composer" id="houseNoticeComposer" hidden>
-          <div class="house-workspace-title"><h2>PUBLICAR AVISO</h2><span>Solo administración</span></div>
-          <label>Título<input name="title" maxlength="60" required placeholder="Ejemplo: Reunión de la Casa"></label>
-          <label>Aviso<textarea name="text" maxlength="500" required placeholder="Escribe la información para los miembros"></textarea></label>
-          <button type="submit">PUBLICAR AVISO</button>
-        </form>
-        <section class="house-workspace-card">
-          <div class="house-workspace-title"><h2>AVISOS</h2><span>Información interna</span></div>
-          <div class="house-notice-list" id="houseNoticeList"></div>
         </section>
       </div>
 
@@ -213,6 +186,16 @@
       </div>
 
       <div class="house-workspace-view" data-workspace-view="admin" hidden>
+        <form class="house-workspace-card house-notice-composer" id="houseNoticeComposer" hidden>
+          <div class="house-workspace-title"><h2>PUBLICAR AVISO</h2><span>Solo administración</span></div>
+          <label>Título<input name="title" maxlength="60" required placeholder="Ejemplo: Reunión de la Casa"></label>
+          <label>Aviso<textarea name="text" maxlength="500" required placeholder="Escribe la información para los miembros"></textarea></label>
+          <button type="submit">PUBLICAR AVISO</button>
+        </form>
+        <section class="house-workspace-card">
+          <div class="house-workspace-title"><h2>AVISOS DE LA CASA</h2><span>Información interna</span></div>
+          <div class="house-notice-list" id="houseNoticeList"></div>
+        </section>
         <section class="house-workspace-card">
           <div class="house-workspace-title"><h2>SOLICITUDES DE INGRESO</h2><span>Aceptar o rechazar</span></div>
           <div class="house-admin-list" id="houseAdminRequests"></div>
@@ -263,11 +246,11 @@
   </nav>
     <script type="module" src="jemmo-app-check.js?v=57"></script>
 <script type="module" src="jemmo-session.js"></script>
-  <script src="pwa-register.js?v=66"></script>
+  <script src="pwa-register.js?v=67"></script>
   <script src="jemmo-wallet.js"></script>
   <script src="jemmo-house-finance.js"></script>
   <script src="app.js"></script>
-  <script type="module" src="jemmo-houses.js?v=66"></script>
+  <script type="module" src="jemmo-houses.js?v=67"></script>
   <script type="module" src="jemmo-house-operations.js?v=37"></script>
 </body>
 </html>

@@ -264,7 +264,10 @@ async function getHouseRoomAccess(houseIdValue) {
   const role = normalizedRole(membership.role || profile.houseRole);
   const position = normalizedRole(membership.housePosition || membership.position || profile.housePosition);
   const ownerUid = clean(house.ownerUid || house.ownerId || house.createdBy || house.proprietorUid, 160);
-  const isHouseOwner = Boolean(ownerUid && ownerUid === user.uid);
+  const profileRole = normalizedRole(profile.role || profile.rol || profile.accountRole);
+  const platformManagement = ['owner', 'propietario', 'superadmin', 'admin', 'administrador'].includes(profileRole);
+  const fatherPlatformOwner = houseId === 'padre' && platformManagement;
+  const isHouseOwner = Boolean((ownerUid && ownerUid === user.uid) || fatherPlatformOwner);
   const activeMembership = membershipSnap.exists() && !['left', 'removed', 'blocked', 'rejected'].includes(membershipStatus);
   const canHost = Boolean(isHouseOwner || (activeMembership && (
     ['owner', 'propietario', 'agent', 'agente', 'admin', 'administrador'].includes(role) ||
@@ -278,7 +281,7 @@ async function getHouseRoomAccess(houseIdValue) {
     roomState.roomPhoto || roomState.roomImage || house.logo || house.photo || house.cover || house.avatar
   );
   const positionLabel = canHost
-    ? (['agent', 'agente'].includes(position) ? 'Agente de Casa' : ['admin', 'administrador'].includes(role) ? 'Administración' : 'Responsable de Casa')
+    ? (fatherPlatformOwner ? 'Propietario de Casa' : ['agent', 'agente'].includes(position) ? 'Agente de Casa' : ['admin', 'administrador'].includes(role) ? 'Administración' : 'Responsable de Casa')
     : (['emitter', 'emisor', 'emisora', 'host', 'creator'].includes(position) ? 'Emisor/a' : 'Miembro');
   return {
     uid: user.uid,

@@ -378,7 +378,7 @@
     </header>
     <section class="jr-house-info" id="houseRoomInfo" aria-label="Datos de la Casa">
       <div class="jr-house-summary">
-        <div class="jr-house-summary-line"><div class="jr-house-medals" id="houseRoomMedals"><span class="jr-house-medal empty">—</span></div><small id="houseRoomCreated">Cargando datos reales de la Casa…</small></div>
+        <div class="jr-house-summary-line"><div class="jr-house-medals" id="houseRoomMedals"><span class="jr-house-medal empty">—</span></div><small id="houseRoomCreated">Casa oficial · sincronización en tiempo real</small></div>
         <div class="jr-house-numbers"><span>MIEMBROS <b id="houseRoomMembers">—</b></span><span>PUNTOS <b id="houseRoomPoints">—</b></span><span>RANGO <b id="houseRoomRank">—</b></span></div>
       </div>
       <div class="jr-task-clock waiting" id="houseTaskClock"><small>TAREA DE EMISOR/A</small><b id="houseTaskCountdown">CARGANDO…</b><span id="houseTaskProgressMini">Comprobando la tarea real de esta Casa…</span></div>
@@ -467,7 +467,7 @@
 
   <script type="module" src="jemmo-app-check.js?v=57"></script>
 <script type="module" src="jemmo-session.js"></script>
-<script src="pwa-register.js?v=66"></script>
+<script src="pwa-register.js?v=67"></script>
 <script src="jemmo-wallet.js?v=45"></script>
 <script src="jemmo-gift-catalog.js?v=61"></script>
 <script src="jemmo-house-finance.js"></script>
@@ -1601,7 +1601,7 @@
       await enterHouseListenerMode(access);return true;
     }catch(error){
       console.warn('Entrada directa a Sala de Casa:',error);
-      toast('No se pudo verificar el responsable. Entrarás como oyente.');
+      toast('La Sala está sincronizando permisos. Entrarás como oyente hasta confirmar al responsable.');
       await enterHouseListenerMode(state.houseAccess||{});return true;
     }
   }

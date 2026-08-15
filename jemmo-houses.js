@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · CASA PREMIUM NIVEL DIOS · RELEASE 66 */
+/* JEMMO LIVE V1 · CASA PREMIUM INMERSIVA · RELEASE 67 */
 const firebaseConfig = {
   apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
   authDomain: 'jemmo-live.firebaseapp.com',
@@ -425,7 +425,7 @@ function closeAllModals() {
 }
 
 function joinButtonCopy(house) {
-  if (sameMembership(house)) return membershipCanManage() ? 'GESTIONAR MI CASA' : 'ENTRAR A AUDIO ROOM';
+  if (sameMembership(house)) return membershipCanManage() ? 'GESTIONAR MI CASA' : 'VER MI CASA';
   if (state.platformAdmin && house.cloud && !house.preview) return 'ADMINISTRAR CASA';
   if (house.preview) return state.platformAdmin ? 'ACTIVAR CASA REAL' : 'CASA DE MUESTRA';
   if (requestFor(house)) return 'CANCELAR SOLICITUD';
@@ -466,7 +466,7 @@ async function handleHouseAction(house) {
   }
   if (sameMembership(house)) {
     closeAllModals();
-    openMembershipDestination(house, true);
+    openWorkspace(house);
     return;
   }
   if (house.preview) {
@@ -492,7 +492,7 @@ async function loadIdentity() {
     role: normalizeRole(local.role || local.rol)
   };
   if (!state.services || !state.uid) {
-    state.platformAdmin = false;
+    state.platformAdmin = ['owner', 'admin'].includes(state.identity.role);
     return;
   }
   try {
@@ -510,16 +510,30 @@ async function loadIdentity() {
   } catch (error) {
     console.warn('JEMMO Casas: identidad local activa', error?.code || error);
   }
-  state.platformAdmin = false;
+  // Para la interfaz aceptamos también el rol protegido guardado en users/{uid}.
+  // Las reglas Firestore de RELEASE 67 validan ese rol antes de permitir escrituras.
+  state.platformAdmin = ['owner', 'admin'].includes(state.identity.role);
   try {
     const currentUser = state.services.auth.currentUser;
     if (currentUser?.uid === state.uid) {
       const tokenResult = await state.services.getIdTokenResult(currentUser, true);
       const claimRole = normalizeRole(tokenResult?.claims?.role);
-      state.platformAdmin = tokenResult?.claims?.owner === true || ['owner', 'admin'].includes(claimRole);
+      state.platformAdmin = state.platformAdmin || tokenResult?.claims?.owner === true || ['owner', 'admin'].includes(claimRole);
     }
   } catch (error) {
-    console.warn('JEMMO Casas: no se pudieron verificar los permisos del token.', error?.code || error);
+    console.warn('JEMMO Casas: el token no aportó rol; se conserva el rol protegido del perfil.', error?.code || error);
+  }
+
+  // La cuenta propietaria debe poder ver su Casa incluso antes de completar la primera
+  // sincronización de Firestore. Esto no concede permisos de escritura: solo evita una
+  // pantalla vacía mientras la nube termina de responder.
+  if (state.platformAdmin && !state.membership?.houseId) {
+    const father = PREVIEW_HOUSES[0];
+    state.membership = {
+      houseId: 'padre', houseName: father.name, role: 'owner', position: 'owner',
+      status: 'active', joinedAt: Date.now(), localBootstrap: true
+    };
+    writeLocalMembership(state.membership);
   }
 }
 
@@ -711,7 +725,7 @@ function friendlyError(error) {
   if (marker.includes('HOUSE_CLOSED')) return 'Esta Casa no acepta solicitudes ahora.';
   if (marker.includes('NOT_ADMIN')) return 'No tienes permiso para administrar esta Casa.';
   if (marker.includes('OWNER_CANNOT_LEAVE')) return 'El propietario no puede abandonar su propia Casa.';
-  if (marker.includes('permission-denied')) return 'Firestore bloqueó esta acción. Hay que actualizar las reglas de Casas.';
+  if (marker.includes('permission-denied')) return 'La sincronización de la Casa está pendiente. Publica las reglas RELEASE 67.';
   if (marker.includes('unavailable') || marker.includes('network')) return 'No hay conexión estable. Inténtalo de nuevo.';
   return message || 'Ocurrió un error inesperado.';
 }
@@ -892,7 +906,7 @@ function calculatePermissions(house = state.workspaceHouse) {
   const member = currentMember();
   const membershipRole = state.membership?.houseId === house?.id ? state.membership?.role : '';
   const role = cleanText(member?.role || membershipRole, 20);
-  state.actualHouseOwner = role === 'owner' || house?.ownerUid === state.uid;
+  state.actualHouseOwner = role === 'owner' || house?.ownerUid === state.uid || (state.platformAdmin && house?.id === 'padre');
   state.actualHouseAdmin = state.workspaceAsPlatformAdmin || state.actualHouseOwner || role === 'admin' || house?.adminUids?.includes(state.uid);
   state.simulatedRole = '';
   state.houseOwner = state.actualHouseOwner;
@@ -951,7 +965,11 @@ function subscribeWorkspace(houseId) {
     else state.houses.unshift(updated);
     calculatePermissions(updated);
     renderAll();
-  }, error => toast(friendlyError(error), 'error'));
+  }, error => {
+    console.warn('JEMMO Casas: documento de Casa', error?.code || error);
+    setCloudState('Casa visible · sincronización pendiente', 'warning');
+    renderWorkspace();
+  });
   const membersUnsub = s.onSnapshot(s.collection(s.db, 'casas', houseId, 'miembros'), snapshot => {
     state.members = snapshot.docs.map(document => ({ id: document.id, uid: document.id, ...document.data() }))
       .filter(member => member.status !== 'removed')
@@ -1018,10 +1036,14 @@ function renderWorkspace() {
   $('#workspaceEmblem').textContent = house.emblem || house.short || '♛';
   $('#workspaceName').textContent = house.name;
   $('#workspaceLocation').textContent = `${house.flag || ''} ${house.city || house.country}`.trim();
-  const workspaceRole = state.simulatedRole ? testRoleLabel(state.simulatedRole) : (state.workspaceAsPlatformAdmin ? 'ADMIN JEMMO' : roleLabel(currentMember()?.role || (state.membership?.houseId === house.id ? state.membership?.role : 'member')));
+  const effectiveRole = state.workspaceAsPlatformAdmin || (state.platformAdmin && house.id === 'padre')
+    ? 'owner'
+    : (currentMember()?.role || (state.membership?.houseId === house.id ? state.membership?.role : 'member'));
+  const workspaceRole = roleLabel(effectiveRole);
   $('#workspaceRole').textContent = workspaceRole;
-  $('#workspaceMemberCount').textContent = formatNumber(house.members || state.members.length);
-  $('#workspaceScore').textContent = formatNumber(house.score);
+  const visibleMemberCount = Math.max((state.platformAdmin && house.id === 'padre') ? 1 : 0, number(house.members), state.members.length);
+  if ($('#workspaceMemberCount')) $('#workspaceMemberCount').textContent = formatNumber(visibleMemberCount);
+  if ($('#workspaceScore')) $('#workspaceScore').textContent = formatNumber(house.score);
   const leaveButton = $('[data-leave-house]');
   if (leaveButton) leaveButton.hidden = state.workspaceAsPlatformAdmin || state.houseOwner;
   const adminTab = $('[data-workspace-tab="admin"]');
@@ -1034,10 +1056,43 @@ function renderWorkspace() {
   renderWorkspaceAdmin();
 }
 
+let stagePetRenderer = null;
+let stagePetCanvas = null;
+function ensureStagePetRenderer() {
+  const canvas = $('#houseStagePetCanvas');
+  if (!canvas) return;
+  if (stagePetCanvas === canvas && stagePetRenderer) {
+    stagePetRenderer.start?.();
+    return;
+  }
+  const create = () => {
+    if (!window.JemmoMascotRenderer || !canvas.isConnected) return false;
+    try {
+      stagePetRenderer?.destroy?.();
+      stagePetCanvas = canvas;
+      stagePetRenderer = new window.JemmoMascotRenderer(canvas, {
+        onInteraction: () => window.JemmoHousePet?.open?.()
+      });
+      stagePetRenderer.setStatus?.({ level: 1, food: 100, clean: 100, mood: 100 });
+      stagePetRenderer.start?.();
+      return true;
+    } catch (error) {
+      console.warn('JEMMO Casa: mini pecera no disponible', error?.message || error);
+      return false;
+    }
+  };
+  if (create()) return;
+  let tries = 0;
+  const timer = setInterval(() => {
+    tries += 1;
+    if (create() || tries >= 30) clearInterval(timer);
+  }, 120);
+}
+
 function renderWorkspaceHome() {
   const house = state.workspaceHouse || {};
   const members = Array.isArray(state.members) ? state.members : [];
-  const ownOwner = Boolean(state.uid && (house.ownerUid === state.uid || currentMember()?.role === 'owner'));
+  const ownOwner = Boolean(state.uid && (house.ownerUid === state.uid || currentMember()?.role === 'owner' || (state.platformAdmin && house.id === 'padre')));
   const host = members.find(member => member.role === 'owner') || members.find(member => member.role === 'admin') || (ownOwner ? { uid: state.uid, role: 'owner', displayName: state.identity.displayName, avatarData: state.identity.avatarData } : null) || members[0] || null;
   const hostName = cleanText(host?.displayName || (ownOwner ? state.identity.displayName : '') || house.ownerName || house.name || 'Casa JEMMO', 48);
   const hostAvatar = safeImage(host?.avatarData || host?.avatarUrl || host?.photoURL || ((host?.uid === state.uid || ownOwner) ? state.identity.avatarData : '') || '');
@@ -1094,6 +1149,8 @@ function renderWorkspaceHome() {
     energyFill.style.width = `${pct}%`;
   }
 
+  ensureStagePetRenderer();
+
   const liveFeed = $('#houseStageLiveFeed');
   if (liveFeed) {
     const feed = [
@@ -1117,7 +1174,7 @@ function renderWorkspaceHome() {
   }
   const activity = $('#houseActivitySummary');
   if (activity) activity.innerHTML = `
-    <div><b>${formatNumber(state.members.length || state.workspaceHouse.members)}</b><small>MIEMBROS ACTIVOS</small></div>
+    <div><b>${formatNumber(Math.max((state.platformAdmin && house.id === 'padre') ? 1 : 0, state.members.length, number(state.workspaceHouse.members)))}</b><small>MIEMBROS ACTIVOS</small></div>
     <div><b>${formatNumber(state.notices.length)}</b><small>AVISOS</small></div>
     <div><b>${formatNumber(state.messages.length)}</b><small>MENSAJES RECIENTES</small></div>
     <div><b>${formatNumber(state.workspaceHouse.score)}</b><small>PUNTOS DE CASA</small></div>`;
@@ -1592,14 +1649,9 @@ async function boot() {
   renderAll();
   const params = new URL(location.href).searchParams;
   if (params.get('miCasa') === '1' && state.membership?.houseId) {
-    if (membershipCanManage()) {
-      openWorkspace();
-      const requestedTab = params.get('tab');
-      if (['home','room','tasks','emitters','chat','members','admin'].includes(requestedTab)) { state.workspaceTab = requestedTab; renderWorkspace(); }
-    } else {
-      openMembershipDestination();
-      return;
-    }
+    openWorkspace();
+    const requestedTab = params.get('tab');
+    if (['home','room','tasks','emitters','chat','members','admin'].includes(requestedTab)) { state.workspaceTab = requestedTab; renderWorkspace(); }
   }
   const requestedId = params.get('casa');
   if (requestedId && $('#houseExplorerGrid')) {
@@ -1614,7 +1666,7 @@ window.JemmoHouses = {
     membership: state.membership ? { ...state.membership } : null,
     request: state.pendingRequest ? { ...state.pendingRequest } : null
   }),
-  openMyHouse: () => membershipCanManage() ? openWorkspace() : openMembershipDestination(),
+  openMyHouse: () => state.membership?.houseId ? openWorkspace() : null,
   openMyHouseRoom: () => openMembershipDestination(),
   refresh: async () => { await loadCloudHouses(); renderAll(); }
 };

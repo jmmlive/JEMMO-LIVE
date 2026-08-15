@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · MI CASA Y ACCESO DIRECTO A SALA OFICIAL PRUEBA 24
+/* JEMMO LIVE V1 · MI CASA · ACCESO DIRECTO A CASA PREMIUM RELEASE 67
    Sincroniza la membresía real del perfil y separa el acceso de miembros del panel de agentes. */
 import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
@@ -38,7 +38,9 @@ function houseRoomUrl(){
 }
 function houseViewUrl(){
   const houseId=clean(currentMembership?.houseId,80);const url=new URL('casas.html',location.href);
-  if(houseId)url.searchParams.set('casa',houseId);url.searchParams.set('view','public');return url.href;
+  url.searchParams.set('miCasa','1');
+  if(houseId)url.searchParams.set('casa',houseId);
+  return url.href;
 }
 function setIcon(image=''){
   const img=$('houseImage'),fallback=$('houseFallback'),icon=$('houseIcon');if(!img||!fallback||!icon)return;
@@ -49,7 +51,7 @@ function setActions(active){
   if(!active){room.hidden=true;view.hidden=true;explore.hidden=false;explore.textContent='EXPLORAR CASAS';explore.onclick=()=>{location.href='casas.html#explorar'};return}
   room.hidden=false;view.hidden=false;explore.hidden=false;
   room.textContent='ENTRAR A AUDIO ROOM DE MI CASA';room.onclick=()=>{location.href=houseRoomUrl()};
-  view.textContent=canManage(currentMembership)?'GESTIONAR MI CASA':'VER MI CASA';view.onclick=()=>{location.href=houseViewUrl()};
+  view.textContent=canManage(currentMembership)?'ENTRAR A MI CASA':'VER MI CASA';view.onclick=()=>{location.href=houseViewUrl()};
   explore.textContent='OTRAS CASAS';explore.onclick=()=>{location.href='casas.html#explorar'};
 }
 function render(){

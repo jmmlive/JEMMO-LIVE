@@ -15,10 +15,24 @@ service cloud.firestore {
         : 'user';
     }
 
+    function protectedProfileIsPlatformAdmin() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && (
+          (('role' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data)
+            && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['owner', 'propietario', 'superadmin', 'admin', 'administrador'])
+          || (('rol' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data)
+            && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.rol in ['owner', 'propietario', 'superadmin', 'admin', 'administrador'])
+          || (('accountRole' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data)
+            && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.accountRole in ['owner', 'propietario', 'superadmin', 'admin', 'administrador'])
+        );
+    }
+
     function isPlatformAdmin() {
       return signedIn() && (
         (('owner' in request.auth.token) && request.auth.token.owner == true)
-        || tokenRole() in ['owner', 'propietario', 'superadmin', 'admin']
+        || tokenRole() in ['owner', 'propietario', 'superadmin', 'admin', 'administrador']
+        || protectedProfileIsPlatformAdmin()
       );
     }
 

@@ -1,21 +1,20 @@
-JEMMO LIVE V1 · CASA PREMIUM NIVEL DIOS · RELEASE 66
-
+JEMMO LIVE V1 · RELEASE 67 · CASA PREMIUM INMERSIVA
 Fecha: 15/08/2026
-Base: RELEASE 65 instalada en GitHub.
+Proyecto Firebase: jemmo-live
 
-CORRECCIONES DE ESTA ENTREGA
-- Sustituido el escenario básico de Casa por la Casa premium aprobada: anfitrión/líder central, miembros orbitando, Pecera Social protagonista y ambiente futurista morado/neón/dorado.
-- Añadidas métricas de energía, puntos, regalos, combo, racha, fans, ranking y actividad; cuando Firebase no tiene un dato real se muestra “—”.
-- La Casa incorpora accesos directos: Sala 24/7, Enviar regalo, Apoyar Casa/Pecera, Batalla, Invitar y Miembros.
-- Añadido “Latido de la Casa” con avisos y mensajes reales recientes.
-- El anfitrión usa el avatar real del propietario cuando está disponible, evitando las iniciales “CP” si el dueño está identificado.
-- Enviar regalo entra directamente a la Sala oficial y abre el panel de regalos.
-- Corregidas reglas Firestore de la Pecera/Mascota para miembros y responsables reales; ya no dependen del antiguo marcador de simulación.
-- Caché PWA renovada a RELEASE 66.
+ESTADO
+- Casa Padre reconstruida como escenario social premium real para móvil.
+- Anfitrión/líder central + miembros en órbita.
+- Pecera Social integrada con motor 2.5D Canvas de PRUEBA 64, sin imagen pegada.
+- Consola de energía y métricas: puntos, regalos, combo, racha, fans y actividad.
+- Acciones directas: Sala 24/7, Regalo, Chat, Batalla y Miembros.
+- Inicio de Casa limpio: sin duplicados de resumen/accesos/avisos.
+- Administración conserva avisos, solicitudes, miembros, funciones/agentes y creación de Casas.
+- Sala oficial: 20 sillas, 4 × 5, solo audio.
+- Reconocimiento del propietario reforzado mediante rol protegido del perfil + Custom Claims.
+- Firestore RELEASE 67 pendiente de publicar tras el Commit.
 
-IMPORTANTE PARA PUBLICAR
-1) Subir el parche web a GitHub y hacer Commit.
-2) Después desplegar firestore.rules en el proyecto Firebase jemmo-live:
-   firebase deploy --only firestore:rules --project jemmo-live
-
-Sin el paso 2, Firebase seguirá usando las reglas antiguas aunque GitHub muestre la nueva interfaz.
+REGLA DE DATOS
+- No se inventan miembros, puntos, regalos, fans ni actividad.
+- La propia cuenta propietaria cuenta como 1 miembro visible cuando el perfil confirma rol propietario.
+- Valores inexistentes en Firebase se muestran como “—”.
