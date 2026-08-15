@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · CASAS Y CASA PREMIUM REAL · RELEASE 65 */
+/* JEMMO LIVE V1 · CASA PREMIUM NIVEL DIOS · RELEASE 66 */
 const firebaseConfig = {
   apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
   authDomain: 'jemmo-live.firebaseapp.com',
@@ -160,8 +160,16 @@ function normalizeHouse(raw, fallback = {}) {
     description: cleanText(source.description || source.descripcion || fallback.description, 220) || 'Comunidad de JEMMO LIVE.',
     ownerUid: cleanText(source.ownerUid || source.propietarioUid || fallback.ownerUid, 160),
     ownerName: cleanText(source.ownerName || source.propietarioNombre || fallback.ownerName, 80),
+    level: Math.max(1, number(source.level ?? source.nivel ?? source.houseLevel ?? fallback.level) || 1),
+    capacity: number(source.capacity ?? source.plazas ?? source.memberCapacity ?? fallback.capacity) || null,
+    activeMembers: (source.activeMembers ?? source.miembrosActivos ?? fallback.activeMembers) == null ? null : number(source.activeMembers ?? source.miembrosActivos ?? fallback.activeMembers),
     energy: (source.energy ?? source.energia ?? fallback.energy) == null ? null : number(source.energy ?? source.energia ?? fallback.energy),
+    energyMax: (source.energyMax ?? source.energiaMax ?? fallback.energyMax) == null ? null : number(source.energyMax ?? source.energiaMax ?? fallback.energyMax),
     giftsReceived: (source.giftsReceived ?? source.regalosRecibidos ?? source.giftCount ?? fallback.giftsReceived) == null ? null : number(source.giftsReceived ?? source.regalosRecibidos ?? source.giftCount ?? fallback.giftsReceived),
+    combo: (source.combo ?? source.giftCombo ?? source.comboRegalos ?? fallback.combo) == null ? null : number(source.combo ?? source.giftCombo ?? source.comboRegalos ?? fallback.combo),
+    streak: (source.streak ?? source.racha ?? source.houseStreak ?? fallback.streak) == null ? null : number(source.streak ?? source.racha ?? source.houseStreak ?? fallback.streak),
+    fans: (source.fans ?? source.fanCount ?? source.seguidores ?? fallback.fans) == null ? null : number(source.fans ?? source.fanCount ?? source.seguidores ?? fallback.fans),
+    battleActive: source.battleActive === true || source.battleStatus === 'active' || fallback.battleActive === true,
     adminUids: Array.isArray(source.adminUids) ? source.adminUids.map(uid => cleanText(uid, 160)).filter(Boolean).slice(0, 80) : (fallback.adminUids || []),
     active,
     cloud: source.cloud === true || fallback.cloud === true,
@@ -548,7 +556,7 @@ async function ensureFatherHouseForOwner() {
       }, { merge: true });
       const legacyMember = legacyMemberSnap.data() || {};
       transaction.set(memberRef, {
-        uid: state.uid, displayName: state.identity.displayName, publicId: state.identity.publicId,
+        uid: state.uid, displayName: state.identity.displayName, publicId: state.identity.publicId, avatarData: state.identity.avatarData || s.deleteField(),
         role: 'owner', housePosition: 'owner', accountRole: cleanText(userData.role || 'owner', 30), status: 'active',
         joinedAt: memberSnap.exists() ? (memberSnap.data()?.joinedAt || s.serverTimestamp()) : (legacyMember.joinedAt || s.serverTimestamp()),
         updatedAt: s.serverTimestamp()
@@ -1029,38 +1037,71 @@ function renderWorkspace() {
 function renderWorkspaceHome() {
   const house = state.workspaceHouse || {};
   const members = Array.isArray(state.members) ? state.members : [];
-  const host = members.find(member => member.role === 'owner') || members.find(member => member.role === 'admin') || members[0] || null;
-  const hostName = cleanText(host?.displayName || house.ownerName || house.name || 'Casa JEMMO', 48);
-  const hostAvatar = safeImage(host?.avatarData || host?.avatarUrl || host?.photoURL || '');
+  const ownOwner = Boolean(state.uid && (house.ownerUid === state.uid || currentMember()?.role === 'owner'));
+  const host = members.find(member => member.role === 'owner') || members.find(member => member.role === 'admin') || (ownOwner ? { uid: state.uid, role: 'owner', displayName: state.identity.displayName, avatarData: state.identity.avatarData } : null) || members[0] || null;
+  const hostName = cleanText(host?.displayName || (ownOwner ? state.identity.displayName : '') || house.ownerName || house.name || 'Casa JEMMO', 48);
+  const hostAvatar = safeImage(host?.avatarData || host?.avatarUrl || host?.photoURL || ((host?.uid === state.uid || ownOwner) ? state.identity.avatarData : '') || '');
   const initials = cleanText(hostName, 48).split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase() || 'JM';
   const stageHostName = $('#houseStageHostName');
   const stageHostAvatar = $('#houseStageHostAvatar');
+  const stageHostRole = $('#houseStageHostRole');
   if (stageHostName) stageHostName.textContent = hostName;
+  if (stageHostRole) stageHostRole.textContent = host?.role === 'admin' ? 'ADMINISTRADOR' : 'PROPIETARIO';
   if (stageHostAvatar) {
     if (hostAvatar) stageHostAvatar.innerHTML = `<img src="${escapeAttr(hostAvatar)}" alt="${escapeHtml(hostName)}">`;
     else stageHostAvatar.textContent = initials;
   }
+
+  const capacitySteps = [4, 8, 12, 15];
+  const level = Math.max(1, Number(house.level) || 1);
+  const requestedCapacity = Number(house.capacity) || 0;
+  const capacity = capacitySteps.includes(requestedCapacity) ? requestedCapacity : capacitySteps[Math.min(capacitySteps.length - 1, level - 1)];
   const stageMembers = $('#houseStageMembers');
   if (stageMembers) {
-    const featured = members.filter(member => member.uid !== host?.uid).slice(0, 6);
-    const seats = Array.from({ length: 6 }, (_, index) => featured[index] || null);
+    const visibleCount = Math.min(8, capacity);
+    const featured = members.filter(member => member.uid !== host?.uid).slice(0, visibleCount);
+    const seats = Array.from({ length: visibleCount }, (_, index) => featured[index] || null);
     stageMembers.innerHTML = seats.map((member, index) => {
-      if (!member) return `<span class="house-stage-seat empty seat-${index + 1}" aria-hidden="true">+</span>`;
+      if (!member) return `<span class="house-stage-seat empty seat-${index + 1}" aria-label="Plaza libre">+</span>`;
       const name = cleanText(member.displayName || 'Miembro JEMMO', 48);
-      const avatar = safeImage(member.avatarData || member.avatarUrl || member.photoURL || '');
+      const avatar = safeImage(member.avatarData || member.avatarUrl || member.photoURL || (member.uid === state.uid ? state.identity.avatarData : '') || '');
       const mark = name.split(/\s+/).filter(Boolean).slice(0,2).map(part => part[0]).join('').toUpperCase() || 'JM';
       return `<span class="house-stage-seat seat-${index + 1}" title="${escapeHtml(name)}">${avatar ? `<img src="${escapeAttr(avatar)}" alt="${escapeHtml(name)}">` : escapeHtml(mark)}</span>`;
     }).join('');
   }
+
   const activityCount = Math.max(0, Number(state.messages.length || 0) + Number(state.notices.length || 0));
-  const giftMetric = Number(house.giftsReceived ?? house.regalosRecibidos ?? house.giftCount);
-  const energyMetric = Number(house.energy ?? house.energia);
+  const metric = value => value == null ? null : Math.max(0, Number(value) || 0);
+  const giftMetric = metric(house.giftsReceived);
+  const energyMetric = metric(house.energy);
+  const comboMetric = metric(house.combo);
+  const streakMetric = metric(house.streak);
+  const fansMetric = metric(house.fans);
   const setStageText = (selector, value) => { const node = $(selector); if (node) node.textContent = value; };
-  setStageText('#houseStageMembersMetric', formatNumber(members.length || house.members || 0));
+  setStageText('#houseStageRank', house.rank && house.rank < 999 ? `#${formatNumber(house.rank)}` : '#—');
+  setStageText('#houseStageCapacity', formatNumber(capacity));
   setStageText('#houseStageScoreMetric', formatNumber(house.score || 0));
   setStageText('#houseStageActivityMetric', formatNumber(activityCount));
-  setStageText('#houseStageGiftsMetric', Number.isFinite(giftMetric) ? formatNumber(giftMetric) : '—');
-  setStageText('#houseStageEnergy', Number.isFinite(energyMetric) ? formatNumber(energyMetric) : '—');
+  setStageText('#houseStageGiftsMetric', giftMetric == null ? '—' : formatNumber(giftMetric));
+  setStageText('#houseStageComboMetric', comboMetric == null ? '—' : `×${formatNumber(comboMetric)}`);
+  setStageText('#houseStageStreakMetric', streakMetric == null ? '—' : `${formatNumber(streakMetric)}D`);
+  setStageText('#houseStageFansMetric', fansMetric == null ? '—' : formatNumber(fansMetric));
+  setStageText('#houseStageEnergy', energyMetric == null ? '—' : formatNumber(energyMetric));
+  const energyFill = $('#houseStageEnergyFill');
+  if (energyFill) {
+    const maxEnergy = Math.max(0, Number(house.energyMax) || 0);
+    const pct = energyMetric == null ? 0 : Math.max(0, Math.min(100, maxEnergy > 0 ? energyMetric / maxEnergy * 100 : energyMetric));
+    energyFill.style.width = `${pct}%`;
+  }
+
+  const liveFeed = $('#houseStageLiveFeed');
+  if (liveFeed) {
+    const feed = [
+      ...state.notices.slice(0, 3).map(item => ({ type: 'notice', icon: '📌', title: item.title || 'Aviso de la Casa', detail: item.text || '', at: item.createdAt || item.createdAtClient })),
+      ...state.messages.slice(-4).map(item => ({ type: item.type || 'message', icon: item.type === 'gift' ? '🎁' : '💬', title: item.authorName || 'Usuario JEMMO', detail: item.text || item.giftName || 'Actividad en la Casa', at: item.createdAt || item.createdAtClient }))
+    ].sort((a, b) => timestampMillis(b.at) - timestampMillis(a.at)).slice(0, 3);
+    liveFeed.innerHTML = feed.length ? `<div class="house-stage-feed-list">${feed.map(item => `<article class="house-stage-feed-item"><span>${item.icon}</span><div><b>${escapeHtml(item.title)}</b><small>${escapeHtml(cleanText(item.detail, 90))}</small></div><time>${escapeHtml(formatDateTime(item.at))}</time></article>`).join('')}</div>` : '<div class="house-stage-feed-empty">La actividad real aparecerá aquí cuando la Casa tenga mensajes, avisos o regalos.</div>';
+  }
 
   const notices = $('#houseNoticeList');
   const composer = $('#houseNoticeComposer');
@@ -1215,7 +1256,7 @@ async function reviewJoinRequest(applicantUid, decision) {
         const initialPosition = ['emisor','emisora','emitter','host','streamer','creator','creador','creadora'].includes(lower(userData.role || userData.rol || userData.accountRole)) ? 'emitter' : 'member';
         transaction.set(memberRef, {
           uid: applicantUid, displayName: cleanText(request.applicantName || userData.displayName || 'Usuario JEMMO', 48),
-          publicId: cleanText(request.applicantPublicId || userData.publicId, 48), role: 'member', status: 'active',
+          publicId: cleanText(request.applicantPublicId || userData.publicId, 48), avatarData: cleanText(userData.avatarData, 800000) || s.deleteField(), role: 'member', status: 'active',
           accountRole: cleanText(userData.role || userData.rol || 'usuario', 30), housePosition: initialPosition,
           assignedAgentUid: initialPosition === 'emitter' ? state.uid : s.deleteField(),
           assignedAgentName: initialPosition === 'emitter' ? cleanText(state.identity.displayName || 'Responsable de Casa', 80) : s.deleteField(),
@@ -1422,6 +1463,33 @@ async function approveCreation(requestUid, decision) {
   } catch (error) { toast(friendlyError(error), 'error'); }
 }
 
+async function handleStageAction(kind) {
+  const house = state.workspaceHouse || houseById(state.membership?.houseId);
+  if (!house) return;
+  if (kind === 'room') { location.href = permanentHouseRoomUrl(house); return; }
+  if (kind === 'gift') {
+    const url = new URL(permanentHouseRoomUrl(house));
+    url.searchParams.set('openGift', '1');
+    location.href = url.href;
+    return;
+  }
+  if (kind === 'support') { window.JemmoHousePet?.open?.(); return; }
+  if (kind === 'members') { state.workspaceTab = 'members'; renderWorkspace(); return; }
+  if (kind === 'battle') { location.href = 'inicio.html#battleOfficialTitle'; return; }
+  if (kind === 'invite') {
+    const inviteUrl = new URL('casas.html', location.href);
+    inviteUrl.searchParams.set('casa', house.id);
+    const data = { title: house.name, text: `Únete a ${house.name} en JEMMO LIVE.`, url: inviteUrl.href };
+    try {
+      if (navigator.share) { await navigator.share(data); return; }
+      await navigator.clipboard.writeText(`${data.text} ${data.url}`);
+      toast('Invitación copiada.', 'success');
+    } catch (error) {
+      if (error?.name !== 'AbortError') toast('No se pudo compartir la invitación.', 'error');
+    }
+  }
+}
+
 function openMemberMenu(uid) {
   const member = state.members.find(item => item.uid === uid);
   if (!member) return;
@@ -1450,6 +1518,8 @@ function bind() {
     renderExplorer();
   });
   document.addEventListener('click', async event => {
+    const stageAction = event.target.closest('[data-stage-action]');
+    if (stageAction) { await handleStageAction(stageAction.dataset.stageAction); return; }
     const details = event.target.closest('[data-house-details]');
     if (details) { const house = houseById(details.dataset.houseDetails); if (house) openHouse(house); return; }
     const action = event.target.closest('[data-house-action]');

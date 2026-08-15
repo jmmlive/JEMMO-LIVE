@@ -1,18 +1,21 @@
-JEMMO LIVE V1 · CASA PREMIUM REAL · RELEASE 65
+JEMMO LIVE V1 · CASA PREMIUM NIVEL DIOS · RELEASE 66
 
 Fecha: 15/08/2026
-Base recibida: JEMMO-LIVE-main (17) (4).zip
+Base: RELEASE 65 instalada en GitHub.
 
-ESTADO DE ESTA ENTREGA
-- Casa Premium integrada en la Casa real.
-- Escenario social con anfitrión y miembros reales disponibles.
-- Pecera Social conectada a la mascota oficial Chicharro JEMMO.
-- La Pecera cambia correctamente según la Casa activa.
-- Métricas no disponibles muestran “—”; no se inventan cifras.
-- Inicio diferencia Batalla Oficial de LIVE individuales.
-- Eliminados textos visibles de prueba en Inicio, Casa y conversación de Mensajes tocados por esta entrega.
-- Simulador de roles de Casa retirado del flujo de la página y de YO.
-- Ruta oficial de Casas: casas.html; casa-demo.html queda solo como compatibilidad.
-- Caché PWA renovada: jemmo-live-v1-casa-premium-real-65-20260815.
+CORRECCIONES DE ESTA ENTREGA
+- Sustituido el escenario básico de Casa por la Casa premium aprobada: anfitrión/líder central, miembros orbitando, Pecera Social protagonista y ambiente futurista morado/neón/dorado.
+- Añadidas métricas de energía, puntos, regalos, combo, racha, fans, ranking y actividad; cuando Firebase no tiene un dato real se muestra “—”.
+- La Casa incorpora accesos directos: Sala 24/7, Enviar regalo, Apoyar Casa/Pecera, Batalla, Invitar y Miembros.
+- Añadido “Latido de la Casa” con avisos y mensajes reales recientes.
+- El anfitrión usa el avatar real del propietario cuando está disponible, evitando las iniciales “CP” si el dueño está identificado.
+- Enviar regalo entra directamente a la Sala oficial y abre el panel de regalos.
+- Corregidas reglas Firestore de la Pecera/Mascota para miembros y responsables reales; ya no dependen del antiguo marcador de simulación.
+- Caché PWA renovada a RELEASE 66.
 
-Registro detallado: CAMBIOS_JEMMO_V1_CASA_PREMIUM_REAL_15-08-2026.md
+IMPORTANTE PARA PUBLICAR
+1) Subir el parche web a GitHub y hacer Commit.
+2) Después desplegar firestore.rules en el proyecto Firebase jemmo-live:
+   firebase deploy --only firestore:rules --project jemmo-live
+
+Sin el paso 2, Firebase seguirá usando las reglas antiguas aunque GitHub muestre la nueva interfaz.

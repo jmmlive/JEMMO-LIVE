@@ -342,17 +342,19 @@ service cloud.firestore {
 
       match /mascota/{documentId} {
         allow read: if signedIn();
-        allow create, update: if houseMemberExists(houseId, request.auth.uid)
-          && isSimulation(request.resource.data);
+        allow create, update: if signedIn()
+          && (houseMemberExists(houseId, request.auth.uid) || isHouseManager(houseId))
+          && request.resource.data.houseId == houseId
+          && request.resource.data.updatedBy == request.auth.uid;
         allow delete: if isHouseManager(houseId);
       }
 
       match /mascotaAcciones/{actionId} {
         allow read: if signedIn();
-        allow create: if houseMemberExists(houseId, request.auth.uid)
-          && request.resource.data.actorUid == request.auth.uid
-          && isSimulation(request.resource.data);
-        allow update: if false;
+        allow create, update: if signedIn()
+          && (houseMemberExists(houseId, request.auth.uid) || isHouseManager(houseId))
+          && request.resource.data.houseId == houseId
+          && request.resource.data.userId == request.auth.uid;
         allow delete: if isHouseManager(houseId);
       }
 

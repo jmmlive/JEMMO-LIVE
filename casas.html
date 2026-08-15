@@ -9,7 +9,7 @@
   <link rel="icon" type="image/png" href="favicon-64.png">
   <link rel="icon" href="icon-192.png">
   <title>JEMMO LIVE · Casas</title>
-  <link rel="stylesheet" href="app.css?v=65">
+  <link rel="stylesheet" href="app.css?v=66">
   <style>html.jemmo-auth-pending body{visibility:hidden}</style>
   <script>document.documentElement.classList.add('jemmo-auth-pending');setTimeout(()=>{if(!document.documentElement.classList.contains('jemmo-auth-pending'))return;let uid='';try{uid=localStorage.getItem('jemmo_active_uid')||''}catch{}if(!uid)try{uid=sessionStorage.getItem('jemmo_active_uid')||''}catch{}if(uid)document.documentElement.classList.remove('jemmo-auth-pending');else location.replace('acceso.html?sesion=timeout')},5500)</script>
 </head>
@@ -92,34 +92,66 @@
       </nav>
 
       <div class="house-workspace-view" data-workspace-view="home">
-        <section class="house-premium-stage" id="housePremiumStage" aria-label="Escenario social de la Casa">
+        <section class="house-premium-stage premium-v66" id="housePremiumStage" aria-label="Pecera social y escenario premium de la Casa">
           <div class="house-stage-ambient" aria-hidden="true"></div>
-          <div class="house-stage-topline">
+          <div class="house-stage-command">
             <span class="house-stage-live"><i></i> CASA ACTIVA</span>
-            <span class="house-stage-energy">ENERGÍA <b id="houseStageEnergy">—</b></span>
+            <span class="house-stage-rank">RANKING <b id="houseStageRank">#—</b></span>
+            <span class="house-stage-capacity"><b id="houseStageCapacity">4</b> PLAZAS</span>
           </div>
-          <div class="house-stage-members" id="houseStageMembers" aria-label="Miembros destacados"></div>
-          <div class="house-stage-center">
-            <span class="house-stage-crown" aria-hidden="true">♛</span>
-            <div class="house-stage-host" id="houseStageHost"><span id="houseStageHostAvatar">JM</span></div>
-            <small>ANFITRIÓN DE LA CASA</small>
-            <strong id="houseStageHostName">Casa JEMMO</strong>
+
+          <div class="house-stage-arena">
+            <span class="house-stage-orbit orbit-a" aria-hidden="true"></span>
+            <span class="house-stage-orbit orbit-b" aria-hidden="true"></span>
+            <span class="house-stage-orbit orbit-c" aria-hidden="true"></span>
+            <div class="house-stage-members" id="houseStageMembers" aria-label="Miembros destacados de la Casa"></div>
+
+            <div class="house-stage-center">
+              <span class="house-stage-crown" aria-hidden="true">♛</span>
+              <div class="house-stage-host" id="houseStageHost"><span id="houseStageHostAvatar">JM</span></div>
+              <small>ANFITRIÓN / LÍDER</small>
+              <strong id="houseStageHostName">Casa JEMMO</strong>
+              <em id="houseStageHostRole">PROPIETARIO</em>
+            </div>
+
+            <button class="house-social-aquarium" id="houseSocialAquarium" type="button" aria-label="Abrir Pecera Social de la Casa">
+              <span class="house-aquarium-water" aria-hidden="true"></span>
+              <span class="house-aquarium-bubbles" aria-hidden="true"></span>
+              <span class="house-aquarium-glow" aria-hidden="true"></span>
+              <img src="jemmo-fish-nav.webp" alt="Chicharro JEMMO">
+              <span class="house-aquarium-copy"><small>PECERA SOCIAL · MASCOTA VIVA</small><b>CHICHARRO JEMMO</b><em>TOCA PARA CUIDARLO, JUGAR Y HACERLO EVOLUCIONAR</em></span>
+              <span class="house-aquarium-enter">ENTRAR ›</span>
+            </button>
           </div>
-          <button class="house-social-aquarium" id="houseSocialAquarium" type="button" aria-label="Abrir pecera social de la Casa">
-            <span class="house-aquarium-glow" aria-hidden="true"></span>
-            <img src="jemmo-fish-nav.webp" alt="Mascota JEMMO">
-            <span><small>PECERA SOCIAL</small><b>CHICHARRO JEMMO</b><em>TOCAR PARA ENTRAR</em></span>
-          </button>
-          <div class="house-stage-metrics">
-            <div><small>MIEMBROS</small><b id="houseStageMembersMetric">0</b></div>
-            <div><small>PUNTOS</small><b id="houseStageScoreMetric">0</b></div>
-            <div><small>REGALOS</small><b id="houseStageGiftsMetric">—</b></div>
-            <div><small>ACTIVIDAD</small><b id="houseStageActivityMetric">0</b></div>
+
+          <section class="house-energy-console" aria-label="Métricas de energía de la Casa">
+            <div class="house-energy-head"><span>ENERGÍA DE LA CASA</span><b id="houseStageEnergy">—</b></div>
+            <div class="house-energy-track"><i id="houseStageEnergyFill"></i><span></span></div>
+            <div class="house-stage-metrics premium-metrics">
+              <div><small>PUNTOS</small><b id="houseStageScoreMetric">0</b></div>
+              <div><small>REGALOS</small><b id="houseStageGiftsMetric">—</b></div>
+              <div><small>COMBO</small><b id="houseStageComboMetric">—</b></div>
+              <div><small>RACHA</small><b id="houseStageStreakMetric">—</b></div>
+              <div><small>FANS</small><b id="houseStageFansMetric">—</b></div>
+              <div><small>ACTIVIDAD</small><b id="houseStageActivityMetric">0</b></div>
+            </div>
+          </section>
+
+          <div class="house-stage-actions house-stage-actions-primary">
+            <button class="house-action-room" type="button" data-stage-action="room"><span>🎙</span><b>ENTRAR A LA SALA</b><small>Audio Room 24/7</small></button>
+            <button class="house-action-gift" type="button" data-stage-action="gift"><span>🎁</span><b>ENVIAR REGALO</b><small>Apoya a tu gente</small></button>
+            <button class="house-action-support" type="button" data-stage-action="support"><span>🐟</span><b>APOYAR CASA</b><small>Impulsa la Pecera</small></button>
           </div>
-          <div class="house-stage-actions">
-            <button type="button" data-workspace-tab="room">ENTRAR A LA SALA</button>
-            <button type="button" data-workspace-tab="chat">CHAT DE LA CASA</button>
+          <div class="house-stage-actions house-stage-actions-secondary">
+            <button type="button" data-stage-action="battle">⚔️ <b>IR A BATALLA</b></button>
+            <button type="button" data-stage-action="invite">➕ <b>INVITAR</b></button>
+            <button type="button" data-stage-action="members">👥 <b>VER MIEMBROS</b></button>
           </div>
+
+          <section class="house-stage-livefeed" aria-label="Actividad reciente de la Casa">
+            <header><div><small>EN VIVO</small><b>LATIDO DE LA CASA</b></div><button type="button" data-workspace-tab="chat">ABRIR CHAT</button></header>
+            <div id="houseStageLiveFeed"><div class="house-stage-feed-empty">La actividad real aparecerá aquí.</div></div>
+          </section>
         </section>
         <section class="house-workspace-card house-activity-card">
           <div class="house-workspace-title"><h2>RESUMEN DE LA CASA</h2><span>Actualizado en tiempo real</span></div>
@@ -231,11 +263,11 @@
   </nav>
     <script type="module" src="jemmo-app-check.js?v=57"></script>
 <script type="module" src="jemmo-session.js"></script>
-  <script src="pwa-register.js?v=65"></script>
+  <script src="pwa-register.js?v=66"></script>
   <script src="jemmo-wallet.js"></script>
   <script src="jemmo-house-finance.js"></script>
   <script src="app.js"></script>
-  <script type="module" src="jemmo-houses.js?v=65"></script>
+  <script type="module" src="jemmo-houses.js?v=66"></script>
   <script type="module" src="jemmo-house-operations.js?v=37"></script>
 </body>
 </html>

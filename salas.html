@@ -467,7 +467,7 @@
 
   <script type="module" src="jemmo-app-check.js?v=57"></script>
 <script type="module" src="jemmo-session.js"></script>
-<script src="pwa-register.js?v=61"></script>
+<script src="pwa-register.js?v=66"></script>
 <script src="jemmo-wallet.js?v=45"></script>
 <script src="jemmo-gift-catalog.js?v=61"></script>
 <script src="jemmo-house-finance.js"></script>
@@ -1883,7 +1883,7 @@ Total: ${totalGifts} regalos · ${formatCoins(totalCoins)} JEMMOS.`;
   }
   renderRoomGiftCatalog();
   renderPreparation();
-  void restore().then(async()=>{await syncCurrentProfileAccess();if(!houseContext.enabled)document.body.classList.remove('jemmo-house-room');applyHouseRoomContext();syncRoomCover();renderPreparation();updateRoomMirrorControl();if(houseContext.direct)await enterHouseRoomDirect();else void prepareIncomingInvite()});
+  void restore().then(async()=>{await syncCurrentProfileAccess();if(!houseContext.enabled)document.body.classList.remove('jemmo-house-room');applyHouseRoomContext();syncRoomCover();renderPreparation();updateRoomMirrorControl();if(houseContext.direct)await enterHouseRoomDirect();else void prepareIncomingInvite();if(houseContext.enabled&&pageParams.get('openGift')==='1')setTimeout(()=>openSheet('giftsSheet'),450)});
 
   document.querySelectorAll('.jr-mode').forEach(btn=>btn.addEventListener('click',()=>{
     state.mode=btn.dataset.mode;
