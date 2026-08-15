@@ -1,4 +1,4 @@
-/* JEMMO LIVE V1 · MI CASA Y ACCESO DIRECTO A SALA OFICIAL PRUEBA 24 */
+/* JEMMO LIVE V1 · CASAS Y CASA PREMIUM REAL · RELEASE 65 */
 const firebaseConfig = {
   apiKey: 'AIzaSyBK0-3RnU5JVx3hI_DoM9Bj2efnk3N4nBQ',
   authDomain: 'jemmo-live.firebaseapp.com',
@@ -78,6 +78,8 @@ const formatNumber = value => Math.round(number(value)).toLocaleString('es-ES');
 const escapeHtml = value => cleanText(value, 1000)
   .replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
   .replaceAll('"', '&quot;').replaceAll("'", '&#039;');
+const safeImage = value => { const url = String(value || '').trim(); return /^(https:\/\/|blob:|data:image\/(?:png|jpe?g|webp);base64,)/i.test(url) ? url.slice(0, 800000) : ''; };
+const escapeAttr = value => String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('\"', '&quot;').replaceAll("'", '&#039;');
 const timestampMillis = value => {
   if (value?.toMillis) return value.toMillis();
   if (value?.seconds) return value.seconds * 1000;
@@ -157,6 +159,9 @@ function normalizeHouse(raw, fallback = {}) {
     glow: cleanText(source.glow || fallback.glow, 64) || 'rgba(196,65,236,.18)',
     description: cleanText(source.description || source.descripcion || fallback.description, 220) || 'Comunidad de JEMMO LIVE.',
     ownerUid: cleanText(source.ownerUid || source.propietarioUid || fallback.ownerUid, 160),
+    ownerName: cleanText(source.ownerName || source.propietarioNombre || fallback.ownerName, 80),
+    energy: (source.energy ?? source.energia ?? fallback.energy) == null ? null : number(source.energy ?? source.energia ?? fallback.energy),
+    giftsReceived: (source.giftsReceived ?? source.regalosRecibidos ?? source.giftCount ?? fallback.giftsReceived) == null ? null : number(source.giftsReceived ?? source.regalosRecibidos ?? source.giftCount ?? fallback.giftsReceived),
     adminUids: Array.isArray(source.adminUids) ? source.adminUids.map(uid => cleanText(uid, 160)).filter(Boolean).slice(0, 80) : (fallback.adminUids || []),
     active,
     cloud: source.cloud === true || fallback.cloud === true,
@@ -279,7 +284,7 @@ function renderHome() {
   const source = real.length ? real : state.houses;
   const featured = source.filter(house => house.featured).slice(0, 5);
   target.innerHTML = featured.map(house => `
-    <a class="home-house-card" href="casa-demo.html?casa=${encodeURIComponent(house.id)}" style="${cardStyle(house)}">
+    <a class="home-house-card" href="casas.html?casa=${encodeURIComponent(house.id)}" style="${cardStyle(house)}">
       <span class="home-house-top"><span class="home-house-emblem">${escapeHtml(house.emblem || house.short)}</span>${house.status === 'battle' ? '<span class="house-live">EN BATALLA</span>' : ''}${house.preview ? '<span class="house-preview-tag">VISTA PREVIA</span>' : ''}</span>
       <h3>${escapeHtml(house.name)}</h3>
       <p>${escapeHtml(house.flag)} ${escapeHtml(house.city || house.country)}</p>
@@ -293,10 +298,10 @@ function renderHome() {
       join.href = permanentHouseRoomUrl(ownHouse);
     } else if (activeRequest()) {
       join.textContent = 'VER MI SOLICITUD';
-      join.href = 'casa-demo.html?solicitud=1';
+      join.href = 'casas.html?solicitud=1';
     } else {
       join.textContent = 'UNIRME A UNA CASA';
-      join.href = 'casa-demo.html#explorar';
+      join.href = 'casas.html#explorar';
     }
   }
 }
@@ -872,16 +877,8 @@ function currentMember() {
   return state.members.find(member => member.uid === state.uid) || null;
 }
 
-function currentTestRole() {
-  if (!state.platformAdmin || !state.uid) return '';
-  try {
-    const value = JSON.parse(localStorage.getItem(`jemmo_role_lab_v1_${state.uid}`) || 'null');
-    return ['owner', 'agent', 'emitter', 'member'].includes(value?.mode) ? value.mode : 'owner';
-  } catch { return 'owner'; }
-}
-function testRoleLabel(role) {
-  return ({ owner: 'PROPIETARIO · PRUEBA', agent: 'AGENTE DE CASA · PRUEBA', emitter: 'EMISOR/A · PRUEBA', member: 'MIEMBRO · PRUEBA' })[role] || '';
-}
+function currentTestRole() { return ''; }
+function testRoleLabel() { return ''; }
 
 function calculatePermissions(house = state.workspaceHouse) {
   const member = currentMember();
@@ -889,8 +886,7 @@ function calculatePermissions(house = state.workspaceHouse) {
   const role = cleanText(member?.role || membershipRole, 20);
   state.actualHouseOwner = role === 'owner' || house?.ownerUid === state.uid;
   state.actualHouseAdmin = state.workspaceAsPlatformAdmin || state.actualHouseOwner || role === 'admin' || house?.adminUids?.includes(state.uid);
-  state.simulatedRole = currentTestRole();
-  // El modo de prueba solo cambia textos y vistas; no concede permisos.
+  state.simulatedRole = '';
   state.houseOwner = state.actualHouseOwner;
   state.houseAdmin = state.actualHouseAdmin;
 }
@@ -905,6 +901,10 @@ function openWorkspace(house = houseById(state.membership?.houseId), asPlatformA
   state.workspaceAsPlatformAdmin = platformAccess;
   state.workspaceHouse = house;
   state.workspaceTab = 'home';
+  try {
+    localStorage.setItem('jemmo_house_id', cleanText(house.id, 80));
+    localStorage.setItem('jemmo_house_name', cleanText(house.name, 80));
+  } catch {}
   const workspace = $('#houseWorkspace');
   if (workspace) workspace.hidden = false;
   $('#explorar')?.setAttribute('hidden', '');
@@ -1027,6 +1027,41 @@ function renderWorkspace() {
 }
 
 function renderWorkspaceHome() {
+  const house = state.workspaceHouse || {};
+  const members = Array.isArray(state.members) ? state.members : [];
+  const host = members.find(member => member.role === 'owner') || members.find(member => member.role === 'admin') || members[0] || null;
+  const hostName = cleanText(host?.displayName || house.ownerName || house.name || 'Casa JEMMO', 48);
+  const hostAvatar = safeImage(host?.avatarData || host?.avatarUrl || host?.photoURL || '');
+  const initials = cleanText(hostName, 48).split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase() || 'JM';
+  const stageHostName = $('#houseStageHostName');
+  const stageHostAvatar = $('#houseStageHostAvatar');
+  if (stageHostName) stageHostName.textContent = hostName;
+  if (stageHostAvatar) {
+    if (hostAvatar) stageHostAvatar.innerHTML = `<img src="${escapeAttr(hostAvatar)}" alt="${escapeHtml(hostName)}">`;
+    else stageHostAvatar.textContent = initials;
+  }
+  const stageMembers = $('#houseStageMembers');
+  if (stageMembers) {
+    const featured = members.filter(member => member.uid !== host?.uid).slice(0, 6);
+    const seats = Array.from({ length: 6 }, (_, index) => featured[index] || null);
+    stageMembers.innerHTML = seats.map((member, index) => {
+      if (!member) return `<span class="house-stage-seat empty seat-${index + 1}" aria-hidden="true">+</span>`;
+      const name = cleanText(member.displayName || 'Miembro JEMMO', 48);
+      const avatar = safeImage(member.avatarData || member.avatarUrl || member.photoURL || '');
+      const mark = name.split(/\s+/).filter(Boolean).slice(0,2).map(part => part[0]).join('').toUpperCase() || 'JM';
+      return `<span class="house-stage-seat seat-${index + 1}" title="${escapeHtml(name)}">${avatar ? `<img src="${escapeAttr(avatar)}" alt="${escapeHtml(name)}">` : escapeHtml(mark)}</span>`;
+    }).join('');
+  }
+  const activityCount = Math.max(0, Number(state.messages.length || 0) + Number(state.notices.length || 0));
+  const giftMetric = Number(house.giftsReceived ?? house.regalosRecibidos ?? house.giftCount);
+  const energyMetric = Number(house.energy ?? house.energia);
+  const setStageText = (selector, value) => { const node = $(selector); if (node) node.textContent = value; };
+  setStageText('#houseStageMembersMetric', formatNumber(members.length || house.members || 0));
+  setStageText('#houseStageScoreMetric', formatNumber(house.score || 0));
+  setStageText('#houseStageActivityMetric', formatNumber(activityCount));
+  setStageText('#houseStageGiftsMetric', Number.isFinite(giftMetric) ? formatNumber(giftMetric) : '—');
+  setStageText('#houseStageEnergy', Number.isFinite(energyMetric) ? formatNumber(energyMetric) : '—');
+
   const notices = $('#houseNoticeList');
   const composer = $('#houseNoticeComposer');
   if (composer) composer.hidden = !state.houseAdmin;
@@ -1419,6 +1454,7 @@ function bind() {
     if (details) { const house = houseById(details.dataset.houseDetails); if (house) openHouse(house); return; }
     const action = event.target.closest('[data-house-action]');
     if (action) { const house = houseById(action.dataset.houseAction); if (!house) return; if (sameMembership(house)) openMembershipDestination(house, true); else openHouse(house, true); return; }
+    if (event.target.closest('#houseSocialAquarium')) { window.JemmoHousePet?.open?.(); return; }
     if (event.target.closest('[data-open-my-house-room]')) { openMembershipDestination(); return; }
     if (event.target.closest('[data-open-my-house]')) { if (membershipCanManage()) openWorkspace(); else openMembershipDestination(); return; }
     if (event.target.closest('[data-explore-other-houses]')) { document.getElementById('explorar')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
@@ -1455,8 +1491,8 @@ function bind() {
   $('#houseNoticeComposer')?.addEventListener('submit', createNotice);
   $('#houseChatForm')?.addEventListener('submit', sendHouseMessage);
   window.addEventListener('keydown', event => { if (event.key === 'Escape') closeAllModals(); });
-  window.addEventListener('jemmo-test-role-change', event => {
-    state.simulatedRole = event.detail?.mode || currentTestRole();
+  window.addEventListener('jemmo-test-role-change', () => {
+    state.simulatedRole = '';
     calculatePermissions();
     if (!state.houseAdmin && ['emitters', 'admin'].includes(state.workspaceTab)) state.workspaceTab = state.simulatedRole === 'emitter' ? 'tasks' : 'home';
     renderWorkspace();

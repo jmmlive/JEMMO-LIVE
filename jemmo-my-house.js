@@ -37,7 +37,7 @@ function houseRoomUrl(){
   return url.href;
 }
 function houseViewUrl(){
-  const houseId=clean(currentMembership?.houseId,80);const url=new URL('casa-demo.html',location.href);
+  const houseId=clean(currentMembership?.houseId,80);const url=new URL('casas.html',location.href);
   if(houseId)url.searchParams.set('casa',houseId);url.searchParams.set('view','public');return url.href;
 }
 function setIcon(image=''){
@@ -46,11 +46,11 @@ function setIcon(image=''){
 }
 function setActions(active){
   const room=$('houseRoomButton'),view=$('houseProfileButton'),explore=$('houseExploreButton');if(!room||!view||!explore)return;
-  if(!active){room.hidden=true;view.hidden=true;explore.hidden=false;explore.textContent='EXPLORAR CASAS';explore.onclick=()=>{location.href='casa-demo.html#explorar'};return}
+  if(!active){room.hidden=true;view.hidden=true;explore.hidden=false;explore.textContent='EXPLORAR CASAS';explore.onclick=()=>{location.href='casas.html#explorar'};return}
   room.hidden=false;view.hidden=false;explore.hidden=false;
   room.textContent='ENTRAR A AUDIO ROOM DE MI CASA';room.onclick=()=>{location.href=houseRoomUrl()};
   view.textContent=canManage(currentMembership)?'GESTIONAR MI CASA':'VER MI CASA';view.onclick=()=>{location.href=houseViewUrl()};
-  explore.textContent='OTRAS CASAS';explore.onclick=()=>{location.href='casa-demo.html#explorar'};
+  explore.textContent='OTRAS CASAS';explore.onclick=()=>{location.href='casas.html#explorar'};
 }
 function render(){
   const name=$('houseName'),text=$('houseText'),card=$('myHouseCard');if(!name||!text)return;

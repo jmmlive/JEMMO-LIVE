@@ -1,19 +1,18 @@
-JEMMO LIVE V1 · CATÁLOGO UNIVERSAL Y LÍMITE SEGURO DE REGALOS · PRUEBA 61
+JEMMO LIVE V1 · CASA PREMIUM REAL · RELEASE 65
 
-Fecha: 01/08/2026
-Base: JEMMO-LIVE-main-PRUEBA-60-COMPLETA.zip
+Fecha: 15/08/2026
+Base recibida: JEMMO-LIVE-main (17) (4).zip
 
-RESULTADO PRUEBA 61
-- Catálogo oficial único en Batalla, LIVE, Audio Room/Salas y Mensajes.
-- Regalos desde 10 hasta 5.000.000 JEMMOS.
-- Límite máximo de 5.000.000 JEMMOS por regalo y destinatario.
-- Multiplicadores dinámicos según el precio del regalo.
-- Hasta 50.000: ×1, ×10, ×20 y ×100.
-- 50.001–250.000: ×1, ×5, ×10 y ×20.
-- 250.001–500.000: ×1, ×2, ×5 y ×10.
-- 500.001–1.000.000: ×1, ×2, ×3 y ×5.
-- 1.000.001–2.500.000: ×1 y ×2.
-- Más de 2.500.000: solo ×1.
-- El siguiente desarrollo será el sistema de animaciones premium para regalos grandes.
-- Caché: jemmo-live-v1-universal-gifts-61-20260801
-- Registro: pwa-universal-gifts-61
+ESTADO DE ESTA ENTREGA
+- Casa Premium integrada en la Casa real.
+- Escenario social con anfitrión y miembros reales disponibles.
+- Pecera Social conectada a la mascota oficial Chicharro JEMMO.
+- La Pecera cambia correctamente según la Casa activa.
+- Métricas no disponibles muestran “—”; no se inventan cifras.
+- Inicio diferencia Batalla Oficial de LIVE individuales.
+- Eliminados textos visibles de prueba en Inicio, Casa y conversación de Mensajes tocados por esta entrega.
+- Simulador de roles de Casa retirado del flujo de la página y de YO.
+- Ruta oficial de Casas: casas.html; casa-demo.html queda solo como compatibilidad.
+- Caché PWA renovada: jemmo-live-v1-casa-premium-real-65-20260815.
+
+Registro detallado: CAMBIOS_JEMMO_V1_CASA_PREMIUM_REAL_15-08-2026.md

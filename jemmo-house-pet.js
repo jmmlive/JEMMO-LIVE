@@ -1,4 +1,4 @@
-/* JEMMO LIVE · MASCOTA VIVA 2.5D Y SANTUARIO ACUÁTICO · PRUEBA 64 */
+/* JEMMO LIVE · MASCOTA VIVA 2.5D Y PECERA SOCIAL · RELEASE 65 */
 (()=>{
   'use strict';
   if(window.__JEMMO_HOUSE_PET_64__)return;
@@ -24,7 +24,7 @@
     const rawName=String(params.get('houseName')||params.get('casaNombre')||localGet('jemmo_house_name')||'Casa Padre JEMMO').trim();
     return{id:id.replace(/[^a-zA-Z0-9_-]/g,'_').slice(0,80)||'padre',name:rawName.slice(0,80)||'Casa Padre JEMMO'};
   };
-  const house=resolveHouse();
+  let house=resolveHouse();
   const isHouseContext=()=>params.get('houseRoom')==='1'||params.get('salaCasa')==='1'||params.has('house')||params.has('houseId')||params.has('casa')||document.body?.dataset?.houseRoom==='1';
 
   const levels=[
@@ -216,7 +216,13 @@
     if(window.JemmoMascotRenderer&&canvas){renderer=new window.JemmoMascotRenderer(canvas,{onInteraction:()=>setCaption('Te ha visto. Mueve el dedo por el agua.')});renderer.setStatus({...state,level:levelInfo().level})}
     window.addEventListener('keydown',event=>{if(event.key==='Escape'&&!overlay?.hidden){if(!el('jhp-confirm-backdrop')?.hidden)closeConfirm();else close()}});
   }
-  function open(){createUi();bodyOverflow=document.body.style.overflow;document.body.style.overflow='hidden';overlay.hidden=false;render();renderer?.resize?.();renderer?.start();clearInterval(countdownTimer);countdownTimer=setInterval(renderCountdowns,1000);el('jhp-close')?.focus({preventScroll:true})}
+  function open(){
+    const activeHouse=resolveHouse();
+    const changed=activeHouse.id!==house.id;
+    if(changed){house=activeHouse;state=defaultState();syncLabel='Cargando la mascota de esta Casa…';syncTone='warn';}
+    createUi();bodyOverflow=document.body.style.overflow;document.body.style.overflow='hidden';overlay.hidden=false;render();renderer?.resize?.();renderer?.start();clearInterval(countdownTimer);countdownTimer=setInterval(renderCountdowns,1000);el('jhp-close')?.focus({preventScroll:true});
+    if(changed)load();
+  }
   function close(){if(!overlay)return;closeConfirm();renderer?.stop();overlay.hidden=true;document.body.style.overflow=bodyOverflow;clearInterval(countdownTimer)}
   function setCaption(text){const node=el('jhp-caption');if(node)node.textContent=text}
   function showToast(message){const node=el('jhp-toast');if(!node)return;node.textContent=message;node.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>node.classList.remove('show'),2600)}

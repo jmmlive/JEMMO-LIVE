@@ -1,3 +1,15 @@
+# 15/08/2026 · RELEASE 65 · CASA PREMIUM REAL
+
+- Nuevo escenario social premium en Mi Casa.
+- Anfitrión destacado y hasta seis miembros reales alrededor del escenario.
+- Pecera Social con Chicharro JEMMO y cambio correcto por Casa activa.
+- Métricas sin datos inventados: “—” cuando Firebase no aporta el campo.
+- Inicio distingue claramente los LIVE individuales de la Batalla Oficial.
+- Limpieza de textos visibles de prueba en las zonas modificadas.
+- Simulador de roles retirado de la experiencia de Casas y YO.
+- Ruta oficial de Casas renombrada a casas.html; la antigua casa-demo.html redirige para no romper enlaces guardados.
+- Nueva caché PWA RELEASE 65.
+
 # PRUEBA 64 · 01/08/2026
 
 - Mascota rehecha sin fotografías ni imágenes generadas.

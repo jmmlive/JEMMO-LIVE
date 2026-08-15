@@ -271,7 +271,7 @@
     if($('chatView').classList.contains('hidden'))return;currentChat=null;$('chatView').classList.add('hidden');$('inboxView').classList.remove('hidden');renderLists($('searchInput').value);if(useHistory&&location.hash.startsWith('#chat-'))history.back();
   }
   function renderMessages(){
-    const area=$('messagesArea');area.innerHTML='<div class="day">CONVERSACIÓN SEGURA · PRUEBA LOCAL</div>';
+    const area=$('messagesArea');area.innerHTML='<div class="day">CONVERSACIÓN SEGURA · JEMMO LIVE</div>';
     const items=state.messages[currentChat]||[];
     if(!items.length)area.innerHTML+='<div class="bubble system">Todavía no hay mensajes. Escribe el primero.</div>';
     items.forEach(item=>{const bubble=document.createElement('div');bubble.className=`bubble ${item.from==='mine'?'mine':item.from==='them'?'theirs':'system'}`;bubble.innerHTML=`${esc(item.text)}<time>${esc(item.time||'')}</time>`;area.append(bubble)});area.scrollTop=area.scrollHeight;

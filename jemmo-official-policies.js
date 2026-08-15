@@ -59,7 +59,7 @@ export const JEMMO_ARTICLES = Object.freeze([
     summary:'LIVE usa escala por nivel; Audio Room paga 800 JEMS por hora completa.',
     keywords:['tarea','tareas','tarifa','tarifas','audio room','live paga','nivel','800','2000','3000','hora completa'],
     body:`Las tareas remuneradas son exclusivas para Emisoras vinculadas a una Casa o Agencia. Audio Room paga **800 JEMS por cada hora completa**, con un máximo de **2 horas remunerables** por ciclo y sin aumento por nivel. LIVE usa la tarifa del nivel y admite un máximo de **3 horas remunerables** por ciclo.\n\nSolo los regalos netos recibidos en LIVE aumentan el nivel dentro de la ventana móvil de siete días. Los regalos de Audio Room, Perfil, Mensajes, Destellos o Batalla no aumentan la tarea. Nivel S permite cuatro horas totales, pero obliga a combinar modalidades: 3 LIVE + 1 Audio Room o 2 LIVE + 2 Audio Room.`,
-    actions:[{label:'Ver tabla completa',section:'tareas'},{label:'Abrir Mis tareas',route:'casa-demo.html'}]
+    actions:[{label:'Ver tabla completa',section:'tareas'},{label:'Abrir Mis tareas',route:'casas.html'}]
   }),
   A({
     id:'task-cycle', category:'tareas', icon:'24', title:'Ciclo, cronómetro y cobro de tareas',
@@ -122,7 +122,7 @@ export const JEMMO_ARTICLES = Object.freeze([
     summary:'Ingreso informado y proceso escalonado para evitar retenciones indefinidas.',
     keywords:['casa','agencia','agente','liberacion','liberación','salir de casa','7 dias','5 dias','3 dias','retener'],
     body:`Antes de unirse a una Casa o Agencia, la Emisora debe ver la política de salida. Si la primera solicitud es rechazada, espera 7 días; tras un segundo rechazo, espera 5 días; en la tercera solicitud la liberación se ejecuta automáticamente después de 3 días. Contando el día inicial, el recorrido completo puede alcanzar 16 días naturales.\n\nSi el agente acepta, la salida es inmediata. Una solicitud sin respuesta no puede quedar abierta indefinidamente y debe producir liberación automática a los 15 días. Cada decisión conserva fecha, motivo y responsable.`,
-    actions:[{label:'Abrir Mi Casa',route:'casa-demo.html'},{label:'Consultar con Chili',section:'saber'}]
+    actions:[{label:'Abrir Mi Casa',route:'casas.html'},{label:'Consultar con Chili',section:'saber'}]
   }),
   A({
     id:'support-process', category:'soporte', icon:'🧑‍💻', title:'Soporte humano y seguimiento',

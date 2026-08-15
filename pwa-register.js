@@ -1,8 +1,8 @@
 (()=>{
   'use strict';
-  if(window.__JEMMO_PWA_REGISTER_64__)return;
-  window.__JEMMO_PWA_REGISTER_64__=true;
-  const RELEASE='pwa-mascot-64';
+  if(window.__JEMMO_PWA_REGISTER_65__)return;
+  window.__JEMMO_PWA_REGISTER_65__=true;
+  const RELEASE='pwa-casa-premium-real-65';
   let installPrompt=null;
   const isStandalone=()=>window.matchMedia?.('(display-mode: standalone)').matches||window.navigator.standalone===true;
   const storage={get:k=>{try{return localStorage.getItem(k)}catch{return null}},set:(k,v)=>{try{localStorage.setItem(k,v);return true}catch{try{sessionStorage.setItem(k,v);return true}catch{return false}}}};
@@ -15,9 +15,9 @@
   document.addEventListener('click',async event=>{const button=event.target.closest('[data-install-jemmo]');if(!button)return;event.preventDefault();if(isStandalone())return showInstallHelp('La aplicación ya está abierta en modo instalado.');if(!window.isSecureContext||location.protocol==='file:')return showInstallHelp('JEMMO LIVE debe estar publicada mediante HTTPS para instalarse.');if(!installPrompt)return showInstallHelp('Abre el menú de Chrome y toca “Instalar aplicación” o “Añadir a pantalla de inicio”.');button.disabled=true;try{await installPrompt.prompt();await installPrompt.userChoice}finally{installPrompt=null;bindInstallButtons()}});
   window.addEventListener('appinstalled',()=>{installPrompt=null;bindInstallButtons()});
   function loadHousePet(){
-    const path=location.pathname.toLowerCase();const search=location.search.toLowerCase();const relevant=path.endsWith('/salas.html')||path.endsWith('salas.html')||path.endsWith('/casa-demo.html')||path.endsWith('casa-demo.html')||search.includes('houseroom=1')||search.includes('house=');if(!relevant)return;
+    const path=location.pathname.toLowerCase();const search=location.search.toLowerCase();const relevant=path.endsWith('/salas.html')||path.endsWith('salas.html')||path.endsWith('/casas.html')||path.endsWith('casas.html')||search.includes('houseroom=1')||search.includes('house=');if(!relevant)return;
     if(!document.querySelector('link[data-jemmo-house-pet]')){const link=document.createElement('link');link.rel='stylesheet';link.href='./jemmo-house-pet.css?v=64';link.dataset.jemmoHousePet='64';document.head.appendChild(link)}
-    const loadMain=()=>{if(document.querySelector('script[data-jemmo-house-pet]'))return;const script=document.createElement('script');script.src='./jemmo-house-pet.js?v=64';script.defer=true;script.dataset.jemmoHousePet='64';script.onerror=()=>console.warn('JEMMO Mascota: no se pudo cargar el módulo.');document.head.appendChild(script)};
+    const loadMain=()=>{if(document.querySelector('script[data-jemmo-house-pet]'))return;const script=document.createElement('script');script.src='./jemmo-house-pet.js?v=65';script.defer=true;script.dataset.jemmoHousePet='65';script.onerror=()=>console.warn('JEMMO Mascota: no se pudo cargar el módulo.');document.head.appendChild(script)};
     if(window.JemmoMascotRenderer)loadMain();else if(!document.querySelector('script[data-jemmo-pet-renderer]')){const renderer=document.createElement('script');renderer.src='./jemmo-house-pet-renderer.js?v=64';renderer.defer=true;renderer.dataset.jemmoPetRenderer='64';renderer.onload=loadMain;renderer.onerror=()=>console.warn('JEMMO Mascota: no se pudo cargar el motor visual.');document.head.appendChild(renderer)}
   }
   if('serviceWorker'in navigator&&location.protocol!=='file:'){

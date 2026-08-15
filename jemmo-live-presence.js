@@ -166,7 +166,7 @@ function renderHome(rows){
   const active=rows.filter(item=>activeNow(item)&&String(item.visibility||'public')==='public').sort((a,b)=>Number(b.startedAtMs||0)-Number(a.startedAtMs||0));
   grid.replaceChildren();
   if(!active.length){
-    const empty=document.createElement('div');empty.className='home-live-empty';empty.innerHTML='<b>Ahora mismo no hay transmisiones activas.</b><span>Cuando una persona inicie LIVE aparecerá aquí automáticamente.</span>';grid.append(empty);return;
+    const empty=document.createElement('div');empty.className='home-live-empty';empty.innerHTML='<b>Ahora mismo no hay LIVE individuales activos.</b><span>Las batallas oficiales pueden seguir activas arriba; cuando una persona inicie su LIVE aparecerá aquí automáticamente.</span>';grid.append(empty);return;
   }
   active.slice(0,12).forEach(item=>{
     const uid=clean(item.uid||item.hostUid,160),name=clean(item.name||'Usuario JEMMO',80);

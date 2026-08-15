@@ -1646,7 +1646,7 @@
     hideSheets();
     document.body.style.overflow='';
     if(houseContext.enabled){
-      const target=new URL('casa-demo.html',location.href);
+      const target=new URL('casas.html',location.href);
       target.searchParams.set('house',houseContext.id);
       target.searchParams.set('view','my-house');
       location.replace(target.href);
